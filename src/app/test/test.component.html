@@ -1,0 +1,104 @@
+<div class="row">
+  <div class="col">
+    <div class="row">
+      <app-button [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="loadData()"></app-button>
+      <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runAll()"></app-button>
+      <app-button [icon]="'fa fa-repeat'" [title]="'Rerun All'" (click)="rerunAll()"></app-button>
+      <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="open(settings)"></app-button>
+      <app-button [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
+      <app-button [title]="'Deselect All'" [text]="'Deselect All'" (click)="uncheckAll()"></app-button>
+      <app-button [icon]="'fa fa-trash'" [title]="'Delete Selected'" (click)="deleteSelected()"></app-button>
+      <app-dropdown [icon]="'fa fa-download'" [title]="'Download'" [items]="['Reports & Messages', 'Reports', 'Messages']"></app-dropdown>
+      <app-button [icon]="'fa fa-upload'" [title]="'Upload'" (click)="uploadFile.click()">
+        <input #uploadFile type="file" style="display: none">
+      </app-button>
+    </div>
+
+    <div class="form-group mt-2">
+      <label for="moveToInput">Move/Copy to:</label>
+      <div class="input-group">
+        <input type="text" class="form-control mr-1 my-2 py-0" placeholder="1" id="moveToInput"/>
+        <app-button class="mt-0" [icon]="'fa fa-copy'" [title]="'Copy'"></app-button>
+        <app-button class="mt-0" [title]="'Move'" [text]="'Move'"></app-button>
+      </div>
+    </div>
+    <div class="row">
+      <table>
+        <tbody>
+        <tr *ngFor="let report of reports" class="form-inline">
+          <td>
+            <input class="form-check-input" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
+          </td>
+          <td>
+            <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report[5])"></app-button>
+          </td>
+          <td>
+            <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="selectReport(report[5], report[2])"></app-button>
+          </td>
+          <td>
+            <app-button [icon]="'fa fa-clone'" [title]="'Clone report'" (click)="open(clone)"></app-button>
+          </td>
+          <td>
+            /{{ report[2]}}
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <app-toast></app-toast>
+</div>
+
+<ng-template #settings let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="settingsModal">Options</h5>
+    <button type="button" class="close" (click)="modal.dismiss()">
+      <span>&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form style="text-align: center">
+      <div class="form-group form-check-inline">
+        <input class="form-check-input" type="checkbox" value="" id="reportTransformationCheck"
+               ng-model="showOptions.ids">
+        <label class="form-check-label transform-label" for="reportTransformationCheck">
+          Show report storage IDs
+        </label>
+      </div>
+      <div class="form-group form-check-inline">
+        <input class="form-check-input" type="checkbox" value="" id="showCheckpointIds"
+               ng-model="showOptions.checkpoints">
+        <label class="form-check-label transform-label" for="showCheckpointIds">
+          Show checkpoint IDs
+        </label>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <app-button [text]="'Restore to defaults'"></app-button>
+  </div>
+</ng-template>
+
+<ng-template #clone let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="cloneModal">Clone Report</h5>
+    <button type="button" class="close" (click)="modal.dismiss()">
+      <span>&times;</span>
+    </button>
+  </div>
+  <div class="modal-body container">
+    <form>
+      <div class="form-group">
+        <label for="variableCsvInput">Variable CSV</label>
+        <textarea class="form-control" id="variableCsvInput" rows="5"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="reportInputMessage">Variable CSV</label>
+        <textarea class="form-control" id="reportInputMessage" rows="5"></textarea>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-info" ng-click="cloneReport()">Generate</button>
+  </div>
+</ng-template>

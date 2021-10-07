@@ -1,0 +1,15 @@
+<!--Debug panel-->
+<div class="resizable-vertical row pl-3" style="min-height: 50px">
+  <div class="w-100">
+    <app-table (emitEvent)="addReport($event)"></app-table>
+  </div>
+</div>
+<div class="row pl-3" style="min-height: 200px">
+  <div class="resizable-horizontal pr-3 border-right" style="min-width: 300px">
+    <app-tree (selectReportEvent)="selectReport($event)"></app-tree>
+  </div>
+  <!-- Content panel-->
+  <div class="col overflow-auto" >
+    <app-display (closeReportEvent)="closeReport($event)"></app-display>
+  </div>
+</div>

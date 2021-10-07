@@ -1,0 +1,6 @@
+{
+  "/ladybug": {
+    "target": "http://localhost",
+    "secure": false
+  }
+}
