@@ -1,5 +1,5 @@
 {
-  "name": "ladybug",
+  "name": "@wearefrank/ladybug",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -8,7 +8,6 @@
     "watch": "ng build --watch --configuration development",
     "test": "cypress open"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "~12.1.0-",
     "@angular/cdk": "^12.2.9",
@@ -48,6 +47,7 @@
     "karma-coverage": "~2.0.3",
     "karma-jasmine": "~4.0.1",
     "karma-jasmine-html-reporter": "~1.7.0",
-  }
     "typescript": "~4.2.3"
+  },
+  "publishConfig": {"access": "public"}
 }
