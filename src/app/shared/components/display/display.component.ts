@@ -28,11 +28,18 @@ export class DisplayComponent {
   @ViewChild('path') path!: ElementRef;
   @ViewChild('transformation') transformation!: ElementRef;
   monacoBefore: string = '';
-  difference: {code: [], name: string, description: string, path: string, transformation: string} = {code: [], name: '', description: '', path: '', transformation: ''};
+  difference: { code: [], name: string, description: string, path: string, transformation: string } = {
+    code: [],
+    name: '',
+    description: '',
+    path: '',
+    transformation: ''
+  };
   stubStrategies: string[] = ["Follow report strategy", "No", "Yes"];
   type: string = '';
 
-  constructor(private modalService: NgbModal, private http: HttpClient) {}
+  constructor(private modalService: NgbModal, private http: HttpClient) {
+  }
 
   /**
    * Open a modal
@@ -116,7 +123,31 @@ export class DisplayComponent {
     this.editingRoot = false;
     this.modalService.dismissAll();
     this.toggleMonacoEditor();
+    if (type === "save") {
+      this.saveReport()
+    }
     console.log("Successfully " + type + " changes!")
+  }
+
+  saveReport() {
+    console.log("Saving report!")
+    let newReport: any = {
+      "name": this.name.nativeElement.value,
+      "path": this.path.nativeElement.value,
+      "description": this.description.nativeElement.value,
+      "transformation": this.transformation.nativeElement.value
+    };
+
+    this.http.post('/ladybug/report/testStorage/' + this.report.ladybug.storageId, newReport).subscribe(
+      response => {
+        console.log(response)
+      },
+      error => {
+        console.log(error)
+        this.toastComponent.addAlert({type: "danger", message: error})
+      }
+    )
+    this.showReport(this.report)
   }
 
   /**
