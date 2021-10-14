@@ -14,9 +14,9 @@ export class TableComponent implements OnInit {
   showFilter: boolean = false;
   metadata: any = {}; // The data that is displayed
   isLoaded: boolean = false; // Wait for the page to be loaded
-  displayAmount: number = 26; // The amount of data that is displayed
+  displayAmount: number = 10; // The amount of data that is displayed
+  totalAmount: number = 0;
   filterValue: string = ""; // Value on what table should filter
-  sortAscending: boolean = true;
   sortedData: any = {};
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @Input() // Needed to make a distinction between the two halves in compare component
@@ -48,6 +48,7 @@ export class TableComponent implements OnInit {
    */
   changeTableLimit(event: any) {
     this.displayAmount = event.target.value;
+    this.ngOnInit()
   }
 
   /**
@@ -136,7 +137,7 @@ export class TableComponent implements OnInit {
    * Load in data for the table
    */
   ngOnInit(): void {
-    this.http.get<any>('/ladybug/metadata/debugStorage').subscribe(data => {
+    this.http.get<any>('/ladybug/metadata/debugStorage/', {params: {"limit": this.displayAmount}}).subscribe(data => {
       this.metadata = data
       this.isLoaded = true;
     }, () => {
