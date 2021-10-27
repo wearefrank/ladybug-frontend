@@ -1,6 +1,6 @@
 <div *ngIf="displayReport">
 
-  <div class="row" >
+  <div class="row" id="displayButtons">
     <app-button [icon]="'fa fa-repeat'" [title]="'Rerun'"></app-button>
     <app-button [icon]="'fa fa-edit'" [title]="'Edit'" *ngIf="!editing"
                 (click)="editReport()"></app-button>
@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <div style="height: 100px">
+  <div id="monacoEditor" style="height: 100px">
     <app-monaco-editor [value]="report.ladybug.message"></app-monaco-editor>
   </div>
 

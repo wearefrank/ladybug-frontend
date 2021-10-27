@@ -30,7 +30,7 @@ export class MonacoEditorComponent implements AfterViewInit {
 
   /**
    * Load monaco editor
-   * @param message - the initial xml cod to be shown
+   * @param message - the initial xml code to be shown
    */
   loadMonaco(message: string): void {
     if (loadedMonaco) {
