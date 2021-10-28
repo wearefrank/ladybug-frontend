@@ -111,7 +111,7 @@ export class TableComponent implements OnInit {
     Request the data based on storageId and send this data along to the tree (via parent)
    */
   openReport(storageId: string) {
-    this.http.get<any>('/ladybug/report/debugStorage/' + storageId).subscribe(data => {
+    this.http.get<any>('/api/report/debugStorage/' + storageId).subscribe(data => {
       data.id = this.id
       this.emitEvent.next(data);
     }, () => {
@@ -137,7 +137,7 @@ export class TableComponent implements OnInit {
    * Load in data for the table
    */
   ngOnInit(): void {
-    this.http.get<any>('/ladybug/metadata/debugStorage/', {params: {"limit": this.displayAmount}}).subscribe(data => {
+    this.http.get<any>('/api/metadata/debugStorage/', {params: {"limit": this.displayAmount}}).subscribe(data => {
       this.metadata = data
       this.isLoaded = true;
     }, () => {

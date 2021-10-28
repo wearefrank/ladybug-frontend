@@ -80,7 +80,7 @@ export class DisplayComponent {
 
     // This is for the root report which has a specific location for the xml message
     if (this.report.ladybug.storageId) {
-      this.http.get<any>('/ladybug/report/debugStorage/' + this.report.ladybug.storageId + "/?xml=true&globalTransformer=true").subscribe(data => {
+      this.http.get<any>('/api/report/debugStorage/' + this.report.ladybug.storageId + "/?xml=true&globalTransformer=true").subscribe(data => {
         this.report.ladybug.message = data.xml;
         this.monacoEditorComponent?.loadMonaco(beautify(data.xml)); // TODO: Maybe create a service for this
       }, () => {

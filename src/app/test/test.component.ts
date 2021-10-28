@@ -33,7 +33,7 @@ export class TestComponent implements OnInit{
    * Load in the report data from testStorage
    */
   loadData() {
-    this.http.get<any>('/ladybug/metadata/testStorage').subscribe(data => {
+    this.http.get<any>('/api/metadata/testStorage').subscribe(data => {
       this.reports = data.values
       this.checkAll();
     }, () => {
@@ -68,7 +68,7 @@ export class TestComponent implements OnInit{
 
   queryResults() {
     console.log("Querying results...")
-    this.http.get<any>('ladybug/runner/result/debugStorage', {headers: headers}).subscribe(
+    this.http.get<any>('/api/runner/result/debugStorage', {headers: headers}).subscribe(
       response => {
         console.log(response)
       },
@@ -94,7 +94,7 @@ export class TestComponent implements OnInit{
    * @param name - the name of the report
    */
   selectReport(storageId: number, name: string) {
-    this.http.get<any>('/ladybug/report/debugStorage/' + storageId).subscribe(data => {
+    this.http.get<any>('/api/report/debugStorage/' + storageId).subscribe(data => {
       this.openTestReportEvent.emit({data: data, name: name})
     }, () => {
       this.toastComponent.addAlert({type: 'warning', message: 'Could not retrieve data for report!'})
