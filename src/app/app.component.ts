@@ -1,5 +1,8 @@
 import {Component, Injector} from '@angular/core';
 import {ReportComponent, ReportData} from "./report/report.component";
+import {Title} from '@angular/platform-browser'
+declare var require: any;
+const { version: appVersion} = require('../../package.json')
 
 @Component({
   selector: 'app-root',
@@ -9,8 +12,12 @@ import {ReportComponent, ReportData} from "./report/report.component";
 
 export class AppComponent {
   injector!: Injector;
+  appVersion: string;
 
-  constructor(private inj: Injector) {}
+  constructor(private inj: Injector, private titleService: Title) {
+    this.appVersion = appVersion
+    this.titleService.setTitle("Ladybug - v" + this.appVersion)
+  }
 
   title = 'ladybug';
   active = 1;
