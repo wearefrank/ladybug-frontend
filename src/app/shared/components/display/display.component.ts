@@ -150,6 +150,15 @@ export class DisplayComponent {
     this.showReport(this.report)
   }
 
+  copyReport() {
+    let storageId: number = +this.report.ladybug.uid.split("#")[0];
+    let data: any = {}
+    data['debugStorage'] = [storageId]
+    this.http.put("api/report/store/testStorage", data).subscribe(response => {
+      console.log(response)
+    })
+  }
+
   /**
    * Toggle editing the monaco editor
    */
