@@ -41,6 +41,11 @@ export class TestComponent implements OnInit{
     });
   }
 
+  resetRunner() {
+    // @ts-ignore
+    this.http.post<any>('api/runner/reset')
+  }
+
   /**
    * Run a test
    */
@@ -52,13 +57,15 @@ export class TestComponent implements OnInit{
     // Either replace -> PUT Call ladybug/runner/replace/debugStorage/reportId
     // Or Compare
     // Go to compare tab and show the two reports
-    console.log("Rerunning report")
+    console.log("Rerunning report...")
     let data: any = {}
     data['testStorage'] = [reportId]
-    this.http.post<any>('ladybug/runner/run/debugStorage', data, {headers: headers, observe: "response"}).subscribe(
+    this.http.post<any>('api/runner/run/debugStorage', data, {headers: headers, observe: "response"}).subscribe(
       response => {
         console.log(response)
-        this.queryResults()
+        setTimeout(() => {
+          this.queryResults()
+        }, 1000)
       },
         error => {
         console.log(error)
@@ -74,19 +81,19 @@ export class TestComponent implements OnInit{
       },
         error => {
         console.log(error)
-        this.toastComponent.addAlert({type: 'danger', message: error})
+        this.toastComponent.addAlert({type: 'danger', message: "(" + error.status + ") " + error.statusText})
       })
   }
 
   /**
-   * Rerun a test
-   */
-  rerunAll() {}
-
-  /**
    * Runs all tests
    */
-  runAll() {}
+  async runAll() {
+    let selectedReports = this.reports.filter(report => report.checked);
+    for (let report in selectedReports) {
+      await this.run(report[5]) // 5 is the index of the reportId
+    }
+  }
 
   /**
    * Selects the report to be displayed
@@ -105,7 +112,27 @@ export class TestComponent implements OnInit{
    * Removes the selected reports
    */
   deleteSelected() {
-    this.reports = this.reports.filter(report => !report.checked)
+    let selectedReports = this.reports.filter(report => report.checked);
+    for (let i = 0; i < selectedReports.length; i++) {
+        this.http.delete('api/report/testStorage/' + selectedReports[i][5]).subscribe(() => {
+        this.loadData()
+      }, error => {
+          console.log(error)
+          this.toastComponent.addAlert({type: 'danger', message: 'Could not delete report!'})
+        })
+    }
+  }
+
+  downloadSelected(exportMessages: boolean, exportReports: boolean) {
+
+    let selectedReports = this.reports.filter(report => report.checked);
+    let queryString = "?";
+    for (let i = 0; i < selectedReports.length; i++) {
+        queryString += "id=" + selectedReports[i][5] + "&"
+    }
+    console.log("Query string: " + queryString);
+    window.open('api/report/download/testStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
+
   }
 
   /**

@@ -3,12 +3,22 @@
     <div class="row">
       <app-button [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="loadData()"></app-button>
       <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runAll()"></app-button>
-      <app-button [icon]="'fa fa-repeat'" [title]="'Rerun All'" (click)="rerunAll()"></app-button>
+      <app-button [icon]="'fa fa-repeat'" [title]="'Reset'" (click)="resetRunner()"></app-button>
       <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="open(settings)"></app-button>
       <app-button [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
       <app-button [title]="'Deselect All'" [text]="'Deselect All'" (click)="uncheckAll()"></app-button>
       <app-button [icon]="'fa fa-trash'" [title]="'Delete Selected'" (click)="deleteSelected()"></app-button>
-      <app-dropdown [icon]="'fa fa-download'" [title]="'Download'" [items]="['Reports & Messages', 'Reports', 'Messages']"></app-dropdown>
+
+      <div ngbDropdown title="Download">
+        <button class="btn btn-info my-2 mx-1" id="dropdownDownload" ngbDropdownToggle>
+          <i class="fa fa-download px-2"></i><span class="caret"></span>
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdownDownload">
+          <button ngbDropdownItem (click)="downloadSelected(true, true)">Reports & Messages</button>
+          <button ngbDropdownItem (click)="downloadSelected(false, true)">Reports</button>
+          <button ngbDropdownItem (click)="downloadSelected(true, false)">Messages</button>
+        </div>
+      </div>
       <app-button [icon]="'fa fa-upload'" [title]="'Upload'" (click)="uploadFile.click()">
         <input #uploadFile type="file" style="display: none">
       </app-button>
@@ -37,6 +47,9 @@
           </td>
           <td>
             <app-button [icon]="'fa fa-clone'" [title]="'Clone report'" (click)="open(clone)"></app-button>
+          </td>
+          <td>
+            <app-button [icon]="'fa fa-exchange'" [title]="'Replace report'"></app-button>
           </td>
           <td>
             /{{ report[2]}}

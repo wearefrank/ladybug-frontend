@@ -137,8 +137,9 @@ export class DisplayComponent {
       "description": this.description.nativeElement.value,
       "transformation": this.transformation.nativeElement.value
     };
+    console.log("Hi")
 
-    this.http.post('/ladybug/report/debugStorage/' + this.report.ladybug.storageId, newReport).subscribe(
+    this.http.post('api/report/debugStorage/' + this.report.ladybug.storageId, newReport).subscribe(
       response => {
         console.log(response)
       },
@@ -148,6 +149,15 @@ export class DisplayComponent {
       }
     )
     this.showReport(this.report)
+  }
+
+  copyReport() {
+    let storageId: number = +this.report.ladybug.uid.split("#")[0];
+    let data: any = {}
+    data['debugStorage'] = [storageId]
+    this.http.put("api/report/store/testStorage", data).subscribe(response => {
+      console.log(response)
+    })
   }
 
   /**

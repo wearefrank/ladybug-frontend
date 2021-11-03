@@ -10,8 +10,7 @@
                 (click)="openModal(saveOrDiscardChanges, 'save')"></app-button>
     <app-dropdown [icon]="'fa fa-download'" [title]="'Download'"
                   [items]="['Reports & Messages', 'Reports', 'Messages']"></app-dropdown>
-    <app-dropdown [icon]="'fa fa-copy'" [title]="'Copy'"
-                  [items]="['Copy One', 'Copy Selected', 'Copy All']"></app-dropdown>
+    <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
     <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport()"></app-button>
   </div>
 
