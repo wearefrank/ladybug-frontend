@@ -7,6 +7,17 @@
       <input #uploadFile type="file" style="display: none">
     </app-button>
     <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
+    <div ngbDropdown title="Download">
+      <button class="btn btn-info my-2 mx-1" id="dropdownDownload" ngbDropdownToggle>
+        <i class="fa fa-download px-2"></i><span class="caret"></span>
+      </button>
+      <div ngbDropdownMenu aria-labelledby="dropdownDownload">
+        <button ngbDropdownItem (click)="downloadReports(true, true)">Reports & Messages</button>
+        <button ngbDropdownItem (click)="downloadReports(false, true)">Reports</button>
+        <button ngbDropdownItem (click)="downloadReports(true, false)">Messages</button>
+      </div>
+    </div>
+
     <app-dropdown [icon]="'fa fa-download'" [title]="'Download'"
                   [items]="['Reports & Messages', 'Reports', 'Messages']"></app-dropdown>
     <app-button [title]="'Open All'" [text]="'Open All'" (click)="openReports(-1)"></app-button>
@@ -23,9 +34,18 @@
     <table class="table table-hover" matSort (matSortChange)="sortData($event)">
       <thead>
       <tr>
-        <th *ngFor="let header of metadata.fields; let i = index" mat-sort-header="{{i}}">
-          {{header}}
-        </th>
+        <th mat-sort-header="5">Storage Id</th>
+        <th mat-sort-header="4">End Time</th>
+        <th mat-sort-header="0">Duration (ms)</th>
+        <th mat-sort-header="2">Name</th>
+        <th mat-sort-header="6">Status</th>
+        <th mat-sort-header="3">Correlation Id</th>
+        <th mat-sort-header="7">Number Of Checkpoints</th>
+        <th mat-sort-header="8">Estimated Memory Usage (Bytes)</th>
+        <th mat-sort-header="1">Storage Size (Bytes)</th>
+<!--        <th *ngFor="let header of metadata.fields; let i = index" mat-sort-header="{{i}}">-->
+<!--          {{header}}-->
+<!--        </th>-->
       </tr>
       <tr id="filterRow" *ngIf="showFilter">
         <th *ngFor="let header of metadata.fields">
@@ -38,7 +58,17 @@
       <tbody>
       <!--        5 is the index of the storageId-->
       <tr *ngFor="let row of metadata.values.slice(0, displayAmount) | filter:filterValue" (click)="openReport(row[5])">
-        <td *ngFor="let value of row">{{value}}</td>
+<!--        // StorageId EndTime Duration Name CorrelationId NrChpts EstMemusage StorageSize-->
+        <td>{{ row[5] }}</td>
+        <td>{{ getDate(row[4]) }}</td>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[2] }}</td>
+        <td>{{ row[6] }}</td>
+        <td>{{ row[3] }}</td>
+        <td>{{ row[7] }}</td>
+        <td>{{ row[8] }}</td>
+        <td>{{ row[1] }}</td>
+        <!--        <td *ngFor="let value of row"><span *ngIf="">{{value}}</span></td>-->
       </tr>
       </tbody>
     </table>

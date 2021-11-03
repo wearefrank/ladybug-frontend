@@ -19,12 +19,20 @@ export class TableComponent implements OnInit {
   filterValue: string = ""; // Value on what table should filter
   sortedData: any = {};
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
+
   @Input() // Needed to make a distinction between the two halves in compare component
-  get id() { return this._id}
-  set id(id: string) {this._id = id}
+  get id() {
+    return this._id
+  }
+
+  set id(id: string) {
+    this._id = id
+  }
+
   private _id: string = "";
 
-  constructor(private modalService: NgbModal, private http: HttpClient) {}
+  constructor(private modalService: NgbModal, private http: HttpClient) {
+  }
 
   /**
    * Open a modal
@@ -32,6 +40,17 @@ export class TableComponent implements OnInit {
    */
   openModal(content: any) {
     this.modalService.open(content);
+  }
+
+  getDate(seconds: string) {
+    let date = new Date(parseInt(seconds))
+    return ('0' + date.getDay()).slice(-2) + "/" +
+      ('0' + date.getUTCMonth()).slice(-2) + "/" +
+      date.getFullYear() + " - " +
+      ('0' + date.getHours()).slice(-2) + ":" +
+      ('0' + date.getMinutes()).slice(-2) + ":" +
+      ('0' + date.getSeconds()) + "." +
+      ('0' + date.getMilliseconds()).slice(-3)
   }
 
   /**
@@ -65,16 +84,26 @@ export class TableComponent implements OnInit {
 
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case '0': return this.compare(Number(a[0]), Number(b[0]), isAsc); // Duration
-        case '1': return this.compare(Number(a[1]), Number(b[1]), isAsc); // StorageSize
-        case '2': return this.compare(a[2], b[2], isAsc);                 // Name
-        case '3': return this.compare(a[3], b[3], isAsc);                 // CorrelationId
-        case '4': return this.compare(a[4], b[4], isAsc);                 // EndTime
-        case '5': return this.compare(Number(a[5]), Number(b[5]), isAsc); // StorageId
-        case '6': return this.compare(a[6], b[6], isAsc);                 // Status
-        case '7': return this.compare(Number(a[7]), Number(b[7]), isAsc); // NumberOfCheckpoints
-        case '8': return this.compare(Number(a[8]), Number(b[8]), isAsc); // EstimatedMemoryUsage
-        default: return 0;
+        case '0':
+          return this.compare(Number(a[0]), Number(b[0]), isAsc); // Duration
+        case '1':
+          return this.compare(Number(a[1]), Number(b[1]), isAsc); // StorageSize
+        case '2':
+          return this.compare(a[2], b[2], isAsc);                 // Name
+        case '3':
+          return this.compare(a[3], b[3], isAsc);                 // CorrelationId
+        case '4':
+          return this.compare(a[4], b[4], isAsc);                 // EndTime
+        case '5':
+          return this.compare(Number(a[5]), Number(b[5]), isAsc); // StorageId
+        case '6':
+          return this.compare(a[6], b[6], isAsc);                 // Status
+        case '7':
+          return this.compare(Number(a[7]), Number(b[7]), isAsc); // NumberOfCheckpoints
+        case '8':
+          return this.compare(Number(a[8]), Number(b[8]), isAsc); // EstimatedMemoryUsage
+        default:
+          return 0;
       }
     });
   }
@@ -108,7 +137,7 @@ export class TableComponent implements OnInit {
   }
 
   /**
-    Request the data based on storageId and send this data along to the tree (via parent)
+   Request the data based on storageId and send this data along to the tree (via parent)
    */
   openReport(storageId: string) {
     this.http.get<any>('api/report/debugStorage/' + storageId).subscribe(data => {
@@ -133,12 +162,17 @@ export class TableComponent implements OnInit {
     }
   }
 
+  downloadReports(showMessages: boolean, showReports: boolean) {
+    
+  }
+
   /**
    * Load in data for the table
    */
   ngOnInit(): void {
     this.http.get<any>('api/metadata/debugStorage/', {params: {"limit": this.displayAmount}}).subscribe(data => {
       this.metadata = data
+      console.log(this.metadata)
       this.isLoaded = true;
     }, () => {
       this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for table!'})

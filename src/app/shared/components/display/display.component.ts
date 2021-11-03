@@ -137,8 +137,9 @@ export class DisplayComponent {
       "description": this.description.nativeElement.value,
       "transformation": this.transformation.nativeElement.value
     };
+    console.log("Hi")
 
-    this.http.post('/ladybug/report/debugStorage/' + this.report.ladybug.storageId, newReport).subscribe(
+    this.http.post('api/report/debugStorage/' + this.report.ladybug.storageId, newReport).subscribe(
       response => {
         console.log(response)
       },
