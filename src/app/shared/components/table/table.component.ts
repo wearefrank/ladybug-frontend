@@ -170,7 +170,7 @@ export class TableComponent implements OnInit {
       queryString += "id=" + selectedReports[i][5] + "&"
     }
     console.log("Query string: " + queryString);
-    window.open('api/report/download/testStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
+    window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
   }
 
   uploadReport(event: any) {
@@ -181,10 +181,9 @@ export class TableComponent implements OnInit {
       formData.append("file", file);
       this.http.post('api/report/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}}).subscribe(response => {
         console.log(response)
+        this.loadData()
       })
     }
-    this.loadData()
-
   }
 
   /**

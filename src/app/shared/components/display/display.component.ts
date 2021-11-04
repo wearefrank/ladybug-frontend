@@ -162,7 +162,7 @@ export class DisplayComponent {
 
   downloadReport(exportMessages: boolean, exportReports: boolean) {
     let queryString = "?id=" + this.report.ladybug.uid.split('#')[0];
-    window.open('api/report/download/testStorage/' + exportMessages + "/" + exportReports + queryString);
+    window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString);
   }
 
   /**

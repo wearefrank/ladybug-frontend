@@ -35,7 +35,7 @@
     <div class="row">
       <table>
         <tbody>
-        <tr *ngFor="let report of reports" class="form-inline">
+        <tr *ngFor="let report of reports" class="form-inline" id="testReport#{{report[5]}}">
           <td>
             <input class="form-check-input" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
           </td>

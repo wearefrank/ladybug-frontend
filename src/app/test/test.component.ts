@@ -1,9 +1,7 @@
 import {Component, OnInit, EventEmitter, Output, Input, ViewChild} from '@angular/core';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ToastComponent} from "../shared/components/toast/toast.component";
-import {map, catchError, timeInterval} from "rxjs/operators";
-import {throwError} from "rxjs";
 
 const headers = new HttpHeaders().set(
   'Content-Type', 'application/json'
@@ -64,7 +62,7 @@ export class TestComponent implements OnInit{
       response => {
         console.log(response)
         setTimeout(() => {
-          this.queryResults()
+          this.queryResults(reportId)
         }, 1000)
       },
         error => {
@@ -73,11 +71,31 @@ export class TestComponent implements OnInit{
       })
   }
 
-  queryResults() {
-    console.log("Querying results...")
+  /**
+   * Query the results of the test run
+   * @param reportId - the id of the report we are running
+   */
+  queryResults(reportId: string) {
+    // Get the report object
+    let report: any = null
+    this.http.get('api/report/debugStorage/' + reportId).subscribe(response => {
+      report = response
+    })
+
     this.http.get<any>('api/runner/result/debugStorage', {headers: headers}).subscribe(
       response => {
-        console.log(response)
+        // Append the results
+        let element =  document.getElementById('testReport#' + reportId)
+        if (element) {
+          let td = document.createElement('td')
+          let res = response.results[reportId];
+          td.appendChild(document.createTextNode("(" + res['previous-time'] + "ms >> " + res['current-time'] + "ms) (" + res['stubbed'] + "/" + res['total'] + " stubbed)"))
+
+          // If the reports are not equal, then a different color should be shown
+          let color = report == response.results[reportId].report ? 'green' : 'red'
+          td.setAttribute('style', 'color:' + color)
+          element.appendChild(td)
+        }
       },
         error => {
         console.log(error)
@@ -91,7 +109,7 @@ export class TestComponent implements OnInit{
   async runAll() {
     let selectedReports = this.reports.filter(report => report.checked);
     for (let report in selectedReports) {
-      await this.run(report[5]) // 5 is the index of the reportId
+      await this.run(report[5])
     }
   }
 
@@ -130,7 +148,6 @@ export class TestComponent implements OnInit{
     for (let i = 0; i < selectedReports.length; i++) {
         queryString += "id=" + selectedReports[i][5] + "&"
     }
-    console.log("Query string: " + queryString);
     window.open('api/report/download/testStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
 
   }
@@ -141,8 +158,8 @@ export class TestComponent implements OnInit{
       console.log("Uploading " + file.name);
       const formData = new FormData();
       formData.append("file", file);
-      this.http.post('api/report/upload/testStorage', formData, {headers: {'Content-Type': 'multipart/form-data'}}).subscribe(response => {
-        console.log(response)
+      this.http.post('api/report/upload/testStorage', formData, {headers: {'Content-Type': 'multipart/form-data'}}).subscribe(() => {
+        this.loadData();
       })
     }
   }
