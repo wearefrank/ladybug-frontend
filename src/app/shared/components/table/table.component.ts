@@ -49,7 +49,7 @@ export class TableComponent implements OnInit {
       date.getFullYear() + " - " +
       ('0' + date.getHours()).slice(-2) + ":" +
       ('0' + date.getMinutes()).slice(-2) + ":" +
-      ('0' + date.getSeconds()) + "." +
+      ('0' + date.getSeconds()).slice(-2) + "." +
       ('0' + date.getMilliseconds()).slice(-3)
   }
 
