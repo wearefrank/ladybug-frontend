@@ -20,7 +20,7 @@
         </div>
       </div>
       <app-button [icon]="'fa fa-upload'" [title]="'Upload'" (click)="uploadFile.click()">
-        <input #uploadFile type="file" style="display: none">
+        <input #uploadFile (change)="uploadReport($event)" type="file" style="display: none">
       </app-button>
     </div>
 

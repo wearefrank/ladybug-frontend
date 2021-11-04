@@ -162,17 +162,41 @@ export class TableComponent implements OnInit {
     }
   }
 
-  downloadReports(showMessages: boolean, showReports: boolean) {
-    
+  downloadReports(exportMessages: boolean, exportReports: boolean) {
+    let selectedReports = this.metadata.values;
+
+    let queryString = "?";
+    for (let i = 0; i < selectedReports.length; i++) {
+      queryString += "id=" + selectedReports[i][5] + "&"
+    }
+    console.log("Query string: " + queryString);
+    window.open('api/report/download/testStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
+  }
+
+  uploadReport(event: any) {
+    const file: File = event.target.files[0]
+    if (file) {
+      console.log("Uploading " + file.name);
+      const formData = new FormData();
+      formData.append("file", file);
+      this.http.post('api/report/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}}).subscribe(response => {
+        console.log(response)
+      })
+    }
+    this.loadData()
+
   }
 
   /**
    * Load in data for the table
    */
-  ngOnInit(): void {
+  ngOnInit() {
+    this.loadData()
+  }
+
+  loadData() {
     this.http.get<any>('api/metadata/debugStorage/', {params: {"limit": this.displayAmount}}).subscribe(data => {
       this.metadata = data
-      console.log(this.metadata)
       this.isLoaded = true;
     }, () => {
       this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for table!'})

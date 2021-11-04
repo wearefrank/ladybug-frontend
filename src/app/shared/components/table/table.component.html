@@ -4,7 +4,7 @@
     <app-button [icon]="'fa fa-undo'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openModal(settings)"></app-button>
     <app-button [icon]="'fa fa-upload'" [title]="'Upload'" (click)="uploadFile.click()">
-      <input #uploadFile type="file" style="display: none">
+      <input #uploadFile (change)="uploadReport($event)" type="file" style="display: none">
     </app-button>
     <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
@@ -17,9 +17,6 @@
         <button ngbDropdownItem (click)="downloadReports(true, false)">Messages</button>
       </div>
     </div>
-
-    <app-dropdown [icon]="'fa fa-download'" [title]="'Download'"
-                  [items]="['Reports & Messages', 'Reports', 'Messages']"></app-dropdown>
     <app-button [title]="'Open All'" [text]="'Open All'" (click)="openReports(-1)"></app-button>
     <div class="col-md-3">
       <form class="form-horizontal pt-2">

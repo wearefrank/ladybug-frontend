@@ -8,8 +8,16 @@
                 (click)="openModal(saveOrDiscardChanges, 'discard')"></app-button>
     <app-button [icon]="'fa fa-save'" [title]="'Save'" *ngIf="editing"
                 (click)="openModal(saveOrDiscardChanges, 'save')"></app-button>
-    <app-dropdown [icon]="'fa fa-download'" [title]="'Download'"
-                  [items]="['Reports & Messages', 'Reports', 'Messages']"></app-dropdown>
+    <div ngbDropdown title="Download">
+      <button class="btn btn-info my-2 mx-1" id="dropdownDownload" ngbDropdownToggle>
+        <i class="fa fa-download px-2"></i><span class="caret"></span>
+      </button>
+      <div ngbDropdownMenu aria-labelledby="dropdownDownload">
+        <button ngbDropdownItem (click)="downloadReport(true, true)">Reports & Messages</button>
+        <button ngbDropdownItem (click)="downloadReport(false, true)">Reports</button>
+        <button ngbDropdownItem (click)="downloadReport(true, false)">Messages</button>
+      </div>
+    </div>
     <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
     <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport()"></app-button>
   </div>

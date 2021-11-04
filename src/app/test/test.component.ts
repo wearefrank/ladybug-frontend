@@ -135,6 +135,18 @@ export class TestComponent implements OnInit{
 
   }
 
+  uploadReport(event: any) {
+    const file: File = event.target.files[0]
+    if (file) {
+      console.log("Uploading " + file.name);
+      const formData = new FormData();
+      formData.append("file", file);
+      this.http.post('api/report/upload/testStorage', formData, {headers: {'Content-Type': 'multipart/form-data'}}).subscribe(response => {
+        console.log(response)
+      })
+    }
+  }
+
   /**
    * Toggle the checkbox
    * @param report - the report that is toggled
