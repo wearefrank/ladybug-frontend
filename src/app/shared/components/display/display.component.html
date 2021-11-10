@@ -69,7 +69,7 @@
         <td>Encoding</td>
         <td>{{ report.ladybug.encoding}}</td>
       </tr>
-      <tr *ngIf="!report.root">
+      <tr *ngIf="!report.root && report.ladybug.message">
         <td>Number of characters</td>
         <td>{{ report.ladybug.message.length}}</td>
       </tr>

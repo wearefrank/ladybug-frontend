@@ -1,6 +1,8 @@
-import {Component, Injector} from '@angular/core';
+import {AfterViewInit, Component, Injector, OnChanges, ViewChild} from '@angular/core';
 import {ReportComponent, ReportData} from "./report/report.component";
 import {Title} from '@angular/platform-browser'
+import {CompareComponent} from "./compare/compare.component";
+import {DebugComponent} from "./debug/debug.component";
 declare var require: any;
 const { version: appVersion} = require('../../package.json')
 
@@ -13,6 +15,7 @@ const { version: appVersion} = require('../../package.json')
 export class AppComponent {
   injector!: Injector;
   appVersion: string;
+  diffReports = {oldReport: '', newReport: ''}
 
   constructor(private inj: Injector, private titleService: Title) {
     this.appVersion = appVersion
@@ -31,6 +34,11 @@ export class AppComponent {
     this.injector = Injector.create({providers: [{provide: ReportData, useValue: data.data}], parent: this.inj})
     this.tabs.push( {key: data.name, value: ReportComponent})
     this.active = this.tabs.length + 3; // Active the tab immediately
+  }
+
+  openCompareReport(data: any) {
+    this.active = 3;
+    this.diffReports = data;
   }
 
   /**

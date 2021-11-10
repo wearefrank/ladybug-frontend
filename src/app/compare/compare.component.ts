@@ -1,13 +1,14 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, Input, OnChanges, ViewChild} from '@angular/core';
 import {TreeComponent} from "../shared/components/tree/tree.component";
 import {DisplayComponent} from "../shared/components/display/display.component";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-compare',
   templateUrl: './compare.component.html',
   styleUrls: ['./compare.component.css']
 })
-export class CompareComponent {
+export class CompareComponent implements OnChanges {
   leftReports: any[] = [];
   rightReports: any[] = [];
   @ViewChild('leftTree') leftTreeComponent!: TreeComponent;
@@ -20,13 +21,32 @@ export class CompareComponent {
   rightCurrentReport: any = {}
   leftReportSelected: boolean = false;
   rightReportSelected: boolean = false;
-  constructor() { }
+  @Input('diffReports') diffReports = {oldReport: '', newReport: ''}
+  constructor(private http: HttpClient) {}
+
+  ngOnChanges() {
+    if (this.diffReports.oldReport != '') {
+      this.selectReportBasedOnIds()
+    }
+  }
+
+  selectReportBasedOnIds() {
+    this.http.get<any>('api/report/debugStorage/' + this.diffReports.oldReport).subscribe(data => {
+      data.id = "leftId";
+      this.addReportNodeLeft(data);
+    })
+    this.http.get<any>('api/report/debugStorage/' + this.diffReports.newReport).subscribe(data => {
+      data.id = "rightId";
+      this.addReportNodeRight(data);
+    })
+  }
 
   /**
    * Adds a report to the left tree
    * @param newReport - report to be added
    */
   addReportNodeLeft(newReport: any) {
+    console.log(newReport)
     if (this.leftId === newReport.id) {
       this.leftReports.push(newReport);
       this.leftTreeComponent?.handleChange(this.leftReports);

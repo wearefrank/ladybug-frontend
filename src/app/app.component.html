@@ -3,19 +3,19 @@
     <li [ngbNavItem]="1">
       <a ngbNavLink>Debug</a>
       <ng-template ngbNavContent>
-        <app-debug></app-debug>
+        <app-debug #debug ></app-debug>
       </ng-template>
     </li>
     <li [ngbNavItem]="2">
       <a ngbNavLink>Test</a>
       <ng-template ngbNavContent>
-        <app-test (openTestReportEvent)="openTestReport($event)"></app-test>
+        <app-test (openTestReportEvent)="openTestReport($event)" (openCompareReportsEvent)="openCompareReport($event)"></app-test>
       </ng-template>
     </li>
     <li [ngbNavItem]="3">
       <a ngbNavLink>Compare</a>
       <ng-template ngbNavContent>
-        <app-compare></app-compare>
+        <app-compare [diffReports]="diffReports"></app-compare>
       </ng-template>
     </li>
     <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 4">

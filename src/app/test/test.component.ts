@@ -16,7 +16,9 @@ export class TestComponent implements OnInit{
   reports: any[] = [];
   metadata: any = {};
   reranReports: any[] = [];
+  reranReportsIndex: string[] = [];
   @Output() openTestReportEvent = new EventEmitter<any>();
+  @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
 
   constructor(private modalService: NgbModal, private http: HttpClient) {}
@@ -117,8 +119,10 @@ export class TestComponent implements OnInit{
           let rerunIndex = this.reranReports.findIndex(x => x.original == result);
           if (rerunIndex !== -1) {
             this.reranReports.splice(rerunIndex, 1);
+            this.reranReportsIndex.splice(rerunIndex, 1)
           }
           this.reranReports.push({original: result, reran: response.results[result].report.storageId});
+          this.reranReportsIndex.push(result)
         }
       }
     }
@@ -174,9 +178,14 @@ export class TestComponent implements OnInit{
     }
   }
 
-  compareReports(reportId: string) {
-    // Get both storageIds
+  compareReports(originalReport: string) {
+    let index = this.reranReportsIndex.indexOf(originalReport);
+    let newReport = this.reranReports[index].reran;
+
+
     // Open the compare tab
+    this.openCompareReportsEvent.emit({oldReport: originalReport, newReport: newReport})
+
     // Select at the left side the previous one
     // Select at the right side the new one
   }
