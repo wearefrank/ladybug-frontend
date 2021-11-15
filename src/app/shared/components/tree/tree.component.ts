@@ -13,6 +13,7 @@ export class TreeComponent {
   tree: any[] = []
   treeId: string = Math.random().toString(36).substring(7);
   parentMap: any[] = []
+  imageText = '../'
 
 
   constructor() {}
@@ -63,12 +64,47 @@ export class TreeComponent {
     // If the level difference is only 1, then the potential parent is the actual parent
     if (currentNode.level - 1 == potentialParent.level) {
       this.parentMap.push({id: currentNode.id, parent: potentialParent})
+      if (potentialParent.nodes == undefined) {
+        potentialParent.nodes = []
+      }
       potentialParent.nodes.push(currentNode)
       return currentNode;
     }
 
     let newPotentialParent = this.parentMap.find(x => x.id == potentialParent.id).parent;
     return this.findParent(currentNode, newPotentialParent)
+  }
+
+  getImage(type: number, even: boolean): string {
+    let img = "../../../../assets/tree-icons/"
+    console.log("Type: " + type + " even: " + even)
+    switch (type) {
+      case 1: img += "start"
+        break;
+      case 2: img += "end"
+        break;
+      case 3: img += "abort"
+        break;
+      case 4: img += "input"
+        break;
+      case 5: img += "output"
+        break;
+      case 6: img += "info"
+        break;
+      case 7: img += "threadCreate" // Doesn't exist?
+        break;
+      case 8: img += "threadStart"
+        break;
+      case 9: img += "threadEnd"
+        break;
+      default:
+        return ""
+    }
+
+    if (even) {
+      return img + "point-even.gif"
+    }
+    return img + "point-odd.gif"
   }
 
   /**
@@ -97,14 +133,13 @@ export class TreeComponent {
 
       let previousNode: any = rootNode;
       for (let checkpoint of report.checkpoints) {
+        let img = this.getImage(checkpoint.type, checkpoint.level % 2 == 0)
         let node = {
-          text: checkpoint.name,
+          text: '<img src="' + img + '" alt="">' + checkpoint.name,
           ladybug: checkpoint,
           root: false,
           id: id++,
-          level: checkpoint.level,
-          backColor: checkpoint.level % 2 == 0 ? 'lightgrey' : 'white',
-          nodes: []
+          level: checkpoint.level
         }
 
         // If it is the first one, the parent is the root
@@ -116,6 +151,9 @@ export class TreeComponent {
           // If the level is higher, then the previous node was its parent
         } else if (node.level > previousNode.level) {
           this.parentMap.push({id: node.id, parent: previousNode})
+          if (previousNode.nodes == undefined) {
+            previousNode.nodes = []
+          }
           previousNode.nodes.push(node)
 
           // If the level is lower, then the previous node is a (grand)child of this node's sibling
@@ -126,6 +164,9 @@ export class TreeComponent {
         } else {
           let newParent = this.parentMap.find(x => x.id == previousNode.id).parent;
           this.parentMap.push({id: node.id, parent: newParent})
+          if (newParent.nodes == undefined) {
+            newParent.nodes = []
+          }
           newParent.nodes.push(node)
         }
 
@@ -149,7 +190,6 @@ export class TreeComponent {
       levels: 5,
       expandIcon: "fa fa-plus",
       collapseIcon: "fa fa-minus",
-      emptyIcon: "fa fa-arrow-left",
       selectedBackColor: "#1ab394",
     });
 
