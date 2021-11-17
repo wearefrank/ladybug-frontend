@@ -190,6 +190,16 @@ export class TestComponent implements OnInit{
     // Select at the right side the new one
   }
 
+  replaceReport(reportId: string) {
+    console.log(reportId)
+    this.http.put("api/runner/replace/testStorage/" + reportId, {headers: headers}).subscribe(resp => {
+      console.log(resp)
+      let index = this.reranReportsIndex.indexOf(reportId);
+      this.reranReportsIndex.splice(index, 1);
+      this.reranReports.splice(index, 1);
+    })
+  }
+
   /**
    * Toggle the checkbox
    * @param report - the report that is toggled

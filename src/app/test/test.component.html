@@ -49,7 +49,7 @@
             <app-button [icon]="'fa fa-clone'" [title]="'Clone report'" (click)="open(clone)"></app-button>
           </td>
           <td *ngIf="reranReportsIndex.includes(report[5])">
-            <app-button [text]="'Replace'" [title]="'Replace report'"></app-button>
+            <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report[5])"></app-button>
           </td>
           <td *ngIf="reranReportsIndex.includes(report[5])">
             <app-button [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report[5])"></app-button>
