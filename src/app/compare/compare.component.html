@@ -13,22 +13,24 @@
 <div class="row">
   <div class="col-6">
     <app-table
-      [hidden]="leftReportSelected"
-      [id]="leftId"
+      [hidden]="leftReport.selected"
+      [id]="leftReport.id"
       (emitEvent)="addReportNodeLeft($event)"></app-table>
     <app-display
       #leftDisplay
-      [hidden]="!leftReportSelected"
+      [hidden]="!leftReport.selected"
       (closeReportEvent)="closeReportLeft($event)"></app-display>
   </div>
   <div class="col-6">
     <app-table
-      [hidden]="rightReportSelected"
-      [id]="rightId"
+      [hidden]="rightReport.selected"
+      [id]="rightReport.id"
       (emitEvent)="addReportNodeRight($event)"></app-table>
     <app-display
       #rightDisplay
-      [hidden]="!rightReportSelected"
+      [hidden]="!rightReport.selected"
       (closeReportEvent)="closeReportRight($event)"></app-display>
   </div>
 </div>
+
+<app-toast></app-toast>

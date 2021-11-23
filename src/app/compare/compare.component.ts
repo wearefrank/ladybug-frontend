@@ -1,7 +1,8 @@
 import {Component, Input, OnChanges, ViewChild} from '@angular/core';
 import {TreeComponent} from "../shared/components/tree/tree.component";
 import {DisplayComponent} from "../shared/components/display/display.component";
-import {HttpClient} from "@angular/common/http";
+import {HttpService} from "../shared/services/http.service";
+import {ToastComponent} from "../shared/components/toast/toast.component";
 
 @Component({
   selector: 'app-compare',
@@ -9,20 +10,17 @@ import {HttpClient} from "@angular/common/http";
   styleUrls: ['./compare.component.css']
 })
 export class CompareComponent implements OnChanges {
-  leftReports: any[] = [];
-  rightReports: any[] = [];
+  leftReport: any = {reports: [], id: "leftId", current: {}, selected: false}
+  rightReport: any = {reports: [], id: "rightId", current: {}, selected: false}
   @ViewChild('leftTree') leftTreeComponent!: TreeComponent;
   @ViewChild('rightTree') rightTreeComponent!: TreeComponent;
   @ViewChild('leftDisplay') leftDisplayComponent!: DisplayComponent;
   @ViewChild('rightDisplay') rightDisplayComponent!: DisplayComponent;
-  leftId: string = "leftId"
-  rightId: string = "rightId"
-  leftCurrentReport: any = {};
-  rightCurrentReport: any = {}
-  leftReportSelected: boolean = false;
-  rightReportSelected: boolean = false;
+  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
+
   @Input('diffReports') diffReports = {oldReport: '', newReport: ''}
-  constructor(private http: HttpClient) {}
+
+  constructor(private httpService: HttpService) {}
 
   ngOnChanges() {
     if (this.diffReports.oldReport != '') {
@@ -30,14 +28,18 @@ export class CompareComponent implements OnChanges {
     }
   }
 
+  /**
+   * Select report based on the specified ids in diffReports
+   */
   selectReportBasedOnIds() {
-    this.http.get<any>('api/report/debugStorage/' + this.diffReports.oldReport).subscribe(data => {
-      data.id = "leftId";
-      this.addReportNodeLeft(data);
+    this.httpService.getReport(this.diffReports.oldReport, this.toastComponent).then(result => {
+      result.id = "leftId"
+      this.addReportNodeLeft(result)
     })
-    this.http.get<any>('api/report/debugStorage/' + this.diffReports.newReport).subscribe(data => {
-      data.id = "rightId";
-      this.addReportNodeRight(data);
+
+    this.httpService.getReport(this.diffReports.newReport, this.toastComponent).then(result => {
+      result.id = "rightId"
+      this.addReportNodeRight(result)
     })
   }
 
@@ -46,10 +48,9 @@ export class CompareComponent implements OnChanges {
    * @param newReport - report to be added
    */
   addReportNodeLeft(newReport: any) {
-    console.log(newReport)
-    if (this.leftId === newReport.id) {
-      this.leftReports.push(newReport);
-      this.leftTreeComponent?.handleChange(this.leftReports);
+    if (this.leftReport.id === newReport.id) {
+      this.leftReport.reports.push(newReport);
+      this.leftTreeComponent?.handleChange(this.leftReport.reports);
     }
   }
 
@@ -58,9 +59,9 @@ export class CompareComponent implements OnChanges {
    * @param newReport - report to be added
    */
   addReportNodeRight(newReport: any) {
-    if (this.rightId === newReport.id) {
-      this.rightReports.push(newReport);
-      this.rightTreeComponent?.handleChange(this.rightReports);
+    if (this.rightReport.id === newReport.id) {
+      this.rightReport.reports.push(newReport);
+      this.rightTreeComponent?.handleChange(this.rightReport.reports);
     }
   }
 
@@ -69,9 +70,9 @@ export class CompareComponent implements OnChanges {
    * @param currentReport - the report to be displayed
    */
   selectReportLeft(currentReport: any) {
-    this.leftReportSelected = true;
-    this.leftCurrentReport = currentReport;
-    this.leftDisplayComponent?.showReport(this.leftCurrentReport);
+    this.leftReport.selected = true;
+    this.leftReport.current = currentReport;
+    this.leftDisplayComponent?.showReport(this.leftReport.current);
   }
 
   /**
@@ -79,9 +80,9 @@ export class CompareComponent implements OnChanges {
    * @param currentReport - the report to be displayed
    */
   selectReportRight(currentReport: any) {
-    this.rightReportSelected = true;
-    this.rightCurrentReport = currentReport;
-    this.rightDisplayComponent?.showReport(this.rightCurrentReport);
+    this.rightReport.selected = true;
+    this.rightReport.current = currentReport;
+    this.rightDisplayComponent?.showReport(this.rightReport.current);
   }
 
   /**
@@ -89,8 +90,8 @@ export class CompareComponent implements OnChanges {
    * @param currentNode - the left node to be removed
    */
   closeReportLeft(currentNode: any) {
-    this.leftReportSelected = false
-    this.leftCurrentReport = {};
+    this.leftReport.selected = false
+    this.leftReport.current = {};
     this.leftTreeComponent?.removeNode(currentNode);
   }
 
@@ -99,8 +100,8 @@ export class CompareComponent implements OnChanges {
    * @param currentNode - the right node to be removed
    */
   closeReportRight(currentNode: any) {
-    this.rightReportSelected = false;
-    this.rightCurrentReport = {};
+    this.rightReport.selected = false;
+    this.rightReport.current = {};
     this.rightTreeComponent?.removeNode(currentNode);
   }
 }

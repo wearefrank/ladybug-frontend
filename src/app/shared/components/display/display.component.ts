@@ -1,14 +1,13 @@
 import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MonacoEditorComponent} from "../../monaco-editor/monaco-editor.component";
-import {HttpClient} from "@angular/common/http";
 // @ts-ignore
 import DiffMatchPatch from 'diff-match-patch';
 // @ts-ignore
 import beautify from "xml-beautifier";
 import {ToastComponent} from "../toast/toast.component";
-import {catchError} from "rxjs/operators";
-import {throwError} from "rxjs"; // TODO: Check if there is a nicer way to do this
+import {HttpService} from "../../services/http.service";
+import {HelperService} from "../../services/helper.service"; // TODO: Check if there is a nicer way to do this
 
 @Component({
   selector: 'app-display',
@@ -38,7 +37,7 @@ export class DisplayComponent {
   stubStrategies: string[] = ["Follow report strategy", "No", "Yes"];
   type: string = '';
 
-  constructor(private modalService: NgbModal, private http: HttpClient) {
+  constructor(private modalService: NgbModal, private httpService: HttpService, private helperService: HelperService) {
   }
 
   /**
@@ -57,15 +56,11 @@ export class DisplayComponent {
       this.difference.code = dmp.diff_main(this.monacoBefore, monacoAfter);
     } else {
       // If it is the root, find the difference in meta-data
-      let beforeName = this.report.ladybug.name === null ? '' : this.report.ladybug.name;
-      let beforeDescription = this.report.ladybug.description === null ? '' : this.report.ladybug.description;
-      let beforePath = this.report.ladybug.path === null ? '' : this.report.ladybug.path;
-      let beforeTransformation = this.report.ladybug.transformation === null ? '' : this.report.ladybug.transformation;
-
-      this.difference.name = dmp.diff_main(beforeName, this.name.nativeElement.value)
-      this.difference.description = dmp.diff_main(beforeDescription, this.description.nativeElement.value)
-      this.difference.path = dmp.diff_main(beforePath, this.path.nativeElement.value)
-      this.difference.transformation = dmp.diff_main(beforeTransformation, this.transformation.nativeElement.value)
+      let ladybug = this.report.ladybug
+      this.difference.name = dmp.diff_main(this.helperService.checkIfNull(ladybug.name), this.name.nativeElement.value)
+      this.difference.description = dmp.diff_main(this.helperService.checkIfNull(ladybug.description), this.description.nativeElement.value)
+      this.difference.path = dmp.diff_main(this.helperService.checkIfNull(ladybug.path), this.path.nativeElement.value)
+      this.difference.transformation = dmp.diff_main(this.helperService.checkIfNull(ladybug.transformation), this.transformation.nativeElement.value)
     }
     content.type = type;
     this.modalService.open(content);
@@ -80,11 +75,9 @@ export class DisplayComponent {
 
     // This is for the root report which has a specific location for the xml message
     if (this.report.ladybug.storageId) {
-      this.http.get<any>('api/report/debugStorage/' + this.report.ladybug.storageId + "/?xml=true&globalTransformer=true").subscribe(data => {
+      this.httpService.getMonacoCode(this.report.ladybug.storageId, this.toastComponent).then(data => {
         this.report.ladybug.message = data.xml;
-        this.monacoEditorComponent?.loadMonaco(beautify(data.xml)); // TODO: Maybe create a service for this
-      }, () => {
-        this.toastComponent.addAlert({type: 'warning', message: 'Could not retrieve data for report!'})
+        this.monacoEditorComponent?.loadMonaco(beautify(data.xml));
       })
     } else {
       // All other reports have the message stored normally
@@ -126,40 +119,40 @@ export class DisplayComponent {
     if (type === "save") {
       this.saveReport()
     }
-    console.log("Successfully " + type + " changes!")
   }
 
+  /**
+   * Save changes of a report.
+   */
   saveReport() {
-    console.log("Saving report!")
     let newReport: any = {
       "name": this.name.nativeElement.value,
       "path": this.path.nativeElement.value,
       "description": this.description.nativeElement.value,
       "transformation": this.transformation.nativeElement.value
     };
-    console.log("Hi")
 
-    this.http.post('api/report/debugStorage/' + this.report.ladybug.storageId, newReport).subscribe(
-      response => {
-        console.log(response)
-      },
-      error => {
-        console.log(error)
-        this.toastComponent.addAlert({type: "danger", message: error})
-      }
-    )
+    this.httpService.postReport(this.report.ladybug.storageId, this.toastComponent, newReport).then(report => {
+      console.log(report) // The update report
+    })
     this.showReport(this.report)
   }
 
+  /**
+   * Copy a report to the test tab.
+   */
   copyReport() {
     let storageId: number = +this.report.ladybug.uid.split("#")[0];
     let data: any = {}
     data['debugStorage'] = [storageId]
-    this.http.put("api/report/store/testStorage", data).subscribe(response => {
-      console.log(response)
-    })
+    this.httpService.copyReport(data, this.toastComponent);
   }
 
+  /**
+   * Directly download a report
+   * @param exportMessages - boolean to see if messages are to be downloaded
+   * @param exportReports - boolean to see if reports are to be downloaded
+   */
   downloadReport(exportMessages: boolean, exportReports: boolean) {
     let queryString = "?id=" + this.report.ladybug.uid.split('#')[0];
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString);

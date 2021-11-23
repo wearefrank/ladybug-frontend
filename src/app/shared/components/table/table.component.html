@@ -22,13 +22,13 @@
       <form class="form-horizontal pt-2">
         <div class="input-group-append">
           <input type="number" id="displayAmount" class="form-control px-1" placeholder="{{displayAmount}}"  (keyup)="changeTableLimit($event)">
-          <div class="input-group-text">/{{ totalAmount }}</div>
+          <div class="input-group-text">/</div>
         </div>
       </form>
     </div>
   </div>
   <div class="table-responsive" style="height: 300px; resize: vertical; overflow: auto">
-    <table class="table table-hover" matSort (matSortChange)="sortData($event)">
+    <table class="table table-hover" matSort (matSortChange)="helperService.sortData($event, metadata.values)">
       <thead>
       <tr>
         <th mat-sort-header="5">Storage Id</th>
@@ -71,8 +71,6 @@
     </table>
   </div>
 </div>
-
-<app-toast></app-toast>
 
 <ng-template #settings let-modal>
   <div class="modal-header">
@@ -138,3 +136,5 @@
       </div>
     </form>
 </ng-template>
+
+<app-toast></app-toast>

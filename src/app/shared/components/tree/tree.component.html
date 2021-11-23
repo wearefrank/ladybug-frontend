@@ -1,8 +1,8 @@
-<div class="row" id="treeButtons" [hidden]="reports.length === 0">
+<div class="row" id="treeButtons" [hidden]="!tree.innerHTML">
   <app-button [icon]="'fa fa-expand'" [title]="'Expand All'" (click)="expandAll()"></app-button>
   <app-button [icon]="'fa fa-compress'" [title]="'Collapse all'" (click)="collapseAll()"></app-button>
   <app-button [icon]="'fa fa-times'" [title]="'Close All'" (click)="closeAll()"></app-button>
   <app-dropdown [icon]="'fa fa-download'" [title]="'Download'" [items]="['Reports & Messages', 'Reports', 'Messages']"></app-dropdown>
 </div>
 
-<div id="{{treeId}}"></div>
+<div #tree id="{{treeId}}"></div>

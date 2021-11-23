@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {HelperService} from "../../services/helper.service";
 declare var $: any;
 
 @Component({
@@ -13,10 +14,8 @@ export class TreeComponent {
   tree: any[] = []
   treeId: string = Math.random().toString(36).substring(7);
   parentMap: any[] = []
-  imageText = '../'
 
-
-  constructor() {}
+  constructor(private helperService: HelperService) {}
 
   /**
    * Collapse the entire tree
@@ -46,8 +45,6 @@ export class TreeComponent {
    * @param node - the node to be removed
    */
   removeNode(node: any) {
-    console.log("tree")
-    console.log(this.tree)
     if (node.root) {
       let result = this.tree.filter(report => {
         return report.id === node.nodeId;
@@ -60,6 +57,11 @@ export class TreeComponent {
     }
   }
 
+  /**
+   * Find the direct parent of a node
+   * @param currentNode - the current node
+   * @param potentialParent - a node that could be its parent
+   */
   findParent(currentNode: any, potentialParent: any): any {
     // If the level difference is only 1, then the potential parent is the actual parent
     if (currentNode.level - 1 == potentialParent.level) {
@@ -75,38 +77,6 @@ export class TreeComponent {
     return this.findParent(currentNode, newPotentialParent)
   }
 
-  getImage(type: number, even: boolean): string {
-    let img = "../../../../assets/tree-icons/"
-    console.log("Type: " + type + " even: " + even)
-    switch (type) {
-      case 1: img += "start"
-        break;
-      case 2: img += "end"
-        break;
-      case 3: img += "abort"
-        break;
-      case 4: img += "input"
-        break;
-      case 5: img += "output"
-        break;
-      case 6: img += "info"
-        break;
-      case 7: img += "threadCreate" // Doesn't exist?
-        break;
-      case 8: img += "threadStart"
-        break;
-      case 9: img += "threadEnd"
-        break;
-      default:
-        return ""
-    }
-
-    if (even) {
-      return img + "point-even.gif"
-    }
-    return img + "point-odd.gif"
-  }
-
   /**
    * Handle change in the tree for the tree view
    * @param reports - the reports to be displayed
@@ -118,11 +88,9 @@ export class TreeComponent {
     this.tree = [];
     let id = 0;
 
-
     // For each item that has been selected show the node and its children
     for (let report of this.reports) {
       this.parentMap = []
-      console.log(report)
       let rootNode = {
         text: report.name,
         ladybug: report,
@@ -133,7 +101,7 @@ export class TreeComponent {
 
       let previousNode: any = rootNode;
       for (let checkpoint of report.checkpoints) {
-        let img = this.getImage(checkpoint.type, checkpoint.level % 2 == 0)
+        let img = this.helperService.getImage(checkpoint.type, checkpoint.level % 2 == 0)
         let node = {
           text: '<img src="' + img + '" alt="">' + checkpoint.name,
           ladybug: checkpoint,

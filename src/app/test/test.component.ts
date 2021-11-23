@@ -1,12 +1,8 @@
-import {Component, OnInit, EventEmitter, Output, Input, ViewChild} from '@angular/core';
+import {Component, OnInit, EventEmitter, Output, ViewChild} from '@angular/core';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ToastComponent} from "../shared/components/toast/toast.component";
-import {lastValueFrom} from "rxjs";
+import {HttpService} from "../shared/services/http.service";
 
-const headers = new HttpHeaders().set(
-  'Content-Type', 'application/json'
-)
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
@@ -21,7 +17,7 @@ export class TestComponent implements OnInit{
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
 
-  constructor(private modalService: NgbModal, private http: HttpClient) {}
+  constructor(private modalService: NgbModal, private httpService: HttpService) {}
 
   open(content: any) {
     this.modalService.open(content);
@@ -35,43 +31,35 @@ export class TestComponent implements OnInit{
    * Load in the report data from testStorage
    */
   loadData() {
-    this.http.get<any>('api/metadata/testStorage').subscribe(data => {
-      this.reports = data.values
-      this.checkAll();
-    }, () => {
-      this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for testing!'})
-    });
+    this.httpService.getTestReports(this.toastComponent).then(data => {
+      this.reports = data.values;
+    })
   }
 
+  /**
+   * Reset the runner
+   */
   resetRunner() {
     // @ts-ignore
-    this.http.post<any>('api/runner/reset')
+    this.httpService.reset()
   }
 
   /**
    * Run a test
    */
   run(reportId: string) {
-    console.log("Rerunning report...")
     let data: any = {}
     data['testStorage'] = [reportId]
-    this.http.post<any>('api/runner/run/debugStorage', data, {headers: headers, observe: "response"}).subscribe(
-      () => {
-        setTimeout(() => {
-          this.queryResults()
-        }, 100)
-      },
-        error => {
-        console.log(error)
-        this.toastComponent.addAlert({ type: 'danger', message: error})
-      })
+
+    this.httpService.runReport(data, this.toastComponent).then(() => {
+      this.queryResults()
+    })
   }
 
   /**
    * Runs all tests
    */
   runAll() {
-    console.log("Rerunning all reports...")
     let selectedReports = this.reports.filter(report => report.checked);
     let data: any = {}
     data['testStorage'] = []
@@ -79,53 +67,50 @@ export class TestComponent implements OnInit{
       data['testStorage'].push(selectedReports[i][5])
     }
 
-    this.http.post<any>('api/runner/run/debugStorage', data, {headers: headers, observe: "response"}).subscribe(
-      () => {
-        setTimeout(() => {
-          this.queryResults()
-        }, 100)
-      },
-      error => {
-        console.log(error)
-        this.toastComponent.addAlert({ type: 'danger', message: error})
-      })
+    this.httpService.runReport(data, this.toastComponent).then(() => {
+      this.queryResults();
+    })
   }
 
   /**
    * Query the results of the test run
    */
   async queryResults() {
-    let request = this.http.get('api/runner/result/debugStorage', {headers: headers});
-    let response: any = await lastValueFrom(request);
+    this.httpService.queryResults(this.toastComponent).then(response => {
 
-    for (let result in response.results) {
-      if (response.results.hasOwnProperty(result)) {
-        let requestReport = this.http.get('api/report/debugStorage/' + result);
-        let report: any = await lastValueFrom(requestReport);
+      // Retrieve each report in the result runner
+      for (let result in response.results) {
+        if (response.results.hasOwnProperty(result)) {
+          this.httpService.getReport(result, this.toastComponent).then(report => {
 
-        let element =  document.getElementById('testReport#' + result)
-        if (element ) {
-          let td = document.createElement('td')
-          let res = response.results[result];
-          td.appendChild(document.createTextNode("(" + res['previous-time'] + "ms >> " + res['current-time'] + "ms) (" + res['stubbed'] + "/" + res['total'] + " stubbed)"))
+            // For each report, show the results
+            let element = document.getElementById('testReport#' + result)
+            if (element) {
+              let td = document.createElement('td')
+              let res = response.results[result];
+              td.appendChild(document.createTextNode("(" + res['previous-time'] + "ms >> " + res['current-time'] + "ms) (" + res['stubbed'] + "/" + res['total'] + " stubbed)"))
 
-          // If the reports are not equal, then a different color should be shown
-          let color = report == response.results[result].report ? 'green' : 'red'
-          td.setAttribute('style', 'color:' + color)
-          if (element.childElementCount > 5 && element.lastChild != null) {
-              element.removeChild(element.lastChild)
-          }
-          element.appendChild(td)
-          let rerunIndex = this.reranReports.findIndex(x => x.original == result);
-          if (rerunIndex !== -1) {
-            this.reranReports.splice(rerunIndex, 1);
-            this.reranReportsIndex.splice(rerunIndex, 1)
-          }
-          this.reranReports.push({original: result, reran: response.results[result].report.storageId});
-          this.reranReportsIndex.push(result)
+              // If the reports are not equal, then a different color should be shown
+              let color = report == response.results[result].report ? 'green' : 'red'
+              td.setAttribute('style', 'color:' + color)
+              if (element.childElementCount > 5 && element.lastChild != null) {
+                element.removeChild(element.lastChild)
+              }
+              element.appendChild(td)
+
+              // Make sure only 1 result is shown and they don't append
+              let rerunIndex = this.reranReports.findIndex(x => x.original == result);
+              if (rerunIndex !== -1) {
+                this.reranReports.splice(rerunIndex, 1);
+                this.reranReportsIndex.splice(rerunIndex, 1)
+              }
+              this.reranReports.push({original: result, reran: response.results[result].report.storageId});
+              this.reranReportsIndex.push(result)
+            }
+          })
         }
       }
-    }
+    })
   }
 
   /**
@@ -134,10 +119,8 @@ export class TestComponent implements OnInit{
    * @param name - the name of the report
    */
   selectReport(storageId: number, name: string) {
-    this.http.get<any>('api/report/debugStorage/' + storageId).subscribe(data => {
+    this.httpService.getReport(storageId.toString(), this.toastComponent).then(data => {
       this.openTestReportEvent.emit({data: data, name: name})
-    }, () => {
-      this.toastComponent.addAlert({type: 'warning', message: 'Could not retrieve data for report!'})
     })
   }
 
@@ -147,15 +130,17 @@ export class TestComponent implements OnInit{
   deleteSelected() {
     let selectedReports = this.reports.filter(report => report.checked);
     for (let i = 0; i < selectedReports.length; i++) {
-        this.http.delete('api/report/testStorage/' + selectedReports[i][5]).subscribe(() => {
-        this.loadData()
-      }, error => {
-          console.log(error)
-          this.toastComponent.addAlert({type: 'danger', message: 'Could not delete report!'})
-        })
+      this.httpService.deleteReport(selectedReports[i][5], this.toastComponent).then(() => {
+        this.loadData();
+      })
     }
   }
 
+  /**
+   * Download selected reports
+   * @param exportMessages - boolean whether to download messages
+   * @param exportReports = boolean whether to download reports
+   */
   downloadSelected(exportMessages: boolean, exportReports: boolean) {
     let selectedReports = this.reports.filter(report => report.checked);
     let queryString = "?";
@@ -166,34 +151,37 @@ export class TestComponent implements OnInit{
 
   }
 
+  /**
+   * Upload a report
+   * @param event - the target file to upload
+   */
   uploadReport(event: any) {
     const file: File = event.target.files[0]
     if (file) {
-      console.log("Uploading " + file.name);
       const formData = new FormData();
       formData.append("file", file);
-      this.http.post('api/report/upload/testStorage', formData, {headers: {'Content-Type': 'multipart/form-data'}}).subscribe(() => {
-        this.loadData();
+      this.httpService.uploadReport(formData, this.toastComponent).then(() => {
+        this.loadData()
       })
     }
   }
 
+  /**
+   * Compare two reports with each other in compare tab
+   * @param originalReport - the original report that will be compared to the new one
+   */
   compareReports(originalReport: string) {
     let index = this.reranReportsIndex.indexOf(originalReport);
     let newReport = this.reranReports[index].reran;
-
-
-    // Open the compare tab
     this.openCompareReportsEvent.emit({oldReport: originalReport, newReport: newReport})
-
-    // Select at the left side the previous one
-    // Select at the right side the new one
   }
 
+  /**
+   * Replace the original report
+   * @param reportId - report that will be replaced
+   */
   replaceReport(reportId: string) {
-    console.log(reportId)
-    this.http.put("api/runner/replace/testStorage/" + reportId, {headers: headers}).subscribe(resp => {
-      console.log(resp)
+    this.httpService.replaceReport(reportId, this.toastComponent).then(() => {
       let index = this.reranReportsIndex.indexOf(reportId);
       this.reranReportsIndex.splice(index, 1);
       this.reranReports.splice(index, 1);

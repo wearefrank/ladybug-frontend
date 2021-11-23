@@ -1,9 +1,9 @@
 import {Component, OnInit, Output, EventEmitter, Input, ViewChild} from '@angular/core';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClient} from '@angular/common/http';
-import {Sort} from "@angular/material/sort";
 import {ToastComponent} from "../toast/toast.component";
 import {FormControl, FormGroup} from "@angular/forms";
+import {HelperService} from "../../services/helper.service";
+import {HttpService} from "../../services/http.service";
 
 @Component({
   selector: 'app-table',
@@ -16,9 +16,7 @@ export class TableComponent implements OnInit {
   metadata: any = {}; // The data that is displayed
   isLoaded: boolean = false; // Wait for the page to be loaded
   displayAmount: number = 400; // The amount of data that is displayed
-  totalAmount: number = 0;
   filterValue: string = ""; // Value on what table should filter
-  sortedData: any = {};
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   settingsForm = new FormGroup({
     generatorEnabled: new FormControl(''),
@@ -26,7 +24,6 @@ export class TableComponent implements OnInit {
     transformationEnabled: new FormControl(false),
     transformation: new FormControl('')
   })
-
 
   @Input() // Needed to make a distinction between the two halves in compare component
   get id() {
@@ -39,7 +36,7 @@ export class TableComponent implements OnInit {
 
   private _id: string = "";
 
-  constructor(private modalService: NgbModal, private http: HttpClient) {
+  constructor(private modalService: NgbModal, private httpService: HttpService, public helperService: HelperService) {
   }
 
   /**
@@ -50,6 +47,10 @@ export class TableComponent implements OnInit {
     this.modalService.open(content);
   }
 
+  /**
+   * Transform milliseconds to an actual date and time
+   * @param seconds - milliseconds since 1-1-1970
+   */
   getDate(seconds: string) {
     let date = new Date(parseInt(seconds))
     return ('0' + date.getDay()).slice(-2) + "/" +
@@ -79,54 +80,6 @@ export class TableComponent implements OnInit {
   }
 
   /**
-   * Sort the data accordingly
-   * @param sort - sort object to handle sorting
-   */
-  sortData(sort: Sort) {
-    const data = this.metadata.values
-    if (!sort.active || sort.direction === '') {
-      this.sortedData = data;
-      return;
-    }
-    this.sortedData = data.sort((a: (string | number)[], b: (string | number)[]) => {
-
-      const isAsc = sort.direction === 'asc';
-      switch (sort.active) {
-        case '0':
-          return this.compare(Number(a[0]), Number(b[0]), isAsc); // Duration
-        case '1':
-          return this.compare(Number(a[1]), Number(b[1]), isAsc); // StorageSize
-        case '2':
-          return this.compare(a[2], b[2], isAsc);                 // Name
-        case '3':
-          return this.compare(a[3], b[3], isAsc);                 // CorrelationId
-        case '4':
-          return this.compare(a[4], b[4], isAsc);                 // EndTime
-        case '5':
-          return this.compare(Number(a[5]), Number(b[5]), isAsc); // StorageId
-        case '6':
-          return this.compare(a[6], b[6], isAsc);                 // Status
-        case '7':
-          return this.compare(Number(a[7]), Number(b[7]), isAsc); // NumberOfCheckpoints
-        case '8':
-          return this.compare(Number(a[8]), Number(b[8]), isAsc); // EstimatedMemoryUsage
-        default:
-          return 0;
-      }
-    });
-  }
-
-  /**
-   * Compare two strings or numbers
-   * @param a - first string/number
-   * @param b - second string/number
-   * @param isAsc - whether it is ascending or not
-   */
-  compare(a: number | string, b: number | string, isAsc: boolean) {
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  }
-
-  /**
    * Refresh the table
    */
   refresh() {
@@ -148,11 +101,9 @@ export class TableComponent implements OnInit {
    Request the data based on storageId and send this data along to the tree (via parent)
    */
   openReport(storageId: string) {
-    this.http.get<any>('api/report/debugStorage/' + storageId).subscribe(data => {
-      data.id = this.id
-      this.emitEvent.next(data);
-    }, () => {
-      this.toastComponent.addAlert({type: 'warning', message: 'Could not retrieve data for report!'})
+    this.httpService.getReport(storageId, this.toastComponent).then(data => {
+      data.id = this.id;
+      this.emitEvent.next(data)
     })
   }
 
@@ -170,6 +121,11 @@ export class TableComponent implements OnInit {
     }
   }
 
+  /**
+   * Download reports
+   * @param exportMessages - boolean whether messages should be downloaded
+   * @param exportReports - boolean whether reports should be downloaded
+   */
   downloadReports(exportMessages: boolean, exportReports: boolean) {
     let selectedReports = this.metadata.values;
 
@@ -177,37 +133,36 @@ export class TableComponent implements OnInit {
     for (let i = 0; i < selectedReports.length; i++) {
       queryString += "id=" + selectedReports[i][5] + "&"
     }
-    console.log("Query string: " + queryString);
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
   }
 
+  /**
+   * Upload report
+   * @param event - click event of the report
+   */
   uploadReport(event: any) {
     const file: File = event.target.files[0]
     if (file) {
-      console.log("Uploading " + file.name);
       const formData = new FormData();
       formData.append("file", file);
-      this.http.post('api/report/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}}).subscribe(response => {
+      this.httpService.uploadReport(formData, this.toastComponent).then(response => {
         console.log(response)
-        this.loadData()
+        this.loadData();
       })
     }
   }
 
+  /**
+   * Save the settings of the table
+   */
   saveSettings() {
     let form = this.settingsForm.value;
-    console.log(form.regexFilter)
     let map: any = {generatorEnabled: form.generatorEnabled, regexFilter: form.regexFilter}
-    this.http.post('api/testtool', map).subscribe(response => {
-      console.log(response)
-    })
+    this.httpService.postSettings(map, this.toastComponent);
 
     if (form.transformationEnabled) {
-      console.log(form.transformation)
       let transformation = {transformation: form.transformation}
-      this.http.post('api/testtool/transformation', transformation).subscribe(response => {
-        console.log(response)
-      })
+      this.httpService.postTransformation(transformation, this.toastComponent);
     }
   }
 
@@ -216,18 +171,19 @@ export class TableComponent implements OnInit {
    */
   ngOnInit() {
     this.loadData()
+    // Also load in the default transformation
+    this.httpService.getTransformation(this.toastComponent).then(response => {
+      this.settingsForm.get('transformation')?.setValue(response.transformation)
+    })
   }
 
+  /**
+   * Load in data in table
+   */
   loadData() {
-    this.http.get<any>('api/metadata/debugStorage/', {params: {"limit": this.displayAmount}}).subscribe(data => {
-      this.metadata = data
+    this.httpService.getReports(this.displayAmount, this.toastComponent).then(data => {
+      this.metadata = data;
       this.isLoaded = true;
-    }, () => {
-      this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for table!'})
-    });
-
-    this.http.get<any>('api/testtool/transformation').subscribe(response => {
-      this.settingsForm.get('transformation')?.setValue(response.transformation)
     })
   }
 }
