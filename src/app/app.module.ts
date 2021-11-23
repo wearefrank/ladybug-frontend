@@ -20,6 +20,8 @@ import { MonacoEditorComponent } from './shared/monaco-editor/monaco-editor.comp
 import {MatSortModule} from "@angular/material/sort";
 import { ReportComponent } from './report/report.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
+import { ReactiveFormsModule } from '@angular/forms';
+
 
 @NgModule({
   declarations: [
@@ -44,7 +46,8 @@ import { ToastComponent } from './shared/components/toast/toast.component';
         BrowserAnimationsModule,
         NgbModule,
         HttpClientModule,
-        MatSortModule
+        MatSortModule,
+        ReactiveFormsModule
     ],
   providers: [],
   bootstrap: [AppComponent]

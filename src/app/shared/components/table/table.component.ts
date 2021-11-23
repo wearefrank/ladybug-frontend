@@ -3,6 +3,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {HttpClient} from '@angular/common/http';
 import {Sort} from "@angular/material/sort";
 import {ToastComponent} from "../toast/toast.component";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-table',
@@ -14,11 +15,18 @@ export class TableComponent implements OnInit {
   showFilter: boolean = false;
   metadata: any = {}; // The data that is displayed
   isLoaded: boolean = false; // Wait for the page to be loaded
-  displayAmount: number = 10; // The amount of data that is displayed
+  displayAmount: number = 400; // The amount of data that is displayed
   totalAmount: number = 0;
   filterValue: string = ""; // Value on what table should filter
   sortedData: any = {};
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
+  settingsForm = new FormGroup({
+    generatorEnabled: new FormControl(''),
+    regexFilter: new FormControl(''), // Report filter
+    transformationEnabled: new FormControl(false),
+    transformation: new FormControl('')
+  })
+
 
   @Input() // Needed to make a distinction between the two halves in compare component
   get id() {
@@ -186,6 +194,23 @@ export class TableComponent implements OnInit {
     }
   }
 
+  saveSettings() {
+    let form = this.settingsForm.value;
+    console.log(form.regexFilter)
+    let map: any = {generatorEnabled: form.generatorEnabled, regexFilter: form.regexFilter}
+    this.http.post('api/testtool', map).subscribe(response => {
+      console.log(response)
+    })
+
+    if (form.transformationEnabled) {
+      console.log(form.transformation)
+      let transformation = {transformation: form.transformation}
+      this.http.post('api/testtool/transformation', transformation).subscribe(response => {
+        console.log(response)
+      })
+    }
+  }
+
   /**
    * Load in data for the table
    */
@@ -200,5 +225,9 @@ export class TableComponent implements OnInit {
     }, () => {
       this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for table!'})
     });
+
+    this.http.get<any>('api/testtool/transformation').subscribe(response => {
+      this.settingsForm.get('transformation')?.setValue(response.transformation)
+    })
   }
 }
