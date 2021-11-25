@@ -52,7 +52,9 @@ export class TestComponent implements OnInit{
     data['testStorage'] = [reportId]
 
     this.httpService.runReport(data, this.toastComponent).then(() => {
-      this.queryResults()
+      setTimeout(() => {
+        this.queryResults()
+      }, 100)
     })
   }
 
@@ -68,49 +70,62 @@ export class TestComponent implements OnInit{
     }
 
     this.httpService.runReport(data, this.toastComponent).then(() => {
-      this.queryResults();
+      setTimeout(() => {
+        this.queryResults();
+      }, 100)
     })
   }
 
   /**
    * Query the results of the test run
    */
-  async queryResults() {
+  queryResults() {
     this.httpService.queryResults(this.toastComponent).then(response => {
 
       // Retrieve each report in the result runner
-      for (let result in response.results) {
-        if (response.results.hasOwnProperty(result)) {
-          this.httpService.getReport(result, this.toastComponent).then(report => {
+      for (let reportIndex in response.results) {
+        if (response.results.hasOwnProperty(reportIndex)) {
+          this.httpService.getReport(reportIndex, this.toastComponent).then(report => {
 
-            // For each report, show the results
-            let element = document.getElementById('testReport#' + result)
+            // See if the report element exist, where we will attach the results to
+            let element = document.getElementById('testReport#' + reportIndex)
             if (element) {
-              let td = document.createElement('td')
-              let res = response.results[result];
-              td.appendChild(document.createTextNode("(" + res['previous-time'] + "ms >> " + res['current-time'] + "ms) (" + res['stubbed'] + "/" + res['total'] + " stubbed)"))
-
-              // If the reports are not equal, then a different color should be shown
-              let color = report == response.results[result].report ? 'green' : 'red'
-              td.setAttribute('style', 'color:' + color)
               if (element.childElementCount > 5 && element.lastChild != null) {
                 element.removeChild(element.lastChild)
               }
-              element.appendChild(td)
-
-              // Make sure only 1 result is shown and they don't append
-              let rerunIndex = this.reranReports.findIndex(x => x.original == result);
-              if (rerunIndex !== -1) {
-                this.reranReports.splice(rerunIndex, 1);
-                this.reranReportsIndex.splice(rerunIndex, 1)
-              }
-              this.reranReports.push({original: result, reran: response.results[result].report.storageId});
-              this.reranReportsIndex.push(result)
+              element.appendChild(this.createResultElement(response.results, reportIndex, report))
             }
           })
         }
       }
     })
+  }
+
+  createResultElement(results: any, reportIndex: string, originalReport: any): Element {
+    let tdElement = document.createElement('td')
+    let resultReport = results[reportIndex];
+    tdElement.appendChild(document.createTextNode("("
+      + resultReport['previous-time'] + "ms >> "
+      + resultReport['current-time'] + "ms) ("
+      + resultReport['stubbed'] + "/"
+      + resultReport['total'] + " stubbed)"
+    ))
+
+    // If the reports are not equal, then a reportIndex color should be shown
+    let color = originalReport == results[reportIndex].report ? 'green' : 'red'
+    tdElement.setAttribute('style', 'color:' + color)
+
+    // Make sure only 1 result is shown and they don't append
+    let rerunIndex = this.reranReports.findIndex(x => x.original == reportIndex);
+    if (rerunIndex !== -1) {
+      this.reranReports.splice(rerunIndex, 1);
+      this.reranReportsIndex.splice(rerunIndex, 1)
+    }
+
+    // Keep track of the reports that have been ran
+    this.reranReports.push({original: reportIndex, reran: results[reportIndex].report.storageId});
+    this.reranReportsIndex.push(reportIndex)
+    return tdElement;
   }
 
   /**

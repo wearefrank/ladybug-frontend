@@ -128,11 +128,8 @@ export class TableComponent implements OnInit {
    */
   downloadReports(exportMessages: boolean, exportReports: boolean) {
     let selectedReports = this.metadata.values;
-
-    let queryString = "?";
-    for (let i = 0; i < selectedReports.length; i++) {
-      queryString += "id=" + selectedReports[i][5] + "&"
-    }
+    let queryString = "?" + selectedReports
+      .reduce((totalQuery: string, selectedReport: string[]) => "id=" + totalQuery + selectedReport[5] + "&")
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
   }
 
@@ -146,7 +143,6 @@ export class TableComponent implements OnInit {
       const formData = new FormData();
       formData.append("file", file);
       this.httpService.uploadReport(formData, this.toastComponent).then(response => {
-        console.log(response)
         this.loadData();
       })
     }

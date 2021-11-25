@@ -65,11 +65,7 @@ export class TreeComponent {
   findParent(currentNode: any, potentialParent: any): any {
     // If the level difference is only 1, then the potential parent is the actual parent
     if (currentNode.level - 1 == potentialParent.level) {
-      this.parentMap.push({id: currentNode.id, parent: potentialParent})
-      if (potentialParent.nodes == undefined) {
-        potentialParent.nodes = []
-      }
-      potentialParent.nodes.push(currentNode)
+      potentialParent = this.addChild(potentialParent, currentNode)
       return currentNode;
     }
 
@@ -77,6 +73,34 @@ export class TreeComponent {
     return this.findParent(currentNode, newPotentialParent)
   }
 
+  addChild(parent: any, node: any): any {
+    this.parentMap.push({id: node.id, parent: parent})
+    if (parent.nodes === undefined) {
+      parent.nodes = []
+    }
+    parent.nodes.push(node)
+    return parent
+  }
+
+  createHierarchy(previousNode: any, node: any) {
+    // If it is the first one, the root is the parent
+    if (node.level == 0) {
+      this.addChild(previousNode, node)
+
+      // If the level is higher, then the previous node was its parent
+    } else if (node.level > previousNode.level) {
+      this.addChild(previousNode, node)
+
+      // If the level is lower, then the previous node is a (grand)child of this node's sibling
+    } else if (node.level < previousNode.level) {
+      this.findParent(node, previousNode)
+
+      // Else the level is equal, meaning the previous node is its sibling
+    } else {
+      let newParent = this.parentMap.find(x => x.id == previousNode.id).parent;
+      this.addChild(newParent, node)
+    }
+  }
   /**
    * Handle change in the tree for the tree view
    * @param reports - the reports to be displayed
@@ -91,7 +115,7 @@ export class TreeComponent {
     // For each item that has been selected show the node and its children
     for (let report of this.reports) {
       this.parentMap = []
-      let rootNode = {
+      let rootNode: {text: string, ladybug: any, root: boolean, id: number, nodes: any[]} = {
         text: report.name,
         ladybug: report,
         root: true,
@@ -109,42 +133,19 @@ export class TreeComponent {
           id: id++,
           level: checkpoint.level
         }
+        this.createHierarchy(previousNode, node)
 
-        // If it is the first one, the parent is the root
-        if (node.level == 0) {
-          this.parentMap.push({id: node.id, parent: rootNode})
-          // @ts-ignore
-          rootNode.nodes.push(node)
-
-          // If the level is higher, then the previous node was its parent
-        } else if (node.level > previousNode.level) {
-          this.parentMap.push({id: node.id, parent: previousNode})
-          if (previousNode.nodes == undefined) {
-            previousNode.nodes = []
-          }
-          previousNode.nodes.push(node)
-
-          // If the level is lower, then the previous node is a (grand)child of this node's sibling
-        } else if (node.level < previousNode.level) {
-          node = this.findParent(node, previousNode)
-
-          // Else the level is equal, meaning the previous node is its sibling
-        } else {
-          let newParent = this.parentMap.find(x => x.id == previousNode.id).parent;
-          this.parentMap.push({id: node.id, parent: newParent})
-          if (newParent.nodes == undefined) {
-            newParent.nodes = []
-          }
-          newParent.nodes.push(node)
-        }
-
+        // Keep track of previous node
         previousNode = node
       }
 
+      // Push the root node to the tree to be displayed
       this.tree.push(rootNode)
     }
 
     this.updateTreeView();
+
+    // Select the first child from the tree
     $('#' + this.treeId).treeview('toggleNodeSelected', [ this.tree[this.tree.length - 1].nodes[0].id, { silent: false } ]);
   }
 
