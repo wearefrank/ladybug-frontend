@@ -56,7 +56,7 @@ export class TestComponent implements OnInit{
     const data: any = {}
     data['testStorage'] = [reportId]
 
-    this.httpService.runReport(data, this.toastComponent).then(() => {
+    this.httpService.runReport(data, this.toastComponent).subscribe(() => {
       setTimeout(() => {
         this.queryResults()
       }, 100)
@@ -74,7 +74,7 @@ export class TestComponent implements OnInit{
       data['testStorage'].push(selectedReports[i][5])
     }
 
-    this.httpService.runReport(data, this.toastComponent).then(() => {
+    this.httpService.runReport(data, this.toastComponent).subscribe(() => {
       setTimeout(() => {
         this.queryResults();
       }, 100)
@@ -85,13 +85,13 @@ export class TestComponent implements OnInit{
    * Query the results of the test run
    */
   queryResults() {
-    this.httpService.queryResults(this.toastComponent).then(response => {
+    this.httpService.queryResults(this.toastComponent).subscribe(response => {
       this.toastComponent.addAlert({type: 'success', message: 'Test run(s) completed!'})
 
       // Retrieve each report in the result runner
       for (let reportIndex in response.results) {
         if (response.results.hasOwnProperty(reportIndex)) {
-          this.httpService.getReport(reportIndex, this.toastComponent).then(report => {
+          this.httpService.getReport(reportIndex, this.toastComponent).subscribe(report => {
 
             // See if the report element exist, where we will attach the results to
             const element = document.getElementById('testReport#' + reportIndex)
@@ -140,7 +140,7 @@ export class TestComponent implements OnInit{
    * @param name - the name of the report
    */
   selectReport(storageId: number, name: string) {
-    this.httpService.getReport(storageId.toString(), this.toastComponent).then(data => {
+    this.httpService.getReport(storageId.toString(), this.toastComponent).subscribe(data => {
       this.openTestReportEvent.emit({data: data, name: name})
     })
   }
@@ -151,7 +151,7 @@ export class TestComponent implements OnInit{
   deleteSelected() {
     const selectedReports = this.reports.filter(report => report.checked);
     for (let i = 0; i < selectedReports.length; i++) {
-      this.httpService.deleteReport(selectedReports[i][5], this.toastComponent).then(() => {
+      this.httpService.deleteReport(selectedReports[i][5], this.toastComponent).subscribe(() => {
         this.loadData();
       })
     }
@@ -181,7 +181,7 @@ export class TestComponent implements OnInit{
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      this.httpService.uploadReport(formData, this.toastComponent).then(() => {
+      this.httpService.uploadReport(formData, this.toastComponent).subscribe(() => {
         this.toastComponent.addAlert({type: 'success', message: 'Report uploaded!'})
         this.loadData()
       })
@@ -203,7 +203,7 @@ export class TestComponent implements OnInit{
    * @param reportId - report that will be replaced
    */
   replaceReport(reportId: string) {
-    this.httpService.replaceReport(reportId, this.toastComponent).then(() => {
+    this.httpService.replaceReport(reportId, this.toastComponent).subscribe(() => {
       let index = this.reranReportsIndex.indexOf(reportId);
       this.reranReportsIndex.splice(index, 1);
       this.reranReports.splice(index, 1);

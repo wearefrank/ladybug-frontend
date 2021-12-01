@@ -85,7 +85,7 @@ export class DisplayComponent {
 
     // This is for the root report which has a specific location for the xml message
     if (this.report.ladybug.storageId) {
-      this.httpService.getMonacoCode(this.report.ladybug.storageId, this.toastComponent).then(data => {
+      this.httpService.getMonacoCode(this.report.ladybug.storageId, this.toastComponent).subscribe(data => {
         this.report.ladybug.message = data.xml;
         this.monacoEditorComponent?.loadMonaco(beautify(data.xml));
       })
@@ -142,7 +142,7 @@ export class DisplayComponent {
       "transformation": this.transformation.nativeElement.value
     };
 
-    this.httpService.postReport(this.report.ladybug.storageId, this.toastComponent, newReport).then(report => {
+    this.httpService.postReport(this.report.ladybug.storageId, this.toastComponent, newReport).subscribe(report => {
       this.toastComponent.addAlert({type: 'success', message: 'Report updated!'})
       console.log(report) // The update report
     })
@@ -156,7 +156,7 @@ export class DisplayComponent {
     let storageId: number = +this.report.ladybug.uid.split("#")[0];
     let data: any = {}
     data['debugStorage'] = [storageId]
-    this.httpService.copyReport(data, this.toastComponent).then(() => {
+    this.httpService.copyReport(data, this.toastComponent).subscribe(() => {
       this.toastComponent.addAlert({type: 'success', message: 'Report copied!'})
     });
   }

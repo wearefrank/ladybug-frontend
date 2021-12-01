@@ -101,7 +101,7 @@ export class TableComponent implements OnInit {
    Request the data based on storageId and send this data along to the tree (via parent)
    */
   openReport(storageId: string) {
-    this.httpService.getReport(storageId, this.toastComponent).then(data => {
+    this.httpService.getReport(storageId, this.toastComponent).subscribe(data => {
       data.id = this.id;
       this.emitEvent.next(data)
     })
@@ -143,7 +143,7 @@ export class TableComponent implements OnInit {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      this.httpService.uploadReport(formData, this.toastComponent).then(response => {
+      this.httpService.uploadReport(formData, this.toastComponent).subscribe(response => {
         this.toastComponent.addAlert({type: 'success', message: 'Report uploaded!'})
         this.loadData();
       })
@@ -170,7 +170,7 @@ export class TableComponent implements OnInit {
   ngOnInit() {
     this.loadData()
     // Also load in the default transformation
-    this.httpService.getTransformation(this.toastComponent).then(response => {
+    this.httpService.getTransformation(this.toastComponent).subscribe(response => {
       this.settingsForm.get('transformation')?.setValue(response.transformation)
     })
   }
