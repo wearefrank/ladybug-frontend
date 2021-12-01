@@ -43,7 +43,7 @@ export class TableComponent implements OnInit {
    * Open a modal
    * @param content - the specific modal to be opened
    */
-  openModal(content: any) {
+  openModal(content: any): void {
     this.modalService.open(content);
   }
 
@@ -51,7 +51,7 @@ export class TableComponent implements OnInit {
    * Transform milliseconds to an actual date and time
    * @param seconds - milliseconds since 1-1-1970
    */
-  getDate(seconds: string) {
+  getDate(seconds: string): string {
     const date = new Date(parseInt(seconds))
     return ('0' + date.getDay()).slice(-2) + "/" +
       ('0' + date.getUTCMonth()).slice(-2) + "/" +
@@ -66,7 +66,7 @@ export class TableComponent implements OnInit {
    * Change the value on what the table should filter
    * @param event - the keyword
    */
-  changeFilter(event: any) {
+  changeFilter(event: any): void {
     this.filterValue = event.target.value;
   }
 
@@ -74,7 +74,7 @@ export class TableComponent implements OnInit {
    * Change the limit of items shown in table
    * @param event - the new table limit
    */
-  changeTableLimit(event: any) {
+  changeTableLimit(event: any): void {
     this.displayAmount = event.target.value;
     this.ngOnInit()
   }
@@ -82,7 +82,7 @@ export class TableComponent implements OnInit {
   /**
    * Refresh the table
    */
-  refresh() {
+  refresh(): void {
     this.showFilter = false;
     this.metadata = {};
     this.isLoaded = false;
@@ -93,14 +93,14 @@ export class TableComponent implements OnInit {
   /**
    * Toggle the filter option
    */
-  toggleFilter() {
+  toggleFilter(): void {
     this.showFilter = !this.showFilter;
   }
 
   /**
    Request the data based on storageId and send this data along to the tree (via parent)
    */
-  openReport(storageId: string) {
+  openReport(storageId: string): void {
     this.httpService.getReport(storageId, this.toastComponent).subscribe(data => {
       data.id = this.id;
       this.emitEvent.next(data)
@@ -110,7 +110,7 @@ export class TableComponent implements OnInit {
   /**
    * Open all reports
    */
-  openReports(amount: number) {
+  openReports(amount: number): void {
     if (amount === -1) {
       amount = this.metadata.values.length;
     }
@@ -126,7 +126,7 @@ export class TableComponent implements OnInit {
    * @param exportMessages - boolean whether messages should be downloaded
    * @param exportReports - boolean whether reports should be downloaded
    */
-  downloadReports(exportMessages: boolean, exportReports: boolean) {
+  downloadReports(exportMessages: boolean, exportReports: boolean): void {
     const selectedReports = this.metadata.values;
     const queryString = selectedReports
       .reduce((totalQuery: string, selectedReport: string[]) => totalQuery + "id=" + selectedReport[5] + "&", "?")
@@ -138,7 +138,7 @@ export class TableComponent implements OnInit {
    * Upload report
    * @param event - click event of the report
    */
-  uploadReport(event: any) {
+  uploadReport(event: any): void {
     const file: File = event.target.files[0]
     if (file) {
       const formData = new FormData();
@@ -153,7 +153,7 @@ export class TableComponent implements OnInit {
   /**
    * Save the settings of the table
    */
-  saveSettings() {
+  saveSettings(): void {
     const form = this.settingsForm.value;
     let map: any = {generatorEnabled: form.generatorEnabled, regexFilter: form.regexFilter}
     this.httpService.postSettings(map, this.toastComponent);
@@ -167,7 +167,7 @@ export class TableComponent implements OnInit {
   /**
    * Load in data for the table
    */
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadData()
     // Also load in the default transformation
     this.httpService.getTransformation(this.toastComponent).subscribe(response => {
@@ -178,7 +178,7 @@ export class TableComponent implements OnInit {
   /**
    * Load in data in table
    */
-  loadData() {
+  loadData(): void {
     this.httpService.getReports(this.displayAmount).subscribe({
       next: value => {
         this.toastComponent.addAlert({type: 'success', message: 'Data loaded!'})

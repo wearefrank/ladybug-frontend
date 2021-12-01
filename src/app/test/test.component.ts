@@ -23,14 +23,14 @@ export class TestComponent implements OnInit{
     this.modalService.open(content);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadData();
   }
 
   /**
    * Load in the report data from testStorage
    */
-  loadData() {
+  loadData(): void {
     this.httpService.getTestReports().subscribe({
       next: value => {
         this.reports = value.values
@@ -44,7 +44,7 @@ export class TestComponent implements OnInit{
   /**
    * Reset the runner
    */
-  resetRunner() {
+  resetRunner(): void {
     // @ts-ignore
     this.httpService.reset()
   }
@@ -52,7 +52,7 @@ export class TestComponent implements OnInit{
   /**
    * Run a test
    */
-  run(reportId: string) {
+  run(reportId: string): void {
     const data: any = {}
     data['testStorage'] = [reportId]
 
@@ -66,7 +66,7 @@ export class TestComponent implements OnInit{
   /**
    * Runs all tests
    */
-  runAll() {
+  runAll(): void {
     const selectedReports = this.reports.filter(report => report.checked);
     let data: any = {}
     data['testStorage'] = []
@@ -84,7 +84,7 @@ export class TestComponent implements OnInit{
   /**
    * Query the results of the test run
    */
-  queryResults() {
+  queryResults(): void {
     this.httpService.queryResults(this.toastComponent).subscribe(response => {
       this.toastComponent.addAlert({type: 'success', message: 'Test run(s) completed!'})
 
@@ -139,7 +139,7 @@ export class TestComponent implements OnInit{
    * @param storageId - the storageId of the report
    * @param name - the name of the report
    */
-  selectReport(storageId: number, name: string) {
+  selectReport(storageId: number, name: string): void {
     this.httpService.getReport(storageId.toString(), this.toastComponent).subscribe(data => {
       this.openTestReportEvent.emit({data: data, name: name})
     })
@@ -148,7 +148,7 @@ export class TestComponent implements OnInit{
   /**
    * Removes the selected reports
    */
-  deleteSelected() {
+  deleteSelected(): void {
     const selectedReports = this.reports.filter(report => report.checked);
     for (let i = 0; i < selectedReports.length; i++) {
       this.httpService.deleteReport(selectedReports[i][5], this.toastComponent).subscribe(() => {
@@ -162,7 +162,7 @@ export class TestComponent implements OnInit{
    * @param exportMessages - boolean whether to download messages
    * @param exportReports = boolean whether to download reports
    */
-  downloadSelected(exportMessages: boolean, exportReports: boolean) {
+  downloadSelected(exportMessages: boolean, exportReports: boolean): void {
     const selectedReports = this.reports.filter(report => report.checked);
     let queryString = "?";
     for (let i = 0; i < selectedReports.length; i++) {
@@ -176,7 +176,7 @@ export class TestComponent implements OnInit{
    * Upload a report
    * @param event - the target file to upload
    */
-  uploadReport(event: any) {
+  uploadReport(event: any): void {
     const file: File = event.target.files[0]
     if (file) {
       const formData = new FormData();
@@ -192,7 +192,7 @@ export class TestComponent implements OnInit{
    * Compare two reports with each other in compare tab
    * @param originalReport - the original report that will be compared to the new one
    */
-  compareReports(originalReport: string) {
+  compareReports(originalReport: string): void {
     let index = this.reranReportsIndex.indexOf(originalReport);
     let newReport = this.reranReports[index].reran;
     this.openCompareReportsEvent.emit({oldReport: originalReport, newReport: newReport})
@@ -202,7 +202,7 @@ export class TestComponent implements OnInit{
    * Replace the original report
    * @param reportId - report that will be replaced
    */
-  replaceReport(reportId: string) {
+  replaceReport(reportId: string): void {
     this.httpService.replaceReport(reportId, this.toastComponent).subscribe(() => {
       let index = this.reranReportsIndex.indexOf(reportId);
       this.reranReportsIndex.splice(index, 1);
@@ -214,7 +214,7 @@ export class TestComponent implements OnInit{
    * Toggle the checkbox
    * @param report - the report that is toggled
    */
-  toggleCheck(report: any) {
+  toggleCheck(report: any): void {
     let index = this.reports.indexOf(report);
     this.reports[index].checked = !report.checked
   }
@@ -222,7 +222,7 @@ export class TestComponent implements OnInit{
   /**
    * Checks all checkboxes
    */
-  checkAll() {
+  checkAll(): void {
     for (let report of this.reports) {
       report.checked = true;
     }
@@ -231,7 +231,7 @@ export class TestComponent implements OnInit{
   /**
    * Unchecks all checkboxes
    */
-  uncheckAll() {
+  uncheckAll(): void {
     for (let report of this.reports) {
       report.checked = false;
     }

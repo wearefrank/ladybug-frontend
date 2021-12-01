@@ -1,4 +1,4 @@
-/// <reference path="../../../../node_modules/monaco-editor/monaco.d.ts" />
+/// <reference path="../../../../../node_modules/monaco-editor/monaco.d.ts" />
 import {AfterViewInit, Component, ElementRef, Input, ViewChild,} from '@angular/core';
 
 let loadedMonaco = false;
@@ -91,7 +91,7 @@ export class MonacoEditorComponent implements AfterViewInit {
   /**
    * Toggle edit mode for the monaco-editor
    */
-  toggleEdit() {
+  toggleEdit(): void {
     this.readonly = !this.readonly
     this.codeEditorInstance.updateOptions( {
       readOnly: this.readonly,

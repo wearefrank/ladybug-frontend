@@ -31,7 +31,7 @@ export class ToastComponent implements OnInit {
    * Closes the alert
    * @param alert - alert that will be closed
    */
-  close(alert: any) {
+  close(alert: any): void {
     this.alerts.splice(this.alerts.indexOf(alert), 1)
     this.ngOnInit();
   }
@@ -40,7 +40,7 @@ export class ToastComponent implements OnInit {
    * Adds an alert
    * @param alert - alert that will be added
    */
-  addAlert(alert: any) {
+  addAlert(alert: any): void {
     this.alerts.push(alert)
     this.ngOnInit();
   }

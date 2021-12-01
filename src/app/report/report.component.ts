@@ -22,7 +22,7 @@ export class ReportComponent implements AfterViewInit {
   /**
    Add a new report and notify the tree of the change
    */
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.treeComponent?.handleChange([this.reportData]);
   }
 
@@ -30,7 +30,7 @@ export class ReportComponent implements AfterViewInit {
    * Select a report to be viewed in the display
    * @param currentReport - the report to be viewed
    */
-  selectReport(currentReport: any) {
+  selectReport(currentReport: any): void {
     this.displayComponent.showReport(currentReport);
   }
 

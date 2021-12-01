@@ -48,7 +48,7 @@ export class HelperService {
    * Sort the data accordingly
    * @param sort - sort object to handle sorting
    */
-  sortData(sort: Sort, data: any) {
+  sortData(sort: Sort, data: any): any {
     if (!sort.active || sort.direction === '') {
       return;
     }
@@ -86,7 +86,7 @@ export class HelperService {
    * @param b - second string/number
    * @param isAsc - whether it is ascending or not
    */
-  compare(a: number | string, b: number | string, isAsc: boolean) {
+  compare(a: number | string, b: number | string, isAsc: boolean): number {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 

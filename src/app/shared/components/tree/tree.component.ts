@@ -20,21 +20,21 @@ export class TreeComponent {
   /**
    * Collapse the entire tree
    */
-  collapseAll() {
+  collapseAll(): void {
     $('#' + this.treeId).treeview('collapseAll', { silent: true})
   }
 
   /**
    * Expand the entire tree (up to 2 levels)
    */
-  expandAll() {
+  expandAll(): void {
     $('#' + this.treeId).treeview('expandAll', { levels: 2, silent: true})
   }
 
   /**
    * Close all nodes in the tree
    */
-  closeAll() {
+  closeAll(): void {
     this.reports.length = 0;
     $('#' + this.treeId).treeview( 'remove');
   }
@@ -44,7 +44,7 @@ export class TreeComponent {
    * and eventually removes the parent when found
    * @param node - the node to be removed
    */
-  removeNode(node: any) {
+  removeNode(node: any): void {
     if (node.root) {
       const result = this.tree.filter(report => {
         return report.id === node.nodeId;
@@ -82,7 +82,7 @@ export class TreeComponent {
     return parent
   }
 
-  createHierarchy(previousNode: any, node: any) {
+  createHierarchy(previousNode: any, node: any): void {
     // If it is the first one, the root is the parent
     if (node.level == 0) {
       this.addChild(previousNode, node)
@@ -105,7 +105,7 @@ export class TreeComponent {
    * Handle change in the tree for the tree view
    * @param reports - the reports to be displayed
    */
-  handleChange(reports: any[]) {
+  handleChange(reports: any[]): void {
     this.reports = reports;
 
     // Reset the items in the tree
@@ -152,7 +152,7 @@ export class TreeComponent {
   /**
    * Update the tree view with the new data
    */
-  updateTreeView() {
+  updateTreeView(): void {
     // Update the tree view
     $('#' + this.treeId).treeview({
       data: this.tree,

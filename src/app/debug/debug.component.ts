@@ -18,7 +18,7 @@ export class DebugComponent {
   /**
     Add a new report and notify the tree of the change
    */
-  addReport(newReport: any) {
+  addReport(newReport: any): void {
     this.reports.push(newReport);
     this.treeComponent.handleChange(this.reports);
   }
@@ -27,7 +27,7 @@ export class DebugComponent {
    * Select a report to be viewed in the display
    * @param currentReport - the report to be viewed
    */
-  selectReport(currentReport: any) {
+  selectReport(currentReport: any): void {
     this.currentReport = currentReport;
     this.displayComponent.showReport(this.currentReport);
   }
@@ -36,7 +36,7 @@ export class DebugComponent {
    * Close a report
    * @param currentReport - the report to be closed
    */
-  closeReport(currentReport: any) {
+  closeReport(currentReport: any): void {
     this.currentReport = {}
     this.treeComponent.removeNode(currentReport);
   }

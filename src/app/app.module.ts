@@ -15,7 +15,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 import { FilterPipe } from './shared/pipes/filter.pipe';
-import { MonacoEditorComponent } from './shared/monaco-editor/monaco-editor.component';
+import { MonacoEditorComponent } from './shared/components/monaco-editor/monaco-editor.component';
 import {MatSortModule} from "@angular/material/sort";
 import { ReportComponent } from './report/report.component';
 import { ToastComponent } from './shared/components/toast/toast.component';

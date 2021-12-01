@@ -31,7 +31,7 @@ export class CompareComponent implements OnChanges {
   /**
    * Select report based on the specified ids in diffReports
    */
-  selectReportBasedOnIds() {
+  selectReportBasedOnIds(): void {
     this.httpService.getReport(this.diffReports.oldReport, this.toastComponent).subscribe(result => {
       result.id = "leftId"
       this.addReportNodeLeft(result)
@@ -47,7 +47,7 @@ export class CompareComponent implements OnChanges {
    * Adds a report to the left tree
    * @param newReport - report to be added
    */
-  addReportNodeLeft(newReport: any) {
+  addReportNodeLeft(newReport: any): void {
     if (this.leftReport.id === newReport.id) {
       this.leftReport.reports.push(newReport);
       this.leftTreeComponent?.handleChange(this.leftReport.reports);
@@ -58,7 +58,7 @@ export class CompareComponent implements OnChanges {
    * Adds a report to the right tree
    * @param newReport - report to be added
    */
-  addReportNodeRight(newReport: any) {
+  addReportNodeRight(newReport: any): void {
     if (this.rightReport.id === newReport.id) {
       this.rightReport.reports.push(newReport);
       this.rightTreeComponent?.handleChange(this.rightReport.reports);
@@ -69,7 +69,7 @@ export class CompareComponent implements OnChanges {
    * Show the report of the left tree on the left display
    * @param currentReport - the report to be displayed
    */
-  selectReportLeft(currentReport: any) {
+  selectReportLeft(currentReport: any): void {
     this.leftReport.selected = true;
     this.leftReport.current = currentReport;
     this.leftDisplayComponent?.showReport(this.leftReport.current);
@@ -79,7 +79,7 @@ export class CompareComponent implements OnChanges {
    * Show the report of the right tree on the right display
    * @param currentReport - the report to be displayed
    */
-  selectReportRight(currentReport: any) {
+  selectReportRight(currentReport: any): void {
     this.rightReport.selected = true;
     this.rightReport.current = currentReport;
     this.rightDisplayComponent?.showReport(this.rightReport.current);
@@ -89,7 +89,7 @@ export class CompareComponent implements OnChanges {
    * Close the left report
    * @param currentNode - the left node to be removed
    */
-  closeReportLeft(currentNode: any) {
+  closeReportLeft(currentNode: any): void {
     this.leftReport.selected = false
     this.leftReport.current = {};
     this.leftTreeComponent?.removeNode(currentNode);
@@ -99,7 +99,7 @@ export class CompareComponent implements OnChanges {
    * Close the right report
    * @param currentNode - the right node to be removed
    */
-  closeReportRight(currentNode: any) {
+  closeReportRight(currentNode: any): void {
     this.rightReport.selected = false;
     this.rightReport.current = {};
     this.rightTreeComponent?.removeNode(currentNode);

@@ -1,6 +1,6 @@
 import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {MonacoEditorComponent} from "../../monaco-editor/monaco-editor.component";
+import {MonacoEditorComponent} from "../monaco-editor/monaco-editor.component";
 // @ts-ignore
 import DiffMatchPatch from 'diff-match-patch';
 // @ts-ignore
@@ -45,7 +45,7 @@ export class DisplayComponent {
    * @param content - the specific modal to be opened
    * @param type
    */
-  openModal(content: any, type: string) {
+  openModal(content: any, type: string): void {
     this.type = type;
     const dmp = new DiffMatchPatch();
 
@@ -80,7 +80,7 @@ export class DisplayComponent {
    * Show a report in the display
    * @param report - the report to be sown
    */
-  showReport(report: any) {
+  showReport(report: any): void {
     this.report = report;
 
     // This is for the root report which has a specific location for the xml message
@@ -99,7 +99,7 @@ export class DisplayComponent {
   /**
    * Close a report
    */
-  closeReport() {
+  closeReport(): void {
     this.closeReportEvent.next(this.report)
     this.displayReport = false;
     this.report = {};
@@ -108,7 +108,7 @@ export class DisplayComponent {
   /**
    * Start editing a report
    */
-  editReport() {
+  editReport(): void {
     this.editing = true;
     if (this.report.root) {
       this.editingRoot = true;
@@ -121,7 +121,7 @@ export class DisplayComponent {
    * Save or discard report changes
    * @param type
    */
-  saveOrDiscard(type: string) {
+  saveOrDiscard(type: string): void {
     this.editing = false;
     this.editingRoot = false;
     this.modalService.dismissAll();
@@ -134,7 +134,7 @@ export class DisplayComponent {
   /**
    * Save changes of a report.
    */
-  saveReport() {
+  saveReport(): void {
     let newReport: any = {
       "name": this.name.nativeElement.value,
       "path": this.path.nativeElement.value,
@@ -152,7 +152,7 @@ export class DisplayComponent {
   /**
    * Copy a report to the test tab.
    */
-  copyReport() {
+  copyReport(): void {
     let storageId: number = +this.report.ladybug.uid.split("#")[0];
     let data: any = {}
     data['debugStorage'] = [storageId]
@@ -166,7 +166,7 @@ export class DisplayComponent {
    * @param exportMessages - boolean to see if messages are to be downloaded
    * @param exportReports - boolean to see if reports are to be downloaded
    */
-  downloadReport(exportMessages: boolean, exportReports: boolean) {
+  downloadReport(exportMessages: boolean, exportReports: boolean): void {
     let queryString = "?id=" + this.report.ladybug.uid.split('#')[0];
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString);
     this.toastComponent.addAlert({type: 'success', message: 'Report Downloaded!'})
@@ -175,7 +175,7 @@ export class DisplayComponent {
   /**
    * Toggle editing the monaco editor
    */
-  toggleMonacoEditor() {
+  toggleMonacoEditor(): void {
     if (!this.report.root) {
       this.monacoEditorComponent.toggleEdit();
     }

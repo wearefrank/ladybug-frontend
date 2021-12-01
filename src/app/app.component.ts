@@ -30,13 +30,13 @@ export class AppComponent {
    * Open an extra tab for the test report
    * @param data - the data in the report
    */
-  openTestReport(data: any) {
+  openTestReport(data: any): void {
     this.injector = Injector.create({providers: [{provide: ReportData, useValue: data.data}], parent: this.inj})
     this.tabs.push( {key: data.name, value: ReportComponent})
     this.active = this.tabs.length + 3; // Active the tab immediately
   }
 
-  openCompareReport(data: any) {
+  openCompareReport(data: any): void {
     this.active = 3;
     this.diffReports = data;
   }
@@ -46,7 +46,7 @@ export class AppComponent {
    * @param event - mouse event
    * @param toRemove - the index of the report
    */
-  closeTestReport(event: MouseEvent, toRemove: number) {
+  closeTestReport(event: MouseEvent, toRemove: number): void {
     this.tabs.splice(toRemove, 1);
     this.active--;
     event.preventDefault();

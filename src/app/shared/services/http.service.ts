@@ -43,7 +43,7 @@ export class HttpService {
       .pipe(catchError(this.handleError(toastComponent, 'Could not retrieve data for report!')))
   }
 
-  copyReport(data: any, toastComponent: ToastComponent) {
+  copyReport(data: any, toastComponent: ToastComponent): Observable<void> {
     return this.http.put("api/report/store/testStorage", data)
       .pipe(catchError(this.handleError(toastComponent, 'Could not copy report into test tab!')))
   }
@@ -53,12 +53,12 @@ export class HttpService {
       .pipe(catchError(this.handleError(toastComponent, 'Could not copy report into test tab!')))
   }
 
-  postSettings(settings: any, toastComponent: ToastComponent) {
+  postSettings(settings: any, toastComponent: ToastComponent): Observable<void> {
     return this.http.post('api/testtool', settings)
       .pipe(catchError(this.handleError(toastComponent, 'Could not save settings!')))
   }
 
-  postTransformation(transformation: any, toastComponent: ToastComponent) {
+  postTransformation(transformation: any, toastComponent: ToastComponent): Observable<void> {
     return this.http.post('api/testtool/transformation', transformation)
       .pipe(catchError(this.handleError(toastComponent, 'Could not save transformation!')))
   }
@@ -68,13 +68,12 @@ export class HttpService {
       .pipe(catchError(this.handleError(toastComponent, 'Could not retrieve transformation!')))
   }
 
-  reset(toastComponent: ToastComponent) {
-    // @ts-ignore
-    return this.http.post<any>('api/runner/reset')
+  reset(toastComponent: ToastComponent): Observable<void> {
+    return this.http.post<any>('api/runner/reset', {})
       .pipe(catchError(this.handleError(toastComponent, 'Could not reset runner!')))
   }
 
-  runReport(report: any, toastComponent: ToastComponent) {
+  runReport(report: any, toastComponent: ToastComponent): Observable<void> {
     return this.http.post<any>('api/runner/run/debugStorage', report, {headers: this.headers, observe: "response"})
       .pipe(catchError(this.handleError(toastComponent, 'Could not correctly run report(s)!')))
   }
@@ -84,12 +83,12 @@ export class HttpService {
       .pipe(catchError(this.handleError(toastComponent, 'Could not retrieve runner results!')))
   }
 
-  deleteReport(reportId: string, toastComponent: ToastComponent) {
+  deleteReport(reportId: string, toastComponent: ToastComponent): Observable<void> {
     return this.http.delete('api/report/testStorage/' + reportId)
       .pipe(catchError(this.handleError(toastComponent, 'Could not delete report!')))
   }
 
-  replaceReport(reportId: string, toastComponent: ToastComponent) {
+  replaceReport(reportId: string, toastComponent: ToastComponent): Observable<void> {
     return this.http.put('api/runner/replace/testStorage/' + reportId, {headers: this.headers})
       .pipe(catchError(this.handleError(toastComponent, 'Could not update report!')))
   }
