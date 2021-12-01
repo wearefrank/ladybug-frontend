@@ -16,6 +16,7 @@ export class AppComponent {
   injector!: Injector;
   appVersion: string;
   diffReports = {oldReport: '', newReport: ''}
+  LAST_TAB_INDEX = 3;
 
   constructor(private inj: Injector, private titleService: Title) {
     this.appVersion = appVersion
@@ -33,11 +34,11 @@ export class AppComponent {
   openTestReport(data: any): void {
     this.injector = Injector.create({providers: [{provide: ReportData, useValue: data.data}], parent: this.inj})
     this.tabs.push( {key: data.name, value: ReportComponent})
-    this.active = this.tabs.length + 3; // Active the tab immediately
+    this.active = this.LAST_TAB_INDEX + this.tabs.length; // Active the tab immediately
   }
 
   openCompareReport(data: any): void {
-    this.active = 3;
+    this.active = this.LAST_TAB_INDEX;
     this.diffReports = data;
   }
 

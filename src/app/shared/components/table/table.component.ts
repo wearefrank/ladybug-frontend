@@ -17,6 +17,7 @@ export class TableComponent implements OnInit {
   isLoaded: boolean = false; // Wait for the page to be loaded
   displayAmount: number = 400; // The amount of data that is displayed
   filterValue: string = ""; // Value on what table should filter
+  STORAGE_ID_INDEX = 5;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   settingsForm = new FormGroup({
     generatorEnabled: new FormControl(''),
@@ -117,7 +118,7 @@ export class TableComponent implements OnInit {
 
     // The index 5 is the storageId
     for (const row of this.metadata.values.slice(0, amount)) {
-      this.openReport(row[5]);
+      this.openReport(row[this.STORAGE_ID_INDEX]);
     }
   }
 
@@ -129,7 +130,7 @@ export class TableComponent implements OnInit {
   downloadReports(exportMessages: boolean, exportReports: boolean): void {
     const selectedReports = this.metadata.values;
     const queryString = selectedReports
-      .reduce((totalQuery: string, selectedReport: string[]) => totalQuery + "id=" + selectedReport[5] + "&", "?")
+      .reduce((totalQuery: string, selectedReport: string[]) => totalQuery + "id=" + selectedReport[this.STORAGE_ID_INDEX] + "&", "?")
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
     this.toastComponent.addAlert({type: 'success', message: 'Reports downloaded!'})
   }

@@ -7,6 +7,7 @@ import {NgbAlert} from "@ng-bootstrap/ng-bootstrap";
   styleUrls: ['./toast.component.css']
 })
 export class ToastComponent implements OnInit {
+  TIMEOUT = 5000;
   alerts: any[] = [
     // {type: 'warning', message: 'There is some error wow!'},
     // {type: 'danger', message: 'There is a big error wow!'},
@@ -24,7 +25,7 @@ export class ToastComponent implements OnInit {
         this.staticAlert.close();
         this.alerts = [];
       }
-    }, 5000)
+    }, this.TIMEOUT)
   }
 
   /**

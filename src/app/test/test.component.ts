@@ -13,6 +13,9 @@ export class TestComponent implements OnInit{
   metadata: any = {};
   reranReports: any[] = [];
   reranReportsIndex: string[] = [];
+  STORAGE_ID_INDEX = 5;
+  NAME_INDEX = 2;
+  TIMEOUT = 100;
   @Output() openTestReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
@@ -59,7 +62,7 @@ export class TestComponent implements OnInit{
     this.httpService.runReport(data, this.toastComponent).subscribe(() => {
       setTimeout(() => {
         this.queryResults()
-      }, 100)
+      }, this.TIMEOUT)
     })
   }
 
@@ -71,13 +74,13 @@ export class TestComponent implements OnInit{
     let data: any = {}
     data['testStorage'] = []
     for (let i = 0; i < selectedReports.length; i++) {
-      data['testStorage'].push(selectedReports[i][5])
+      data['testStorage'].push(selectedReports[i][this.STORAGE_ID_INDEX])
     }
 
     this.httpService.runReport(data, this.toastComponent).subscribe(() => {
       setTimeout(() => {
         this.queryResults();
-      }, 100)
+      }, this.TIMEOUT)
     })
   }
 
@@ -151,7 +154,7 @@ export class TestComponent implements OnInit{
   deleteSelected(): void {
     const selectedReports = this.reports.filter(report => report.checked);
     for (let i = 0; i < selectedReports.length; i++) {
-      this.httpService.deleteReport(selectedReports[i][5], this.toastComponent).subscribe(() => {
+      this.httpService.deleteReport(selectedReports[i][this.STORAGE_ID_INDEX], this.toastComponent).subscribe(() => {
         this.loadData();
       })
     }
@@ -166,7 +169,7 @@ export class TestComponent implements OnInit{
     const selectedReports = this.reports.filter(report => report.checked);
     let queryString = "?";
     for (let i = 0; i < selectedReports.length; i++) {
-        queryString += "id=" + selectedReports[i][5] + "&"
+        queryString += "id=" + selectedReports[i][this.STORAGE_ID_INDEX] + "&"
     }
     window.open('api/report/download/testStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
 

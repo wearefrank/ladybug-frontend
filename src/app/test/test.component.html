@@ -35,24 +35,24 @@
     <div class="row">
       <table>
         <tbody>
-        <tr *ngFor="let report of reports" class="form-inline" id="testReport#{{report[5]}}">
+        <tr *ngFor="let report of reports" class="form-inline" id="testReport#{{report[STORAGE_ID_INDEX]}}">
           <td>
             <input class="form-check-input" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
           </td>
           <td>
-            <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report[5])"></app-button>
+            <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report[STORAGE_ID_INDEX])"></app-button>
           </td>
           <td>
-            <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="selectReport(report[5], report[2])"></app-button>
+            <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="selectReport(report[STORAGE_ID_INDEX], report[NAME_INDEX])"></app-button>
           </td>
           <td>
             <app-button [icon]="'fa fa-clone'" [title]="'Clone report'" (click)="open(clone)"></app-button>
           </td>
-          <td *ngIf="reranReportsIndex.includes(report[5])">
-            <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report[5])"></app-button>
+          <td *ngIf="reranReportsIndex.includes(report[STORAGE_ID_INDEX])">
+            <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report[STORAGE_ID_INDEX])"></app-button>
           </td>
-          <td *ngIf="reranReportsIndex.includes(report[5])">
-            <app-button [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report[5])"></app-button>
+          <td *ngIf="reranReportsIndex.includes(report[STORAGE_ID_INDEX])">
+            <app-button [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report[STORAGE_ID_INDEX])"></app-button>
           </td>
           <td>
             /{{ report[2]}}
