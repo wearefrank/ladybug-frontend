@@ -47,7 +47,7 @@ export class DisplayComponent {
    */
   openModal(content: any, type: string) {
     this.type = type;
-    let dmp = new DiffMatchPatch();
+    const dmp = new DiffMatchPatch();
 
     // If it is not the root, find the difference in the code
     if (!this.report.root) {

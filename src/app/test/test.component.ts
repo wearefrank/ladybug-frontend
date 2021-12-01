@@ -53,7 +53,7 @@ export class TestComponent implements OnInit{
    * Run a test
    */
   run(reportId: string) {
-    let data: any = {}
+    const data: any = {}
     data['testStorage'] = [reportId]
 
     this.httpService.runReport(data, this.toastComponent).then(() => {
@@ -67,7 +67,7 @@ export class TestComponent implements OnInit{
    * Runs all tests
    */
   runAll() {
-    let selectedReports = this.reports.filter(report => report.checked);
+    const selectedReports = this.reports.filter(report => report.checked);
     let data: any = {}
     data['testStorage'] = []
     for (let i = 0; i < selectedReports.length; i++) {
@@ -94,7 +94,7 @@ export class TestComponent implements OnInit{
           this.httpService.getReport(reportIndex, this.toastComponent).then(report => {
 
             // See if the report element exist, where we will attach the results to
-            let element = document.getElementById('testReport#' + reportIndex)
+            const element = document.getElementById('testReport#' + reportIndex)
             if (element) {
               if (element.childElementCount > 5 && element.lastChild != null) {
                 element.removeChild(element.lastChild)
@@ -108,8 +108,8 @@ export class TestComponent implements OnInit{
   }
 
   createResultElement(results: any, reportIndex: string, originalReport: any): Element {
-    let tdElement = document.createElement('td')
-    let resultReport = results[reportIndex];
+    const tdElement = document.createElement('td')
+    const resultReport = results[reportIndex];
     tdElement.appendChild(document.createTextNode("("
       + resultReport['previous-time'] + "ms >> "
       + resultReport['current-time'] + "ms) ("
@@ -118,11 +118,11 @@ export class TestComponent implements OnInit{
     ))
 
     // If the reports are not equal, then a reportIndex color should be shown
-    let color = originalReport == results[reportIndex].report ? 'green' : 'red'
+    const color = originalReport == results[reportIndex].report ? 'green' : 'red'
     tdElement.setAttribute('style', 'color:' + color)
 
     // Make sure only 1 result is shown and they don't append
-    let rerunIndex = this.reranReports.findIndex(x => x.original == reportIndex);
+    const rerunIndex = this.reranReports.findIndex(x => x.original == reportIndex);
     if (rerunIndex !== -1) {
       this.reranReports.splice(rerunIndex, 1);
       this.reranReportsIndex.splice(rerunIndex, 1)
@@ -149,7 +149,7 @@ export class TestComponent implements OnInit{
    * Removes the selected reports
    */
   deleteSelected() {
-    let selectedReports = this.reports.filter(report => report.checked);
+    const selectedReports = this.reports.filter(report => report.checked);
     for (let i = 0; i < selectedReports.length; i++) {
       this.httpService.deleteReport(selectedReports[i][5], this.toastComponent).then(() => {
         this.loadData();
@@ -163,7 +163,7 @@ export class TestComponent implements OnInit{
    * @param exportReports = boolean whether to download reports
    */
   downloadSelected(exportMessages: boolean, exportReports: boolean) {
-    let selectedReports = this.reports.filter(report => report.checked);
+    const selectedReports = this.reports.filter(report => report.checked);
     let queryString = "?";
     for (let i = 0; i < selectedReports.length; i++) {
         queryString += "id=" + selectedReports[i][5] + "&"

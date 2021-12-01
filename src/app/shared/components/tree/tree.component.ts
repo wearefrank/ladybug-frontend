@@ -46,10 +46,10 @@ export class TreeComponent {
    */
   removeNode(node: any) {
     if (node.root) {
-      let result = this.tree.filter(report => {
+      const result = this.tree.filter(report => {
         return report.id === node.nodeId;
       })
-      let index = this.tree.indexOf(result[0]);
+      const index = this.tree.indexOf(result[0]);
       this.tree.splice(index, 1);
       this.updateTreeView();
     } else {
@@ -69,7 +69,7 @@ export class TreeComponent {
       return currentNode;
     }
 
-    let newPotentialParent = this.parentMap.find(x => x.id == potentialParent.id).parent;
+    const newPotentialParent = this.parentMap.find(x => x.id == potentialParent.id).parent;
     return this.findParent(currentNode, newPotentialParent)
   }
 
@@ -97,7 +97,7 @@ export class TreeComponent {
 
       // Else the level is equal, meaning the previous node is its sibling
     } else {
-      let newParent = this.parentMap.find(x => x.id == previousNode.id).parent;
+      const newParent = this.parentMap.find(x => x.id == previousNode.id).parent;
       this.addChild(newParent, node)
     }
   }
@@ -113,9 +113,9 @@ export class TreeComponent {
     let id = 0;
 
     // For each item that has been selected show the node and its children
-    for (let report of this.reports) {
+    for (const report of this.reports) {
       this.parentMap = []
-      let rootNode: {text: string, ladybug: any, root: boolean, id: number, nodes: any[]} = {
+      const rootNode: {text: string, ladybug: any, root: boolean, id: number, nodes: any[]} = {
         text: report.name,
         ladybug: report,
         root: true,
@@ -124,9 +124,9 @@ export class TreeComponent {
       }
 
       let previousNode: any = rootNode;
-      for (let checkpoint of report.checkpoints) {
-        let img = this.helperService.getImage(checkpoint.type, checkpoint.level % 2 == 0)
-        let node = {
+      for (const checkpoint of report.checkpoints) {
+        const img = this.helperService.getImage(checkpoint.type, checkpoint.level % 2 == 0)
+        const node = {
           text: '<img src="' + img + '" alt="">' + checkpoint.name,
           ladybug: checkpoint,
           root: false,

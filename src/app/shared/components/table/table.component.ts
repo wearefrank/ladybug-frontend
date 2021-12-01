@@ -52,7 +52,7 @@ export class TableComponent implements OnInit {
    * @param seconds - milliseconds since 1-1-1970
    */
   getDate(seconds: string) {
-    let date = new Date(parseInt(seconds))
+    const date = new Date(parseInt(seconds))
     return ('0' + date.getDay()).slice(-2) + "/" +
       ('0' + date.getUTCMonth()).slice(-2) + "/" +
       date.getFullYear() + " - " +
@@ -116,7 +116,7 @@ export class TableComponent implements OnInit {
     }
 
     // The index 5 is the storageId
-    for (let row of this.metadata.values.slice(0, amount)) {
+    for (const row of this.metadata.values.slice(0, amount)) {
       this.openReport(row[5]);
     }
   }
@@ -127,8 +127,8 @@ export class TableComponent implements OnInit {
    * @param exportReports - boolean whether reports should be downloaded
    */
   downloadReports(exportMessages: boolean, exportReports: boolean) {
-    let selectedReports = this.metadata.values;
-    let queryString = selectedReports
+    const selectedReports = this.metadata.values;
+    const queryString = selectedReports
       .reduce((totalQuery: string, selectedReport: string[]) => totalQuery + "id=" + selectedReport[5] + "&", "?")
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
     this.toastComponent.addAlert({type: 'success', message: 'Reports downloaded!'})
@@ -154,7 +154,7 @@ export class TableComponent implements OnInit {
    * Save the settings of the table
    */
   saveSettings() {
-    let form = this.settingsForm.value;
+    const form = this.settingsForm.value;
     let map: any = {generatorEnabled: form.generatorEnabled, regexFilter: form.regexFilter}
     this.httpService.postSettings(map, this.toastComponent);
 
