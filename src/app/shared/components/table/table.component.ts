@@ -52,15 +52,8 @@ export class TableComponent implements OnInit {
    * Transform milliseconds to an actual date and time
    * @param seconds - milliseconds since 1-1-1970
    */
-  getDate(seconds: string): string {
-    const date = new Date(parseInt(seconds))
-    return ('0' + date.getDay()).slice(-2) + "/" +
-      ('0' + date.getUTCMonth()).slice(-2) + "/" +
-      date.getFullYear() + " - " +
-      ('0' + date.getHours()).slice(-2) + ":" +
-      ('0' + date.getMinutes()).slice(-2) + ":" +
-      ('0' + date.getSeconds()).slice(-2) + "." +
-      ('0' + date.getMilliseconds()).slice(-3)
+  getDate(seconds: string): Date {
+    return new Date(parseInt(seconds))
   }
 
   /**

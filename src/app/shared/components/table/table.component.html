@@ -57,7 +57,7 @@
       <tr *ngFor="let row of metadata.values.slice(0, displayAmount) | filter:filterValue" (click)="openReport(row[STORAGE_ID_INDEX])">
 <!--        // StorageId EndTime Duration Name CorrelationId NrChpts EstMemusage StorageSize-->
         <td>{{ row[5] }}</td>
-        <td>{{ getDate(row[4]) }}</td>
+        <td> {{ getDate(row[4]) | date:'dd/MM/yyyy - HH:mm:ss.SSS'}}</td>
         <td>{{ row[0] }}</td>
         <td>{{ row[2] }}</td>
         <td>{{ row[6] }}</td>
