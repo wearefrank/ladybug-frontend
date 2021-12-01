@@ -31,8 +31,13 @@ export class TestComponent implements OnInit{
    * Load in the report data from testStorage
    */
   loadData() {
-    this.httpService.getTestReports(this.toastComponent).then(data => {
-      this.reports = data.values;
+    this.httpService.getTestReports().subscribe({
+      next: value => {
+        this.reports = value.values
+        this.toastComponent.addAlert({type: 'success', message: 'Test data retrieved'})
+      }, error: () => {
+        this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for test!'})
+      }
     })
   }
 
@@ -81,6 +86,7 @@ export class TestComponent implements OnInit{
    */
   queryResults() {
     this.httpService.queryResults(this.toastComponent).then(response => {
+      this.toastComponent.addAlert({type: 'success', message: 'Test run(s) completed!'})
 
       // Retrieve each report in the result runner
       for (let reportIndex in response.results) {
@@ -176,6 +182,7 @@ export class TestComponent implements OnInit{
       const formData = new FormData();
       formData.append("file", file);
       this.httpService.uploadReport(formData, this.toastComponent).then(() => {
+        this.toastComponent.addAlert({type: 'success', message: 'Report uploaded!'})
         this.loadData()
       })
     }

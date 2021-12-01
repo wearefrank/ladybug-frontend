@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ToastComponent} from "../components/toast/toast.component";
-import {lastValueFrom} from "rxjs";
+import {catchError, lastValueFrom, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -20,18 +20,12 @@ export class HttpService {
     });
   }
 
-  async getReports(limit: number, toastComponent: ToastComponent): Promise<any> {
-    let request = this.http.get<any>('api/metadata/debugStorage/', {params: {"limit": limit}});
-    return await lastValueFrom(request).catch(() => {
-      toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for table!'})
-    })
+  getReports(limit: number): Observable<any> {
+    return this.http.get('api/metadata/debugStorage/', {params: {"limit": limit}})
   }
 
-  async getTestReports(toastComponent: ToastComponent): Promise<any> {
-    let request = this.http.get<any>('api/metadata/testStorage/');
-    return await lastValueFrom(request).catch(() => {
-      toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for test!'})
-    })
+  getTestReports(): Observable<any> {
+    return this.http.get<any>('api/metadata/testStorage/')
   }
 
   async getMonacoCode(reportId: string, toastComponent: ToastComponent): Promise<any> {
@@ -41,6 +35,13 @@ export class HttpService {
     })
   }
 
+  /**
+   * Save an updated version of a report
+   *
+   * @param reportId - the report ID
+   * @param toastComponent - toast to display error message if needed
+   * @param report - the updated report
+   */
   async postReport(reportId: string, toastComponent: ToastComponent, report: any): Promise<any> {
     let request = this.http.post('api/report/debugStorage/' + reportId, report);
     return await lastValueFrom(request).catch(() => {
@@ -113,8 +114,9 @@ export class HttpService {
   }
 
   async replaceReport(reportId: string, toastComponent: ToastComponent) {
-    let request = this.http.put("api/runner/replace/testStorage/" + reportId, {headers: this.headers});
+    let request = this.http.put('api/runner/replace/testStorage/' + reportId, {headers: this.headers});
     await lastValueFrom(request).catch(() => {
       toastComponent.addAlert({type: 'danger', message: 'Could not delete report!'})
     })
-  }}
+  }
+}

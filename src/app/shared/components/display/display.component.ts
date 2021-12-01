@@ -53,18 +53,28 @@ export class DisplayComponent {
     if (!this.report.root) {
       this.monacoBefore = this.report.ladybug.message;
       let monacoAfter = this.monacoEditorComponent?.getValue();
-      this.difference.code = dmp.diff_main(this.monacoBefore, monacoAfter);
+      if (monacoAfter != null) {
+        this.difference.code = dmp.diff_main(this.monacoBefore, monacoAfter);
+      }
     } else {
       // If it is the root, find the difference in meta-data
       let ladybug = this.report.ladybug
-      this.difference.name = dmp.diff_main(this.helperService.checkIfNull(ladybug.name), this.name.nativeElement.value)
-      this.difference.description = dmp.diff_main(this.helperService.checkIfNull(ladybug.description), this.description.nativeElement.value)
-      this.difference.path = dmp.diff_main(this.helperService.checkIfNull(ladybug.path), this.path.nativeElement.value)
-      this.difference.transformation = dmp.diff_main(this.helperService.checkIfNull(ladybug.transformation), this.transformation.nativeElement.value)
+      this.difference.name = dmp.diff_main(this.checkIfNull(ladybug.name), this.checkIfNull(this.name.nativeElement.value))
+      this.difference.description = dmp.diff_main(this.checkIfNull(ladybug.description), this.checkIfNull(this.description.nativeElement.value))
+      this.difference.path = dmp.diff_main(this.checkIfNull(ladybug.path), this.checkIfNull(this.path.nativeElement.value))
+      this.difference.transformation = dmp.diff_main(this.checkIfNull(ladybug.transformation), this.checkIfNull(this.transformation.nativeElement.value))
     }
     content.type = type;
     this.modalService.open(content);
   }
+
+  checkIfNull(value: any): string {
+    if (value) {
+      return value
+    }
+    return ''
+  }
+
 
   /**
    * Show a report in the display
@@ -133,6 +143,7 @@ export class DisplayComponent {
     };
 
     this.httpService.postReport(this.report.ladybug.storageId, this.toastComponent, newReport).then(report => {
+      this.toastComponent.addAlert({type: 'success', message: 'Report updated!'})
       console.log(report) // The update report
     })
     this.showReport(this.report)
@@ -145,7 +156,9 @@ export class DisplayComponent {
     let storageId: number = +this.report.ladybug.uid.split("#")[0];
     let data: any = {}
     data['debugStorage'] = [storageId]
-    this.httpService.copyReport(data, this.toastComponent);
+    this.httpService.copyReport(data, this.toastComponent).then(() => {
+      this.toastComponent.addAlert({type: 'success', message: 'Report copied!'})
+    });
   }
 
   /**
@@ -156,6 +169,7 @@ export class DisplayComponent {
   downloadReport(exportMessages: boolean, exportReports: boolean) {
     let queryString = "?id=" + this.report.ladybug.uid.split('#')[0];
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString);
+    this.toastComponent.addAlert({type: 'success', message: 'Report Downloaded!'})
   }
 
   /**

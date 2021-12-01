@@ -1,4 +1,4 @@
-import {Component, OnInit, Output, EventEmitter, Input, ViewChild} from '@angular/core';
+import {Component, OnInit, Output, EventEmitter, Input, ViewChild, AfterViewInit} from '@angular/core';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ToastComponent} from "../toast/toast.component";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -128,9 +128,10 @@ export class TableComponent implements OnInit {
    */
   downloadReports(exportMessages: boolean, exportReports: boolean) {
     let selectedReports = this.metadata.values;
-    let queryString = "?" + selectedReports
-      .reduce((totalQuery: string, selectedReport: string[]) => "id=" + totalQuery + selectedReport[5] + "&")
+    let queryString = selectedReports
+      .reduce((totalQuery: string, selectedReport: string[]) => totalQuery + "id=" + selectedReport[5] + "&", "?")
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
+    this.toastComponent.addAlert({type: 'success', message: 'Reports downloaded!'})
   }
 
   /**
@@ -143,6 +144,7 @@ export class TableComponent implements OnInit {
       const formData = new FormData();
       formData.append("file", file);
       this.httpService.uploadReport(formData, this.toastComponent).then(response => {
+        this.toastComponent.addAlert({type: 'success', message: 'Report uploaded!'})
         this.loadData();
       })
     }
@@ -177,9 +179,14 @@ export class TableComponent implements OnInit {
    * Load in data in table
    */
   loadData() {
-    this.httpService.getReports(this.displayAmount, this.toastComponent).then(data => {
-      this.metadata = data;
-      this.isLoaded = true;
+    this.httpService.getReports(this.displayAmount).subscribe({
+      next: value => {
+        this.toastComponent.addAlert({type: 'success', message: 'Data loaded!'})
+        this.metadata = value
+        this.isLoaded = true
+      }, error: () => {
+        this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for table'})
+      }
     })
   }
 }
