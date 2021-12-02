@@ -2,6 +2,7 @@ import {Component, OnInit, EventEmitter, Output, ViewChild} from '@angular/core'
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ToastComponent} from "../shared/components/toast/toast.component";
 import {HttpService} from "../shared/services/http.service";
+import {LoaderService} from "../shared/services/loader.service";
 
 @Component({
   selector: 'app-test',
@@ -10,7 +11,6 @@ import {HttpService} from "../shared/services/http.service";
 })
 export class TestComponent implements OnInit{
   reports: any[] = [];
-  metadata: any = {};
   reranReports: any[] = [];
   reranReportsIndex: string[] = [];
   STORAGE_ID_INDEX = 5;
@@ -20,14 +20,26 @@ export class TestComponent implements OnInit{
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
 
-  constructor(private modalService: NgbModal, private httpService: HttpService) {}
+  constructor(private modalService: NgbModal, private httpService: HttpService, private loaderService: LoaderService) {}
 
   open(content: any) {
     this.modalService.open(content);
   }
 
   ngOnInit(): void {
-    this.loadData();
+    if (!this.loaderService.isTestLoaded()) {
+      this.loadData();
+    } else {
+      console.log("Data loaded")
+      this.reports = this.loaderService.getTestReports();
+      this.reranReports = this.loaderService.getReranReports();
+      this.reranReportsIndex = this.loaderService.getReranReportsIndex();
+    }
+  }
+
+  ngOnDestroy() {
+    this.loaderService.saveTestSettings(this.reports, this.reranReports, this.reranReportsIndex)
+    console.log("Data saved")
   }
 
   /**
@@ -100,9 +112,10 @@ export class TestComponent implements OnInit{
             const element = document.getElementById('testReport#' + reportIndex)
             if (element) {
               if (element.childElementCount > 5 && element.lastChild != null) {
-                element.removeChild(element.lastChild)
+                // element.removeChild(element.lastChild)
               }
-              element.appendChild(this.createResultElement(response.results, reportIndex, report))
+              this.createResultElement(response.results, reportIndex, report)
+              // element.appendChild(this.reranReports[this.reranReportsIndex.indexOf(reportIndex)].element)
             }
           })
         }
@@ -110,7 +123,7 @@ export class TestComponent implements OnInit{
     })
   }
 
-  createResultElement(results: any, reportIndex: string, originalReport: any): Element {
+  createResultElement(results: any, reportIndex: string, originalReport: any): void {
     const tdElement = document.createElement('td')
     const resultReport = results[reportIndex];
     tdElement.appendChild(document.createTextNode("("
@@ -132,9 +145,10 @@ export class TestComponent implements OnInit{
     }
 
     // Keep track of the reports that have been ran
-    this.reranReports.push({original: reportIndex, reran: results[reportIndex].report.storageId});
+    let el = tdElement.innerHTML
+    this.reranReports.push({original: reportIndex, reran: results[reportIndex].report.storageId, element: el, color: color});
     this.reranReportsIndex.push(reportIndex)
-    return tdElement;
+
   }
 
   /**

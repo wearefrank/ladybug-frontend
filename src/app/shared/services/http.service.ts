@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ToastComponent} from "../components/toast/toast.component";
-import {catchError, Observable, of} from "rxjs";
+import {catchError, Observable, of, shareReplay} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +26,7 @@ export class HttpService {
   }
 
   getReports(limit: number): Observable<any> {
-    return this.http.get('api/metadata/debugStorage/', {params: {"limit": limit}})
+    return this.http.get('api/metadata/debugStorage/', {params: {"limit": limit}}).pipe(shareReplay(1))
   }
 
   getTestReports(): Observable<any> {

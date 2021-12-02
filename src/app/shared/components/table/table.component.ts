@@ -1,16 +1,17 @@
-import {Component, OnInit, Output, EventEmitter, Input, ViewChild, AfterViewInit} from '@angular/core';
+import {Component, OnInit, Output, EventEmitter, Input, ViewChild, AfterViewInit, OnDestroy} from '@angular/core';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ToastComponent} from "../toast/toast.component";
 import {FormControl, FormGroup} from "@angular/forms";
 import {HelperService} from "../../services/helper.service";
 import {HttpService} from "../../services/http.service";
+import {LoaderService} from "../../services/loader.service";
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css']
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, OnDestroy {
   @Output() emitEvent = new EventEmitter<any>();
   showFilter: boolean = false;
   metadata: any = {}; // The data that is displayed
@@ -37,7 +38,11 @@ export class TableComponent implements OnInit {
 
   private _id: string = "";
 
-  constructor(private modalService: NgbModal, private httpService: HttpService, public helperService: HelperService) {
+  constructor(
+    private modalService: NgbModal,
+    private httpService: HttpService,
+    public helperService: HelperService,
+    private loaderService: LoaderService) {
   }
 
   /**
@@ -162,11 +167,17 @@ export class TableComponent implements OnInit {
    * Load in data for the table
    */
   ngOnInit(): void {
-    this.loadData()
-    // Also load in the default transformation
-    this.httpService.getTransformation(this.toastComponent).subscribe(response => {
-      this.settingsForm.get('transformation')?.setValue(response.transformation)
-    })
+    if (!this.loaderService.isTableLoaded()) {
+      this.loadData()
+      this.httpService.getTransformation(this.toastComponent).subscribe(response => {
+        // Also load in the default transformation
+        this.settingsForm.get('transformation')?.setValue(response.transformation)
+      })
+    } else {
+      this.metadata = this.loaderService.getTableData();
+      this.showFilter = this.loaderService.getShowFilter();
+      this.isLoaded = true;
+    }
   }
 
   /**
@@ -182,5 +193,9 @@ export class TableComponent implements OnInit {
         this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for table'})
       }
     })
+  }
+
+  ngOnDestroy() {
+    this.loaderService.saveTableSettings(this.metadata, this.showFilter)
   }
 }

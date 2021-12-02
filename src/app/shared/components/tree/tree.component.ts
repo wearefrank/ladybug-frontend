@@ -1,5 +1,6 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {HelperService} from "../../services/helper.service";
+import {LoaderService} from "../../services/loader.service";
 declare var $: any;
 
 @Component({
@@ -8,14 +9,14 @@ declare var $: any;
   styleUrls: ['./tree.component.css']
 })
 
-export class TreeComponent {
+export class TreeComponent implements AfterViewInit, OnDestroy {
   @Output() selectReportEvent = new EventEmitter<any>();
   @Input() reports: any[] = [];
   tree: any[] = []
   treeId: string = Math.random().toString(36).substring(7);
   parentMap: any[] = []
 
-  constructor(private helperService: HelperService) {}
+  constructor(private helperService: HelperService, private loaderService: LoaderService) {}
 
   /**
    * Collapse the entire tree
@@ -125,7 +126,7 @@ export class TreeComponent {
 
       let previousNode: any = rootNode;
       for (const checkpoint of report.checkpoints) {
-        const img = this.helperService.getImage(checkpoint.type, checkpoint.level % 2 == 0)
+        const img = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0)
         const node = {
           text: '<img src="' + img + '" alt="">' + checkpoint.name,
           ladybug: checkpoint,
@@ -145,8 +146,10 @@ export class TreeComponent {
 
     this.updateTreeView();
 
-    // Select the first child from the tree
-    $('#' + this.treeId).treeview('toggleNodeSelected', [ this.tree[this.tree.length - 1].nodes[0].id, { silent: false } ]);
+    // Select the first child from the tree, if it exists
+    if (this.tree.length > 0) {
+      $('#' + this.treeId).treeview('toggleNodeSelected', [ this.tree[this.tree.length - 1].nodes[0].id, { silent: false } ]);
+    }
   }
 
   /**
@@ -168,4 +171,23 @@ export class TreeComponent {
     });
   }
 
+  ngAfterViewInit() {
+    if (this.loaderService.isTreeLoaded()) {
+      this.tree = this.loaderService.getTreeData();
+      this.updateTreeView();
+      const selectedNode = this.loaderService.getSelectedNode()
+      if (selectedNode != -1) {
+        console.log("Doing this")
+        console.log(selectedNode)
+        $('#' + this.treeId).treeview('toggleNodeSelected', [ selectedNode, { silent: false } ]);
+      }
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.tree.length > 0) {
+      let selectedNode = $('#' + this.treeId).treeview('getSelected')[0].id;
+      this.loaderService.saveTreeSettings(this.tree, selectedNode)
+    }
+  }
 }

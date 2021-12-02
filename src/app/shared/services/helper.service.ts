@@ -5,7 +5,7 @@ import {Sort} from "@angular/material/sort";
   providedIn: 'root'
 })
 export class HelperService {
-
+  THROWABLE_ENCODER = "printStackTrace()"
   constructor() { }
 
   /**
@@ -13,7 +13,7 @@ export class HelperService {
    * @param type - the type of the image
    * @param even - whether we are on an even or odd level (changes icon color)
    */
-  getImage(type: number, even: boolean): string {
+  getImage(type: number, encoding: string, even: boolean): string {
     let img = "../../../../assets/tree-icons/"
     switch (type) {
       case 1: img += "start"
@@ -37,11 +37,16 @@ export class HelperService {
       default:
         return ""
     }
+    img += "point"
+
+    if (encoding === this.THROWABLE_ENCODER) {
+      img += "-error"
+    }
 
     if (even) {
-      return img + "point-even.gif"
+      return img + "-even.gif"
     }
-    return img + "point-odd.gif"
+    return img + "-odd.gif"
   }
 
   /**

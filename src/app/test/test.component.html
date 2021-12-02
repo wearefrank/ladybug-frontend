@@ -34,7 +34,7 @@
     </div>
     <div class="row">
       <table>
-        <tbody>
+        <tbody id="testReports">
         <tr *ngFor="let report of reports" class="form-inline" id="testReport#{{report[STORAGE_ID_INDEX]}}">
           <td>
             <input class="form-check-input" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
@@ -56,6 +56,11 @@
           </td>
           <td>
             /{{ report[2]}}
+          </td>
+
+          <td *ngIf="reranReports[reranReportsIndex.indexOf(report[STORAGE_ID_INDEX])]"
+              [ngStyle]="{color:reranReports[reranReportsIndex.indexOf(report[STORAGE_ID_INDEX])].color }"
+              [innerHTML]="reranReports[reranReportsIndex.indexOf(report[STORAGE_ID_INDEX])].element">
           </td>
         </tr>
         </tbody>

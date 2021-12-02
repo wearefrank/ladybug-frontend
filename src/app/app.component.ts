@@ -24,7 +24,7 @@ export class AppComponent {
   }
 
   title = 'ladybug';
-  active = 1;
+  active = 2;
   tabs: {key: string, value: any}[] = []
 
   /**
