@@ -125,7 +125,7 @@ export class TreeComponent {
 
       let previousNode: any = rootNode;
       for (const checkpoint of report.checkpoints) {
-        const img = this.helperService.getImage(checkpoint.type, checkpoint.level % 2 == 0)
+        const img = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0)
         const node = {
           text: '<img src="' + img + '" alt="">' + checkpoint.name,
           ladybug: checkpoint,
