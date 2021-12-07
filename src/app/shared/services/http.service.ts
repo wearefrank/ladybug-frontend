@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ToastComponent} from "../components/toast/toast.component";
-import {catchError, Observable, of, shareReplay} from "rxjs";
+import {catchError, Observable, of} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -10,86 +10,91 @@ export class HttpService {
   headers = new HttpHeaders().set(
     'Content-Type', 'application/json'
   )
+  toastComponent!: ToastComponent;
 
   constructor(private http: HttpClient) { }
 
-  handleError(toast: ToastComponent, message: string) {
+  initializeToastComponent(toastComponent: ToastComponent) {
+    this.toastComponent = toastComponent;
+  }
+
+  handleError(message: string) {
     return (error: any): Observable<any> => {
-      toast.addAlert({type: 'danger', message: message})
+      this.toastComponent.addAlert({type: 'danger', message: message})
       return of(error)
     }
   }
 
-  getReport(reportId: string, toastComponent: ToastComponent): Observable<any> {
-    return this.http.get<any>('api/report/debugStorage/' + reportId)
-      .pipe(catchError(this.handleError(toastComponent, 'Could not retrieve data for report!')))
-  }
-
   getReports(limit: number): Observable<any> {
-    return this.http.get('api/metadata/debugStorage/', {params: {"limit": limit}}).pipe(shareReplay(1))
+    return this.http.get('api/metadata/debugStorage/', {params: {"limit": limit}})
   }
 
   getTestReports(): Observable<any> {
     return this.http.get<any>('api/metadata/testStorage/')
   }
 
-  getMonacoCode(reportId: string, toastComponent: ToastComponent): Observable<any> {
+  getReport(reportId: string): Observable<any> {
+    return this.http.get<any>('api/report/debugStorage/' + reportId)
+      .pipe(catchError(this.handleError('Could not retrieve data for report!')))
+  }
+
+  getMonacoCode(reportId: string): Observable<any> {
     return this.http.get<any>('api/report/debugStorage/' + reportId + '/?xml=true&globalTransformer=true')
-      .pipe(catchError(this.handleError(toastComponent, 'Could not save report!')))
+      .pipe(catchError(this.handleError('Could not retrieve monaco code!')))
   }
 
-  postReport(reportId: string, toastComponent: ToastComponent, report: any): Observable<any> {
+  postReport(reportId: string, report: any): Observable<any> {
     return this.http.post('api/report/debugStorage/' + reportId, report)
-      .pipe(catchError(this.handleError(toastComponent, 'Could not retrieve data for report!')))
+      .pipe(catchError(this.handleError('Could not retrieve data for report!')))
   }
 
-  copyReport(data: any, toastComponent: ToastComponent): Observable<void> {
-    return this.http.put("api/report/store/testStorage", data)
-      .pipe(catchError(this.handleError(toastComponent, 'Could not copy report into test tab!')))
+  copyReport(data: any): Observable<void> {
+    return this.http.put("api/report/store/testStorages", data)
+      .pipe(catchError(this.handleError('Could not copy report into test tab!')))
   }
 
-  uploadReport(formData: FormData, toastComponent: ToastComponent): Observable<any> {
+  uploadReport(formData: FormData): Observable<any> {
     return this.http.post('api/report/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}})
-      .pipe(catchError(this.handleError(toastComponent, 'Could not copy report into test tab!')))
+      .pipe(catchError(this.handleError('Could not copy report into test tab!')))
   }
 
-  postSettings(settings: any, toastComponent: ToastComponent): Observable<void> {
+  postSettings(settings: any): Observable<void> {
     return this.http.post('api/testtool', settings)
-      .pipe(catchError(this.handleError(toastComponent, 'Could not save settings!')))
+      .pipe(catchError(this.handleError('Could not save settings!')))
   }
 
-  postTransformation(transformation: any, toastComponent: ToastComponent): Observable<void> {
+  postTransformation(transformation: any): Observable<void> {
     return this.http.post('api/testtool/transformation', transformation)
-      .pipe(catchError(this.handleError(toastComponent, 'Could not save transformation!')))
+      .pipe(catchError(this.handleError('Could not save transformation!')))
   }
 
-  getTransformation(toastComponent: ToastComponent): Observable<any> {
+  getTransformation(): Observable<any> {
     return this.http.get<any>('api/testtool/transformation')
-      .pipe(catchError(this.handleError(toastComponent, 'Could not retrieve transformation!')))
+      .pipe(catchError(this.handleError('Could not retrieve transformation!')))
   }
 
-  reset(toastComponent: ToastComponent): Observable<void> {
+  reset(): Observable<void> {
     return this.http.post<any>('api/runner/reset', {})
-      .pipe(catchError(this.handleError(toastComponent, 'Could not reset runner!')))
+      .pipe(catchError(this.handleError('Could not reset runner!')))
   }
 
-  runReport(report: any, toastComponent: ToastComponent): Observable<void> {
+  runReport(report: any): Observable<void> {
     return this.http.post<any>('api/runner/run/debugStorage', report, {headers: this.headers, observe: "response"})
-      .pipe(catchError(this.handleError(toastComponent, 'Could not correctly run report(s)!')))
+      .pipe(catchError(this.handleError('Could not correctly run report(s)!')))
   }
 
-  queryResults(toastComponent: ToastComponent): Observable<any> {
+  queryResults(): Observable<any> {
     return this.http.get('api/runner/result/debugStorage', {headers: this.headers})
-      .pipe(catchError(this.handleError(toastComponent, 'Could not retrieve runner results!')))
+      .pipe(catchError(this.handleError('Could not retrieve runner results!')))
   }
 
-  deleteReport(reportId: string, toastComponent: ToastComponent): Observable<void> {
+  deleteReport(reportId: string): Observable<void> {
     return this.http.delete('api/report/testStorage/' + reportId)
-      .pipe(catchError(this.handleError(toastComponent, 'Could not delete report!')))
+      .pipe(catchError(this.handleError('Could not delete report!')))
   }
 
-  replaceReport(reportId: string, toastComponent: ToastComponent): Observable<void> {
+  replaceReport(reportId: string): Observable<void> {
     return this.http.put('api/runner/replace/testStorage/' + reportId, {headers: this.headers})
-      .pipe(catchError(this.handleError(toastComponent, 'Could not update report!')))
+      .pipe(catchError(this.handleError('Could not update report!')))
   }
 }

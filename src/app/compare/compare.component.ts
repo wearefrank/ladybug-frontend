@@ -32,12 +32,12 @@ export class CompareComponent implements OnChanges {
    * Select report based on the specified ids in diffReports
    */
   selectReportBasedOnIds(): void {
-    this.httpService.getReport(this.diffReports.oldReport, this.toastComponent).subscribe(result => {
+    this.httpService.getReport(this.diffReports.oldReport).subscribe(result => {
       result.id = "leftId"
       this.addReportNodeLeft(result)
     })
 
-    this.httpService.getReport(this.diffReports.newReport, this.toastComponent).subscribe(result => {
+    this.httpService.getReport(this.diffReports.newReport).subscribe(result => {
       result.id = "rightId"
       this.addReportNodeRight(result)
     })

@@ -30,7 +30,6 @@ export class TestComponent implements OnInit{
     if (!this.loaderService.isTestLoaded()) {
       this.loadData();
     } else {
-      console.log("Data loaded")
       this.reports = this.loaderService.getTestReports();
       this.reranReports = this.loaderService.getReranReports();
       this.reranReportsIndex = this.loaderService.getReranReportsIndex();
@@ -39,7 +38,6 @@ export class TestComponent implements OnInit{
 
   ngOnDestroy() {
     this.loaderService.saveTestSettings(this.reports, this.reranReports, this.reranReportsIndex)
-    console.log("Data saved")
   }
 
   /**
@@ -71,7 +69,7 @@ export class TestComponent implements OnInit{
     const data: any = {}
     data['testStorage'] = [reportId]
 
-    this.httpService.runReport(data, this.toastComponent).subscribe(() => {
+    this.httpService.runReport(data).subscribe(() => {
       setTimeout(() => {
         this.queryResults()
       }, this.TIMEOUT)
@@ -89,7 +87,7 @@ export class TestComponent implements OnInit{
       data['testStorage'].push(selectedReports[i][this.STORAGE_ID_INDEX])
     }
 
-    this.httpService.runReport(data, this.toastComponent).subscribe(() => {
+    this.httpService.runReport(data).subscribe(() => {
       setTimeout(() => {
         this.queryResults();
       }, this.TIMEOUT)
@@ -100,13 +98,13 @@ export class TestComponent implements OnInit{
    * Query the results of the test run
    */
   queryResults(): void {
-    this.httpService.queryResults(this.toastComponent).subscribe(response => {
+    this.httpService.queryResults().subscribe(response => {
       this.toastComponent.addAlert({type: 'success', message: 'Test run(s) completed!'})
 
       // Retrieve each report in the result runner
       for (let reportIndex in response.results) {
         if (response.results.hasOwnProperty(reportIndex)) {
-          this.httpService.getReport(reportIndex, this.toastComponent).subscribe(report => {
+          this.httpService.getReport(reportIndex).subscribe(report => {
 
             // See if the report element exist, where we will attach the results to
             const element = document.getElementById('testReport#' + reportIndex)
@@ -145,10 +143,8 @@ export class TestComponent implements OnInit{
     }
 
     // Keep track of the reports that have been ran
-    let el = tdElement.innerHTML
-    this.reranReports.push({original: reportIndex, reran: results[reportIndex].report.storageId, element: el, color: color});
+     this.reranReports.push({original: reportIndex, reran: results[reportIndex].report.storageId, element: tdElement.innerHTML, color: color});
     this.reranReportsIndex.push(reportIndex)
-
   }
 
   /**
@@ -157,7 +153,7 @@ export class TestComponent implements OnInit{
    * @param name - the name of the report
    */
   selectReport(storageId: number, name: string): void {
-    this.httpService.getReport(storageId.toString(), this.toastComponent).subscribe(data => {
+    this.httpService.getReport(storageId.toString()).subscribe(data => {
       this.openTestReportEvent.emit({data: data, name: name})
     })
   }
@@ -168,7 +164,7 @@ export class TestComponent implements OnInit{
   deleteSelected(): void {
     const selectedReports = this.reports.filter(report => report.checked);
     for (let i = 0; i < selectedReports.length; i++) {
-      this.httpService.deleteReport(selectedReports[i][this.STORAGE_ID_INDEX], this.toastComponent).subscribe(() => {
+      this.httpService.deleteReport(selectedReports[i][this.STORAGE_ID_INDEX]).subscribe(() => {
         this.loadData();
       })
     }
@@ -198,7 +194,7 @@ export class TestComponent implements OnInit{
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      this.httpService.uploadReport(formData, this.toastComponent).subscribe(() => {
+      this.httpService.uploadReport(formData).subscribe(() => {
         this.toastComponent.addAlert({type: 'success', message: 'Report uploaded!'})
         this.loadData()
       })
@@ -220,7 +216,7 @@ export class TestComponent implements OnInit{
    * @param reportId - report that will be replaced
    */
   replaceReport(reportId: string): void {
-    this.httpService.replaceReport(reportId, this.toastComponent).subscribe(() => {
+    this.httpService.replaceReport(reportId).subscribe(() => {
       let index = this.reranReportsIndex.indexOf(reportId);
       this.reranReportsIndex.splice(index, 1);
       this.reranReports.splice(index, 1);

@@ -57,7 +57,7 @@
           <td>
             /{{ report[2]}}
           </td>
-
+          <!--TODO: Fix this-->
           <td *ngIf="reranReports[reranReportsIndex.indexOf(report[STORAGE_ID_INDEX])]"
               [ngStyle]="{color:reranReports[reranReportsIndex.indexOf(report[STORAGE_ID_INDEX])].color }"
               [innerHTML]="reranReports[reranReportsIndex.indexOf(report[STORAGE_ID_INDEX])].element">

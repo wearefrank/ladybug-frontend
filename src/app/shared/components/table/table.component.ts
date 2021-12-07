@@ -100,7 +100,7 @@ export class TableComponent implements OnInit, OnDestroy {
    Request the data based on storageId and send this data along to the tree (via parent)
    */
   openReport(storageId: string): void {
-    this.httpService.getReport(storageId, this.toastComponent).subscribe(data => {
+    this.httpService.getReport(storageId).subscribe(data => {
       data.id = this.id;
       this.emitEvent.next(data)
     })
@@ -142,7 +142,7 @@ export class TableComponent implements OnInit, OnDestroy {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      this.httpService.uploadReport(formData, this.toastComponent).subscribe(response => {
+      this.httpService.uploadReport(formData).subscribe(response => {
         this.toastComponent.addAlert({type: 'success', message: 'Report uploaded!'})
         this.loadData();
       })
@@ -155,11 +155,11 @@ export class TableComponent implements OnInit, OnDestroy {
   saveSettings(): void {
     const form = this.settingsForm.value;
     let map: any = {generatorEnabled: form.generatorEnabled, regexFilter: form.regexFilter}
-    this.httpService.postSettings(map, this.toastComponent);
+    this.httpService.postSettings(map);
 
     if (form.transformationEnabled) {
       let transformation = {transformation: form.transformation}
-      this.httpService.postTransformation(transformation, this.toastComponent);
+      this.httpService.postTransformation(transformation);
     }
   }
 
@@ -169,7 +169,7 @@ export class TableComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (!this.loaderService.isTableLoaded()) {
       this.loadData()
-      this.httpService.getTransformation(this.toastComponent).subscribe(response => {
+      this.httpService.getTransformation().subscribe(response => {
         // Also load in the default transformation
         this.settingsForm.get('transformation')?.setValue(response.transformation)
       })
@@ -184,7 +184,8 @@ export class TableComponent implements OnInit, OnDestroy {
    * Load in data in table
    */
   loadData(): void {
-    this.httpService.getReports(this.displayAmount).subscribe({
+    this.httpService.getReports(this.displayAmount)
+      .subscribe({
       next: value => {
         this.toastComponent.addAlert({type: 'success', message: 'Data loaded!'})
         this.metadata = value
