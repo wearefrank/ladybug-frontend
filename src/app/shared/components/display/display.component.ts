@@ -53,28 +53,18 @@ export class DisplayComponent {
     if (!this.report.root) {
       this.monacoBefore = this.report.ladybug.message;
       let monacoAfter = this.monacoEditorComponent?.getValue();
-      if (monacoAfter != null) {
-        this.difference.code = dmp.diff_main(this.monacoBefore, monacoAfter);
-      }
+      this.difference.code = dmp.diff_main(this.monacoBefore, monacoAfter?? '');
     } else {
       // If it is the root, find the difference in meta-data
       let ladybug = this.report.ladybug
-      this.difference.name = dmp.diff_main(this.checkIfNull(ladybug.name), this.checkIfNull(this.name.nativeElement.value))
-      this.difference.description = dmp.diff_main(this.checkIfNull(ladybug.description), this.checkIfNull(this.description.nativeElement.value))
-      this.difference.path = dmp.diff_main(this.checkIfNull(ladybug.path), this.checkIfNull(this.path.nativeElement.value))
-      this.difference.transformation = dmp.diff_main(this.checkIfNull(ladybug.transformation), this.checkIfNull(this.transformation.nativeElement.value))
+      this.difference.name = dmp.diff_main(ladybug.name?? '', this.name.nativeElement.value?? '')
+      this.difference.description = dmp.diff_main(ladybug.description?? '', this.description.nativeElement.value?? '')
+      this.difference.path = dmp.diff_main(ladybug.path?? '', this.path.nativeElement.value?? '')
+      this.difference.transformation = dmp.diff_main(ladybug.transformation?? '', this.transformation.nativeElement.value?? '')
     }
     content.type = type;
     this.modalService.open(content);
   }
-
-  checkIfNull(value: any): string {
-    if (value) {
-      return value
-    }
-    return ''
-  }
-
 
   /**
    * Show a report in the display
