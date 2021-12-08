@@ -5,6 +5,7 @@ import {FormControl, FormGroup} from "@angular/forms";
 import {HelperService} from "../../services/helper.service";
 import {HttpService} from "../../services/http.service";
 import {LoaderService} from "../../services/loader.service";
+import {TableSettingsModalComponent} from "../modals/table-settings-modal/table-settings-modal.component";
 
 @Component({
   selector: 'app-table',
@@ -20,12 +21,7 @@ export class TableComponent implements OnInit, OnDestroy {
   filterValue: string = ""; // Value on what table should filter
   STORAGE_ID_INDEX = 5;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
-  settingsForm = new FormGroup({
-    generatorEnabled: new FormControl(''),
-    regexFilter: new FormControl(''), // Report filter
-    transformationEnabled: new FormControl(false),
-    transformation: new FormControl('')
-  })
+  @ViewChild(TableSettingsModalComponent) tableSettingsModal!: TableSettingsModalComponent;
 
   @Input() // Needed to make a distinction between the two halves in compare component
   get id() {
@@ -39,7 +35,6 @@ export class TableComponent implements OnInit, OnDestroy {
   private _id: string = "";
 
   constructor(
-    private modalService: NgbModal,
     private httpService: HttpService,
     public helperService: HelperService,
     private loaderService: LoaderService) {
@@ -49,8 +44,8 @@ export class TableComponent implements OnInit, OnDestroy {
    * Open a modal
    * @param content - the specific modal to be opened
    */
-  openModal(content: any): void {
-    this.modalService.open(content);
+  openModal(): void {
+    this.tableSettingsModal.open();
   }
 
   /**
@@ -109,7 +104,14 @@ export class TableComponent implements OnInit, OnDestroy {
   /**
    * Open all reports
    */
-  openReports(amount: number): void {
+  openAllReports(): void {
+    // The index 5 is the storageId
+    for (const row of this.metadata.values) {
+      this.openReport(row[this.STORAGE_ID_INDEX]);
+    }
+  }
+
+  openReports(amount: number) {
     if (amount === -1) {
       amount = this.metadata.values.length;
     }
@@ -130,7 +132,7 @@ export class TableComponent implements OnInit, OnDestroy {
     const queryString = selectedReports
       .reduce((totalQuery: string, selectedReport: string[]) => totalQuery + "id=" + selectedReport[this.STORAGE_ID_INDEX] + "&", "?")
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
-    this.toastComponent.addAlert({type: 'success', message: 'Reports downloaded!'})
+    this.httpService.handleSuccess('Reports downloaded!')
   }
 
   /**
@@ -142,24 +144,9 @@ export class TableComponent implements OnInit, OnDestroy {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      this.httpService.uploadReport(formData).subscribe(response => {
-        this.toastComponent.addAlert({type: 'success', message: 'Report uploaded!'})
+      this.httpService.uploadReport(formData).subscribe(() => {
         this.loadData();
       })
-    }
-  }
-
-  /**
-   * Save the settings of the table
-   */
-  saveSettings(): void {
-    const form = this.settingsForm.value;
-    let map: any = {generatorEnabled: form.generatorEnabled, regexFilter: form.regexFilter}
-    this.httpService.postSettings(map);
-
-    if (form.transformationEnabled) {
-      let transformation = {transformation: form.transformation}
-      this.httpService.postTransformation(transformation);
     }
   }
 
@@ -169,10 +156,6 @@ export class TableComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (!this.loaderService.isTableLoaded()) {
       this.loadData()
-      this.httpService.getTransformation().subscribe(response => {
-        // Also load in the default transformation
-        this.settingsForm.get('transformation')?.setValue(response.transformation)
-      })
     } else {
       this.metadata = this.loaderService.getTableData();
       this.showFilter = this.loaderService.getShowFilter();

@@ -1,0 +1,64 @@
+<!-- Setting modal -->
+<ng-template #modal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="settingsModal">Options</h5>
+    <button type="button" class="close" (click)="modal.dismiss()">
+      <span>&times;</span>
+    </button>
+  </div>
+
+  <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()" >
+    <div class="modal-body container">
+      <div class="form-group">
+        <label>Report generator</label>
+        <select class="form-control custom-select mr-sm-2" formControlName="generatorEnabled">
+          <option>Enabled</option>
+          <option>Disabled</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Report filter (regex)</label>
+        <input type="text" class="form-control" formControlName="regexFilter">
+      </div>
+      <div class="form-group">
+        <label for="openLatestReports">Open latest reports</label>
+        <div class="input-group">
+          <input #inputnumber type="number" value="10" class="form-control" placeholder="10" id="openLatestReports"/>
+          <div class="input-group-append">
+            <button class="btn btn-info" type="button" (click)="openReports(+inputnumber.value); modal.dismiss()">Open</button>
+          </div>
+        </div>
+        <div class="form-check-inline ml-1 mt-2">
+          <input class="form-check-input" type="checkbox" id="openReportCheckbox">
+          <label class="form-check-label" for="openReportCheckbox">
+            Exclude reports with empty report.xml
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="openInProgressNo">Open report in progress number</label>
+        <div class="input-group">
+          <input type="number" class="form-control" placeholder="1" id="openInProgressNo"/>
+          <div class="input-group-append">
+            <button class="btn btn-info" type="button">Open</button>
+          </div>
+        </div>
+      </div>
+      <div class="dropdown-divider"></div>
+      <div class="form-group form-check-inline">
+        <input class="form-check-input" type="checkbox" formControlName="transformationEnabled">
+        <label class="form-check-label transform-label">
+          Report.xml Transformations
+        </label>
+      </div>
+      <div class="form-group">
+        <label>Transformation</label>
+        <textarea class="form-control" rows="10" formControlName="transformation">Hi there</textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-info" (click)="modal.dismiss()"><i class="fa fa-undo"></i></button>
+      <button type="submit" class="btn btn-info" (click)="modal.dismiss()"><i class="fa fa-save"></i></button>
+    </div>
+  </form>
+</ng-template>

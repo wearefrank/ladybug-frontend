@@ -3,6 +3,8 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ToastComponent} from "../shared/components/toast/toast.component";
 import {HttpService} from "../shared/services/http.service";
 import {LoaderService} from "../shared/services/loader.service";
+import {CloneModalComponent} from "../shared/components/modals/clone-modal/clone-modal.component";
+import {TestSettingsModalComponent} from "../shared/components/modals/test-settings-modal/test-settings-modal.component";
 
 @Component({
   selector: 'app-test',
@@ -19,11 +21,17 @@ export class TestComponent implements OnInit{
   @Output() openTestReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
+  @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
+  @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
 
-  constructor(private modalService: NgbModal, private httpService: HttpService, private loaderService: LoaderService) {}
+  constructor(private httpService: HttpService, private loaderService: LoaderService) {}
 
-  open(content: any) {
-    this.modalService.open(content);
+  openCloneModal() {
+    this.cloneModal.open();
+  }
+
+  openSettingsModal() {
+    this.testSettingsModal.open()
   }
 
   ngOnInit(): void {
@@ -99,7 +107,6 @@ export class TestComponent implements OnInit{
    */
   queryResults(): void {
     this.httpService.queryResults().subscribe(response => {
-      this.toastComponent.addAlert({type: 'success', message: 'Test run(s) completed!'})
 
       // Retrieve each report in the result runner
       for (let reportIndex in response.results) {
@@ -195,7 +202,6 @@ export class TestComponent implements OnInit{
       const formData = new FormData();
       formData.append("file", file);
       this.httpService.uploadReport(formData).subscribe(() => {
-        this.toastComponent.addAlert({type: 'success', message: 'Report uploaded!'})
         this.loadData()
       })
     }

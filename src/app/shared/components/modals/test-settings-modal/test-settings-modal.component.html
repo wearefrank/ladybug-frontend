@@ -1,0 +1,27 @@
+<ng-template #modal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="settingsModal">Options</h5>
+    <button type="button" class="close" (click)="modal.dismiss()">
+      <span>&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form style="text-align: center">
+      <div class="form-group form-check-inline">
+        <input class="form-check-input" type="checkbox">
+        <label class="form-check-label transform-label">
+          Show report storage IDs
+        </label>
+      </div>
+      <div class="form-group form-check-inline">
+        <input class="form-check-input" type="checkbox">
+        <label class="form-check-label transform-label">
+          Show checkpoint IDs
+        </label>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <app-button [text]="'Restore to defaults'"></app-button>
+  </div>
+</ng-template>

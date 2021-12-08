@@ -5,9 +5,8 @@ import {MonacoEditorComponent} from "../monaco-editor/monaco-editor.component";
 import DiffMatchPatch from 'diff-match-patch';
 // @ts-ignore
 import beautify from "xml-beautifier";
-import {ToastComponent} from "../toast/toast.component";
 import {HttpService} from "../../services/http.service";
-import {HelperService} from "../../services/helper.service"; // TODO: Check if there is a nicer way to do this
+import {DisplayTableComponent} from "../display-table/display-table.component"; // TODO: Check if there is a nicer way to do this
 
 @Component({
   selector: 'app-display',
@@ -21,23 +20,16 @@ export class DisplayComponent {
   @Input() report: any = {};
   @Output() closeReportEvent = new EventEmitter<any>();
   @ViewChild(MonacoEditorComponent) monacoEditorComponent!: MonacoEditorComponent;
-  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
+  @ViewChild(DisplayTableComponent) displayTableComponent!: DisplayTableComponent;
   @ViewChild('name') name!: ElementRef;
   @ViewChild('description') description!: ElementRef;
   @ViewChild('path') path!: ElementRef;
   @ViewChild('transformation') transformation!: ElementRef;
-  monacoBefore: string = '';
-  difference: { code: [], name: string, description: string, path: string, transformation: string } = {
-    code: [],
-    name: '',
-    description: '',
-    path: '',
-    transformation: ''
-  };
   stubStrategies: string[] = ["Follow report strategy", "No", "Yes"];
-  type: string = '';
+  saveOrDiscardType: string = '';
+  modalThing: any[] = []
 
-  constructor(private modalService: NgbModal, private httpService: HttpService, private helperService: HelperService) {
+  constructor(private modalService: NgbModal, private httpService: HttpService) {
   }
 
   /**
@@ -46,24 +38,32 @@ export class DisplayComponent {
    * @param type
    */
   openModal(content: any, type: string): void {
-    this.type = type;
+    this.saveOrDiscardType = type;
     const dmp = new DiffMatchPatch();
 
+    let ladybug = this.report.ladybug;
     // If it is not the root, find the difference in the code
     if (!this.report.root) {
-      this.monacoBefore = this.report.ladybug.message;
       let monacoAfter = this.monacoEditorComponent?.getValue();
-      this.difference.code = dmp.diff_main(this.monacoBefore, monacoAfter?? '');
+      let code = dmp.diff_main(ladybug.message, monacoAfter?? '');
+      this.modalThing.push({name: "Configuration", ladybug: ladybug.message, difference: code})
     } else {
       // If it is the root, find the difference in meta-data
-      let ladybug = this.report.ladybug
-      this.difference.name = dmp.diff_main(ladybug.name?? '', this.name.nativeElement.value?? '')
-      this.difference.description = dmp.diff_main(ladybug.description?? '', this.description.nativeElement.value?? '')
-      this.difference.path = dmp.diff_main(ladybug.path?? '', this.path.nativeElement.value?? '')
-      this.difference.transformation = dmp.diff_main(ladybug.transformation?? '', this.transformation.nativeElement.value?? '')
+      let name = dmp.diff_main(ladybug.name?? '', this.name.nativeElement.value?? '');
+      this.modalThing.push({name: "Name", ladybug: ladybug.name, difference: name})
+
+      let description = dmp.diff_main(ladybug.description?? '', this.description.nativeElement.value?? '')
+      this.modalThing.push({name: "Description", ladybug: ladybug.description, difference: description})
+
+      let path = dmp.diff_main(ladybug.path?? '', this.path.nativeElement.value?? '')
+      this.modalThing.push({name: "Path", ladybug: ladybug.path, difference: path})
+
+      let transformation = dmp.diff_main(ladybug.transformation?? '', this.transformation.nativeElement.value?? '')
+      this.modalThing.push({name: "Transformation", ladybug: ladybug.transformation, difference: transformation})
     }
+
     content.type = type;
-    this.modalService.open(content);
+    this.modalService.open(content, {backdrop: 'static', keyboard: false});
   }
 
   /**
@@ -84,6 +84,7 @@ export class DisplayComponent {
       this.monacoEditorComponent?.loadMonaco(beautify(this.report.ladybug.message));
     }
     this.displayReport = true;
+    this.disableEditing();
   }
 
   /**
@@ -133,7 +134,6 @@ export class DisplayComponent {
     };
 
     this.httpService.postReport(this.report.ladybug.storageId, newReport).subscribe(report => {
-      this.toastComponent.addAlert({type: 'success', message: 'Report updated!'})
       console.log(report) // The update report
     })
     this.showReport(this.report)
@@ -146,9 +146,7 @@ export class DisplayComponent {
     let storageId: number = +this.report.ladybug.uid.split("#")[0];
     let data: any = {}
     data['debugStorage'] = [storageId]
-    this.httpService.copyReport(data).subscribe(() => {
-      this.toastComponent.addAlert({type: 'success', message: 'Report copied!'})
-    });
+    this.httpService.copyReport(data)
   }
 
   /**
@@ -159,7 +157,7 @@ export class DisplayComponent {
   downloadReport(exportMessages: boolean, exportReports: boolean): void {
     let queryString = "?id=" + this.report.ladybug.uid.split('#')[0];
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString);
-    this.toastComponent.addAlert({type: 'success', message: 'Report Downloaded!'})
+    this.httpService.handleSuccess('Report Downloaded!')
   }
 
   /**
@@ -169,5 +167,18 @@ export class DisplayComponent {
     if (!this.report.root) {
       this.monacoEditorComponent.toggleEdit();
     }
+  }
+
+  dismissModal() {
+    this.modalService.dismissAll();
+    this.disableEditing();
+  }
+
+  disableEditing() {
+    if (this.editing && !this.editingRoot) {
+      this.monacoEditorComponent.toggleEdit();
+    }
+    this.editing = false;
+    this.editingRoot = false;
   }
 }

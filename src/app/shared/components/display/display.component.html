@@ -1,5 +1,4 @@
 <div *ngIf="displayReport">
-
   <div class="row" id="displayButtons">
     <app-button [icon]="'fa fa-repeat'" [title]="'Rerun'"></app-button>
     <app-button [icon]="'fa fa-edit'" [title]="'Edit'" *ngIf="!editing"
@@ -36,67 +35,9 @@
   </div>
 
   <div *ngIf="!editingRoot" class="pt-4">
-    <table class="table col-md-4 border">
-      <tr>
-        <td>Name</td>
-        <td>{{report.ladybug.name}}</td>
-      </tr>
-      <tr *ngIf="report.root">
-        <td>Description</td>
-        <td>{{report.ladybug.description}}</td>
-      </tr>
-      <tr *ngIf="!report.root">
-        <td>Thread name</td>
-        <td>{{ report.ladybug.threadName}}</td>
-      </tr>
-      <tr *ngIf="!report.root">
-        <td>Source class name</td>
-        <td>{{ report.ladybug.sourceClassName}}</td>
-      </tr>
-      <tr *ngIf="!report.root">
-        <td>Message class name</td>
-        <td>{{ report.ladybug.messageClassName}}</td>
-      </tr>
-      <tr>
-        <td>Path</td>
-        <td>{{ report.ladybug.path}}</td>
-      </tr>
-      <tr *ngIf="!report.root">
-        <td>CheckpointUID</td>
-        <td>{{ report.ladybug.uid}}</td>
-      </tr>
-      <tr *ngIf="!report.root">
-        <td>Encoding</td>
-        <td>{{ report.ladybug.encoding}}</td>
-      </tr>
-      <tr *ngIf="!report.root && report.ladybug.message">
-        <td>Number of characters</td>
-        <td>{{ report.ladybug.message.length}}</td>
-      </tr>
-      <tr *ngIf="report.root">
-        <td>Transformation</td>
-        <td>{{ report.ladybug.transformation}}</td>
-      </tr>
-      <tr *ngIf="report.root">
-        <td>StorageId</td>
-        <td>{{ report.ladybug.storageId}}</td>
-      </tr>
-      <tr *ngIf="report.root">
-        <td>Storage</td>
-        <td>{{ report.ladybug.storage}}</td>
-      </tr>
-      <tr>
-        <td>Estimated memory usage</td>
-        <td>{{ report.ladybug.estimatedMemoryUsage}}</td>
-      </tr>
-      <tr *ngIf="report.root">
-        <td>CorrelationId</td>
-        <td>{{ report.ladybug.correlationId}}</td>
-      </tr>
-    </table>
+    <app-display-table [report]="report"></app-display-table>
   </div>
 
-<!-- Display report edit -->
   <div *ngIf="editingRoot">
     <div class="form-group">
       <label>Name</label>
@@ -118,7 +59,6 @@
     </div>
     <div class="form-group">
       <label>Variables</label>
-<!--      <textarea #variables class="form-control"></textarea>-->
       <div class="form-group"
            style="height: 100px; width: 600px; border: 1px solid #ced4da; border-radius: .25rem;"></div>
     </div>
@@ -126,112 +66,26 @@
 
   <ng-template #saveOrDiscardChanges let-modal>
     <div class="modal-header">
-      <h3 class="modal-title">Are you sure you want to {{ type }} changes?</h3>
-      <button type="button" class="close" (click)="modal.dismiss()">
+      <h3 class="modal-title">Are you sure you want to {{ saveOrDiscardType }} changes?</h3>
+      <button type="button" class="close" (click)="dismissModal()">
         <span>&times;</span>
       </button>
     </div>
-    <div *ngIf="!report.root" class="modal-content">
-      <div class="row">
-        <div class="col">
-          <div class="text-center pt-2">Before</div>
-          <div class="dropdown-divider"></div>
-          <div class="text-left pb-2 overflow-auto">{{monacoBefore}}</div>
-        </div>
-        <div class="col text-right">
-          <div class="text-center pt-2">After</div>
-          <div class="dropdown-divider"></div>
-          <div class="text-left pb-2 overflow-auto">
-            <span *ngFor="let chunk of difference.code">
-              <span *ngIf="+chunk[0] === -1" style="background: #ff7f7f">{{chunk[1]}}</span>
-              <span *ngIf="+chunk[0] === 0">{{chunk[1]}}</span>
-              <span *ngIf="+chunk[0] === 1" style="background: #7cfc00">{{chunk[1]}}</span>
-            </span>
-           </div>
-        </div>
-      </div>
-    </div>
-    <div *ngIf="report.root" class="modal-content">
-      <div>
-        <div class="text-center">Name</div>
+    <div class="modal-content">
+      <div *ngFor="let part of modalThing">
+        <div class="text-center">{{ part.name}}</div>
         <div class="dropdown-divider"></div>
         <div class="row">
           <div class="col">
             <div class="text-center pt-2">Before</div>
             <div class="dropdown-divider"></div>
-            <div class="text-center pb-2 overflow-auto">{{ this.report.ladybug.name }}</div>
+            <div class="text-center pb-2 overflow-auto">{{ part.ladybug }}</div>
           </div>
           <div class="col text-right">
             <div class="text-center pt-2">After</div>
             <div class="dropdown-divider"></div>
             <div class="text-center pb-2 overflow-auto">
-              <span *ngFor="let chunk of difference.name">
-                <span *ngIf="+chunk[0] === -1" style="background: #ff7f7f">{{chunk[1]}}</span>
-                <span *ngIf="+chunk[0] === 0">{{chunk[1]}}</span>
-                <span *ngIf="+chunk[0] === 1" style="background: #7cfc00">{{chunk[1]}}</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="text-center">Description</div>
-        <div class="dropdown-divider"></div>
-        <div class="row">
-          <div class="col">
-            <div class="text-center pt-2">Before</div>
-            <div class="dropdown-divider"></div>
-            <div class="text-center pb-2 overflow-auto">{{ this.report.ladybug.description }}</div>
-          </div>
-          <div class="col text-right">
-            <div class="text-center pt-2">After</div>
-            <div class="dropdown-divider"></div>
-            <div class="text-center pb-2 overflow-auto">
-              <span *ngFor="let chunk of difference.description">
-                <span *ngIf="+chunk[0] === -1" style="background: #ff7f7f">{{chunk[1]}}</span>
-                <span *ngIf="+chunk[0] === 0">{{chunk[1]}}</span>
-                <span *ngIf="+chunk[0] === 1" style="background: #7cfc00">{{chunk[1]}}</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="text-center">Path</div>
-        <div class="dropdown-divider"></div>
-        <div class="row">
-          <div class="col">
-            <div class="text-center pt-2">Before</div>
-            <div class="dropdown-divider"></div>
-            <div class="text-center pb-2 overflow-auto">{{ this.report.ladybug.path }}</div>
-          </div>
-          <div class="col text-right">
-            <div class="text-center pt-2">After</div>
-            <div class="dropdown-divider"></div>
-            <div class="text-center pb-2 overflow-auto">
-              <span *ngFor="let chunk of difference.path">
-                <span *ngIf="+chunk[0] === -1" style="background: #ff7f7f">{{chunk[1]}}</span>
-                <span *ngIf="+chunk[0] === 0">{{chunk[1]}}</span>
-                <span *ngIf="+chunk[0] === 1" style="background: #7cfc00">{{chunk[1]}}</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="text-center">Transformation</div>
-        <div class="dropdown-divider"></div>
-        <div class="row">
-          <div class="col">
-            <div class="text-center pt-2">Before</div>
-            <div class="dropdown-divider"></div>
-            <div class="text-center pb-2 overflow-auto">{{ this.report.ladybug.transformation }}</div>
-          </div>
-          <div class="col text-right">
-            <div class="text-center pt-2">After</div>
-            <div class="dropdown-divider"></div>
-            <div class="text-center pb-2 overflow-auto">
-              <span *ngFor="let chunk of difference.transformation">
+              <span *ngFor="let chunk of part.difference">
                 <span *ngIf="+chunk[0] === -1" style="background: #ff7f7f">{{chunk[1]}}</span>
                 <span *ngIf="+chunk[0] === 0">{{chunk[1]}}</span>
                 <span *ngIf="+chunk[0] === 1" style="background: #7cfc00">{{chunk[1]}}</span>
@@ -243,11 +97,9 @@
     </div>
     <div class="modal-footer">
       <div class="col-md-12 text-center">
-        <button type="button" class="btn btn-info mr-2" (click)="saveOrDiscard(type)">Yes</button>
-        <button type="button" class="btn btn-info ml-2" (click)="modal.dismiss()">No</button>
+        <button type="button" class="btn btn-info mr-2" (click)="saveOrDiscard(saveOrDiscardType)">Yes</button>
+        <button type="button" class="btn btn-info ml-2" (click)="dismissModal()">No</button>
       </div>
     </div>
   </ng-template>
-
-  <app-toast></app-toast>
 </div>

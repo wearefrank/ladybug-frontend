@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ToastComponent} from "../components/toast/toast.component";
-import {catchError, Observable, of} from "rxjs";
+import {catchError, finalize, Observable, of, tap} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +25,10 @@ export class HttpService {
     }
   }
 
+  handleSuccess(message: string) {
+    this.toastComponent.addAlert({type: 'success', message: message})
+  }
+
   getReports(limit: number): Observable<any> {
     return this.http.get('api/metadata/debugStorage/', {params: {"limit": limit}})
   }
@@ -35,6 +39,7 @@ export class HttpService {
 
   getReport(reportId: string): Observable<any> {
     return this.http.get<any>('api/report/debugStorage/' + reportId)
+      .pipe(tap(() => this.handleSuccess('Report opened!')))
       .pipe(catchError(this.handleError('Could not retrieve data for report!')))
   }
 
@@ -45,16 +50,19 @@ export class HttpService {
 
   postReport(reportId: string, report: any): Observable<any> {
     return this.http.post('api/report/debugStorage/' + reportId, report)
+      .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError('Could not retrieve data for report!')))
   }
 
   copyReport(data: any): Observable<void> {
     return this.http.put("api/report/store/testStorages", data)
+      .pipe(tap(() => this.handleSuccess('Report copied!')))
       .pipe(catchError(this.handleError('Could not copy report into test tab!')))
   }
 
-  uploadReport(formData: FormData): Observable<any> {
+  uploadReport(formData: FormData): Observable<void> {
     return this.http.post('api/report/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+      .pipe(tap(() => this.handleSuccess('Report uploaded!')))
       .pipe(catchError(this.handleError('Could not copy report into test tab!')))
   }
 
@@ -85,6 +93,7 @@ export class HttpService {
 
   queryResults(): Observable<any> {
     return this.http.get('api/runner/result/debugStorage', {headers: this.headers})
+      .pipe(tap(() => this.handleSuccess('Test run(s) completed!')))
       .pipe(catchError(this.handleError('Could not retrieve runner results!')))
   }
 

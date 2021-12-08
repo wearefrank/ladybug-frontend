@@ -4,7 +4,7 @@
       <app-button [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="loadData()"></app-button>
       <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runAll()"></app-button>
       <app-button [icon]="'fa fa-repeat'" [title]="'Reset'" (click)="resetRunner()"></app-button>
-      <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="open(settings)"></app-button>
+      <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="openSettingsModal()"></app-button>
       <app-button [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
       <app-button [title]="'Deselect All'" [text]="'Deselect All'" (click)="uncheckAll()"></app-button>
       <app-button [icon]="'fa fa-trash'" [title]="'Delete Selected'" (click)="deleteSelected()"></app-button>
@@ -46,7 +46,7 @@
             <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="selectReport(report[STORAGE_ID_INDEX], report[NAME_INDEX])"></app-button>
           </td>
           <td>
-            <app-button [icon]="'fa fa-clone'" [title]="'Clone report'" (click)="open(clone)"></app-button>
+            <app-button [icon]="'fa fa-clone'" [title]="'Clone report'" (click)="openCloneModal()"></app-button>
           </td>
           <td *ngIf="reranReportsIndex.includes(report[STORAGE_ID_INDEX])">
             <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report[STORAGE_ID_INDEX])"></app-button>
@@ -70,56 +70,9 @@
   <app-toast></app-toast>
 </div>
 
-<ng-template #settings let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title" id="settingsModal">Options</h5>
-    <button type="button" class="close" (click)="modal.dismiss()">
-      <span>&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <form style="text-align: center">
-      <div class="form-group form-check-inline">
-        <input class="form-check-input" type="checkbox" value="" id="reportTransformationCheck"
-               ng-model="showOptions.ids">
-        <label class="form-check-label transform-label" for="reportTransformationCheck">
-          Show report storage IDs
-        </label>
-      </div>
-      <div class="form-group form-check-inline">
-        <input class="form-check-input" type="checkbox" value="" id="showCheckpointIds"
-               ng-model="showOptions.checkpoints">
-        <label class="form-check-label transform-label" for="showCheckpointIds">
-          Show checkpoint IDs
-        </label>
-      </div>
-    </form>
-  </div>
-  <div class="modal-footer">
-    <app-button [text]="'Restore to defaults'"></app-button>
-  </div>
-</ng-template>
 
-<ng-template #clone let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title" id="cloneModal">Clone Report</h5>
-    <button type="button" class="close" (click)="modal.dismiss()">
-      <span>&times;</span>
-    </button>
-  </div>
-  <div class="modal-body container">
-    <form>
-      <div class="form-group">
-        <label for="variableCsvInput">Variable CSV</label>
-        <textarea class="form-control" id="variableCsvInput" rows="5"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="reportInputMessage">Variable CSV</label>
-        <textarea class="form-control" id="reportInputMessage" rows="5"></textarea>
-      </div>
-    </form>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-info" ng-click="cloneReport()">Generate</button>
-  </div>
-</ng-template>
+<!-- Settings modal -->
+<app-test-settings-modal></app-test-settings-modal>
+
+<!-- Clone modal -->
+<app-clone-modal></app-clone-modal>

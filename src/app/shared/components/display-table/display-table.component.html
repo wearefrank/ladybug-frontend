@@ -1,0 +1,58 @@
+<table class="table col-md-4 border">
+  <tr>
+    <td>Name</td>
+    <td>{{_report.ladybug.name}}</td>
+  </tr>
+  <tr *ngIf="_report.root">
+    <td>Description</td>
+    <td>{{_report.ladybug.description}}</td>
+  </tr>
+  <tr *ngIf="!_report.root">
+    <td>Thread name</td>
+    <td>{{ _report.ladybug.threadName}}</td>
+  </tr>
+  <tr *ngIf="!_report.root">
+    <td>Source class name</td>
+    <td>{{ _report.ladybug.sourceClassName}}</td>
+  </tr>
+  <tr *ngIf="!_report.root">
+    <td>Message class name</td>
+    <td>{{ _report.ladybug.messageClassName}}</td>
+  </tr>
+  <tr>
+    <td>Path</td>
+    <td>{{ _report.ladybug.path}}</td>
+  </tr>
+  <tr *ngIf="!_report.root">
+    <td>CheckpointUID</td>
+    <td>{{ _report.ladybug.uid}}</td>
+  </tr>
+  <tr *ngIf="!_report.root">
+    <td>Encoding</td>
+    <td>{{ _report.ladybug.encoding}}</td>
+  </tr>
+  <tr *ngIf="!_report.root && _report.ladybug.message">
+    <td>Number of characters</td>
+    <td>{{ _report.ladybug.message.length}}</td>
+  </tr>
+  <tr *ngIf="_report.root">
+    <td>Transformation</td>
+    <td>{{ _report.ladybug.transformation}}</td>
+  </tr>
+  <tr *ngIf="_report.root">
+    <td>StorageId</td>
+    <td>{{ _report.ladybug.storageId}}</td>
+  </tr>
+  <tr *ngIf="_report.root">
+    <td>Storage</td>
+    <td>{{ _report.ladybug.storage}}</td>
+  </tr>
+  <tr>
+    <td>Estimated memory usage</td>
+    <td>{{ _report.ladybug.estimatedMemoryUsage}}</td>
+  </tr>
+  <tr *ngIf="_report.root">
+    <td>CorrelationId</td>
+    <td>{{ _report.ladybug.correlationId}}</td>
+  </tr>
+</table>
