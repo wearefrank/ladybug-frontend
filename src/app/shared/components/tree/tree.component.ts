@@ -177,8 +177,6 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
       this.updateTreeView();
       const selectedNode = this.loaderService.getSelectedNode()
       if (selectedNode != -1) {
-        console.log("Doing this")
-        console.log(selectedNode)
         $('#' + this.treeId).treeview('toggleNodeSelected', [ selectedNode, { silent: false } ]);
       }
     }

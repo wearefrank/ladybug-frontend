@@ -17,7 +17,8 @@
         <button ngbDropdownItem (click)="downloadReport(true, false)">Messages</button>
       </div>
     </div>
-    <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
+
+    <app-button *ngIf="report.root" [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
     <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport()"></app-button>
   </div>
 

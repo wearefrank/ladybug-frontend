@@ -38,11 +38,11 @@ export class TableSettingsModalComponent implements OnInit {
   saveSettings(): void {
     const form = this.settingsForm.value;
     let map: any = {generatorEnabled: form.generatorEnabled, regexFilter: form.regexFilter}
-    this.httpService.postSettings(map);
+    this.httpService.postSettings(map).subscribe();
 
     if (form.transformationEnabled) {
       let transformation = {transformation: form.transformation}
-      this.httpService.postTransformation(transformation);
+      this.httpService.postTransformation(transformation).subscribe();
     }
   }
 

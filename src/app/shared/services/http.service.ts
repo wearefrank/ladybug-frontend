@@ -55,7 +55,7 @@ export class HttpService {
   }
 
   copyReport(data: any): Observable<void> {
-    return this.http.put("api/report/store/testStorages", data)
+    return this.http.put("api/report/store/testStorage", data)
       .pipe(tap(() => this.handleSuccess('Report copied!')))
       .pipe(catchError(this.handleError('Could not copy report into test tab!')))
   }
@@ -99,6 +99,7 @@ export class HttpService {
 
   deleteReport(reportId: string): Observable<void> {
     return this.http.delete('api/report/testStorage/' + reportId)
+      .pipe(tap(() => this.handleSuccess('Report deleted!')))
       .pipe(catchError(this.handleError('Could not delete report!')))
   }
 

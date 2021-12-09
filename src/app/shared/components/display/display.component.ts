@@ -143,10 +143,10 @@ export class DisplayComponent {
    * Copy a report to the test tab.
    */
   copyReport(): void {
-    let storageId: number = +this.report.ladybug.uid.split("#")[0];
+    let storageId: number = +this.report.ladybug.storageId;
     let data: any = {}
     data['debugStorage'] = [storageId]
-    this.httpService.copyReport(data)
+    this.httpService.copyReport(data).subscribe()
   }
 
   /**
