@@ -1,7 +1,5 @@
-let URL = "http://localhost:4200"
-
 beforeEach(() => {
-  cy.visit(URL)
+  cy.visit('')
 })
 
 describe('Changing the table size', function () {

@@ -7,7 +7,8 @@
 
 describe('Ladybug simple protractor test', function() {
   it('Confirm title of ladybug app', function() {
-    cy.visit('http://localhost:4200');
-    cy.title().should('eq', 'Ladybug');
+    cy.visit('');
+    // Please update the version here when you update the version in package.json
+    cy.title().should('eq', 'Ladybug - v0.0.12');
   });
 });
