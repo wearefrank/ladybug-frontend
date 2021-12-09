@@ -13,25 +13,18 @@ import {TableSettingsModalComponent} from "../modals/table-settings-modal/table-
   styleUrls: ['./table.component.css']
 })
 export class TableComponent implements OnInit, OnDestroy {
-  @Output() emitEvent = new EventEmitter<any>();
   showFilter: boolean = false;
-  metadata: any = {}; // The data that is displayed
-  isLoaded: boolean = false; // Wait for the page to be loaded
-  displayAmount: number = 400; // The amount of data that is displayed
-  filterValue: string = ""; // Value on what table should filter
+  reportMetadata: any = {};
+  isPageLoaded: boolean = false;
+  displayAmount: number = 10;
+  filterValue: string = "";
   STORAGE_ID_INDEX = 5;
+  @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent) tableSettingsModal!: TableSettingsModalComponent;
-
   @Input() // Needed to make a distinction between the two halves in compare component
-  get id() {
-    return this._id
-  }
-
-  set id(id: string) {
-    this._id = id
-  }
-
+  get id() { return this._id }
+  set id(id: string) { this._id = id }
   private _id: string = "";
 
   constructor(
@@ -40,146 +33,91 @@ export class TableComponent implements OnInit, OnDestroy {
     private loaderService: LoaderService) {
   }
 
-  /**
-   * Open a modal
-   * @param content - the specific modal to be opened
-   */
+  ngOnInit(): void {
+    if (!this.loaderService.isTableLoaded()) {
+      this.loadData()
+    } else {
+      this.reportMetadata = this.loaderService.getTableData();
+      this.showFilter = this.loaderService.getShowFilter();
+      this.isPageLoaded = true;
+    }
+  }
+
+  loadData(): void {
+    this.httpService.getReports(this.displayAmount)
+      .subscribe({
+        next: value => {
+          this.reportMetadata = value
+          this.isPageLoaded = true
+          this.toastComponent.addAlert({type: 'success', message: 'Data loaded!'})
+        }, error: () => {
+          this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for table'})
+        }
+      })
+  }
+
   openModal(): void {
     this.tableSettingsModal.open();
   }
 
-  /**
-   * Transform milliseconds to an actual date and time
-   * @param seconds - milliseconds since 1-1-1970
-   */
   getDate(seconds: string): Date {
     return new Date(parseInt(seconds))
   }
 
-  /**
-   * Change the value on what the table should filter
-   * @param event - the keyword
-   */
-  changeFilter(event: any): void {
-    this.filterValue = event.target.value;
-  }
-
-  /**
-   * Change the limit of items shown in table
-   * @param event - the new table limit
-   */
-  changeTableLimit(event: any): void {
-    this.displayAmount = event.target.value;
-    this.ngOnInit()
-  }
-
-  /**
-   * Refresh the table
-   */
-  refresh(): void {
-    this.showFilter = false;
-    this.metadata = {};
-    this.isLoaded = false;
-    this.displayAmount = 10;
-    this.ngOnInit();
-  }
-
-  /**
-   * Toggle the filter option
-   */
   toggleFilter(): void {
     this.showFilter = !this.showFilter;
   }
 
-  /**
-   Request the data based on storageId and send this data along to the tree (via parent)
-   */
+  changeFilter(event: any): void {
+    this.filterValue = event.target.value;
+  }
+
+  changeTableLimit(event: any): void {
+    this.displayAmount = event.target.value;
+    this.loadData()
+  }
+
+  refresh(): void {
+    this.showFilter = false;
+    this.reportMetadata = {};
+    this.isPageLoaded = false;
+    this.displayAmount = 10;
+    this.loadData();
+  }
+
   openReport(storageId: string): void {
     this.httpService.getReport(storageId).subscribe(data => {
       data.id = this.id;
-      this.emitEvent.next(data)
+      this.openReportEvent.next(data)
     })
   }
 
-  /**
-   * Open all reports
-   */
   openAllReports(): void {
-    // The index 5 is the storageId
-    for (const row of this.metadata.values) {
-      this.openReport(row[this.STORAGE_ID_INDEX]);
-    }
+    this.reportMetadata.values.map((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]))
   }
 
   openReports(amount: number) {
-    if (amount === -1) {
-      amount = this.metadata.values.length;
-    }
-
-    // The index 5 is the storageId
-    for (const row of this.metadata.values.slice(0, amount)) {
-      this.openReport(row[this.STORAGE_ID_INDEX]);
-    }
+    this.reportMetadata.values.slice(0, amount).map((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]))
   }
 
-  /**
-   * Download reports
-   * @param exportMessages - boolean whether messages should be downloaded
-   * @param exportReports - boolean whether reports should be downloaded
-   */
   downloadReports(exportMessages: boolean, exportReports: boolean): void {
-    const selectedReports = this.metadata.values;
-    const queryString = selectedReports
+    const queryString = this.reportMetadata.values
       .reduce((totalQuery: string, selectedReport: string[]) => totalQuery + "id=" + selectedReport[this.STORAGE_ID_INDEX] + "&", "?")
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
-    this.httpService.handleSuccess('Reports downloaded!')
   }
 
-  /**
-   * Upload report
-   * @param event - click event of the report
-   */
   uploadReport(event: any): void {
     const file: File = event.target.files[0]
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
       this.httpService.uploadReport(formData).subscribe(() => {
-        this.loadData();
+        this.ngOnInit();
       })
     }
   }
 
-  /**
-   * Load in data for the table
-   */
-  ngOnInit(): void {
-    if (!this.loaderService.isTableLoaded()) {
-      this.loadData()
-    } else {
-      this.metadata = this.loaderService.getTableData();
-      this.showFilter = this.loaderService.getShowFilter();
-      this.isLoaded = true;
-    }
-  }
-
-  /**
-   * Load in data in table
-   */
-  loadData(): void {
-    this.httpService.getReports(this.displayAmount)
-      .subscribe({
-      next: value => {
-        this.toastComponent.addAlert({type: 'success', message: 'Data loaded!'})
-        this.metadata = value
-        this.isLoaded = true
-      }, error: () => {
-        this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for table'})
-      }
-    })
-  }
-
   ngOnDestroy() {
-    this.loaderService.saveTableSettings(this.metadata, this.showFilter)
+    this.loaderService.saveTableSettings(this.reportMetadata, this.showFilter)
   }
 }

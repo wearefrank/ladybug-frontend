@@ -1,10 +1,9 @@
-<!--    Report list panel-->
-<div class="row" *ngIf="isLoaded">
+<div class="row" *ngIf="isPageLoaded">
   <div class="row">
     <app-button [icon]="'fa fa-undo'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openModal()"></app-button>
     <app-button [icon]="'fa fa-upload'" [title]="'Upload'" (click)="uploadFile.click()">
-      <input #uploadFile (change)="uploadReport($event)" type="file" style="display: none">
+      <input #uploadFile (change)="uploadReport($event)" type="file" id="uploadFile">
     </app-button>
     <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
@@ -27,8 +26,9 @@
       </form>
     </div>
   </div>
-  <div class="table-responsive" style="height: 300px; resize: vertical; overflow: auto">
-    <table class="table table-hover" matSort (matSortChange)="helperService.sortData($event, metadata.values)">
+
+  <div class="table-responsive" id="metadataTable">
+    <table class="table table-hover" matSort (matSortChange)="helperService.sortData($event, reportMetadata.values)">
       <thead>
       <tr>
         <th mat-sort-header="5">Storage Id</th>
@@ -40,12 +40,9 @@
         <th mat-sort-header="7">Number Of Checkpoints</th>
         <th mat-sort-header="8">Estimated Memory Usage (Bytes)</th>
         <th mat-sort-header="1">Storage Size (Bytes)</th>
-<!--        <th *ngFor="let header of metadata.fields; let i = index" mat-sort-header="{{i}}">-->
-<!--          {{header}}-->
-<!--        </th>-->
       </tr>
       <tr id="filterRow" *ngIf="showFilter">
-        <th *ngFor="let header of metadata.fields">
+        <th *ngFor="let header of reportMetadata.fields">
           <div class="input-group">
             <input type="text" id="filter" class="form-control" placeholder="Filter" (keyup.enter)="changeFilter($event)">
           </div>
@@ -53,8 +50,7 @@
       </tr>
       </thead>
       <tbody>
-      <!--        5 is the index of the storageId-->
-      <tr *ngFor="let row of metadata.values.slice(0, displayAmount) | filter:filterValue" (click)="openReport(row[STORAGE_ID_INDEX])">
+      <tr *ngFor="let row of reportMetadata.values.slice(0, displayAmount) | filter:filterValue" (click)="openReport(row[STORAGE_ID_INDEX])">
 <!--        // StorageId EndTime Duration Name CorrelationId NrChpts EstMemusage StorageSize-->
         <td>{{ row[5] }}</td>
         <td> {{ getDate(row[4]) | date:'dd/MM/yyyy - HH:mm:ss.SSS'}}</td>
@@ -65,7 +61,6 @@
         <td>{{ row[7] }}</td>
         <td>{{ row[8] }}</td>
         <td>{{ row[1] }}</td>
-        <!--        <td *ngFor="let value of row"><span *ngIf="">{{value}}</span></td>-->
       </tr>
       </tbody>
     </table>
@@ -73,5 +68,4 @@
 </div>
 
 <app-table-settings-modal (openReportsEvent)="openReports($event)"></app-table-settings-modal>
-
 <app-toast></app-toast>
