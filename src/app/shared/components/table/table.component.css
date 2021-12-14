@@ -1,3 +1,13 @@
 .resizable-vertical {
   height: 300px !important;
 }
+
+#metadataTable {
+  height: 300px;
+  resize: vertical;
+  overflow: auto
+}
+
+#uploadFile {
+  display: none
+}

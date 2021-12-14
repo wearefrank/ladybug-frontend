@@ -15,7 +15,7 @@
     <app-table
       [hidden]="leftReport.selected"
       [id]="leftReport.id"
-      (emitEvent)="addReportNodeLeft($event)"></app-table>
+      (openReportEvent)="addReportNodeLeft($event)"></app-table>
     <app-display
       #leftDisplay
       [hidden]="!leftReport.selected"
@@ -25,7 +25,7 @@
     <app-table
       [hidden]="rightReport.selected"
       [id]="rightReport.id"
-      (emitEvent)="addReportNodeRight($event)"></app-table>
+      (openReportEvent)="addReportNodeRight($event)"></app-table>
     <app-display
       #rightDisplay
       [hidden]="!rightReport.selected"

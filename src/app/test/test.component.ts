@@ -41,10 +41,27 @@ export class TestComponent implements OnInit{
       this.reports = this.loaderService.getTestReports();
       this.reranReports = this.loaderService.getReranReports();
       this.reranReportsIndex = this.loaderService.getReranReportsIndex();
+      this.addCopiedReports();
     }
   }
 
+  addCopiedReports() {
+    this.httpService.getTestReports().subscribe({
+      next: response => {
+        const amountAdded = response.values.length - this.reports.length
+        if (amountAdded > 0) {
+          for (let i = this.reports.length; i <= response.values.length - 1; i++) {
+            this.reports.push(response.values[i])
+          }
+        }
+      }, error: () => {
+        this.httpService.handleError('Could not retrieve data for test!')
+      }
+    })
+  }
+
   ngOnDestroy() {
+    console.log(this.reports)
     this.loaderService.saveTestSettings(this.reports, this.reranReports, this.reranReportsIndex)
   }
 
@@ -55,9 +72,8 @@ export class TestComponent implements OnInit{
     this.httpService.getTestReports().subscribe({
       next: value => {
         this.reports = value.values
-        this.toastComponent.addAlert({type: 'success', message: 'Test data retrieved'})
       }, error: () => {
-        this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for test!'})
+        this.httpService.handleError('Could not retrieve data for test!')
       }
     })
   }
@@ -67,7 +83,7 @@ export class TestComponent implements OnInit{
    */
   resetRunner(): void {
     // @ts-ignore
-    this.httpService.reset()
+    this.httpService.reset().subscribe()
   }
 
   /**
@@ -112,7 +128,6 @@ export class TestComponent implements OnInit{
       for (let reportIndex in response.results) {
         if (response.results.hasOwnProperty(reportIndex)) {
           this.httpService.getReport(reportIndex).subscribe(report => {
-
             // See if the report element exist, where we will attach the results to
             const element = document.getElementById('testReport#' + reportIndex)
             if (element) {
@@ -169,12 +184,15 @@ export class TestComponent implements OnInit{
    * Removes the selected reports
    */
   deleteSelected(): void {
-    const selectedReports = this.reports.filter(report => report.checked);
-    for (let i = 0; i < selectedReports.length; i++) {
-      this.httpService.deleteReport(selectedReports[i][this.STORAGE_ID_INDEX]).subscribe(() => {
-        this.loadData();
-      })
-    }
+    this.reports.map(report => {
+      if (report.checked) {
+        this.httpService.deleteReport(report[this.STORAGE_ID_INDEX]).subscribe()
+      }
+    })
+
+    setTimeout(() => {
+      this.loadData()
+    }, this.TIMEOUT)
   }
 
   /**
@@ -234,25 +252,20 @@ export class TestComponent implements OnInit{
    * @param report - the report that is toggled
    */
   toggleCheck(report: any): void {
-    let index = this.reports.indexOf(report);
-    this.reports[index].checked = !report.checked
+    report.checked = !report.checked
   }
 
   /**
    * Checks all checkboxes
    */
   checkAll(): void {
-    for (let report of this.reports) {
-      report.checked = true;
-    }
+    this.reports.map(report => report.checked = true)
   }
 
   /**
    * Unchecks all checkboxes
    */
   uncheckAll(): void {
-    for (let report of this.reports) {
-      report.checked = false;
-    }
+    this.reports.map(report => report.checked = false)
   }
 }

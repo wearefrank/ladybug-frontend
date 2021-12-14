@@ -1,12 +1,12 @@
 <div *ngIf="displayReport">
   <div class="row" id="displayButtons">
     <app-button [icon]="'fa fa-repeat'" [title]="'Rerun'"></app-button>
-    <app-button [icon]="'fa fa-edit'" [title]="'Edit'" *ngIf="!editing"
+    <app-button [icon]="'fa fa-edit'" [title]="'Edit'" *ngIf="!editingChildNode && !editingRootNode"
                 (click)="editReport()"></app-button>
-    <app-button [icon]="'fa fa-trash'" [title]="'Discard Changes'" *ngIf="editing"
-                (click)="openModal(saveOrDiscardChanges, 'discard')"></app-button>
-    <app-button [icon]="'fa fa-save'" [title]="'Save'" *ngIf="editing"
-                (click)="openModal(saveOrDiscardChanges, 'save')"></app-button>
+    <app-button [icon]="'fa fa-trash'" [title]="'Discard Changes'" *ngIf="editingChildNode || editingRootNode"
+                (click)="openDifferenceModal(saveOrDiscardChanges, 'discard')"></app-button>
+    <app-button [icon]="'fa fa-save'" [title]="'Save'" *ngIf="editingChildNode || editingRootNode"
+                (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
     <div ngbDropdown title="Download">
       <button class="btn btn-info my-2 mx-1" id="dropdownDownload" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
@@ -17,7 +17,8 @@
         <button ngbDropdownItem (click)="downloadReport(true, false)">Messages</button>
       </div>
     </div>
-    <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
+
+    <app-button *ngIf="report.root" [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
     <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport()"></app-button>
   </div>
 
@@ -34,11 +35,11 @@
     <app-monaco-editor [value]="report.ladybug.message"></app-monaco-editor>
   </div>
 
-  <div *ngIf="!editingRoot" class="pt-4">
+  <div *ngIf="!editingRootNode" class="pt-4">
     <app-display-table [report]="report"></app-display-table>
   </div>
 
-  <div *ngIf="editingRoot">
+  <div *ngIf="editingRootNode">
     <div class="form-group">
       <label>Name</label>
       <input #name type="text" class="form-control" placeholder="Name" value="{{report.ladybug.name}}">
@@ -72,14 +73,14 @@
       </button>
     </div>
     <div class="modal-content">
-      <div *ngFor="let part of modalThing">
+      <div *ngFor="let part of differenceModal">
         <div class="text-center">{{ part.name}}</div>
         <div class="dropdown-divider"></div>
         <div class="row">
           <div class="col">
             <div class="text-center pt-2">Before</div>
             <div class="dropdown-divider"></div>
-            <div class="text-center pb-2 overflow-auto">{{ part.ladybug }}</div>
+            <div class="text-center pb-2 overflow-auto">{{ part.originalValue }}</div>
           </div>
           <div class="col text-right">
             <div class="text-center pt-2">After</div>

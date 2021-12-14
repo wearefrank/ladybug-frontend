@@ -12,7 +12,6 @@ let loadPromise: Promise<void>;
 export class MonacoEditorComponent implements AfterViewInit {
   @ViewChild('container') editorContainer!: ElementRef;
   codeEditorInstance!: monaco.editor.IStandaloneCodeEditor;
-  readonly: boolean = true
   @Input()
   get value() { return this._value}
   set value(value: string) { this._value = value}
@@ -77,7 +76,7 @@ export class MonacoEditorComponent implements AfterViewInit {
       this.editorContainer.nativeElement,
       {
         value: message,
-        readOnly: this.readonly,
+        readOnly: true,
         language: 'xml',
         theme: 'vs-light',
         fontSize: 10,
@@ -88,17 +87,15 @@ export class MonacoEditorComponent implements AfterViewInit {
     );
   }
 
-  /**
-   * Toggle edit mode for the monaco-editor
-   */
-  toggleEdit(): void {
-    this.readonly = !this.readonly
-    this.codeEditorInstance.updateOptions( {
-      readOnly: this.readonly,
-      theme: this.readonly ? 'vs-light' : 'vs-light', // TODO: Create custom theme
-      minimap: {
-        enabled: !this.readonly
-      }
+  enableEdit(): void {
+    this.codeEditorInstance.updateOptions({
+        readOnly: false
+    })
+  }
+
+  disableEdit(): void {
+    this.codeEditorInstance.updateOptions({
+      readOnly: true
     })
   }
 }
