@@ -58,14 +58,13 @@ export class DisplayComponent {
     this.report = report;
     this.loadMonacoCode();
     this.displayReport = true;
-    this.disableEditing(); // Switching from editing current report to another
+    this.disableEditing(); // For switching from editing current report to another
   }
 
   loadMonacoCode() {
     if (this.report.root) {
-      this.httpService.getMonacoCode(this.report.ladybug.storageId).subscribe(data => {
-        this.monacoEditorComponent?.loadMonaco(beautify(data.xml));
-      })
+      this.httpService.getMonacoCode(this.report.ladybug.storageId)
+        .subscribe(data => this.monacoEditorComponent?.loadMonaco(beautify(data.xml)))
     } else {
       this.monacoEditorComponent?.loadMonaco(beautify(this.report.ladybug.message));
     }
@@ -128,8 +127,7 @@ export class DisplayComponent {
 
   copyReport(): void {
     const storageId: number = +this.report.ladybug.storageId;
-    let data: any = {}
-    data['debugStorage'] = [storageId]
+    const data: any = {'debugStorage': [storageId]}
     this.httpService.copyReport(data).subscribe()
   }
 

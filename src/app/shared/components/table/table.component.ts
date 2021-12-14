@@ -96,7 +96,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.reportMetadata.values.map((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]))
   }
 
-  openReports(amount: number) {
+  openReports(amount: number): void {
     this.reportMetadata.values.slice(0, amount).map((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]))
   }
 
@@ -111,13 +111,11 @@ export class TableComponent implements OnInit, OnDestroy {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      this.httpService.uploadReport(formData).subscribe(() => {
-        this.ngOnInit();
-      })
+      this.httpService.uploadReport(formData).subscribe(() => this.ngOnInit())
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.loaderService.saveTableSettings(this.reportMetadata, this.showFilter)
   }
 }

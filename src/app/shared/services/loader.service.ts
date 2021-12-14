@@ -18,18 +18,16 @@ export class LoaderService {
   testLoaded: boolean = false;
   testReports: any[] = [];
   reranReports: any[] = [];
-  reranReportsIndex: string[] = [];
 
   // Ran tests
   // Selected reports in compare
 
   constructor() { }
 
-  saveTestSettings(testReports: any[], reranReports: any[], reranReportsIndex: string[]): void {
+  saveTestSettings(testReports: any[], reranReports: any[]): void {
     this.testLoaded = true;
     this.testReports = testReports;
     this.reranReports = reranReports;
-    this.reranReportsIndex = reranReportsIndex;
   }
 
   getTestReports() {
@@ -38,10 +36,6 @@ export class LoaderService {
 
   getReranReports(): any[] {
     return this.reranReports;
-  }
-
-  getReranReportsIndex(): string[] {
-    return this.reranReportsIndex;
   }
 
   isTestLoaded(): boolean {

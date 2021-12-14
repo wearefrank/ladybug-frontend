@@ -48,20 +48,20 @@
           <td>
             <app-button [icon]="'fa fa-clone'" [title]="'Clone report'" (click)="openCloneModal()"></app-button>
           </td>
-          <td *ngIf="reranReportsIndex.includes(report[STORAGE_ID_INDEX])">
+          <td *ngIf="testReportRan(report[STORAGE_ID_INDEX])">
             <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report[STORAGE_ID_INDEX])"></app-button>
           </td>
-          <td *ngIf="reranReportsIndex.includes(report[STORAGE_ID_INDEX])">
+          <td *ngIf="testReportRan(report[STORAGE_ID_INDEX])">
             <app-button [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report[STORAGE_ID_INDEX])"></app-button>
           </td>
           <td>
             /{{ report[2]}}
           </td>
           <!--TODO: Fix this-->
-          <td *ngIf="reranReports[reranReportsIndex.indexOf(report[STORAGE_ID_INDEX])]"
-              [ngStyle]="{color:reranReports[reranReportsIndex.indexOf(report[STORAGE_ID_INDEX])].color }"
-              [innerHTML]="reranReports[reranReportsIndex.indexOf(report[STORAGE_ID_INDEX])].element">
-          </td>
+<!--          <td *ngIf="getReranReport(report)" id="resultElement#{{report[STORAGE_ID_INDEX]}}"-->
+<!--              [ngStyle]="{color:getReranReport(report).color }"-->
+<!--              [innerHTML]="getReranReport(report).element">-->
+<!--          </td>-->
         </tr>
         </tbody>
       </table>
