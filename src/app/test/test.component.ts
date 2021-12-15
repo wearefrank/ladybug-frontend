@@ -1,4 +1,4 @@
-import {Component, OnInit, EventEmitter, Output, ViewChild} from '@angular/core';
+import {Component, OnInit, EventEmitter, Output, ViewChild, AfterViewInit} from '@angular/core';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ToastComponent} from "../shared/components/toast/toast.component";
 import {HttpService} from "../shared/services/http.service";
@@ -11,7 +11,7 @@ import {TestSettingsModalComponent} from "../shared/components/modals/test-setti
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.css']
 })
-export class TestComponent implements OnInit{
+export class TestComponent implements OnInit, AfterViewInit {
   reports: any[] = [];
   reranReports: any[] = [];
   STORAGE_ID_INDEX = 5;
@@ -41,6 +41,12 @@ export class TestComponent implements OnInit{
       this.reranReports = this.loaderService.getReranReports();
       this.getCopiedReports();
     }
+  }
+
+  ngAfterViewInit() {
+    this.reranReports.forEach(report => {
+      this.showResults(report.result, report.originalIndex);
+    })
   }
 
   addCopiedReports(httpResponse: any): void {
@@ -92,42 +98,49 @@ export class TestComponent implements OnInit{
 
   queryResults(): void {
     this.httpService.queryResults().subscribe(response => {
-      for (let reportIndex in response.results) {
-        if (response.results.hasOwnProperty(reportIndex)) {
-          this.showResults(reportIndex, response)
+      for (let oldReportIndex in response.results) {
+        if (response.results.hasOwnProperty(oldReportIndex)) {
+          this.showResults(response.results[oldReportIndex], oldReportIndex)
         }
       }
     })
   }
 
   testReportRan(id: string) {
-    return this.reranReports.filter(report => report.original == id).length > 0;
+    return this.reranReports.filter(report => report.originalIndex == id).length > 0;
   }
 
-  showResults(reportIndex: string, queryResponse: any) {
-    let testReportElement = document.getElementById("testReport#" + reportIndex);
+  showResults(resultReport: any, oldReportIndex: string) {
+    let testReportElement = document.getElementById("testReport#" + oldReportIndex);
     if (testReportElement) {
-      let originalReport = this.getOriginalReport(reportIndex);
-      let newReport = queryResponse.results[reportIndex];
-
-      let newResultElement = this.createElement(newReport, reportIndex, originalReport);
-      let existingResultElement = document.getElementById("resultElement#" + reportIndex)
-
-      if (existingResultElement) {
-        this.reranReports = this.reranReports.filter(report => report.original != reportIndex)
-        this.replaceElement(testReportElement, newResultElement, existingResultElement)
-      } else {
-        this.addElement(testReportElement, newResultElement)
-      }
-      this.reranReports.push({original: reportIndex, reran: newReport.report.storageId});
+      this.appendResultToTestReport(resultReport, oldReportIndex, testReportElement)
     }
+  }
+
+  appendResultToTestReport(resultReport: any, oldReportIndex: string, testReportElement: HTMLElement) {
+    let newResultElement = this.createNewResultElement(resultReport, oldReportIndex)
+    let existingResultElement = document.getElementById("resultElement#" + oldReportIndex)
+
+    if (existingResultElement) {
+      this.replaceElement(testReportElement, newResultElement, existingResultElement, oldReportIndex)
+    } else {
+      this.addElement(testReportElement, newResultElement)
+    }
+
+    this.reranReports.push({originalIndex: oldReportIndex, newIndex: resultReport.report.storageId, result: resultReport});
+  }
+
+  createNewResultElement(resultReport: any, oldReportIndex: string) {
+    let originalReport = this.getOriginalReport(oldReportIndex);
+    return this.createElement(resultReport, oldReportIndex, originalReport);
   }
 
   getOriginalReport(reportId: string) {
     return this.httpService.getReport(reportId).subscribe(report => report)
   }
 
-  replaceElement(parentElement: HTMLElement, newElement: HTMLElement, oldElement: HTMLElement) {
+  replaceElement(parentElement: HTMLElement, newElement: HTMLElement, oldElement: HTMLElement, oldReportIndex: string) {
+    this.reranReports = this.reranReports.filter(report => report.originalIndex != oldReportIndex)
     parentElement.replaceChild(newElement, oldElement)
   }
 
@@ -178,13 +191,13 @@ export class TestComponent implements OnInit{
   }
 
   compareReports(originalReport: string): void {
-    let newReport = this.reranReports.filter(report => report.original == originalReport)[0].reran;
+    let newReport = this.reranReports.filter(report => report.originalIndex == originalReport)[0].reran;
     this.openCompareReportsEvent.emit({oldReport: originalReport, newReport: newReport})
   }
 
   replaceReport(reportId: string): void {
     this.httpService.replaceReport(reportId).subscribe(() => {
-      this.reranReports = this.reranReports.filter(report => report.original != reportId)
+      this.reranReports = this.reranReports.filter(report => report.originalIndex != reportId)
     })
   }
 
