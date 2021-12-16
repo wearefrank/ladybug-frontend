@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {Metadata} from "../interfaces/metadata";
 import {TreeNode} from "../interfaces/tree-node";
 import {ReranReport} from "../interfaces/reran-report";
+import {Report} from "../interfaces/report";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class LoaderService {
   // Tree
   treeLoaded: boolean = false;
   treeData: TreeNode[] = [];
+  selectedReports: Report[] = [];
   selectedNode: number = -1;
 
   // Tests
@@ -63,9 +65,10 @@ export class LoaderService {
     return this.showFilter;
   }
 
-  saveTreeSettings(treeData: TreeNode[], nodeSelected: number): void {
+  saveTreeSettings(treeData: TreeNode[], selectedReports: Report[], nodeSelected: number): void {
     this.treeLoaded = true;
     this.treeData = treeData;
+    this.selectedReports = selectedReports;
     this.selectedNode = nodeSelected;
   }
 
@@ -75,6 +78,10 @@ export class LoaderService {
 
   getTreeData(): any[] {
     return this.treeData;
+  }
+
+  getSelectedReports(): Report[] {
+    return this.selectedReports;
   }
 
   getSelectedNode(): number {

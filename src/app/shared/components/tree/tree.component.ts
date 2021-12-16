@@ -14,7 +14,7 @@ declare var $: any;
 
 export class TreeComponent implements AfterViewInit, OnDestroy {
   @Output() selectReportEvent = new EventEmitter<any>();
-  @Input() reports: Report[] = [];
+  @Input() selectedReports: Report[] = [];
   tree: TreeNode[] = []
   treeId: string = Math.random().toString(36).substring(7);
   parentMap: any[] = [] // {id: number, parent: TreeNode}
@@ -31,7 +31,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   closeAll(): void {
-    this.reports.length = 0;
+    this.selectedReports.length = 0;
     $('#' + this.treeId).treeview( 'remove');
   }
 
@@ -51,12 +51,12 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     return this.tree.indexOf(result[0]);
   }
 
-  handleChange(reports: Report[]): void {
+  handleChange(report: Report, showTreeInCompare: boolean): void {
     this.tree = [];
-    this.reports = reports;
     this.treeNodeId = 0;
+    const reportsToShow = this.getReportsToShow(report, showTreeInCompare);
 
-    for (const reportRoot of this.reports) {
+    for (const reportRoot of reportsToShow) {
       this.parentMap = []
       const rootNode = this.createRootNode(reportRoot)
       this.tree.push(rootNode)
@@ -64,6 +64,16 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
 
     this.updateTreeView();
     this.selectFirstChildNode();
+  }
+
+
+  getReportsToShow(report: Report, showTreeInCompare: boolean) {
+    let reportsToShow: Report[] = [report];
+    if (!showTreeInCompare) {
+      this.selectedReports.push(report)
+      reportsToShow = this.selectedReports;
+    }
+    return reportsToShow;
   }
 
   createRootNode(report: Report): TreeNode {
@@ -157,8 +167,9 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     if (this.loaderService.isTreeLoaded()) {
       this.tree = this.loaderService.getTreeData();
+      this.selectedReports = this.loaderService.getSelectedReports();
       this.updateTreeView();
-      const selectedNode = this.loaderService.getSelectedNode()
+      const selectedNode = this.loaderService.getSelectedNode();
       if (selectedNode != -1) {
         $('#' + this.treeId).treeview('toggleNodeSelected', [ selectedNode, { silent: false } ]);
       }
@@ -168,7 +179,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.tree.length > 0) {
       const selectedNode = $('#' + this.treeId).treeview('getSelected')[0].id;
-      this.loaderService.saveTreeSettings(this.tree, selectedNode)
+      this.loaderService.saveTreeSettings(this.tree, this.selectedReports, selectedNode)
     }
   }
 }

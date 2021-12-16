@@ -22,7 +22,7 @@ export class DebugComponent {
    */
   addReportToTree(newReport: Report): void {
     this.reports.push(newReport);
-    this.treeComponent.handleChange(this.reports);
+    this.treeComponent.handleChange(newReport, false);
   }
 
   /**
