@@ -20,8 +20,7 @@ export class CompareComponent implements OnChanges {
   @ViewChild('leftDisplay') leftDisplayComponent!: DisplayComponent;
   @ViewChild('rightDisplay') rightDisplayComponent!: DisplayComponent;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
-
-  @Input('diffReports') diffReports = {oldReport: '', newReport: ''}
+  @Input() diffReports = {oldReport: '', newReport: ''}
 
   constructor(private httpService: HttpService) {}
 

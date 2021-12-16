@@ -5,7 +5,7 @@ import {Component, Input, OnInit} from '@angular/core';
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.css']
 })
-export class DropdownComponent implements OnInit {
+export class DropdownComponent {
   @Input()
   get items(): string[]{return this._items}
   set items(items: string[]) { this._items = items; }
@@ -22,8 +22,4 @@ export class DropdownComponent implements OnInit {
   private _icon = "";
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit, EventEmitter, Output, ViewChild, AfterViewInit} from '@angular/core';
+import {Component, OnInit, EventEmitter, Output, ViewChild, AfterViewInit, OnDestroy} from '@angular/core';
 import {ToastComponent} from "../shared/components/toast/toast.component";
 import {HttpService} from "../shared/services/http.service";
 import {LoaderService} from "../shared/services/loader.service";
@@ -14,7 +14,7 @@ import {Report} from "../shared/interfaces/report";
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.css']
 })
-export class TestComponent implements OnInit, AfterViewInit {
+export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   STORAGE_ID_INDEX = 5;
