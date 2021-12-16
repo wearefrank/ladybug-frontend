@@ -1,10 +1,13 @@
 import {Component, OnInit, EventEmitter, Output, ViewChild, AfterViewInit} from '@angular/core';
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ToastComponent} from "../shared/components/toast/toast.component";
 import {HttpService} from "../shared/services/http.service";
 import {LoaderService} from "../shared/services/loader.service";
 import {CloneModalComponent} from "../shared/components/modals/clone-modal/clone-modal.component";
 import {TestSettingsModalComponent} from "../shared/components/modals/test-settings-modal/test-settings-modal.component";
+import {TestResult} from "../shared/interfaces/test-result";
+import {ReranReport} from "../shared/interfaces/reran-report";
+import {Metadata} from "../shared/interfaces/metadata";
+import {Report} from "../shared/interfaces/report";
 
 @Component({
   selector: 'app-test',
@@ -13,7 +16,7 @@ import {TestSettingsModalComponent} from "../shared/components/modals/test-setti
 })
 export class TestComponent implements OnInit, AfterViewInit {
   reports: any[] = [];
-  reranReports: any[] = [];
+  reranReports: ReranReport[] = [];
   STORAGE_ID_INDEX = 5;
   NAME_INDEX = 2;
   TIMEOUT = 100;
@@ -49,11 +52,11 @@ export class TestComponent implements OnInit, AfterViewInit {
     })
   }
 
-  addCopiedReports(httpResponse: any): void {
-    const amountAdded = httpResponse.values.length - this.reports.length
+  addCopiedReports(metadata: Metadata): void {
+    const amountAdded = metadata.values.length - this.reports.length
     if (amountAdded > 0) {
-      for (let i = this.reports.length; i <= httpResponse.values.length - 1; i++) {
-        this.reports.push(httpResponse.values[i])
+      for (let i = this.reports.length; i <= metadata.values.length - 1; i++) {
+        this.reports.push(metadata.values[i])
       }
     }
   }
@@ -106,18 +109,18 @@ export class TestComponent implements OnInit, AfterViewInit {
     })
   }
 
-  testReportRan(id: string) {
+  testReportRan(id: string): boolean {
     return this.reranReports.filter(report => report.originalIndex == id).length > 0;
   }
 
-  showResults(resultReport: any, oldReportIndex: string) {
+  showResults(resultReport: TestResult, oldReportIndex: string): void {
     let testReportElement = document.getElementById("testReport#" + oldReportIndex);
     if (testReportElement) {
       this.appendResultToTestReport(resultReport, oldReportIndex, testReportElement)
     }
   }
 
-  appendResultToTestReport(resultReport: any, oldReportIndex: string, testReportElement: HTMLElement) {
+  appendResultToTestReport(resultReport: TestResult, oldReportIndex: string, testReportElement: HTMLElement): void {
     let newResultElement = this.createNewResultElement(resultReport, oldReportIndex)
     let existingResultElement = document.getElementById("resultElement#" + oldReportIndex)
 
@@ -127,36 +130,42 @@ export class TestComponent implements OnInit, AfterViewInit {
       this.addElement(testReportElement, newResultElement)
     }
 
-    this.reranReports.push({originalIndex: oldReportIndex, newIndex: resultReport.report.storageId, result: resultReport});
+    this.reranReports.push({originalIndex: oldReportIndex, newIndex: resultReport.report.storageId.toString(), result: resultReport});
   }
 
-  createNewResultElement(resultReport: any, oldReportIndex: string) {
+  createNewResultElement(resultReport: TestResult, oldReportIndex: string): HTMLElement {
     let originalReport = this.getOriginalReport(oldReportIndex);
     return this.createElement(resultReport, oldReportIndex, originalReport);
   }
 
-  getOriginalReport(reportId: string) {
-    return this.httpService.getReport(reportId).subscribe(report => report)
+  // TODO: Fix, Returns empty value, because it does not wait for the report
+  getOriginalReport(reportId: string): Report {
+    let originalReport = {}
+    this.httpService.getReport(reportId).subscribe(report => {
+      return originalReport = report;
+    })
+
+    return <Report>originalReport;
   }
 
-  replaceElement(parentElement: HTMLElement, newElement: HTMLElement, oldElement: HTMLElement, oldReportIndex: string) {
+  replaceElement(parentElement: HTMLElement, newElement: HTMLElement, oldElement: HTMLElement, oldReportIndex: string): void {
     this.reranReports = this.reranReports.filter(report => report.originalIndex != oldReportIndex)
     parentElement.replaceChild(newElement, oldElement)
   }
 
-  addElement(parentElement: HTMLElement, newElement: HTMLElement) {
+  addElement(parentElement: HTMLElement, newElement: HTMLElement): void {
     parentElement.appendChild(newElement);
   }
 
-  createElement(resultReport: any, reportIndex: string, originalReport: any) {
+  createElement(resultReport: TestResult, oldReportIndex: string, originalReport: Report): HTMLElement {
     const tdElement = document.createElement('td')
     tdElement.appendChild(document.createTextNode("("
-      + resultReport['previous-time'] + "ms >> "
-      + resultReport['current-time'] + "ms) ("
-      + resultReport['stubbed'] + "/"
-      + resultReport['total'] + " stubbed)"
+      + resultReport.previousTime + "ms >> "
+      + resultReport.currentTime + "ms) ("
+      + resultReport.stubbed + "/"
+      + resultReport.total + " stubbed)"
     ))
-    tdElement.setAttribute('id', 'resultElement#' + reportIndex)
+    tdElement.setAttribute('id', 'resultElement#' + oldReportIndex)
 
     // If the reports are not equal, then a reportIndex color should be shown
     const color = originalReport == resultReport.report ? 'green' : 'red'
@@ -191,7 +200,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   compareReports(originalReport: string): void {
-    let newReport = this.reranReports.filter(report => report.originalIndex == originalReport)[0].reran;
+    let newReport = this.reranReports.filter(report => report.originalIndex == originalReport)[0].newIndex;
     this.openCompareReportsEvent.emit({oldReport: originalReport, newReport: newReport})
   }
 

@@ -1,11 +1,10 @@
 import {Component, OnInit, Output, EventEmitter, Input, ViewChild, AfterViewInit, OnDestroy} from '@angular/core';
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ToastComponent} from "../toast/toast.component";
-import {FormControl, FormGroup} from "@angular/forms";
 import {HelperService} from "../../services/helper.service";
 import {HttpService} from "../../services/http.service";
 import {LoaderService} from "../../services/loader.service";
 import {TableSettingsModalComponent} from "../modals/table-settings-modal/table-settings-modal.component";
+import {Metadata} from "../../interfaces/metadata";
 
 @Component({
   selector: 'app-table',
@@ -14,7 +13,7 @@ import {TableSettingsModalComponent} from "../modals/table-settings-modal/table-
 })
 export class TableComponent implements OnInit, OnDestroy {
   showFilter: boolean = false;
-  reportMetadata: any = {};
+  reportMetadata: Metadata = {fields: [], values: []};
   isPageLoaded: boolean = false;
   displayAmount: number = 10;
   filterValue: string = "";
@@ -79,7 +78,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   refresh(): void {
     this.showFilter = false;
-    this.reportMetadata = {};
+    this.reportMetadata = {fields: [], values: []};
     this.isPageLoaded = false;
     this.displayAmount = 10;
     this.loadData();

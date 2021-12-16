@@ -1,4 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
+import {TreeNode} from "../../interfaces/tree-node";
 
 @Component({
   selector: 'app-display-table',
@@ -8,8 +9,8 @@ import {Component, Input, OnInit} from '@angular/core';
 export class DisplayTableComponent {
   @Input()
   get report() { return this._report}
-  set report(report: string) { this._report = report}
-  public _report: any = {};
+  set report(report: TreeNode) { this._report = report}
+  public _report: TreeNode = {id: -1, ladybug: undefined, level: -1, root: false, text: ""};
 
   constructor() { }
 

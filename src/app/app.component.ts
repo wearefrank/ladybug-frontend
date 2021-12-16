@@ -1,8 +1,6 @@
-import {AfterViewChecked, AfterViewInit, Component, Injector, OnChanges, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Injector, ViewChild} from '@angular/core';
 import {ReportComponent, ReportData} from "./report/report.component";
 import {Title} from '@angular/platform-browser'
-import {CompareComponent} from "./compare/compare.component";
-import {DebugComponent} from "./debug/debug.component";
 import {ToastComponent} from "./shared/components/toast/toast.component";
 import {HttpService} from "./shared/services/http.service";
 declare var require: any;

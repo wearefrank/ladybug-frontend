@@ -8,11 +8,6 @@ export class HelperService {
   THROWABLE_ENCODER = "printStackTrace()"
   constructor() { }
 
-  /**
-   * Retrieve the icon image
-   * @param type - the type of the image
-   * @param even - whether we are on an even or odd level (changes icon color)
-   */
   getImage(type: number, encoding: string, even: boolean): string {
     let img = "../../../../assets/tree-icons/"
     switch (type) {
@@ -49,15 +44,11 @@ export class HelperService {
     return img + "-odd.gif"
   }
 
-  /**
-   * Sort the data accordingly
-   * @param sort - sort object to handle sorting
-   */
-  sortData(sort: Sort, data: any): any {
+  sortData(sort: Sort, data: string[][]): any {
     if (!sort.active || sort.direction === '') {
       return;
     }
-    data.sort((a: (string | number)[], b: (string | number)[]) => {
+    data.sort((a, b) => {
 
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
@@ -85,12 +76,6 @@ export class HelperService {
     });
   }
 
-  /**
-   * Compare two strings or numbers
-   * @param a - first string/number
-   * @param b - second string/number
-   * @param isAsc - whether it is ascending or not
-   */
   compare(a: number | string, b: number | string, isAsc: boolean): number {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }

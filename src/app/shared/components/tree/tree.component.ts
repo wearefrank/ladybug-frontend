@@ -2,6 +2,8 @@ import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output
 import {HelperService} from "../../services/helper.service";
 import {LoaderService} from "../../services/loader.service";
 import {TreeNode} from "../../interfaces/tree-node";
+import {Report} from "../../interfaces/report";
+import {Checkpoint} from "../../interfaces/checkpoint";
 declare var $: any;
 
 @Component({
@@ -12,10 +14,11 @@ declare var $: any;
 
 export class TreeComponent implements AfterViewInit, OnDestroy {
   @Output() selectReportEvent = new EventEmitter<any>();
-  @Input() reports: any[] = [];
+  @Input() reports: Report[] = [];
   tree: TreeNode[] = []
   treeId: string = Math.random().toString(36).substring(7);
-  parentMap: any[] = []
+  parentMap: any[] = [] // {id: number, parent: TreeNode}
+  treeNodeId: number = 0;
 
   constructor(private helperService: HelperService, private loaderService: LoaderService) {}
 
@@ -32,7 +35,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     $('#' + this.treeId).treeview( 'remove');
   }
 
-  removeNode(node: any): void {
+  removeNode(node: TreeNode): void {
     if (node.root) {
       this.tree.splice(this.getNodeIndexToBeRemoved(node), 1);
       this.updateTreeView();
@@ -41,21 +44,21 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  getNodeIndexToBeRemoved(node: any): number {
+  getNodeIndexToBeRemoved(node: TreeNode): number {
     const result = this.tree.filter(report => {
       return report.id == node.nodeId;
     })
     return this.tree.indexOf(result[0]);
   }
 
-  handleChange(reports: any[]): void {
+  handleChange(reports: Report[]): void {
     this.tree = [];
     this.reports = reports;
-    let id = 0;
+    this.treeNodeId = 0;
 
     for (const reportRoot of this.reports) {
       this.parentMap = []
-      const rootNode = this.createRootNode(reportRoot, id)
+      const rootNode = this.createRootNode(reportRoot)
       this.tree.push(rootNode)
     }
 
@@ -63,18 +66,19 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     this.selectFirstChildNode();
   }
 
-  createRootNode(report: any, id: number): TreeNode {
+  createRootNode(report: Report): TreeNode {
     const rootNode: TreeNode = {
       text: report.name,
       ladybug: report,
       root: true,
-      id: id++,
-      nodes: []
+      id: this.treeNodeId++,
+      nodes: [],
+      level: -1
     }
 
     let previousNode: TreeNode = rootNode;
     for (const checkpoint of report.checkpoints) {
-      const currentNode: TreeNode = this.createChildNode(checkpoint, id++);
+      const currentNode: TreeNode = this.createChildNode(checkpoint);
       this.createHierarchy(previousNode, currentNode)
       previousNode = currentNode
     }
@@ -82,18 +86,18 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     return rootNode;
   }
 
-  createChildNode(checkpoint: any, id: number): TreeNode {
+  createChildNode(checkpoint: Checkpoint): TreeNode {
     const img = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0)
     return {
       text: '<img src="' + img + '" alt="">' + checkpoint.name,
       ladybug: checkpoint,
       root: false,
-      id: id,
+      id: this.treeNodeId++,
       level: checkpoint.level
     }
   }
 
-  createHierarchy(previousNode: any, node: any): void {
+  createHierarchy(previousNode: TreeNode, node: TreeNode): void {
     // If it is the first one, the root is the parent
     if (node.level == 0) {
       this.addChild(previousNode, node)
@@ -113,10 +117,10 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  findParent(currentNode: any, potentialParent: any): any {
+  findParent(currentNode: TreeNode, potentialParent: TreeNode): TreeNode {
     // If the level difference is only 1, then the potential parent is the actual parent
     if (currentNode.level - 1 == potentialParent.level) {
-      potentialParent = this.addChild(potentialParent, currentNode)
+      this.addChild(potentialParent, currentNode)
       return currentNode;
     }
 
@@ -124,11 +128,10 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     return this.findParent(currentNode, newPotentialParent)
   }
 
-  addChild(parent: any, node: any): any {
+  addChild(parent: TreeNode, node: TreeNode): void {
     this.parentMap.push({id: node.id, parent: parent})
     parent.nodes = parent.nodes?? [];
     parent.nodes.push(node)
-    return parent
   }
 
   updateTreeView(): void {
@@ -140,7 +143,9 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
       selectedBackColor: "#1ab394",
     });
 
-    $('#' + this.treeId).on('nodeSelected', (event: any, data: any) => this.selectReportEvent.next(data));
+    $('#' + this.treeId).on('nodeSelected', (event: any, data: TreeNode) => {
+      this.selectReportEvent.next(data)
+    });
   }
 
   selectFirstChildNode(): void {

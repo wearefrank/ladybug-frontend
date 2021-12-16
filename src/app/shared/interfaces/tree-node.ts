@@ -4,5 +4,6 @@ export interface TreeNode {
   root: boolean,
   id: number,
   nodes?: TreeNode[],
-  level?: number
+  level: number,
+  nodeId?: number
 }

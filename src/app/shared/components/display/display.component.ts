@@ -7,6 +7,8 @@ import DiffMatchPatch from 'diff-match-patch';
 import beautify from "xml-beautifier";
 import {HttpService} from "../../services/http.service";
 import {DisplayTableComponent} from "../display-table/display-table.component";
+import {DifferenceModal} from "../../interfaces/difference-modal";
+import {TreeNode} from "../../interfaces/tree-node";
 
 @Component({
   selector: 'app-display',
@@ -17,7 +19,7 @@ export class DisplayComponent {
   editingChildNode: boolean = false;
   editingRootNode: boolean = false;
   displayReport: boolean = false
-  report: any = {};
+  report: TreeNode = {id: -1, ladybug: undefined, level: -1, root: false, text: ""};
   @Output() closeReportEvent = new EventEmitter<any>();
   @ViewChild(MonacoEditorComponent) monacoEditorComponent!: MonacoEditorComponent;
   @ViewChild(DisplayTableComponent) displayTableComponent!: DisplayTableComponent;
@@ -27,7 +29,7 @@ export class DisplayComponent {
   @ViewChild('transformation') transformation!: ElementRef;
   stubStrategies: string[] = ["Follow report strategy", "No", "Yes"];
   saveOrDiscardType: string = '';
-  differenceModal: any[] = []
+  differenceModal: DifferenceModal[] = []
 
   constructor(
     private modalService: NgbModal,
@@ -54,7 +56,7 @@ export class DisplayComponent {
     this.differenceModal.push({name: keyword, originalValue: this.report.ladybug[keyword], difference: difference})
   }
 
-  showReport(report: any): void {
+  showReport(report: TreeNode): void {
     this.report = report;
     this.loadMonacoCode();
     this.displayReport = true;
@@ -73,7 +75,7 @@ export class DisplayComponent {
   closeReport(): void {
     this.closeReportEvent.next(this.report)
     this.displayReport = false;
-    this.report = {};
+    this.report = {id: -1, ladybug: undefined, level: 0, root: false, text: ""};
   }
 
   editReport(): void {
@@ -106,7 +108,7 @@ export class DisplayComponent {
     if (this.report.root) {
       this.httpService.postReport(this.report.ladybug.storageId, this.getReportValues()).subscribe()
     } else {
-      // TODO: Save the changes in the message for child nodes
+      // TODO: Save the changes in the message for child nodes (aka the editor changes)
     }
   }
 

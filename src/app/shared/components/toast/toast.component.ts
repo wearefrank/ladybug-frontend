@@ -1,5 +1,6 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {NgbAlert} from "@ng-bootstrap/ng-bootstrap";
+import {Alert} from "../../interfaces/alert";
 
 @Component({
   selector: 'app-toast',
@@ -8,7 +9,7 @@ import {NgbAlert} from "@ng-bootstrap/ng-bootstrap";
 })
 export class ToastComponent implements OnInit {
   TIMEOUT = 1000;
-  alerts: any[] = [
+  alerts: Alert[] = [
     // {type: 'warning', message: 'There is some error wow!'},
     // {type: 'danger', message: 'There is a big error wow!'},
     // {type: 'success', message: 'There is no error wow!'}
@@ -32,7 +33,7 @@ export class ToastComponent implements OnInit {
    * Closes the alert
    * @param alert - alert that will be closed
    */
-  close(alert: any): void {
+  close(alert: Alert): void {
     this.alerts.splice(this.alerts.indexOf(alert), 1)
     this.ngOnInit();
   }
@@ -41,7 +42,7 @@ export class ToastComponent implements OnInit {
    * Adds an alert
    * @param alert - alert that will be added
    */
-  addAlert(alert: any): void {
+  addAlert(alert: Alert): void {
     this.alerts.push(alert)
     this.ngOnInit();
   }

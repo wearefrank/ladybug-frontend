@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import {Metadata} from "../interfaces/metadata";
+import {TreeNode} from "../interfaces/tree-node";
+import {ReranReport} from "../interfaces/reran-report";
 
 @Injectable({
   providedIn: 'root'
@@ -6,25 +9,25 @@ import { Injectable } from '@angular/core';
 export class LoaderService {
   // Table
   tableLoaded: boolean = false;
-  tableData: any = {}
+  tableData: Metadata = {fields: [], values: []}
   showFilter: boolean = false;
 
   // Tree
   treeLoaded: boolean = false;
-  treeData: any[] = [];
+  treeData: TreeNode[] = [];
   selectedNode: number = -1;
 
   // Tests
   testLoaded: boolean = false;
   testReports: any[] = [];
-  reranReports: any[] = [];
+  reranReports: ReranReport[] = [];
 
   // Ran tests
   // Selected reports in compare
 
   constructor() { }
 
-  saveTestSettings(testReports: any[], reranReports: any[]): void {
+  saveTestSettings(testReports: any[], reranReports: ReranReport[]): void {
     this.testLoaded = true;
     this.testReports = testReports;
     this.reranReports = reranReports;
@@ -34,7 +37,7 @@ export class LoaderService {
     return this.testReports;
   }
 
-  getReranReports(): any[] {
+  getReranReports(): ReranReport[] {
     return this.reranReports;
   }
 
@@ -42,7 +45,7 @@ export class LoaderService {
     return this.testLoaded;
   }
 
-  saveTableSettings(tableData: any, showFilter: boolean): void {
+  saveTableSettings(tableData: Metadata, showFilter: boolean): void {
     this.tableLoaded = true;
     this.tableData = tableData;
     this.showFilter = showFilter;
@@ -52,7 +55,7 @@ export class LoaderService {
     return this.tableLoaded;
   }
 
-  getTableData(): any {
+  getTableData(): Metadata {
     return this.tableData;
   }
 
@@ -60,7 +63,7 @@ export class LoaderService {
     return this.showFilter;
   }
 
-  saveTreeSettings(treeData: any[], nodeSelected: number): void {
+  saveTreeSettings(treeData: TreeNode[], nodeSelected: number): void {
     this.treeLoaded = true;
     this.treeData = treeData;
     this.selectedNode = nodeSelected;

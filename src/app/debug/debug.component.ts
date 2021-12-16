@@ -1,6 +1,8 @@
 import {Component, ViewChild} from '@angular/core';
 import {TreeComponent} from "../shared/components/tree/tree.component";
 import {DisplayComponent} from "../shared/components/display/display.component";
+import {Report} from "../shared/interfaces/report";
+import {TreeNode} from "../shared/interfaces/tree-node";
 
 @Component({
   selector: 'app-debug',
@@ -8,8 +10,8 @@ import {DisplayComponent} from "../shared/components/display/display.component";
   styleUrls: ['./debug.component.css']
 })
 export class DebugComponent {
-  reports: any[] = [];
-  currentReport: any = {};
+  reports: Report[] = [];
+  currentReport: TreeNode = {id: -1, ladybug: undefined, level: -1, root: false, text: ""};
   @ViewChild(TreeComponent) treeComponent!: TreeComponent;
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
 
@@ -18,7 +20,7 @@ export class DebugComponent {
   /**
     Add a new report and notify the tree of the change
    */
-  addReport(newReport: any): void {
+  addReportToTree(newReport: Report): void {
     this.reports.push(newReport);
     this.treeComponent.handleChange(this.reports);
   }
@@ -27,7 +29,7 @@ export class DebugComponent {
    * Select a report to be viewed in the display
    * @param currentReport - the report to be viewed
    */
-  selectReport(currentReport: any): void {
+  showReportInDisplay(currentReport: TreeNode): void {
     this.currentReport = currentReport;
     this.displayComponent.showReport(this.currentReport);
   }
@@ -36,8 +38,8 @@ export class DebugComponent {
    * Close a report
    * @param currentReport - the report to be closed
    */
-  closeReport(currentReport: any): void {
-    this.currentReport = {}
+  closeReport(currentReport: TreeNode): void {
+    this.currentReport = {id: -1, ladybug: undefined, level: -1, root: false, text: ""}
     this.treeComponent.removeNode(currentReport);
   }
 }

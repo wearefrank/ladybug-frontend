@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ToastComponent} from "../components/toast/toast.component";
 import {catchError, finalize, Observable, of, tap} from "rxjs";
+import {Report} from "../interfaces/report";
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +49,7 @@ export class HttpService {
       .pipe(catchError(this.handleError('Could not retrieve monaco code!')))
   }
 
-  postReport(reportId: string, report: any): Observable<any> {
+  postReport(reportId: string, report: any): Observable<void> {
     return this.http.post('api/report/debugStorage/' + reportId, report)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError('Could not retrieve data for report!')))

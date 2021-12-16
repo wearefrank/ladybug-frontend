@@ -10,11 +10,10 @@ export class FilterPipe implements PipeTransform {
    * @param items - the column to be filtered
    * @param filter - the word with which to filter
    */
-  transform(items: any[], filter: string): any {
+  transform(items: string[][], filter: string): string[][] {
     if (!items || !filter || filter === "") {
       return items;
     }
-
     return items.filter(item => item.includes(filter));
   }
 
