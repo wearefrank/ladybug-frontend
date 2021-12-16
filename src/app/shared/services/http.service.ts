@@ -66,7 +66,7 @@ export class HttpService {
       .pipe(catchError(this.handleError('Could not copy report into test tab!')))
   }
 
-  uploadReport(formData: FormData): Observable<void> {
+  uploadReport(formData: FormData): Observable<any> {
     return this.http.post('api/report/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}})
       .pipe(tap(() => this.handleSuccess('Report uploaded!')))
       .pipe(catchError(this.handleError('Could not copy report into test tab!')))

@@ -105,13 +105,22 @@ export class TableComponent implements OnInit, OnDestroy {
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
   }
 
-  uploadReport(event: any): void {
+  uploadReports(event: any): void {
     const file: File = event.target.files[0]
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      this.httpService.uploadReport(formData).subscribe(() => this.ngOnInit())
+      this.showUploadedReports(formData)
     }
+  }
+
+  showUploadedReports(formData: any) {
+    this.httpService.uploadReport(formData).subscribe(data => {
+      for (let i = 0; i < data.length; i++) {
+        data[i].id = this.id;
+        this.openReportEvent.next(data[i])
+      }
+    })
   }
 
   ngOnDestroy(): void {

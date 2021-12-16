@@ -3,7 +3,7 @@
     <app-button [icon]="'fa fa-undo'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openModal()"></app-button>
     <app-button [icon]="'fa fa-upload'" [title]="'Upload'" (click)="uploadFile.click()">
-      <input #uploadFile (change)="uploadReport($event)" type="file" id="uploadFile">
+      <input #uploadFile (change)="uploadReports($event)" type="file" id="uploadFile">
     </app-button>
     <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
