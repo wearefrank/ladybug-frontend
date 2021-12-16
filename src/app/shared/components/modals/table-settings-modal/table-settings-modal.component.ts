@@ -37,6 +37,7 @@ export class TableSettingsModalComponent implements OnInit {
    */
   saveSettings(): void {
     const form = this.settingsForm.value;
+    this.httpService.setTransformationEnabled(form.transformationEnabled);
     let map: { generatorEnabled: string, regexFilter: string } = {generatorEnabled: form.generatorEnabled, regexFilter: form.regexFilter}
     this.httpService.postSettings(map).subscribe();
 

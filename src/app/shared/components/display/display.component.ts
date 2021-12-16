@@ -66,7 +66,9 @@ export class DisplayComponent {
   loadMonacoCode() {
     if (this.report.root) {
       this.httpService.getMonacoCode(this.report.ladybug.storageId)
-        .subscribe(data => this.monacoEditorComponent?.loadMonaco(beautify(data.xml)))
+        .subscribe(data => {
+          this.monacoEditorComponent?.loadMonaco(data.xml)
+        })
     } else {
       this.monacoEditorComponent?.loadMonaco(beautify(this.report.ladybug.message));
     }

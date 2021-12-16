@@ -12,8 +12,13 @@ export class HttpService {
     'Content-Type', 'application/json'
   )
   toastComponent!: ToastComponent;
+  xmlTransformationEnabled: boolean = false;
 
   constructor(private http: HttpClient) { }
+
+  setTransformationEnabled(xmlTransformationEnabled: boolean) {
+    this.xmlTransformationEnabled = xmlTransformationEnabled;
+  }
 
   initializeToastComponent(toastComponent: ToastComponent) {
     this.toastComponent = toastComponent;
@@ -45,7 +50,7 @@ export class HttpService {
   }
 
   getMonacoCode(reportId: string): Observable<any> {
-    return this.http.get<any>('api/report/debugStorage/' + reportId + '/?xml=true&globalTransformer=true')
+    return this.http.get<any>('api/report/debugStorage/' + reportId + '/?xml=true&globalTransformer=' + this.xmlTransformationEnabled.toString())
       .pipe(catchError(this.handleError('Could not retrieve monaco code!')))
   }
 
@@ -69,11 +74,13 @@ export class HttpService {
 
   postSettings(settings: any): Observable<void> {
     return this.http.post('api/testtool', settings)
+      .pipe(tap(() => this.handleSuccess('Settings saved!')))
       .pipe(catchError(this.handleError('Could not save settings!')))
   }
 
   postTransformation(transformation: any): Observable<void> {
     return this.http.post('api/testtool/transformation', transformation)
+      .pipe(tap(() => this.handleSuccess('Transformation saved!')))
       .pipe(catchError(this.handleError('Could not save transformation!')))
   }
 
