@@ -1,11 +1,11 @@
-beforeEach(() => {
-  cy.visit('')
-})
-
 describe('Changing the table size', function () {
+  beforeEach(() => {
+    cy.visit('')
+  })
+  
   it('Typing in a table size', function () {
-    cy.get('#displayAmount').type(5)
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 5)
+    cy.get('#displayAmount').type(2)
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
 
   it('Remove table size', function () {
@@ -15,7 +15,7 @@ describe('Changing the table size', function () {
 
   it('Retype larger table size', function () {
     cy.get('#displayAmount').type(10)
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 10)
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
 })
 
@@ -35,14 +35,13 @@ describe('Toggle filter and filter results', function () {
 
   it('Type in a filter parameter', function () {
     cy.get('#FilterButton').click()
-    cy.get('#filterRow #filter').eq(2).type("testRerun{enter}")
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
+    cy.get('#filterRow #filter').eq(2).type("name{enter}")
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 1)
   })
 
   it('Empty the filter', function () {
-    cy.get('#FilterButton').click()
-    cy.get('#filterRow #filter').eq(2).type("testRerun{enter}")
+    // Filter is on because of previous test
     cy.get('#filterRow #filter').eq(2).clear().type("{enter}")
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 10)
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
 })

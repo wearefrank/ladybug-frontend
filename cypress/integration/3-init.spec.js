@@ -5,10 +5,22 @@
 // check out the link below and learn how to write your first test:
 // https://on.cypress.io/writing-first-test
 
+const { createJSDocTypeExpression } = require("typescript");
+
 describe('Ladybug simple protractor test', function() {
   it('Confirm title of ladybug app', function() {
     cy.visit('');
     // Please update the version here when you update the version in package.json
     cy.title().should('eq', 'Ladybug - v0.0.12');
   });
+
+  it('Create first two report', function() {
+    // No cy.visit because then the API call can happen multiple times.
+    cy.request('http://localhost/index.jsp?createReport=simple').then(resp => {
+      expect(resp.status).equal(200);
+    });
+    cy.request('http://localhost/index.jsp?createReport=otherSimple').then(resp => {
+      expect(resp.status).equal(200);
+    });
+  })
 });
