@@ -69,7 +69,13 @@ export class HttpService {
   uploadReport(formData: FormData): Observable<any> {
     return this.http.post('api/report/upload', formData, {headers: {'Content-Type': 'multipart/form-data'}})
       .pipe(tap(() => this.handleSuccess('Report uploaded!')))
-      .pipe(catchError(this.handleError('Could not copy report into test tab!')))
+      .pipe(catchError(this.handleError('Could not retrieve uploaded report!')))
+  }
+
+  uploadReportToStorage(formData: FormData): Observable<any> {
+    return this.http.post('api/report/upload/testStorage', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+      .pipe(tap(() => this.handleSuccess('Report uploaded to storage!')))
+      .pipe(catchError(this.handleError('Could not upload report to storage!')))
   }
 
   postSettings(settings: any): Observable<void> {

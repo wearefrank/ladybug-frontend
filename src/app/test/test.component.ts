@@ -195,7 +195,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      this.httpService.uploadReport(formData).subscribe(() => this.loadData())
+      this.httpService.uploadReportToStorage(formData).subscribe(() => this.loadData())
     }
   }
 
