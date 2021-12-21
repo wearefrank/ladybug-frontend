@@ -48,10 +48,10 @@
           <td>
             <app-button [icon]="'fa fa-clone'" [title]="'Clone report'" (click)="openCloneModal()"></app-button>
           </td>
-          <td *ngIf="testReportRan(report[STORAGE_ID_INDEX])">
+          <td *ngIf="checkIfTestReportReran(report[STORAGE_ID_INDEX])">
             <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report[STORAGE_ID_INDEX])"></app-button>
           </td>
-          <td *ngIf="testReportRan(report[STORAGE_ID_INDEX])">
+          <td *ngIf="checkIfTestReportReran(report[STORAGE_ID_INDEX])">
             <app-button [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report[STORAGE_ID_INDEX])"></app-button>
           </td>
           <td>

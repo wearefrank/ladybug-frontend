@@ -35,7 +35,7 @@ export class TableComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (!this.loaderService.isTableLoaded()) {
       this.loadData()
-    } else {
+    } else if (!this._id) {
       this.reportMetadata = this.loaderService.getTableData();
       this.showFilter = this.loaderService.getShowFilter();
       this.isPageLoaded = true;

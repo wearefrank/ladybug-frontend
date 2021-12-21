@@ -109,7 +109,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  testReportRan(id: string): boolean {
+  checkIfTestReportReran(id: string): boolean {
     return this.reranReports.filter(report => report.originalIndex == id).length > 0;
   }
 
