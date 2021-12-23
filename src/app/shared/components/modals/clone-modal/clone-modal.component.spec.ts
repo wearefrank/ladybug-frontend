@@ -8,9 +8,8 @@ describe('CloneModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CloneModalComponent ]
-    })
-    .compileComponents();
+      declarations: [CloneModalComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

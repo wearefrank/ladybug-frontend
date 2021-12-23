@@ -1,5 +1,5 @@
 export interface DifferenceModal {
-  name: string,
-  originalValue: string,
-  difference: (number | string)[][]
+  name: string;
+  originalValue: string;
+  difference: (number | string)[][];
 }

@@ -1,7 +1,7 @@
-import {TestResult} from "./test-result";
+import { TestResult } from './test-result';
 
 export interface ReranReport {
-  originalIndex: string,
-  newIndex: string,
-  result: TestResult
+  originalIndex: string;
+  newIndex: string;
+  result: TestResult;
 }
