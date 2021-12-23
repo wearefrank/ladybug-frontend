@@ -21,5 +21,5 @@ export class DropdownComponent {
   set icon(icon: string){ this._icon = icon; }
   private _icon = "";
 
-  constructor() { }
+  constructor() {}
 }

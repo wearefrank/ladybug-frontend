@@ -10,7 +10,7 @@ export class TestSettingsModalComponent {
   @ViewChild('modal') modal!: any;
 
 
-  constructor(private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal) {}
 
   open() {
     this.modalService.open(this.modal);

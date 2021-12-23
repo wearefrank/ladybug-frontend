@@ -27,7 +27,7 @@ export class LoaderService {
   // Ran tests
   // Selected reports in compare
 
-  constructor() { }
+  constructor() {}
 
   saveTestSettings(testReports: any[], reranReports: ReranReport[]): void {
     this.testLoaded = true;

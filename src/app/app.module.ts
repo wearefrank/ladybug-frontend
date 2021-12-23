@@ -58,4 +58,4 @@ import { TableSettingsModalComponent } from './shared/components/modals/table-se
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

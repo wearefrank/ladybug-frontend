@@ -6,7 +6,7 @@ import {Sort} from "@angular/material/sort";
 })
 export class HelperService {
   THROWABLE_ENCODER = "printStackTrace()"
-  constructor() { }
+  constructor() {}
 
   getImage(type: number, encoding: string, even: boolean): string {
     let img = "../../../../assets/tree-icons/"
@@ -50,7 +50,7 @@ export class HelperService {
     }
     data.sort((a, b) => {
 
-      const isAsc = sort.direction === 'asc';
+      const isAsc: boolean = sort.direction === 'asc';
       switch (sort.active) {
         case '0':
           return this.compare(Number(a[0]), Number(b[0]), isAsc); // Duration

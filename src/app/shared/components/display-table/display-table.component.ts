@@ -12,6 +12,6 @@ export class DisplayTableComponent {
   set report(report: TreeNode) { this._report = report}
   public _report: TreeNode = {id: -1, ladybug: undefined, level: -1, root: false, text: ""};
 
-  constructor() { }
+  constructor() {}
 
 }

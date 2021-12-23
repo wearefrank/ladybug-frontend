@@ -18,8 +18,7 @@ export class ReportComponent implements AfterViewInit {
   @ViewChild(TreeComponent) treeComponent!: TreeComponent;
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
 
-  constructor(public reportData: ReportData) {
-  }
+  constructor(public reportData: ReportData) {}
 
   /**
    Add a new report and notify the tree of the change

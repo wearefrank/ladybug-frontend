@@ -19,7 +19,7 @@ export class TableSettingsModalComponent implements OnInit {
 
   @Output() openReportsEvent = new EventEmitter<any>();
 
-  constructor(private modalService: NgbModal, private httpService: HttpService) { }
+  constructor(private modalService: NgbModal, private httpService: HttpService) {}
 
   open() {
     this.modalService.open(this.modal)
@@ -36,7 +36,7 @@ export class TableSettingsModalComponent implements OnInit {
    * Save the settings of the table
    */
   saveSettings(): void {
-    const form = this.settingsForm.value;
+    const form = this.settingsForm.value; // TODO: Find out type
     this.httpService.setTransformationEnabled(form.transformationEnabled);
     let map: { generatorEnabled: string, regexFilter: string } = {generatorEnabled: form.generatorEnabled, regexFilter: form.regexFilter}
     this.httpService.postSettings(map).subscribe();

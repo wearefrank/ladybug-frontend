@@ -17,7 +17,7 @@ export class ToastComponent implements OnInit {
 
   @ViewChild('staticAlert', {static: false}) staticAlert!: NgbAlert;
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     // Show the alert for 5 seconds

@@ -29,8 +29,7 @@ export class TableComponent implements OnInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private loaderService: LoaderService) {
-  }
+    private loaderService: LoaderService) {}
 
   ngOnInit(): void {
     if (!this.loaderService.isTableLoaded()) {
@@ -60,7 +59,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   getDate(seconds: string): Date {
-    return new Date(parseInt(seconds))
+    return new Date(Number.parseInt(seconds))
   }
 
   toggleFilter(): void {
@@ -92,15 +91,15 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openAllReports(): void {
-    this.reportMetadata.values.map((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]))
+    this.reportMetadata.values.forEach((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]))
   }
 
   openReports(amount: number): void {
-    this.reportMetadata.values.slice(0, amount).map((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]))
+    this.reportMetadata.values.slice(0, amount).forEach((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]))
   }
 
   downloadReports(exportMessages: boolean, exportReports: boolean): void {
-    const queryString = this.reportMetadata.values
+    const queryString: string = this.reportMetadata.values
       .reduce((totalQuery: string, selectedReport: string[]) => totalQuery + "id=" + selectedReport[this.STORAGE_ID_INDEX] + "&", "?")
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
   }
@@ -108,7 +107,7 @@ export class TableComponent implements OnInit, OnDestroy {
   uploadReports(event: any): void {
     const file: File = event.target.files[0]
     if (file) {
-      const formData = new FormData();
+      const formData: any = new FormData();
       formData.append("file", file);
       this.showUploadedReports(formData)
     }
@@ -116,9 +115,9 @@ export class TableComponent implements OnInit, OnDestroy {
 
   showUploadedReports(formData: any) {
     this.httpService.uploadReport(formData).subscribe(data => {
-      for (let i = 0; i < data.length; i++) {
-        data[i].id = this.id;
-        this.openReportEvent.next(data[i])
+      for (let report of data) {
+        report.id = this.id
+        this.openReportEvent.next(report)
       }
     })
   }

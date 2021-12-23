@@ -9,7 +9,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 export class CloneModalComponent {
   @ViewChild('modal') modal!: any;
 
-  constructor(private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal) {}
 
   open() {
     this.modalService.open(this.modal)

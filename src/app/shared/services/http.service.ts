@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ToastComponent} from "../components/toast/toast.component";
-import {catchError, finalize, Observable, of, tap} from "rxjs";
-import {Report} from "../interfaces/report";
+import {catchError, Observable, of, tap} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +12,9 @@ export class HttpService {
   )
   toastComponent!: ToastComponent;
   xmlTransformationEnabled: boolean = false;
+  REPORT_DEBUG_STORAGE: string = 'api/report/debugStorage/'
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   setTransformationEnabled(xmlTransformationEnabled: boolean) {
     this.xmlTransformationEnabled = xmlTransformationEnabled;
@@ -44,18 +44,18 @@ export class HttpService {
   }
 
   getReport(reportId: string): Observable<any> {
-    return this.http.get<any>('api/report/debugStorage/' + reportId)
+    return this.http.get<any>(this.REPORT_DEBUG_STORAGE + reportId)
       .pipe(tap(() => this.handleSuccess('Report opened!')))
       .pipe(catchError(this.handleError('Could not retrieve data for report!')))
   }
 
   getMonacoCode(reportId: string): Observable<any> {
-    return this.http.get<any>('api/report/debugStorage/' + reportId + '/?xml=true&globalTransformer=' + this.xmlTransformationEnabled.toString())
+    return this.http.get<any>(this.REPORT_DEBUG_STORAGE + reportId + '/?xml=true&globalTransformer=' + this.xmlTransformationEnabled.toString())
       .pipe(catchError(this.handleError('Could not retrieve monaco code!')))
   }
 
   postReport(reportId: string, report: any): Observable<void> {
-    return this.http.post('api/report/debugStorage/' + reportId, report)
+    return this.http.post(this.REPORT_DEBUG_STORAGE + reportId, report)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError('Could not retrieve data for report!')))
   }

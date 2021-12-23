@@ -16,7 +16,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   @Output() selectReportEvent = new EventEmitter<any>();
   @Input() selectedReports: Report[] = [];
   tree: TreeNode[] = []
-  treeId: string = Math.random().toString(36).substring(7);
+  treeId: string = Math.random().toString(36).slice(7); //
   parentMap: any[] = [] // {id: number, parent: TreeNode}
   treeNodeId: number = 0;
 
@@ -45,10 +45,10 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   getNodeIndexToBeRemoved(node: TreeNode): number {
-    const result = this.tree.filter(report => {
+    const result: any = this.tree.find(report => { // TODO: Find type of result
       return report.id == node.nodeId;
     })
-    return this.tree.indexOf(result[0]);
+    return this.tree.indexOf(result);
   }
 
   handleChange(report: Report, showTreeInCompare: boolean): void {
@@ -58,7 +58,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
 
     for (const reportRoot of reportsToShow) {
       this.parentMap = []
-      const rootNode = this.createRootNode(reportRoot)
+      const rootNode: TreeNode = this.createRootNode(reportRoot)
       this.tree.push(rootNode)
     }
 
@@ -66,7 +66,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     this.selectFirstChildNode();
   }
 
-
+  // TODO: Return and use it as type where it is called
   getReportsToShow(report: Report, showTreeInCompare: boolean) {
     let reportsToShow: Report[] = [report];
     if (!showTreeInCompare) {
@@ -97,7 +97,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   createChildNode(checkpoint: Checkpoint): TreeNode {
-    const img = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0)
+    const img: string = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0)
     return {
       text: '<img src="' + img + '" alt="">' + checkpoint.name,
       ladybug: checkpoint,
@@ -122,6 +122,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
 
       // Else the level is equal, meaning the previous node is its sibling
     } else {
+      // TODO: Find out type
       const newParent = this.parentMap.find(x => x.id == previousNode.id).parent;
       this.addChild(newParent, node)
     }
@@ -134,6 +135,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
       return currentNode;
     }
 
+    // TODO: Find out type
     const newPotentialParent = this.parentMap.find(node => node.id == potentialParent.id).parent;
     return this.findParent(currentNode, newPotentialParent)
   }
@@ -169,6 +171,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
       this.tree = this.loaderService.getTreeData();
       this.selectedReports = this.loaderService.getSelectedReports();
       this.updateTreeView();
+      // TODO: Find out if type is actually TreeNode
       const selectedNode = this.loaderService.getSelectedNode();
       if (selectedNode != -1) {
         $('#' + this.treeId).treeview('toggleNodeSelected', [ selectedNode, { silent: false } ]);
@@ -178,6 +181,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.tree.length > 0) {
+      // TODO: Find out if type is actually number
       const selectedNode = $('#' + this.treeId).treeview('getSelected')[0].id;
       this.loaderService.saveTreeSettings(this.tree, this.selectedReports, selectedNode)
     }

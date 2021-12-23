@@ -53,10 +53,10 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addCopiedReports(metadata: Metadata): void {
-    const amountAdded = metadata.values.length - this.reports.length
+    const amountAdded: number = metadata.values.length - this.reports.length
     if (amountAdded > 0) {
-      for (let i = this.reports.length; i <= metadata.values.length - 1; i++) {
-        this.reports.push(metadata.values[i])
+      for (let index = this.reports.length; index <= metadata.values.length - 1; index++) {
+        this.reports.push(metadata.values[index])
       }
     }
   }
@@ -110,22 +110,22 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   checkIfTestReportReran(id: string): boolean {
-    return this.reranReports.filter(report => report.originalIndex == id).length > 0;
+    return this.reranReports.some(report => report.originalIndex == id);
   }
 
   showResults(resultReport: TestResult, oldReportIndex: string): void {
-    let testReportElement = document.getElementById("testReport#" + oldReportIndex);
+    let testReportElement = document.querySelector("#testReport\\#" + oldReportIndex);
     if (testReportElement) {
       this.appendResultToTestReport(resultReport, oldReportIndex, testReportElement)
     }
   }
 
-  appendResultToTestReport(resultReport: TestResult, oldReportIndex: string, testReportElement: HTMLElement): void {
+  appendResultToTestReport(resultReport: TestResult, oldReportIndex: string, testReportElement: Element): void {
     let newResultElement = this.createNewResultElement(resultReport, oldReportIndex)
-    let existingResultElement = document.getElementById("resultElement#" + oldReportIndex)
+    let existingResultElement = document.querySelector("#resultElement\\#" + oldReportIndex)
 
     if (existingResultElement) {
-      this.replaceElement(testReportElement, newResultElement, existingResultElement, oldReportIndex)
+      this.replaceElement(newResultElement, existingResultElement, oldReportIndex)
     } else {
       this.addElement(testReportElement, newResultElement)
     }
@@ -133,7 +133,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reranReports.push({originalIndex: oldReportIndex, newIndex: resultReport.report.storageId.toString(), result: resultReport});
   }
 
-  createNewResultElement(resultReport: TestResult, oldReportIndex: string): HTMLElement {
+  createNewResultElement(resultReport: TestResult, oldReportIndex: string): Element {
     let originalReport = this.getOriginalReport(oldReportIndex);
     return this.createElement(resultReport, oldReportIndex, originalReport);
   }
@@ -148,18 +148,18 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     return <Report>originalReport;
   }
 
-  replaceElement(parentElement: HTMLElement, newElement: HTMLElement, oldElement: HTMLElement, oldReportIndex: string): void {
+  replaceElement(newElement: Element, oldElement: Element, oldReportIndex: string): void {
     this.reranReports = this.reranReports.filter(report => report.originalIndex != oldReportIndex)
-    parentElement.replaceChild(newElement, oldElement)
+    oldElement.replaceWith(newElement)
   }
 
-  addElement(parentElement: HTMLElement, newElement: HTMLElement): void {
-    parentElement.appendChild(newElement);
+  addElement(parentElement: Element, newElement: Element): void {
+    parentElement.append(newElement);
   }
 
   createElement(resultReport: TestResult, oldReportIndex: string, originalReport: Report): HTMLElement {
-    const tdElement = document.createElement('td')
-    tdElement.appendChild(document.createTextNode("("
+    const tdElement: HTMLElement = document.createElement('td')
+    tdElement.append(document.createTextNode("("
       + resultReport.previousTime + "ms >> "
       + resultReport.currentTime + "ms) ("
       + resultReport.stubbed + "/"
@@ -168,7 +168,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     tdElement.setAttribute('id', 'resultElement#' + oldReportIndex)
 
     // If the reports are not equal, then a reportIndex color should be shown
-    const color = originalReport == resultReport.report ? 'green' : 'red'
+    const color: string = originalReport == resultReport.report ? 'green' : 'red'
     tdElement.setAttribute('style', 'color:' + color)
     return tdElement;
   }
@@ -185,7 +185,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   downloadSelected(exportMessages: boolean, exportReports: boolean): void {
-    const queryString = this.reports.filter(report => report.checked)
+    const queryString: string = this.reports.filter(report => report.checked)
       .reduce((totalQuery: string, selectedReport: string[]) => totalQuery + "id=" + selectedReport[this.STORAGE_ID_INDEX] + "&", "?")
     window.open('api/report/download/testStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
   }
@@ -193,14 +193,14 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   uploadReport(event: any): void {
     const file: File = event.target.files[0]
     if (file) {
-      const formData = new FormData();
+      const formData: any = new FormData();
       formData.append("file", file);
       this.httpService.uploadReportToStorage(formData).subscribe(() => this.loadData())
     }
   }
 
   compareReports(originalReport: string): void {
-    let newReport = this.reranReports.filter(report => report.originalIndex == originalReport)[0].newIndex;
+    let newReport = this.reranReports.find(report => report.originalIndex == originalReport)?.newIndex;
     this.openCompareReportsEvent.emit({oldReport: originalReport, newReport: newReport})
   }
 
@@ -215,10 +215,10 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   checkAll(): void {
-    this.reports.map(report => report.checked = true)
+    this.reports.forEach(report => report.checked = true)
   }
 
   uncheckAll(): void {
-    this.reports.map(report => report.checked = false)
+    this.reports.forEach(report => report.checked = false)
   }
 }

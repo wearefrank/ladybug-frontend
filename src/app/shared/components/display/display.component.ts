@@ -33,8 +33,7 @@ export class DisplayComponent {
 
   constructor(
     private modalService: NgbModal,
-    private httpService: HttpService) {
-  }
+    private httpService: HttpService) {}
 
   openDifferenceModal(modal: any, type: string): void {
     if (this.report.root) {
@@ -136,7 +135,7 @@ export class DisplayComponent {
   }
 
   downloadReport(exportMessages: boolean, exportReports: boolean): void {
-    const queryString = "?id=" + this.report.ladybug.uid.split('#')[0];
+    const queryString: string = "?id=" + this.report.ladybug.uid.split('#')[0];
     window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString);
     this.httpService.handleSuccess('Report Downloaded!')
   }
