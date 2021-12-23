@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import {Metadata} from "../interfaces/metadata";
-import {TreeNode} from "../interfaces/tree-node";
-import {ReranReport} from "../interfaces/reran-report";
-import {Report} from "../interfaces/report";
+import { Metadata } from '../interfaces/metadata';
+import { TreeNode } from '../interfaces/tree-node';
+import { ReranReport } from '../interfaces/reran-report';
+import { Report } from '../interfaces/report';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LoaderService {
   // Table
   tableLoaded: boolean = false;
-  tableData: Metadata = {fields: [], values: []}
+  tableData: Metadata = { fields: [], values: [] };
   showFilter: boolean = false;
 
   // Tree
@@ -27,7 +27,7 @@ export class LoaderService {
   // Ran tests
   // Selected reports in compare
 
-  constructor() { }
+  constructor() {}
 
   saveTestSettings(testReports: any[], reranReports: ReranReport[]): void {
     this.testLoaded = true;
@@ -65,7 +65,11 @@ export class LoaderService {
     return this.showFilter;
   }
 
-  saveTreeSettings(treeData: TreeNode[], selectedReports: Report[], nodeSelected: number): void {
+  saveTreeSettings(
+    treeData: TreeNode[],
+    selectedReports: Report[],
+    nodeSelected: number
+  ): void {
     this.treeLoaded = true;
     this.treeData = treeData;
     this.selectedReports = selectedReports;

@@ -1,8 +1,8 @@
-import {AfterViewInit, Component, Injectable, ViewChild} from '@angular/core';
-import {TreeComponent} from "../shared/components/tree/tree.component";
-import {DisplayComponent} from "../shared/components/display/display.component";
-import {TreeNode} from "../shared/interfaces/tree-node";
-import {Report} from "../shared/interfaces/report";
+import { AfterViewInit, Component, Injectable, ViewChild } from '@angular/core';
+import { TreeComponent } from '../shared/components/tree/tree.component';
+import { DisplayComponent } from '../shared/components/display/display.component';
+import { TreeNode } from '../shared/interfaces/tree-node';
+import { Report } from '../shared/interfaces/report';
 
 @Injectable()
 export class ReportData {
@@ -12,20 +12,19 @@ export class ReportData {
 @Component({
   selector: 'app-report',
   templateUrl: './report.component.html',
-  styleUrls: ['./report.component.css']
+  styleUrls: ['./report.component.css'],
 })
 export class ReportComponent implements AfterViewInit {
   @ViewChild(TreeComponent) treeComponent!: TreeComponent;
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
 
-  constructor(public reportData: ReportData) {
-  }
+  constructor(public reportData: ReportData) {}
 
   /**
    Add a new report and notify the tree of the change
    */
   ngAfterViewInit(): void {
-    this.treeComponent?.handleChange(<Report><unknown>this.reportData, false);
+    this.treeComponent?.handleChange(<Report>(<unknown>this.reportData), false);
   }
 
   /**
@@ -35,5 +34,4 @@ export class ReportComponent implements AfterViewInit {
   selectReport(currentReport: TreeNode): void {
     this.displayComponent.showReport(currentReport);
   }
-
 }

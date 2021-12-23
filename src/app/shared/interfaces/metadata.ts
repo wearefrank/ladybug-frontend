@@ -1,4 +1,4 @@
 export interface Metadata {
-  fields: []
-  values: string[][]
+  fields: [];
+  values: string[][];
 }

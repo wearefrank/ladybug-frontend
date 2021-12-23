@@ -1,17 +1,23 @@
-import {Component, ViewChild} from '@angular/core';
-import {TreeComponent} from "../shared/components/tree/tree.component";
-import {DisplayComponent} from "../shared/components/display/display.component";
-import {Report} from "../shared/interfaces/report";
-import {TreeNode} from "../shared/interfaces/tree-node";
+import { Component, ViewChild } from '@angular/core';
+import { TreeComponent } from '../shared/components/tree/tree.component';
+import { DisplayComponent } from '../shared/components/display/display.component';
+import { Report } from '../shared/interfaces/report';
+import { TreeNode } from '../shared/interfaces/tree-node';
 
 @Component({
   selector: 'app-debug',
   templateUrl: './debug.component.html',
-  styleUrls: ['./debug.component.css']
+  styleUrls: ['./debug.component.css'],
 })
 export class DebugComponent {
   reports: Report[] = [];
-  currentReport: TreeNode = {id: -1, ladybug: undefined, level: -1, root: false, text: ""};
+  currentReport: TreeNode = {
+    id: -1,
+    ladybug: undefined,
+    level: -1,
+    root: false,
+    text: '',
+  };
   @ViewChild(TreeComponent) treeComponent!: TreeComponent;
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
 
@@ -39,7 +45,13 @@ export class DebugComponent {
    * @param currentReport - the report to be closed
    */
   closeReport(currentReport: TreeNode): void {
-    this.currentReport = {id: -1, ladybug: undefined, level: -1, root: false, text: ""}
+    this.currentReport = {
+      id: -1,
+      ladybug: undefined,
+      level: -1,
+      root: false,
+      text: '',
+    };
     this.treeComponent.removeNode(currentReport);
   }
 }

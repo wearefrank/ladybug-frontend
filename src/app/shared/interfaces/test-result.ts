@@ -1,9 +1,9 @@
-import {Report} from "./report";
+import { Report } from './report';
 
 export interface TestResult {
-  currentTime: number,
-  previousTime: number,
-  report: Report,
-  stubbed: number,
-  total: number
+  currentTime: number;
+  previousTime: number;
+  report: Report;
+  stubbed: number;
+  total: number;
 }

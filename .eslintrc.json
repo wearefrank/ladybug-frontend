@@ -5,9 +5,11 @@
   ],
   "overrides": [
     {
+      "parser": "@typescript-eslint/parser",
       "files": [
         "*.ts"
       ],
+      "plugins": ["sonarjs", "prettier"],
       "parserOptions": {
         "project": [
           "tsconfig.json"
@@ -16,7 +18,10 @@
       },
       "extends": [
         "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates"
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:sonarjs/recommended",
+        "plugin:unicorn/recommended",
+        "plugin:prettier/recommended"
       ],
       "rules": {
         "@angular-eslint/directive-selector": [
@@ -34,7 +39,9 @@
             "prefix": "app",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "unicorn/no-array-for-each": "off",
+        "unicorn/prevent-abbreviations": "off"
       }
     },
     {
