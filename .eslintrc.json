@@ -40,6 +40,9 @@
             "style": "kebab-case"
           }
         ],
+        "prettier/prettier": ["error", {
+          "endOfLine": "auto"
+        }],
         "unicorn/no-array-for-each": "off",
         "unicorn/prevent-abbreviations": "off"
       }
