@@ -12,14 +12,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Install Cypress
+        run: npm ci
+
       - name: Run Cypress tests
-        uses: cypress-io/github-action@v2
-        with:
-          browser: chrome
-          headless: true
-        env:
-          CYPRESS_host: 'http://localhost'
-          CYPRESS_port: 4200
+        run: npm run e2e
+        continue-on-error: false
 
   unit-test:
     name: Unit tests
