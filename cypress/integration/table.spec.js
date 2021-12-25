@@ -38,7 +38,7 @@ describe('Toggle filter and filter results', function () {
   it('Type in a filter parameter', function () {
     cy.get('#FilterButton').click()
     cy.get('#filterRow #filter').eq(2).type("testRerun{enter}")
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 0)
   })
 
   it('Empty the filter', function () {
