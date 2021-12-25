@@ -61,7 +61,7 @@ export class MonacoEditorComponent implements AfterViewInit {
           loaderScript.type = 'text/javascript';
           loaderScript.src = 'assets/monaco/vs/loader.js';
           loaderScript.addEventListener('load', onAmdLoader);
-          document.body.append(loaderScript); // TODO : Check if .append or appendChild
+          document.body.append(loaderScript);
         } else {
           onAmdLoader();
         }
