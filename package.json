@@ -10,7 +10,6 @@
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "cypress-headed":"start-server-and-test 'ng-serve' http://localhost:4200 cypress run --headed --browser chrome",
     "e2e": "start-server-and-test 'ng serve' http://localhost:4200 cypress:run",
     "e2e-interactive": "start-server-and-test 'ng serve' http://localhost:4200 cypress:open",
     "lint": "ng lint"
