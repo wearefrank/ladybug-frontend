@@ -16,8 +16,8 @@ jobs:
         run: npm ci
 
       - name: Run Cypress tests
-        run: npm run test:chrome
-        continue-on-error: true
+        run: npm run cypress:run
+        continue-on-error: false
 
   unit-test:
     name: Unit tests
@@ -41,7 +41,7 @@ jobs:
 
       - name: Run unit tests
         run: npm run test-headless
-        continue-on-error: true
+        continue-on-error: false
 
 
 
