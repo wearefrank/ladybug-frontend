@@ -41,7 +41,8 @@
           }
         ],
         "prettier/prettier": ["error", {
-          "endOfLine": "auto"
+          "endOfLine": "auto",
+          "printWidth": 120
         }],
         "unicorn/no-array-for-each": "off",
         "unicorn/prevent-abbreviations": "off"

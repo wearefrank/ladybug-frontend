@@ -18,11 +18,7 @@ export class AppComponent implements AfterViewInit {
   LAST_TAB_INDEX = 3;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
 
-  constructor(
-    private inj: Injector,
-    private titleService: Title,
-    private httpService: HttpService
-  ) {
+  constructor(private inj: Injector, private titleService: Title, private httpService: HttpService) {
     this.appVersion = appVersion;
     this.titleService.setTitle('Ladybug - v' + this.appVersion);
   }

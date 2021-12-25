@@ -65,11 +65,7 @@ export class LoaderService {
     return this.showFilter;
   }
 
-  saveTreeSettings(
-    treeData: TreeNode[],
-    selectedReports: Report[],
-    nodeSelected: number
-  ): void {
+  saveTreeSettings(treeData: TreeNode[], selectedReports: Report[], nodeSelected: number): void {
     this.treeLoaded = true;
     this.treeData = treeData;
     this.selectedReports = selectedReports;

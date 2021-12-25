@@ -1,11 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MonacoEditorComponent } from '../monaco-editor/monaco-editor.component';
 // @ts-ignore
@@ -46,10 +39,7 @@ export class DisplayComponent {
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
 
-  constructor(
-    private modalService: NgbModal,
-    private httpService: HttpService
-  ) {}
+  constructor(private modalService: NgbModal, private httpService: HttpService) {}
 
   openDifferenceModal(modal: any, type: string): void {
     if (this.report.root) {
@@ -67,10 +57,7 @@ export class DisplayComponent {
   }
 
   addToDifferenceModal(keyword: string, elementValue: string) {
-    const difference = new DiffMatchPatch().diff_main(
-      this.report.ladybug[keyword] ?? '',
-      elementValue ?? ''
-    );
+    const difference = new DiffMatchPatch().diff_main(this.report.ladybug[keyword] ?? '', elementValue ?? '');
     this.differenceModal.push({
       name: keyword,
       originalValue: this.report.ladybug[keyword],
@@ -87,15 +74,11 @@ export class DisplayComponent {
 
   loadMonacoCode() {
     if (this.report.root) {
-      this.httpService
-        .getMonacoCode(this.report.ladybug.storageId)
-        .subscribe((data) => {
-          this.monacoEditorComponent?.loadMonaco(data.xml);
-        });
+      this.httpService.getMonacoCode(this.report.ladybug.storageId).subscribe((data) => {
+        this.monacoEditorComponent?.loadMonaco(data.xml);
+      });
     } else {
-      this.monacoEditorComponent?.loadMonaco(
-        beautify(this.report.ladybug.message)
-      );
+      this.monacoEditorComponent?.loadMonaco(beautify(this.report.ladybug.message));
     }
   }
 
@@ -139,9 +122,7 @@ export class DisplayComponent {
 
   saveChanges() {
     if (this.report.root) {
-      this.httpService
-        .postReport(this.report.ladybug.storageId, this.getReportValues())
-        .subscribe();
+      this.httpService.postReport(this.report.ladybug.storageId, this.getReportValues()).subscribe();
     } else {
       // TODO: Save the changes in the message for child nodes (aka the editor changes)
     }
@@ -149,9 +130,7 @@ export class DisplayComponent {
 
   discardChanges() {
     if (!this.report.root) {
-      this.monacoEditorComponent.loadMonaco(
-        this.differenceModal[0].originalValue
-      );
+      this.monacoEditorComponent.loadMonaco(this.differenceModal[0].originalValue);
     }
   }
 
@@ -172,13 +151,7 @@ export class DisplayComponent {
 
   downloadReport(exportMessages: boolean, exportReports: boolean): void {
     const queryString: string = '?id=' + this.report.ladybug.uid.split('#')[0];
-    window.open(
-      'api/report/download/debugStorage/' +
-        exportMessages +
-        '/' +
-        exportReports +
-        queryString
-    );
+    window.open('api/report/download/debugStorage/' + exportMessages + '/' + exportReports + queryString);
     this.httpService.handleSuccess('Report Downloaded!');
   }
 

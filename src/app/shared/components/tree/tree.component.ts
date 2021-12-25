@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { HelperService } from '../../services/helper.service';
 import { LoaderService } from '../../services/loader.service';
 import { TreeNode } from '../../interfaces/tree-node';
@@ -27,10 +19,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   parentMap: any[] = []; // {id: number, parent: TreeNode}
   treeNodeId: number = 0;
 
-  constructor(
-    private helperService: HelperService,
-    private loaderService: LoaderService
-  ) {}
+  constructor(private helperService: HelperService, private loaderService: LoaderService) {}
 
   collapseAll(): void {
     $('#' + this.treeId).treeview('collapseAll', { silent: true });
@@ -108,11 +97,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   createChildNode(checkpoint: Checkpoint): TreeNode {
-    const img: string = this.helperService.getImage(
-      checkpoint.type,
-      checkpoint.encoding,
-      checkpoint.level % 2 == 0
-    );
+    const img: string = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0);
     return {
       text: '<img src="' + img + '" alt="">' + checkpoint.name,
       ladybug: checkpoint,
@@ -138,9 +123,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
       // Else the level is equal, meaning the previous node is its sibling
     } else {
       // TODO: Find out type
-      const newParent = this.parentMap.find(
-        (x) => x.id == previousNode.id
-      ).parent;
+      const newParent = this.parentMap.find((x) => x.id == previousNode.id).parent;
       this.addChild(newParent, node);
     }
   }
@@ -153,9 +136,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     }
 
     // TODO: Find out type
-    const newPotentialParent = this.parentMap.find(
-      (node) => node.id == potentialParent.id
-    ).parent;
+    const newPotentialParent = this.parentMap.find((node) => node.id == potentialParent.id).parent;
     return this.findParent(currentNode, newPotentialParent);
   }
 
@@ -196,10 +177,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
       // TODO: Find out if type is actually TreeNode
       const selectedNode = this.loaderService.getSelectedNode();
       if (selectedNode != -1) {
-        $('#' + this.treeId).treeview('toggleNodeSelected', [
-          selectedNode,
-          { silent: false },
-        ]);
+        $('#' + this.treeId).treeview('toggleNodeSelected', [selectedNode, { silent: false }]);
       }
     }
   }
@@ -208,11 +186,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     if (this.tree.length > 0) {
       // TODO: Find out if type is actually number
       const selectedNode = $('#' + this.treeId).treeview('getSelected')[0].id;
-      this.loaderService.saveTreeSettings(
-        this.tree,
-        this.selectedReports,
-        selectedNode
-      );
+      this.loaderService.saveTreeSettings(this.tree, this.selectedReports, selectedNode);
     }
   }
 }

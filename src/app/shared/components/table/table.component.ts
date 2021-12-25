@@ -1,13 +1,4 @@
-import {
-  Component,
-  OnInit,
-  Output,
-  EventEmitter,
-  Input,
-  ViewChild,
-  AfterViewInit,
-  OnDestroy,
-} from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { ToastComponent } from '../toast/toast.component';
 import { HelperService } from '../../services/helper.service';
 import { HttpService } from '../../services/http.service';
@@ -112,17 +103,13 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openAllReports(): void {
-    this.reportMetadata.values.forEach((report: string[]) =>
-      this.openReport(report[this.STORAGE_ID_INDEX])
-    );
+    this.reportMetadata.values.forEach((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]));
   }
 
   openReports(amount: number): void {
     this.reportMetadata.values
       .slice(0, amount)
-      .forEach((report: string[]) =>
-        this.openReport(report[this.STORAGE_ID_INDEX])
-      );
+      .forEach((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]));
   }
 
   downloadReports(exportMessages: boolean, exportReports: boolean): void {
@@ -131,13 +118,7 @@ export class TableComponent implements OnInit, OnDestroy {
         totalQuery + 'id=' + selectedReport[this.STORAGE_ID_INDEX] + '&',
       '?'
     );
-    window.open(
-      'api/report/download/debugStorage/' +
-        exportMessages +
-        '/' +
-        exportReports +
-        queryString.slice(0, -1)
-    );
+    window.open('api/report/download/debugStorage/' + exportMessages + '/' + exportReports + queryString.slice(0, -1));
   }
 
   uploadReports(event: any): void {

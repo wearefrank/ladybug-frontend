@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../services/http.service';
@@ -25,10 +19,7 @@ export class TableSettingsModalComponent implements OnInit {
 
   @Output() openReportsEvent = new EventEmitter<any>();
 
-  constructor(
-    private modalService: NgbModal,
-    private httpService: HttpService
-  ) {}
+  constructor(private modalService: NgbModal, private httpService: HttpService) {}
 
   open() {
     this.modalService.open(this.modal);
@@ -37,9 +28,7 @@ export class TableSettingsModalComponent implements OnInit {
   ngOnInit(): void {
     this.httpService.getTransformation().subscribe((response) => {
       // Also load in the default transformation
-      this.settingsForm
-        .get('transformation')
-        ?.setValue(response.transformation);
+      this.settingsForm.get('transformation')?.setValue(response.transformation);
     });
   }
 

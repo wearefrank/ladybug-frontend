@@ -47,9 +47,7 @@ export class HttpService {
     return this.http
       .get<any>(this.REPORT_DEBUG_STORAGE + reportId)
       .pipe(tap(() => this.handleSuccess('Report opened!')))
-      .pipe(
-        catchError(this.handleError('Could not retrieve data for report!'))
-      );
+      .pipe(catchError(this.handleError('Could not retrieve data for report!')));
   }
 
   getMonacoCode(reportId: string): Observable<any> {
@@ -67,18 +65,14 @@ export class HttpService {
     return this.http
       .post(this.REPORT_DEBUG_STORAGE + reportId, report)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
-      .pipe(
-        catchError(this.handleError('Could not retrieve data for report!'))
-      );
+      .pipe(catchError(this.handleError('Could not retrieve data for report!')));
   }
 
   copyReport(data: any): Observable<void> {
     return this.http
       .put('api/report/store/testStorage', data)
       .pipe(tap(() => this.handleSuccess('Report copied!')))
-      .pipe(
-        catchError(this.handleError('Could not copy report into test tab!'))
-      );
+      .pipe(catchError(this.handleError('Could not copy report into test tab!')));
   }
 
   uploadReport(formData: FormData): Observable<any> {
@@ -87,9 +81,7 @@ export class HttpService {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       .pipe(tap(() => this.handleSuccess('Report uploaded!')))
-      .pipe(
-        catchError(this.handleError('Could not retrieve uploaded report!'))
-      );
+      .pipe(catchError(this.handleError('Could not retrieve uploaded report!')));
   }
 
   uploadReportToStorage(formData: FormData): Observable<any> {
@@ -98,9 +90,7 @@ export class HttpService {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       .pipe(tap(() => this.handleSuccess('Report uploaded to storage!')))
-      .pipe(
-        catchError(this.handleError('Could not upload report to storage!'))
-      );
+      .pipe(catchError(this.handleError('Could not upload report to storage!')));
   }
 
   postSettings(settings: any): Observable<void> {
@@ -124,9 +114,7 @@ export class HttpService {
   }
 
   reset(): Observable<void> {
-    return this.http
-      .post<any>('api/runner/reset', {})
-      .pipe(catchError(this.handleError('Could not reset runner!')));
+    return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError('Could not reset runner!')));
   }
 
   runReport(report: any): Observable<void> {

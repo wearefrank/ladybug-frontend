@@ -1,12 +1,4 @@
-import {
-  Component,
-  OnInit,
-  EventEmitter,
-  Output,
-  ViewChild,
-  AfterViewInit,
-  OnDestroy,
-} from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { HttpService } from '../shared/services/http.service';
 import { LoaderService } from '../shared/services/loader.service';
@@ -35,10 +27,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(TestSettingsModalComponent)
   testSettingsModal!: TestSettingsModalComponent;
 
-  constructor(
-    private httpService: HttpService,
-    private loaderService: LoaderService
-  ) {}
+  constructor(private httpService: HttpService, private loaderService: LoaderService) {}
 
   openCloneModal(): void {
     this.cloneModal.open();
@@ -67,11 +56,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   addCopiedReports(metadata: Metadata): void {
     const amountAdded: number = metadata.values.length - this.reports.length;
     if (amountAdded > 0) {
-      for (
-        let index = this.reports.length;
-        index <= metadata.values.length - 1;
-        index++
-      ) {
+      for (let index = this.reports.length; index <= metadata.values.length - 1; index++) {
         this.reports.push(metadata.values[index]);
       }
     }
@@ -80,8 +65,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   getCopiedReports(): void {
     this.httpService.getTestReports().subscribe({
       next: (response) => this.addCopiedReports(response),
-      error: () =>
-        this.httpService.handleError('Could not retrieve data for test!'),
+      error: () => this.httpService.handleError('Could not retrieve data for test!'),
     });
   }
 
@@ -92,8 +76,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   loadData(): void {
     this.httpService.getTestReports().subscribe({
       next: (value) => (this.reports = value.values),
-      error: () =>
-        this.httpService.handleError('Could not retrieve data for test!'),
+      error: () => this.httpService.handleError('Could not retrieve data for test!'),
     });
   }
 
@@ -110,9 +93,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     const data: any = { testStorage: [] };
     this.reports
       .filter((report) => report.checked)
-      .forEach((report) =>
-        data['testStorage'].push(report[this.STORAGE_ID_INDEX])
-      );
+      .forEach((report) => data['testStorage'].push(report[this.STORAGE_ID_INDEX]));
     this.httpService.runReport(data).subscribe(() => this.timeOut());
   }
 
@@ -135,37 +116,18 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showResults(resultReport: TestResult, oldReportIndex: string): void {
-    let testReportElement = document.querySelector(
-      '#testReport\\#' + oldReportIndex
-    );
+    let testReportElement = document.querySelector('#testReport\\#' + oldReportIndex);
     if (testReportElement) {
-      this.appendResultToTestReport(
-        resultReport,
-        oldReportIndex,
-        testReportElement
-      );
+      this.appendResultToTestReport(resultReport, oldReportIndex, testReportElement);
     }
   }
 
-  appendResultToTestReport(
-    resultReport: TestResult,
-    oldReportIndex: string,
-    testReportElement: Element
-  ): void {
-    let newResultElement = this.createNewResultElement(
-      resultReport,
-      oldReportIndex
-    );
-    let existingResultElement = document.querySelector(
-      '#resultElement\\#' + oldReportIndex
-    );
+  appendResultToTestReport(resultReport: TestResult, oldReportIndex: string, testReportElement: Element): void {
+    let newResultElement = this.createNewResultElement(resultReport, oldReportIndex);
+    let existingResultElement = document.querySelector('#resultElement\\#' + oldReportIndex);
 
     if (existingResultElement) {
-      this.replaceElement(
-        newResultElement,
-        existingResultElement,
-        oldReportIndex
-      );
+      this.replaceElement(newResultElement, existingResultElement, oldReportIndex);
     } else {
       this.addElement(testReportElement, newResultElement);
     }
@@ -177,10 +139,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  createNewResultElement(
-    resultReport: TestResult,
-    oldReportIndex: string
-  ): Element {
+  createNewResultElement(resultReport: TestResult, oldReportIndex: string): Element {
     let originalReport = this.getOriginalReport(oldReportIndex);
     return this.createElement(resultReport, oldReportIndex, originalReport);
   }
@@ -195,14 +154,8 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     return <Report>originalReport;
   }
 
-  replaceElement(
-    newElement: Element,
-    oldElement: Element,
-    oldReportIndex: string
-  ): void {
-    this.reranReports = this.reranReports.filter(
-      (report) => report.originalIndex != oldReportIndex
-    );
+  replaceElement(newElement: Element, oldElement: Element, oldReportIndex: string): void {
+    this.reranReports = this.reranReports.filter((report) => report.originalIndex != oldReportIndex);
     oldElement.replaceWith(newElement);
   }
 
@@ -210,11 +163,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     parentElement.append(newElement);
   }
 
-  createElement(
-    resultReport: TestResult,
-    oldReportIndex: string,
-    originalReport: Report
-  ): HTMLElement {
+  createElement(resultReport: TestResult, oldReportIndex: string, originalReport: Report): HTMLElement {
     const tdElement: HTMLElement = document.createElement('td');
     tdElement.append(
       document.createTextNode(
@@ -232,8 +181,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     tdElement.setAttribute('id', 'resultElement#' + oldReportIndex);
 
     // If the reports are not equal, then a reportIndex color should be shown
-    const color: string =
-      originalReport == resultReport.report ? 'green' : 'red';
+    const color: string = originalReport == resultReport.report ? 'green' : 'red';
     tdElement.setAttribute('style', 'color:' + color);
     return tdElement;
   }
@@ -241,17 +189,13 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   selectReport(storageId: number, name: string): void {
     this.httpService
       .getReport(storageId.toString())
-      .subscribe((data) =>
-        this.openTestReportEvent.emit({ data: data, name: name })
-      );
+      .subscribe((data) => this.openTestReportEvent.emit({ data: data, name: name }));
   }
 
   deleteSelected(): void {
     this.reports
       .filter((report) => report.checked)
-      .forEach((report) =>
-        this.httpService.deleteReport(report[this.STORAGE_ID_INDEX]).subscribe()
-      );
+      .forEach((report) => this.httpService.deleteReport(report[this.STORAGE_ID_INDEX]).subscribe());
     setTimeout(() => this.loadData(), this.TIMEOUT);
   }
 
@@ -263,13 +207,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
           totalQuery + 'id=' + selectedReport[this.STORAGE_ID_INDEX] + '&',
         '?'
       );
-    window.open(
-      'api/report/download/testStorage/' +
-        exportMessages +
-        '/' +
-        exportReports +
-        queryString.slice(0, -1)
-    );
+    window.open('api/report/download/testStorage/' + exportMessages + '/' + exportReports + queryString.slice(0, -1));
   }
 
   uploadReport(event: any): void {
@@ -277,16 +215,12 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     if (file) {
       const formData: any = new FormData();
       formData.append('file', file);
-      this.httpService
-        .uploadReportToStorage(formData)
-        .subscribe(() => this.loadData());
+      this.httpService.uploadReportToStorage(formData).subscribe(() => this.loadData());
     }
   }
 
   compareReports(originalReport: string): void {
-    let newReport = this.reranReports.find(
-      (report) => report.originalIndex == originalReport
-    )?.newIndex;
+    let newReport = this.reranReports.find((report) => report.originalIndex == originalReport)?.newIndex;
     this.openCompareReportsEvent.emit({
       oldReport: originalReport,
       newReport: newReport,
@@ -295,9 +229,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
 
   replaceReport(reportId: string): void {
     this.httpService.replaceReport(reportId).subscribe(() => {
-      this.reranReports = this.reranReports.filter(
-        (report) => report.originalIndex != reportId
-      );
+      this.reranReports = this.reranReports.filter((report) => report.originalIndex != reportId);
     });
   }
 

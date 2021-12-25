@@ -1,11 +1,5 @@
 /// <reference path="../../../../../node_modules/monaco-editor/monaco.d.ts" />
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Input,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 
 let loadedMonaco = false;
 let loadPromise: Promise<void>;
@@ -63,8 +57,7 @@ export class MonacoEditorComponent implements AfterViewInit {
         };
 
         if (!(window as any).require) {
-          const loaderScript: HTMLScriptElement =
-            document.createElement('script');
+          const loaderScript: HTMLScriptElement = document.createElement('script');
           loaderScript.type = 'text/javascript';
           loaderScript.src = 'assets/monaco/vs/loader.js';
           loaderScript.addEventListener('load', onAmdLoader);
@@ -81,19 +74,16 @@ export class MonacoEditorComponent implements AfterViewInit {
    * @param message - the initial xml cod to be shown
    */
   initializeEditor(message: string): void {
-    this.codeEditorInstance = monaco.editor.create(
-      this.editorContainer.nativeElement,
-      {
-        value: message,
-        readOnly: true,
-        language: 'xml',
-        theme: 'vs-light',
-        fontSize: 10,
-        minimap: {
-          enabled: false,
-        },
-      }
-    );
+    this.codeEditorInstance = monaco.editor.create(this.editorContainer.nativeElement, {
+      value: message,
+      readOnly: true,
+      language: 'xml',
+      theme: 'vs-light',
+      fontSize: 10,
+      minimap: {
+        enabled: false,
+      },
+    });
   }
 
   enableEdit(): void {
