@@ -29,5 +29,5 @@ jobs:
     - run: npm ci
     - run: npm run build
     - run: npm run test-headless
-    - run: npm run e2e
+    - run: npm run cypress:run
     - run: npm run lint
