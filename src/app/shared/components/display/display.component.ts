@@ -54,20 +54,11 @@ export class DisplayComponent {
   openDifferenceModal(modal: any, type: string): void {
     if (this.report.root) {
       this.addToDifferenceModal('name', this.name.nativeElement.value);
-      this.addToDifferenceModal(
-        'description',
-        this.description.nativeElement.value
-      );
+      this.addToDifferenceModal('description', this.description.nativeElement.value);
       this.addToDifferenceModal('path', this.path.nativeElement.value);
-      this.addToDifferenceModal(
-        'transformation',
-        this.transformation.nativeElement.value
-      );
+      this.addToDifferenceModal('transformation', this.transformation.nativeElement.value);
     } else {
-      this.addToDifferenceModal(
-        'message',
-        this.monacoEditorComponent?.getValue()
-      );
+      this.addToDifferenceModal('message', this.monacoEditorComponent?.getValue());
     }
 
     modal.type = type;

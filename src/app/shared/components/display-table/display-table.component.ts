@@ -14,9 +14,10 @@ export class DisplayTableComponent {
   set report(report: TreeNode) {
     this._report = report;
   }
+
   public _report: TreeNode = {
     id: -1,
-    ladybug: undefined,
+    ladybug: {},
     level: -1,
     root: false,
     text: '',

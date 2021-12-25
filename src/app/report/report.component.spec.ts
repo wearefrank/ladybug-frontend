@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReportComponent } from './report.component';
+import {ReportComponent, ReportData} from './report.component';
 
 describe('ReportComponent', () => {
   let component: ReportComponent;
@@ -9,6 +9,7 @@ describe('ReportComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ReportComponent],
+      providers: [ReportData]
     }).compileComponents();
   });
 
