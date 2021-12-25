@@ -16,8 +16,8 @@ jobs:
         run: npm ci
 
       - name: Run Cypress tests
-        run: npm run e2e
-        continue-on-error: false
+        run: npm run e2e-interactive
+        continue-on-error: true
 
   unit-test:
     name: Unit tests

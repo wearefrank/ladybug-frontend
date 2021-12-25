@@ -11,7 +11,7 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "e2e": "start-server-and-test 'ng serve' 4200 cypress:run",
-    "e2e-interactive": "start-server-and-test 'ng serve' http://localhost:4200 cypress:open",
+    "e2e-interactive": "start-server-and-test 'ng serve' 4200 cypress:open",
     "lint": "ng lint"
   },
   "dependencies": {
