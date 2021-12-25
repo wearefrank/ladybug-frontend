@@ -17,6 +17,9 @@ jobs:
         with:
           browser: chrome
           headless: true
+        env:
+          CYPRESS_host: 'http://localhost'
+          CYPRESS_port: 4200
 
   unit-test:
     name: Unit tests
