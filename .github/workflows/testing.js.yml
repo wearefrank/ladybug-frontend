@@ -4,25 +4,7 @@ on:
   pull_request:
 
 jobs:
-  cypress-test:
-    name: Run on latest browsers
-    runs-on: ubuntu-latest
-    container: cypress/browsers:latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install Cypress
-        run: npm ci
-
-      - name: Build project
-        run: npm build
-
-      - name: Run Cypress tests
-        run: npm run e2e
-        continue-on-error: false
-
-  unit-test:
+  testing:
     name: Unit tests
     runs-on: ubuntu-latest
     strategy:
@@ -44,6 +26,10 @@ jobs:
 
       - name: Run unit tests
         run: npm run test-headless
+        continue-on-error: false
+
+      - name: Run Cypress tests
+        run: npm run e2e
         continue-on-error: false
 
 
