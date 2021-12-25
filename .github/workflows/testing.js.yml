@@ -15,9 +15,12 @@ jobs:
       - name: Install Cypress
         run: npm ci
 
+      - name: Build project
+        run: npm build
+
       - name: Run Cypress tests
-        run: npm run e2e-interactive
-        continue-on-error: true
+        run: npm run e2e
+        continue-on-error: false
 
   unit-test:
     name: Unit tests
