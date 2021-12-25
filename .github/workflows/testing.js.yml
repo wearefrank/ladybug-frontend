@@ -28,9 +28,9 @@ jobs:
         run: npm run test-headless
         continue-on-error: false
 
-      - name: Run Cypress tests
-        run: npm run e3e
-        continue-on-error: false
+#      - name: Run Cypress tests
+#        run: npm run e3e
+#        continue-on-error: false
 
 
 
