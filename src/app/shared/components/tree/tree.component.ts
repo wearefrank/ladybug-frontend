@@ -13,6 +13,7 @@ declare var $: any;
 })
 export class TreeComponent implements AfterViewInit, OnDestroy {
   @Output() selectReportEvent = new EventEmitter<any>();
+  @Output() closeEntireTreeEvent = new EventEmitter<any>();
   @Input() selectedReports: Report[] = [];
   tree: TreeNode[] = [];
   treeId: string = Math.random().toString(36).slice(7); //
@@ -32,6 +33,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   closeAll(): void {
     this.selectedReports.length = 0;
     $('#' + this.treeId).treeview('remove');
+    this.closeEntireTreeEvent.emit();
   }
 
   removeNode(node: TreeNode): void {

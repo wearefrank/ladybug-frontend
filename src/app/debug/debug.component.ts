@@ -40,6 +40,10 @@ export class DebugComponent {
     this.displayComponent.showReport(this.currentReport);
   }
 
+  closeEntireTree(): void {
+    this.displayComponent.closeReport(false);
+  }
+
   /**
    * Close a report
    * @param currentReport - the report to be closed

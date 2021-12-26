@@ -82,8 +82,10 @@ export class DisplayComponent {
     }
   }
 
-  closeReport(): void {
-    this.closeReportEvent.next(this.report);
+  closeReport(onlyClosingDisplay: boolean): void {
+    if (onlyClosingDisplay) {
+      this.closeReportEvent.next(this.report);
+    }
     this.displayReport = false;
     this.report = {
       id: -1,
