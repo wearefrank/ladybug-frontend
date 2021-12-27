@@ -5,5 +5,4 @@ export interface TreeNode {
   id: number;
   nodes?: TreeNode[];
   level: number;
-  nodeId?: number;
 }

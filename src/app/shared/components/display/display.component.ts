@@ -70,6 +70,7 @@ export class DisplayComponent {
     this.loadMonacoCode();
     this.displayReport = true;
     this.disableEditing(); // For switching from editing current report to another
+    console.log("Showing report" + this.displayReport)
   }
 
   loadMonacoCode() {
@@ -82,18 +83,15 @@ export class DisplayComponent {
     }
   }
 
-  closeReport(onlyClosingDisplay: boolean): void {
+  closeReport(onlyClosingDisplay: boolean, reportId: number): void {
     if (onlyClosingDisplay) {
       this.closeReportEvent.next(this.report);
+      if (this.report.id === reportId) {
+        this.displayReport = false;
+      }
+    } else {
+      this.displayReport = false;
     }
-    this.displayReport = false;
-    this.report = {
-      id: -1,
-      ladybug: undefined,
-      level: 0,
-      root: false,
-      text: '',
-    };
   }
 
   editReport(): void {

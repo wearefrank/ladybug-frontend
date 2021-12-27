@@ -14,7 +14,7 @@ declare var $: any;
 export class TreeComponent implements AfterViewInit, OnDestroy {
   @Output() selectReportEvent = new EventEmitter<any>();
   @Output() closeEntireTreeEvent = new EventEmitter<any>();
-  @Input() selectedReports: Report[] = [];
+  selectedReports: Report[] = [];
   tree: TreeNode[] = [];
   treeId: string = Math.random().toString(36).slice(7); //
   parentMap: any[] = []; // {id: number, parent: TreeNode}
@@ -38,21 +38,32 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
 
   removeNode(node: TreeNode): void {
     if (node.root) {
-      this.tree.splice(this.getNodeIndexToBeRemoved(node), 1);
-      this.updateTreeView();
+      const indexToBeRemoved = this.getNodeIndexToBeRemoved(node);
+      this.selectedReports.splice(indexToBeRemoved, 1);
+      this.tree.splice(indexToBeRemoved, 1);
+      this.selectNextReport(indexToBeRemoved);
     } else {
       this.removeNode($('#' + this.treeId).treeview('getParent', node));
     }
   }
 
-  getNodeIndexToBeRemoved(node: TreeNode): number {
-    const result: TreeNode | undefined = this.tree.find((report) => {
-      return report.id == node.nodeId;
-    });
-    if (result) {
-      return this.tree.indexOf(result);
+  selectNextReport(previousIndex: number): void {
+    if (this.selectedReports.length > 0) {
+      const nextIndex = this.tree.length > 1 ? previousIndex - 1 : 0;
+      const nextNode = this.tree[nextIndex];
+      this.updateTreeView();
+
+      $('#' + this.treeId).treeview('toggleNodeSelected', [
+        nextNode.nodes![0].id,
+        { silent: false },
+      ]);
+    } else {
+      this.updateTreeView();
     }
-    return -1;
+  }
+
+  getNodeIndexToBeRemoved(node: TreeNode): number {
+    return this.tree.findIndex((report) => report.id == node.id);
   }
 
   handleChange(report: Report, showTreeInCompare: boolean): void {

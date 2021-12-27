@@ -19,7 +19,7 @@
     </div>
 
     <app-button *ngIf="report.root" [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
-    <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
+    <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true, report.id)"></app-button>
   </div>
 
   <div class="form-row m-2">
