@@ -195,8 +195,10 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   deleteSelected(): void {
     this.reports
       .filter((report) => report.checked)
-      .forEach((report) => this.httpService.deleteReport(report[this.STORAGE_ID_INDEX]).subscribe());
-    setTimeout(() => this.loadData(), this.TIMEOUT);
+      .forEach((report) => {
+        this.httpService.deleteReport(report[this.STORAGE_ID_INDEX]).subscribe();
+        this.reports.splice(this.reports.indexOf(report), 1);
+      });
   }
 
   downloadSelected(exportMessages: boolean, exportReports: boolean): void {

@@ -52,11 +52,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
       const nextIndex = this.tree.length > 1 ? previousIndex - 1 : 0;
       const nextNode = this.tree[nextIndex];
       this.updateTreeView();
-
-      $('#' + this.treeId).treeview('toggleNodeSelected', [
-        nextNode.nodes![0].id,
-        { silent: false },
-      ]);
+      $('#' + this.treeId).treeview('toggleNodeSelected', [nextNode.nodes![0].id, { silent: false }]);
     } else {
       this.updateTreeView();
     }

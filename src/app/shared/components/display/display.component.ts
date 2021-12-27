@@ -70,7 +70,6 @@ export class DisplayComponent {
     this.loadMonacoCode();
     this.displayReport = true;
     this.disableEditing(); // For switching from editing current report to another
-    console.log("Showing report" + this.displayReport)
   }
 
   loadMonacoCode() {
