@@ -3,15 +3,59 @@ import { Metadata } from '../interfaces/metadata';
 import { TreeNode } from '../interfaces/tree-node';
 import { ReranReport } from '../interfaces/reran-report';
 import { Report } from '../interfaces/report';
+import { TableSettings } from '../interfaces/table-settings';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoaderService {
   // Table
-  tableLoaded: boolean = false;
-  tableData: Metadata = { fields: [], values: [] };
-  showFilter: boolean = false;
+  tables: TableSettings[] = [
+    {
+      tableId: 'debug',
+      tableLoaded: false,
+      showFilter: false,
+      reportMetadata: { fields: [], values: [] },
+      displayAmount: -1,
+      filterValue: '',
+    },
+    {
+      tableId: 'leftId',
+      tableLoaded: false,
+      showFilter: false,
+      reportMetadata: { fields: [], values: [] },
+      displayAmount: -1,
+      filterValue: '',
+    },
+    {
+      tableId: 'rightId',
+      tableLoaded: false,
+      showFilter: false,
+      reportMetadata: { fields: [], values: [] },
+      displayAmount: -1,
+      filterValue: '',
+    },
+  ];
+
+  saveTableSettings(
+    tableId: string,
+    reportMetadata: Metadata,
+    showFilter: boolean,
+    displayAmount: number,
+    filterValue: string,
+    tableLoaded: boolean
+  ): void {
+    let currentTable: any = this.tables.find((table) => table.tableId === tableId);
+    currentTable.reportMetadata = reportMetadata;
+    currentTable.showFilter = showFilter;
+    currentTable.displayAmount = displayAmount;
+    currentTable.filterValue = filterValue;
+    currentTable.tableLoaded = tableLoaded;
+  }
+
+  getTableSettings(tableId: string): TableSettings {
+    return this.tables.find((table) => table.tableId === tableId)!;
+  }
 
   // Tree
   treeLoaded: boolean = false;
@@ -45,24 +89,6 @@ export class LoaderService {
 
   isTestLoaded(): boolean {
     return this.testLoaded;
-  }
-
-  saveTableSettings(tableData: Metadata, showFilter: boolean): void {
-    this.tableLoaded = true;
-    this.tableData = tableData;
-    this.showFilter = showFilter;
-  }
-
-  isTableLoaded(): boolean {
-    return this.tableLoaded;
-  }
-
-  getTableData(): Metadata {
-    return this.tableData;
-  }
-
-  getShowFilter(): boolean {
-    return this.showFilter;
   }
 
   saveTreeSettings(treeData: TreeNode[], selectedReports: Report[], nodeSelected: number): void {

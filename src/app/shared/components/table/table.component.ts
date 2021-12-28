@@ -4,7 +4,7 @@ import { HelperService } from '../../services/helper.service';
 import { HttpService } from '../../services/http.service';
 import { LoaderService } from '../../services/loader.service';
 import { TableSettingsModalComponent } from '../modals/table-settings-modal/table-settings-modal.component';
-import { Metadata } from '../../interfaces/metadata';
+import { TableSettings } from '../../interfaces/table-settings';
 
 @Component({
   selector: 'app-table',
@@ -12,11 +12,14 @@ import { Metadata } from '../../interfaces/metadata';
   styleUrls: ['./table.component.css'],
 })
 export class TableComponent implements OnInit, OnDestroy {
-  showFilter: boolean = false;
-  reportMetadata: Metadata = { fields: [], values: [] };
-  isPageLoaded: boolean = false;
-  displayAmount: number = 10;
-  filterValue: string = '';
+  tableSettings: TableSettings = {
+    tableId: '', // this._id might not be defined yet
+    reportMetadata: { fields: [], values: [] },
+    tableLoaded: false,
+    displayAmount: 10,
+    showFilter: false,
+    filterValue: '',
+  };
   STORAGE_ID_INDEX = 5;
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
@@ -29,7 +32,7 @@ export class TableComponent implements OnInit, OnDestroy {
   set id(id: string) {
     this._id = id;
   }
-  private _id: string = '';
+  private _id: string = 'debug';
 
   constructor(
     private httpService: HttpService,
@@ -38,20 +41,30 @@ export class TableComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    if (!this.loaderService.isTableLoaded()) {
+    const tableSettings = this.loaderService.getTableSettings(this._id);
+    if (!tableSettings.tableLoaded) {
       this.loadData();
-    } else if (!this._id) {
-      this.reportMetadata = this.loaderService.getTableData();
-      this.showFilter = this.loaderService.getShowFilter();
-      this.isPageLoaded = true;
+    } else {
+      this.tableSettings = tableSettings;
     }
   }
 
+  ngOnDestroy(): void {
+    this.loaderService.saveTableSettings(
+      this._id,
+      this.tableSettings.reportMetadata,
+      this.tableSettings.showFilter,
+      this.tableSettings.displayAmount,
+      this.tableSettings.filterValue,
+      this.tableSettings.tableLoaded
+    );
+  }
+
   loadData(): void {
-    this.httpService.getReports(this.displayAmount).subscribe({
+    this.httpService.getReports(this.tableSettings.displayAmount).subscribe({
       next: (value) => {
-        this.reportMetadata = value;
-        this.isPageLoaded = true;
+        this.tableSettings.reportMetadata = value;
+        this.tableSettings.tableLoaded = true;
         this.toastComponent.addAlert({
           type: 'success',
           message: 'Data loaded!',
@@ -75,23 +88,23 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   toggleFilter(): void {
-    this.showFilter = !this.showFilter;
+    this.tableSettings.showFilter = !this.tableSettings.showFilter;
   }
 
   changeFilter(event: any): void {
-    this.filterValue = event.target.value;
+    this.tableSettings.filterValue = event.target.value;
   }
 
   changeTableLimit(event: any): void {
-    this.displayAmount = event.target.value;
+    this.tableSettings.displayAmount = event.target.value;
     this.loadData();
   }
 
   refresh(): void {
-    this.showFilter = false;
-    this.reportMetadata = { fields: [], values: [] };
-    this.isPageLoaded = false;
-    this.displayAmount = 10;
+    this.tableSettings.showFilter = false;
+    this.tableSettings.reportMetadata = { fields: [], values: [] };
+    this.tableSettings.tableLoaded = false;
+    this.tableSettings.displayAmount = 10;
     this.loadData();
   }
 
@@ -103,17 +116,19 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openAllReports(): void {
-    this.reportMetadata.values.forEach((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]));
+    this.tableSettings.reportMetadata.values.forEach((report: string[]) =>
+      this.openReport(report[this.STORAGE_ID_INDEX])
+    );
   }
 
   openReports(amount: number): void {
-    this.reportMetadata.values
+    this.tableSettings.reportMetadata.values
       .slice(0, amount)
       .forEach((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]));
   }
 
   downloadReports(exportMessages: boolean, exportReports: boolean): void {
-    const queryString: string = this.reportMetadata.values.reduce(
+    const queryString: string = this.tableSettings.reportMetadata.values.reduce(
       (totalQuery: string, selectedReport: string[]) =>
         totalQuery + 'id=' + selectedReport[this.STORAGE_ID_INDEX] + '&',
       '?'
@@ -137,9 +152,5 @@ export class TableComponent implements OnInit, OnDestroy {
         this.openReportEvent.next(report);
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.loaderService.saveTableSettings(this.reportMetadata, this.showFilter);
   }
 }
