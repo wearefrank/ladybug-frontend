@@ -4,6 +4,7 @@ import { TreeNode } from '../interfaces/tree-node';
 import { ReranReport } from '../interfaces/reran-report';
 import { Report } from '../interfaces/report';
 import { TableSettings } from '../interfaces/table-settings';
+import { TreeSettings } from '../interfaces/tree-settings';
 
 @Injectable({
   providedIn: 'root',
@@ -45,7 +46,7 @@ export class LoaderService {
     filterValue: string,
     tableLoaded: boolean
   ): void {
-    let currentTable: any = this.tables.find((table) => table.tableId === tableId);
+    let currentTable: TableSettings = this.tables.find((table) => table.tableId === tableId)!;
     currentTable.reportMetadata = reportMetadata;
     currentTable.showFilter = showFilter;
     currentTable.displayAmount = displayAmount;
@@ -58,18 +59,52 @@ export class LoaderService {
   }
 
   // Tree
-  treeLoaded: boolean = false;
-  treeData: TreeNode[] = [];
-  selectedReports: Report[] = [];
-  selectedNode: number = -1;
+  trees: TreeSettings[] = [
+    {
+      treeId: 'debug',
+      treeLoaded: false,
+      tree: [],
+      selectedReports: [],
+      selectedNode: -1,
+    },
+    {
+      treeId: 'leftId',
+      treeLoaded: false,
+      tree: [],
+      selectedReports: [],
+      selectedNode: -1,
+    },
+    {
+      treeId: 'rightId',
+      treeLoaded: false,
+      tree: [],
+      selectedReports: [],
+      selectedNode: -1,
+    },
+  ];
+
+  saveTreeSettings(
+    treeId: string,
+    treeLoaded: boolean,
+    tree: TreeNode[],
+    selectedReports: Report[],
+    selectedNode: number
+  ): void {
+    let currentTree: TreeSettings = this.trees.find((tree) => tree.treeId === treeId)!;
+    currentTree.treeLoaded = treeLoaded;
+    currentTree.tree = tree;
+    currentTree.selectedReports = selectedReports;
+    currentTree.selectedNode = selectedNode;
+  }
+
+  getTreeSettings(treeId: string): TreeSettings {
+    return this.trees.find((tree) => tree.treeId === treeId)!;
+  }
 
   // Tests
   testLoaded: boolean = false;
   testReports: any[] = [];
   reranReports: ReranReport[] = [];
-
-  // Ran tests
-  // Selected reports in compare
 
   constructor() {}
 
@@ -89,28 +124,5 @@ export class LoaderService {
 
   isTestLoaded(): boolean {
     return this.testLoaded;
-  }
-
-  saveTreeSettings(treeData: TreeNode[], selectedReports: Report[], nodeSelected: number): void {
-    this.treeLoaded = true;
-    this.treeData = treeData;
-    this.selectedReports = selectedReports;
-    this.selectedNode = nodeSelected;
-  }
-
-  isTreeLoaded(): boolean {
-    return this.treeLoaded;
-  }
-
-  getTreeData(): any[] {
-    return this.treeData;
-  }
-
-  getSelectedReports(): Report[] {
-    return this.selectedReports;
-  }
-
-  getSelectedNode(): number {
-    return this.selectedNode;
   }
 }

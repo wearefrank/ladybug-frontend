@@ -4,6 +4,7 @@ import { LoaderService } from '../../services/loader.service';
 import { TreeNode } from '../../interfaces/tree-node';
 import { Report } from '../../interfaces/report';
 import { Checkpoint } from '../../interfaces/checkpoint';
+import { TreeSettings } from '../../interfaces/tree-settings';
 declare var $: any;
 
 @Component({
@@ -14,63 +15,99 @@ declare var $: any;
 export class TreeComponent implements AfterViewInit, OnDestroy {
   @Output() selectReportEvent = new EventEmitter<any>();
   @Output() closeEntireTreeEvent = new EventEmitter<any>();
-  selectedReports: Report[] = [];
-  tree: TreeNode[] = [];
-  treeId: string = Math.random().toString(36).slice(7); //
+  treeSettings: TreeSettings = {
+    selectedReports: [],
+    tree: [],
+    treeId: '',
+    treeLoaded: false,
+    selectedNode: -1,
+  };
   parentMap: any[] = []; // {id: number, parent: TreeNode}
   treeNodeId: number = 0;
+  @Input() // Needed to make a distinction between the two halves in compare component
+  get id() {
+    return this._id;
+  }
+  set id(id: string) {
+    this._id = id;
+  }
+  public _id: string = 'debug';
 
   constructor(private helperService: HelperService, private loaderService: LoaderService) {}
 
+  ngAfterViewInit(): void {
+    const treeSettings = this.loaderService.getTreeSettings(this._id);
+    if (treeSettings.treeLoaded) {
+      this.treeSettings = treeSettings;
+      this.updateTreeView();
+      if (this.treeSettings.selectedNode != -1) {
+        $('#' + this._id).treeview('toggleNodeSelected', [this.treeSettings.selectedNode, { silent: false }]);
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.treeSettings.tree.length > 0) {
+      const selectedNode: number = $('#' + this._id).treeview('getSelected')[0].id;
+      this.loaderService.saveTreeSettings(
+        this._id,
+        true,
+        this.treeSettings.tree,
+        this.treeSettings.selectedReports,
+        selectedNode
+      );
+    }
+  }
+
   collapseAll(): void {
-    $('#' + this.treeId).treeview('collapseAll', { silent: true });
+    $('#' + this._id).treeview('collapseAll', { silent: true });
   }
 
   expandAll(): void {
-    $('#' + this.treeId).treeview('expandAll', { levels: 2, silent: true });
+    $('#' + this._id).treeview('expandAll', { levels: 2, silent: true });
   }
 
   closeAll(): void {
-    this.selectedReports.length = 0;
-    $('#' + this.treeId).treeview('remove');
+    this.treeSettings.selectedReports.length = 0;
+    $('#' + this._id).treeview('remove');
     this.closeEntireTreeEvent.emit();
   }
 
   removeNode(node: TreeNode): void {
     if (node.root) {
       const indexToBeRemoved = this.getNodeIndexToBeRemoved(node);
-      this.selectedReports.splice(indexToBeRemoved, 1);
-      this.tree.splice(indexToBeRemoved, 1);
+      this.treeSettings.selectedReports.splice(indexToBeRemoved, 1);
+      this.treeSettings.tree.splice(indexToBeRemoved, 1);
       this.selectNextReport(indexToBeRemoved);
     } else {
-      this.removeNode($('#' + this.treeId).treeview('getParent', node));
+      this.removeNode($('#' + this._id).treeview('getParent', node));
     }
   }
 
   selectNextReport(previousIndex: number): void {
-    if (this.selectedReports.length > 0) {
-      const nextIndex = this.tree.length > 1 ? previousIndex - 1 : 0;
-      const nextNode = this.tree[nextIndex];
+    if (this.treeSettings.selectedReports.length > 0) {
+      const nextIndex = this.treeSettings.tree.length > 1 ? previousIndex - 1 : 0;
+      const nextNode = this.treeSettings.tree[nextIndex];
       this.updateTreeView();
-      $('#' + this.treeId).treeview('toggleNodeSelected', [nextNode.nodes![0].id, { silent: false }]);
+      $('#' + this._id).treeview('toggleNodeSelected', [nextNode.nodes![0].id, { silent: false }]);
     } else {
       this.updateTreeView();
     }
   }
 
   getNodeIndexToBeRemoved(node: TreeNode): number {
-    return this.tree.findIndex((report) => report.id == node.id);
+    return this.treeSettings.tree.findIndex((report) => report.id == node.id);
   }
 
   handleChange(report: Report, showTreeInCompare: boolean): void {
-    this.tree = [];
+    this.treeSettings.tree = [];
     this.treeNodeId = 0;
     const reportsToShow = this.getReportsToShow(report, showTreeInCompare);
 
     for (const reportRoot of reportsToShow) {
       this.parentMap = [];
       const rootNode: TreeNode = this.createRootNode(reportRoot);
-      this.tree.push(rootNode);
+      this.treeSettings.tree.push(rootNode);
     }
 
     this.updateTreeView();
@@ -81,8 +118,8 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   getReportsToShow(report: Report, showTreeInCompare: boolean) {
     let reportsToShow: Report[] = [report];
     if (!showTreeInCompare) {
-      this.selectedReports.push(report);
-      reportsToShow = this.selectedReports;
+      this.treeSettings.selectedReports.push(report);
+      reportsToShow = this.treeSettings.selectedReports;
     }
     return reportsToShow;
   }
@@ -156,44 +193,25 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   updateTreeView(): void {
-    $('#' + this.treeId).treeview({
-      data: this.tree,
+    $('#' + this._id).treeview({
+      data: this.treeSettings.tree,
       levels: 5,
       expandIcon: 'fa fa-plus',
       collapseIcon: 'fa fa-minus',
       selectedBackColor: '#1ab394',
     });
 
-    $('#' + this.treeId).on('nodeSelected', (event: any, data: TreeNode) => {
+    $('#' + this._id).on('nodeSelected', (event: any, data: TreeNode) => {
       this.selectReportEvent.next(data);
     });
   }
 
   selectFirstChildNode(): void {
-    if (this.tree.length > 0 && this.tree[this.tree.length - 1].nodes) {
-      $('#' + this.treeId).treeview('toggleNodeSelected', [
-        this.tree[this.tree.length - 1].nodes![0].id,
+    if (this.treeSettings.tree.length > 0 && this.treeSettings.tree[this.treeSettings.tree.length - 1].nodes) {
+      $('#' + this._id).treeview('toggleNodeSelected', [
+        this.treeSettings.tree[this.treeSettings.tree.length - 1].nodes![0].id,
         { silent: false },
       ]);
-    }
-  }
-
-  ngAfterViewInit(): void {
-    if (this.loaderService.isTreeLoaded()) {
-      this.tree = this.loaderService.getTreeData();
-      this.selectedReports = this.loaderService.getSelectedReports();
-      this.updateTreeView();
-      const selectedNode: number = this.loaderService.getSelectedNode();
-      if (selectedNode != -1) {
-        $('#' + this.treeId).treeview('toggleNodeSelected', [selectedNode, { silent: false }]);
-      }
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (this.tree.length > 0) {
-      const selectedNode: number = $('#' + this.treeId).treeview('getSelected')[0].id;
-      this.loaderService.saveTreeSettings(this.tree, this.selectedReports, selectedNode);
     }
   }
 }
