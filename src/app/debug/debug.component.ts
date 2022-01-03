@@ -1,43 +1,33 @@
-import {Component, ViewChild} from '@angular/core';
-import {TreeComponent} from "../shared/components/tree/tree.component";
-import {DisplayComponent} from "../shared/components/display/display.component";
+import { Component, ViewChild } from '@angular/core';
+import { TreeComponent } from '../shared/components/tree/tree.component';
+import { DisplayComponent } from '../shared/components/display/display.component';
+import { Report } from '../shared/interfaces/report';
+import { TreeNode } from '../shared/interfaces/tree-node';
 
 @Component({
   selector: 'app-debug',
   templateUrl: './debug.component.html',
-  styleUrls: ['./debug.component.css']
+  styleUrls: ['./debug.component.css'],
 })
 export class DebugComponent {
-  reports: any[] = [];
-  currentReport: any = {};
   @ViewChild(TreeComponent) treeComponent!: TreeComponent;
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
 
   constructor() {}
 
-  /**
-    Add a new report and notify the tree of the change
-   */
-  addReport(newReport: any): void {
-    this.reports.push(newReport);
-    this.treeComponent.handleChange(this.reports);
+  addReportToTree(newReport: Report): void {
+    this.treeComponent.handleChange(newReport, false);
   }
 
-  /**
-   * Select a report to be viewed in the display
-   * @param currentReport - the report to be viewed
-   */
-  selectReport(currentReport: any): void {
-    this.currentReport = currentReport;
-    this.displayComponent.showReport(this.currentReport);
+  showReportInDisplay(currentReport: TreeNode): void {
+    this.displayComponent.showReport(currentReport);
   }
 
-  /**
-   * Close a report
-   * @param currentReport - the report to be closed
-   */
-  closeReport(currentReport: any): void {
-    this.currentReport = {}
+  closeEntireTree(): void {
+    this.displayComponent.closeReport(false, -1);
+  }
+
+  closeReport(currentReport: TreeNode): void {
     this.treeComponent.removeNode(currentReport);
   }
 }

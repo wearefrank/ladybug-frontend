@@ -1,14 +1,16 @@
+import { Checkpoint } from './checkpoint';
+
 export interface Report {
-  checkpoints: Report[];
+  checkpoints: Checkpoint[];
   correlationId: string;
   description: string;
   endTime: number;
   estimatedMemoryUsage: number;
   fullPath: string;
-  inputCheckpoint: Report;
+  inputCheckpoint: Checkpoint;
   name: string;
   numberOfCheckpoints: number;
-  originalEndpointOrAbortpointForCurrentLevel: any // I dont know the type
+  originalEndpointOrAbortpointForCurrentLevel: Checkpoint;
   originalReport: Report;
   path: string;
   reportFilterMatching: boolean;
@@ -16,6 +18,7 @@ export interface Report {
   storageId: number;
   stubStrategy: string;
   transformation: string;
-  variableCsv: any // I dont know the type
-  variablesAsMap: any // I dont know the type
+  variableCsv: string;
+  variablesAsMap: any; // Map<String, String>
+  id: string; // Custom
 }

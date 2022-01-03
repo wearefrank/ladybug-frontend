@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CompareComponent } from './compare.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('CompareComponent', () => {
   let component: CompareComponent;
@@ -8,9 +9,9 @@ describe('CompareComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CompareComponent ]
-    })
-    .compileComponents();
+      declarations: [CompareComponent],
+      imports: [HttpClientTestingModule],
+    }).compileComponents();
   });
 
   beforeEach(() => {

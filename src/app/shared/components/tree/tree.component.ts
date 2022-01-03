@@ -1,191 +1,217 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {HelperService} from "../../services/helper.service";
-import {LoaderService} from "../../services/loader.service";
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { HelperService } from '../../services/helper.service';
+import { LoaderService } from '../../services/loader.service';
+import { TreeNode } from '../../interfaces/tree-node';
+import { Report } from '../../interfaces/report';
+import { Checkpoint } from '../../interfaces/checkpoint';
+import { TreeSettings } from '../../interfaces/tree-settings';
 declare var $: any;
 
 @Component({
   selector: 'app-tree',
   templateUrl: './tree.component.html',
-  styleUrls: ['./tree.component.css']
+  styleUrls: ['./tree.component.css'],
 })
-
 export class TreeComponent implements AfterViewInit, OnDestroy {
   @Output() selectReportEvent = new EventEmitter<any>();
-  @Input() reports: any[] = [];
-  tree: any[] = []
-  treeId: string = Math.random().toString(36).substring(7);
-  parentMap: any[] = []
+  @Output() closeEntireTreeEvent = new EventEmitter<any>();
+  treeSettings: TreeSettings = {
+    selectedReports: [],
+    tree: [],
+    treeId: '',
+    treeLoaded: false,
+    selectedNode: -1,
+  };
+  parentMap: any[] = []; // {id: number, parent: TreeNode}
+  treeNodeId: number = 0;
+  @Input() // Needed to make a distinction between the two halves in compare component
+  get id() {
+    return this._id;
+  }
+  set id(id: string) {
+    this._id = id;
+  }
+  public _id: string = 'debug';
 
   constructor(private helperService: HelperService, private loaderService: LoaderService) {}
 
-  /**
-   * Collapse the entire tree
-   */
-  collapseAll(): void {
-    $('#' + this.treeId).treeview('collapseAll', { silent: true})
-  }
-
-  /**
-   * Expand the entire tree (up to 2 levels)
-   */
-  expandAll(): void {
-    $('#' + this.treeId).treeview('expandAll', { levels: 2, silent: true})
-  }
-
-  /**
-   * Close all nodes in the tree
-   */
-  closeAll(): void {
-    this.reports.length = 0;
-    $('#' + this.treeId).treeview( 'remove');
-  }
-
-  /**
-   * Removes the entire node from the tree. If it is not the parent it recursively tries to find the parent
-   * and eventually removes the parent when found
-   * @param node - the node to be removed
-   */
-  removeNode(node: any): void {
-    if (node.root) {
-      const result = this.tree.filter(report => {
-        return report.id === node.nodeId;
-      })
-      const index = this.tree.indexOf(result[0]);
-      this.tree.splice(index, 1);
+  ngAfterViewInit(): void {
+    const treeSettings = this.loaderService.getTreeSettings(this._id);
+    if (treeSettings.treeLoaded) {
+      this.treeSettings = treeSettings;
       this.updateTreeView();
-    } else {
-      this.removeNode($('#' + this.treeId).treeview('getParent', node))
-    }
-  }
-
-  /**
-   * Find the direct parent of a node
-   * @param currentNode - the current node
-   * @param potentialParent - a node that could be its parent
-   */
-  findParent(currentNode: any, potentialParent: any): any {
-    // If the level difference is only 1, then the potential parent is the actual parent
-    if (currentNode.level - 1 == potentialParent.level) {
-      potentialParent = this.addChild(potentialParent, currentNode)
-      return currentNode;
-    }
-
-    const newPotentialParent = this.parentMap.find(x => x.id == potentialParent.id).parent;
-    return this.findParent(currentNode, newPotentialParent)
-  }
-
-  addChild(parent: any, node: any): any {
-    this.parentMap.push({id: node.id, parent: parent})
-    if (parent.nodes === undefined) {
-      parent.nodes = []
-    }
-    parent.nodes.push(node)
-    return parent
-  }
-
-  createHierarchy(previousNode: any, node: any): void {
-    // If it is the first one, the root is the parent
-    if (node.level == 0) {
-      this.addChild(previousNode, node)
-
-      // If the level is higher, then the previous node was its parent
-    } else if (node.level > previousNode.level) {
-      this.addChild(previousNode, node)
-
-      // If the level is lower, then the previous node is a (grand)child of this node's sibling
-    } else if (node.level < previousNode.level) {
-      this.findParent(node, previousNode)
-
-      // Else the level is equal, meaning the previous node is its sibling
-    } else {
-      const newParent = this.parentMap.find(x => x.id == previousNode.id).parent;
-      this.addChild(newParent, node)
-    }
-  }
-  /**
-   * Handle change in the tree for the tree view
-   * @param reports - the reports to be displayed
-   */
-  handleChange(reports: any[]): void {
-    this.reports = reports;
-
-    // Reset the items in the tree
-    this.tree = [];
-    let id = 0;
-
-    // For each item that has been selected show the node and its children
-    for (const report of this.reports) {
-      this.parentMap = []
-      const rootNode: {text: string, ladybug: any, root: boolean, id: number, nodes: any[]} = {
-        text: report.name,
-        ladybug: report,
-        root: true,
-        id: id++,
-        nodes: []
+      if (this.treeSettings.selectedNode != -1) {
+        $('#' + this._id).treeview('toggleNodeSelected', [this.treeSettings.selectedNode, { silent: false }]);
       }
+    }
+  }
 
-      let previousNode: any = rootNode;
-      for (const checkpoint of report.checkpoints) {
-        const img = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0)
-        const node = {
-          text: '<img src="' + img + '" alt="">' + checkpoint.name,
-          ladybug: checkpoint,
-          root: false,
-          id: id++,
-          level: checkpoint.level
-        }
-        this.createHierarchy(previousNode, node)
+  ngOnDestroy(): void {
+    if (this.treeSettings.tree.length > 0) {
+      const selectedNode: number = $('#' + this._id).treeview('getSelected')[0].id;
+      this.loaderService.saveTreeSettings(
+        this._id,
+        true,
+        this.treeSettings.tree,
+        this.treeSettings.selectedReports,
+        selectedNode
+      );
+    }
+  }
 
-        // Keep track of previous node
-        previousNode = node
-      }
+  collapseAll(): void {
+    $('#' + this._id).treeview('collapseAll', { silent: true });
+  }
 
-      // Push the root node to the tree to be displayed
-      this.tree.push(rootNode)
+  expandAll(): void {
+    $('#' + this._id).treeview('expandAll', { levels: 2, silent: true });
+  }
+
+  closeAll(): void {
+    this.treeSettings.selectedReports.length = 0;
+    $('#' + this._id).treeview('remove');
+    this.closeEntireTreeEvent.emit();
+  }
+
+  removeNode(node: TreeNode): void {
+    if (node.root) {
+      const indexToBeRemoved = this.getNodeIndexToBeRemoved(node);
+      this.treeSettings.selectedReports.splice(indexToBeRemoved, 1);
+      this.treeSettings.tree.splice(indexToBeRemoved, 1);
+      this.selectNextReport(indexToBeRemoved);
+    } else {
+      this.removeNode($('#' + this._id).treeview('getParent', node));
+    }
+  }
+
+  selectNextReport(previousIndex: number): void {
+    if (this.treeSettings.selectedReports.length > 0) {
+      const nextIndex = this.treeSettings.tree.length > 1 ? previousIndex - 1 : 0;
+      const nextNode = this.treeSettings.tree[nextIndex];
+      this.updateTreeView();
+      $('#' + this._id).treeview('toggleNodeSelected', [nextNode.nodes![0].id, { silent: false }]);
+    } else {
+      this.updateTreeView();
+    }
+  }
+
+  getNodeIndexToBeRemoved(node: TreeNode): number {
+    return this.treeSettings.tree.findIndex((report) => report.id == node.id);
+  }
+
+  handleChange(report: Report, showTreeInCompare: boolean): void {
+    this.treeSettings.tree = [];
+    this.treeNodeId = 0;
+    const reportsToShow = this.getReportsToShow(report, showTreeInCompare);
+
+    for (const reportRoot of reportsToShow) {
+      this.parentMap = [];
+      const rootNode: TreeNode = this.createRootNode(reportRoot);
+      this.treeSettings.tree.push(rootNode);
     }
 
     this.updateTreeView();
+    this.selectFirstChildNode();
+  }
 
-    // Select the first child from the tree, if it exists
-    if (this.tree.length > 0) {
-      $('#' + this.treeId).treeview('toggleNodeSelected', [ this.tree[this.tree.length - 1].nodes[0].id, { silent: false } ]);
+  // TODO: Return and use it as type where it is called
+  getReportsToShow(report: Report, showTreeInCompare: boolean) {
+    let reportsToShow: Report[] = [report];
+    if (!showTreeInCompare) {
+      this.treeSettings.selectedReports.push(report);
+      reportsToShow = this.treeSettings.selectedReports;
+    }
+    return reportsToShow;
+  }
+
+  createRootNode(report: Report): TreeNode {
+    const rootNode: TreeNode = {
+      text: report.name,
+      ladybug: report,
+      root: true,
+      id: this.treeNodeId++,
+      nodes: [],
+      level: -1,
+    };
+
+    let previousNode: TreeNode = rootNode;
+    for (const checkpoint of report.checkpoints) {
+      const currentNode: TreeNode = this.createChildNode(checkpoint);
+      this.createHierarchy(previousNode, currentNode);
+      previousNode = currentNode;
+    }
+
+    return rootNode;
+  }
+
+  createChildNode(checkpoint: Checkpoint): TreeNode {
+    const img: string = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0);
+    return {
+      text: '<img src="' + img + '" alt="">' + checkpoint.name,
+      ladybug: checkpoint,
+      root: false,
+      id: this.treeNodeId++,
+      level: checkpoint.level,
+    };
+  }
+
+  createHierarchy(previousNode: TreeNode, node: TreeNode): void {
+    // If it is the first one, the root is the parent
+    if (node.level == 0) {
+      this.addChild(previousNode, node);
+
+      // If the level is higher, then the previous node was its parent
+    } else if (node.level > previousNode.level) {
+      this.addChild(previousNode, node);
+
+      // If the level is lower, then the previous node is a (grand)child of this node's sibling
+    } else if (node.level < previousNode.level) {
+      this.findParent(node, previousNode);
+
+      // Else the level is equal, meaning the previous node is its sibling
+    } else {
+      const newParent: TreeNode = this.parentMap.find((x) => x.id == previousNode.id).parent;
+      this.addChild(newParent, node);
     }
   }
 
-  /**
-   * Update the tree view with the new data
-   */
+  findParent(currentNode: TreeNode, potentialParent: TreeNode): TreeNode {
+    // If the level difference is only 1, then the potential parent is the actual parent
+    if (currentNode.level - 1 == potentialParent.level) {
+      this.addChild(potentialParent, currentNode);
+      return currentNode;
+    }
+
+    const newPotentialParent: TreeNode = this.parentMap.find((node) => node.id == potentialParent.id).parent;
+    return this.findParent(currentNode, newPotentialParent);
+  }
+
+  addChild(parent: TreeNode, node: TreeNode): void {
+    this.parentMap.push({ id: node.id, parent: parent });
+    parent.nodes = parent.nodes ?? [];
+    parent.nodes.push(node);
+  }
+
   updateTreeView(): void {
-    // Update the tree view
-    $('#' + this.treeId).treeview({
-      data: this.tree,
+    $('#' + this._id).treeview({
+      data: this.treeSettings.tree,
       levels: 5,
-      expandIcon: "fa fa-plus",
-      collapseIcon: "fa fa-minus",
-      selectedBackColor: "#1ab394",
+      expandIcon: 'fa fa-plus',
+      collapseIcon: 'fa fa-minus',
+      selectedBackColor: '#1ab394',
     });
 
-    // When a node is selected, we send forward the data to the display
-    $('#' + this.treeId).on('nodeSelected', (event: any, data: any) => {
-      this.selectReportEvent.next(data)
+    $('#' + this._id).on('nodeSelected', (event: any, data: TreeNode) => {
+      this.selectReportEvent.next(data);
     });
   }
 
-  ngAfterViewInit() {
-    if (this.loaderService.isTreeLoaded()) {
-      this.tree = this.loaderService.getTreeData();
-      this.updateTreeView();
-      const selectedNode = this.loaderService.getSelectedNode()
-      if (selectedNode != -1) {
-        $('#' + this.treeId).treeview('toggleNodeSelected', [ selectedNode, { silent: false } ]);
-      }
-    }
-  }
-
-  ngOnDestroy() {
-    if (this.tree.length > 0) {
-      let selectedNode = $('#' + this.treeId).treeview('getSelected')[0].id;
-      this.loaderService.saveTreeSettings(this.tree, selectedNode)
+  selectFirstChildNode(): void {
+    if (this.treeSettings.tree.length > 0 && this.treeSettings.tree[this.treeSettings.tree.length - 1].nodes) {
+      $('#' + this._id).treeview('toggleNodeSelected', [
+        this.treeSettings.tree[this.treeSettings.tree.length - 1].nodes![0].id,
+        { silent: false },
+      ]);
     }
   }
 }

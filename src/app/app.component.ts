@@ -1,46 +1,46 @@
-import {AfterViewChecked, AfterViewInit, Component, Injector, OnChanges, ViewChild} from '@angular/core';
-import {ReportComponent, ReportData} from "./report/report.component";
-import {Title} from '@angular/platform-browser'
-import {CompareComponent} from "./compare/compare.component";
-import {DebugComponent} from "./debug/debug.component";
-import {ToastComponent} from "./shared/components/toast/toast.component";
-import {HttpService} from "./shared/services/http.service";
+import { AfterViewInit, Component, Injector, ViewChild } from '@angular/core';
+import { ReportComponent, ReportData } from './report/report.component';
+import { Title } from '@angular/platform-browser';
+import { ToastComponent } from './shared/components/toast/toast.component';
+import { HttpService } from './shared/services/http.service';
 declare var require: any;
-const { version: appVersion} = require('../../package.json')
+const { version: appVersion } = require('../../package.json');
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
-
 export class AppComponent implements AfterViewInit {
   injector!: Injector;
   appVersion: string;
-  diffReports = {oldReport: '', newReport: ''}
+  diffReports = { oldReport: '', newReport: '' };
   LAST_TAB_INDEX = 3;
-  @ViewChild(ToastComponent) toastComponent!: ToastComponent
+  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
 
   constructor(private inj: Injector, private titleService: Title, private httpService: HttpService) {
-    this.appVersion = appVersion
-    this.titleService.setTitle("Ladybug - v" + this.appVersion)
+    this.appVersion = appVersion;
+    this.titleService.setTitle('Ladybug - v' + this.appVersion);
   }
 
   ngAfterViewInit() {
-    this.httpService.initializeToastComponent(this.toastComponent)
+    this.httpService.initializeToastComponent(this.toastComponent);
   }
 
   title = 'ladybug';
   active = 1;
-  tabs: {key: string, value: any}[] = []
+  tabs: { key: string; value: any }[] = [];
 
   /**
    * Open an extra tab for the test report
    * @param data - the data in the report
    */
   openTestReport(data: any): void {
-    this.injector = Injector.create({providers: [{provide: ReportData, useValue: data.data}], parent: this.inj})
-    this.tabs.push( {key: data.name, value: ReportComponent})
+    this.injector = Injector.create({
+      providers: [{ provide: ReportData, useValue: data.data }],
+      parent: this.inj,
+    });
+    this.tabs.push({ key: data.name, value: ReportComponent });
     this.active = this.LAST_TAB_INDEX + this.tabs.length; // Active the tab immediately
   }
 

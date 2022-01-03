@@ -1,9 +1,9 @@
-<div class="row" *ngIf="isPageLoaded">
+<div class="row" *ngIf="tableSettings.tableLoaded">
   <div class="row">
     <app-button [icon]="'fa fa-undo'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openModal()"></app-button>
     <app-button [icon]="'fa fa-upload'" [title]="'Upload'" (click)="uploadFile.click()">
-      <input #uploadFile (change)="uploadReport($event)" type="file" id="uploadFile">
+      <input #uploadFile (change)="uploadReports($event)" type="file" id="uploadFile">
     </app-button>
     <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
@@ -20,7 +20,7 @@
     <div class="col-md-3">
       <form class="form-horizontal pt-2">
         <div class="input-group-append">
-          <input type="number" id="displayAmount" class="form-control px-1" placeholder="{{displayAmount}}"  (keyup)="changeTableLimit($event)">
+          <input type="number" id="displayAmount" class="form-control px-1" placeholder="{{tableSettings.displayAmount}}"  (keyup)="changeTableLimit($event)">
           <div class="input-group-text">/</div>
         </div>
       </form>
@@ -28,7 +28,7 @@
   </div>
 
   <div class="table-responsive" id="metadataTable">
-    <table class="table table-hover" matSort (matSortChange)="helperService.sortData($event, reportMetadata.values)">
+    <table class="table table-hover" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata.values)">
       <thead>
       <tr>
         <th mat-sort-header="5">Storage Id</th>
@@ -41,8 +41,8 @@
         <th mat-sort-header="8">Estimated Memory Usage (Bytes)</th>
         <th mat-sort-header="1">Storage Size (Bytes)</th>
       </tr>
-      <tr id="filterRow" *ngIf="showFilter">
-        <th *ngFor="let header of reportMetadata.fields">
+      <tr id="filterRow" *ngIf="tableSettings.showFilter">
+        <th *ngFor="let header of tableSettings.reportMetadata.fields">
           <div class="input-group">
             <input type="text" id="filter" class="form-control" placeholder="Filter" (keyup.enter)="changeFilter($event)">
           </div>
@@ -50,7 +50,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let row of reportMetadata.values.slice(0, displayAmount) | filter:filterValue" (click)="openReport(row[STORAGE_ID_INDEX])">
+      <tr *ngFor="let row of tableSettings.reportMetadata.values.slice(0, tableSettings.displayAmount) | filter:tableSettings.filterValue" (click)="openReport(row[STORAGE_ID_INDEX])">
 <!--        // StorageId EndTime Duration Name CorrelationId NrChpts EstMemusage StorageSize-->
         <td>{{ row[5] }}</td>
         <td> {{ getDate(row[4]) | date:'dd/MM/yyyy - HH:mm:ss.SSS'}}</td>

@@ -12,11 +12,11 @@ import { TreeComponent } from './shared/components/tree/tree.component';
 import { ButtonComponent } from './shared/components/button/button.component';
 import { DropdownComponent } from './shared/components/dropdown/dropdown.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 import { FilterPipe } from './shared/pipes/filter.pipe';
 import { MonacoEditorComponent } from './shared/components/monaco-editor/monaco-editor.component';
-import {MatSortModule} from "@angular/material/sort";
+import { MatSortModule } from '@angular/material/sort';
 import { ReportComponent } from './report/report.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -24,7 +24,6 @@ import { TestSettingsModalComponent } from './shared/components/modals/test-sett
 import { CloneModalComponent } from './shared/components/modals/clone-modal/clone-modal.component';
 import { DisplayTableComponent } from './shared/components/display-table/display-table.component';
 import { TableSettingsModalComponent } from './shared/components/modals/table-settings-modal/table-settings-modal.component';
-
 
 @NgModule({
   declarations: [
@@ -44,18 +43,19 @@ import { TableSettingsModalComponent } from './shared/components/modals/table-se
     TestSettingsModalComponent,
     CloneModalComponent,
     DisplayTableComponent,
-    TableSettingsModalComponent
+    TableSettingsModalComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        NgbModule,
-        HttpClientModule,
-        MatSortModule,
-        ReactiveFormsModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    NgbModule,
+    NgbNavModule,
+    HttpClientModule,
+    MatSortModule,
+    ReactiveFormsModule,
+  ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

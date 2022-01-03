@@ -8,9 +8,8 @@ describe('MonacoEditorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MonacoEditorComponent ]
-    })
-    .compileComponents();
+      declarations: [MonacoEditorComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

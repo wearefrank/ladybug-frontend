@@ -1,14 +1,8 @@
+import { Report } from './report';
+
 export interface CompareReport {
-  leftReport: {
-    reports: [],
-    id: "leftId",
-    current: {},
-    selected: false
-  },
-  rightReport: {
-    reports: [],
-    id: "rightId",
-    current: {},
-    selected: false
-  }
+  reports: Report[];
+  id: string;
+  current: any;
+  selected: boolean;
 }

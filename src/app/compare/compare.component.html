@@ -2,11 +2,13 @@
   <div class="col-6">
     <app-tree
       #leftTree
+      [id]="leftReport.id"
       (selectReportEvent)="selectReportLeft($event)"></app-tree>
   </div>
   <div class="col-6">
     <app-tree
       #rightTree
+      [id]="rightReport.id"
       (selectReportEvent)="selectReportRight($event)"></app-tree>
   </div>
 </div>

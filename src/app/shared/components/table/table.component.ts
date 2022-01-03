@@ -1,59 +1,82 @@
-import {Component, OnInit, Output, EventEmitter, Input, ViewChild, AfterViewInit, OnDestroy} from '@angular/core';
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ToastComponent} from "../toast/toast.component";
-import {FormControl, FormGroup} from "@angular/forms";
-import {HelperService} from "../../services/helper.service";
-import {HttpService} from "../../services/http.service";
-import {LoaderService} from "../../services/loader.service";
-import {TableSettingsModalComponent} from "../modals/table-settings-modal/table-settings-modal.component";
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { ToastComponent } from '../toast/toast.component';
+import { HelperService } from '../../services/helper.service';
+import { HttpService } from '../../services/http.service';
+import { LoaderService } from '../../services/loader.service';
+import { TableSettingsModalComponent } from '../modals/table-settings-modal/table-settings-modal.component';
+import { TableSettings } from '../../interfaces/table-settings';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.css']
+  styleUrls: ['./table.component.css'],
 })
 export class TableComponent implements OnInit, OnDestroy {
-  showFilter: boolean = false;
-  reportMetadata: any = {};
-  isPageLoaded: boolean = false;
-  displayAmount: number = 10;
-  filterValue: string = "";
+  tableSettings: TableSettings = {
+    tableId: '', // this._id might not be defined yet
+    reportMetadata: { fields: [], values: [] },
+    tableLoaded: false,
+    displayAmount: 10,
+    showFilter: false,
+    filterValue: '',
+  };
   STORAGE_ID_INDEX = 5;
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
-  @ViewChild(TableSettingsModalComponent) tableSettingsModal!: TableSettingsModalComponent;
+  @ViewChild(TableSettingsModalComponent)
+  tableSettingsModal!: TableSettingsModalComponent;
   @Input() // Needed to make a distinction between the two halves in compare component
-  get id() { return this._id }
-  set id(id: string) { this._id = id }
-  private _id: string = "";
+  get id() {
+    return this._id;
+  }
+  set id(id: string) {
+    this._id = id;
+  }
+  private _id: string = 'debug';
 
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private loaderService: LoaderService) {
-  }
+    private loaderService: LoaderService
+  ) {}
 
   ngOnInit(): void {
-    if (!this.loaderService.isTableLoaded()) {
-      this.loadData()
+    const tableSettings = this.loaderService.getTableSettings(this._id);
+    if (!tableSettings.tableLoaded) {
+      this.loadData();
     } else {
-      this.reportMetadata = this.loaderService.getTableData();
-      this.showFilter = this.loaderService.getShowFilter();
-      this.isPageLoaded = true;
+      this.tableSettings = tableSettings;
     }
   }
 
+  ngOnDestroy(): void {
+    this.loaderService.saveTableSettings(
+      this._id,
+      this.tableSettings.reportMetadata,
+      this.tableSettings.showFilter,
+      this.tableSettings.displayAmount,
+      this.tableSettings.filterValue,
+      this.tableSettings.tableLoaded
+    );
+  }
+
   loadData(): void {
-    this.httpService.getReports(this.displayAmount)
-      .subscribe({
-        next: value => {
-          this.reportMetadata = value
-          this.isPageLoaded = true
-          this.toastComponent.addAlert({type: 'success', message: 'Data loaded!'})
-        }, error: () => {
-          this.toastComponent.addAlert({type: 'danger', message: 'Could not retrieve data for table'})
-        }
-      })
+    this.httpService.getReports(this.tableSettings.displayAmount).subscribe({
+      next: (value) => {
+        this.tableSettings.reportMetadata = value;
+        this.tableSettings.tableLoaded = true;
+        this.toastComponent.addAlert({
+          type: 'success',
+          message: 'Data loaded!',
+        });
+      },
+      error: () => {
+        this.toastComponent.addAlert({
+          type: 'danger',
+          message: 'Could not retrieve data for table',
+        });
+      },
+    });
   }
 
   openModal(): void {
@@ -61,63 +84,73 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   getDate(seconds: string): Date {
-    return new Date(parseInt(seconds))
+    return new Date(Number.parseInt(seconds));
   }
 
   toggleFilter(): void {
-    this.showFilter = !this.showFilter;
+    this.tableSettings.showFilter = !this.tableSettings.showFilter;
   }
 
   changeFilter(event: any): void {
-    this.filterValue = event.target.value;
+    this.tableSettings.filterValue = event.target.value;
   }
 
   changeTableLimit(event: any): void {
-    this.displayAmount = event.target.value;
-    this.loadData()
+    this.tableSettings.displayAmount = event.target.value;
+    this.loadData();
   }
 
   refresh(): void {
-    this.showFilter = false;
-    this.reportMetadata = {};
-    this.isPageLoaded = false;
-    this.displayAmount = 10;
+    this.tableSettings.showFilter = false;
+    this.tableSettings.reportMetadata = { fields: [], values: [] };
+    this.tableSettings.tableLoaded = false;
+    this.tableSettings.displayAmount = 10;
     this.loadData();
   }
 
   openReport(storageId: string): void {
-    this.httpService.getReport(storageId).subscribe(data => {
+    this.httpService.getReport(storageId).subscribe((data) => {
       data.id = this.id;
-      this.openReportEvent.next(data)
-    })
+      this.openReportEvent.next(data);
+    });
   }
 
   openAllReports(): void {
-    this.reportMetadata.values.map((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]))
+    this.tableSettings.reportMetadata.values.forEach((report: string[]) =>
+      this.openReport(report[this.STORAGE_ID_INDEX])
+    );
   }
 
-  openReports(amount: number) {
-    this.reportMetadata.values.slice(0, amount).map((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]))
+  openReports(amount: number): void {
+    this.tableSettings.reportMetadata.values
+      .slice(0, amount)
+      .forEach((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]));
   }
 
   downloadReports(exportMessages: boolean, exportReports: boolean): void {
-    const queryString = this.reportMetadata.values
-      .reduce((totalQuery: string, selectedReport: string[]) => totalQuery + "id=" + selectedReport[this.STORAGE_ID_INDEX] + "&", "?")
-    window.open('api/report/download/debugStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
+    const queryString: string = this.tableSettings.reportMetadata.values.reduce(
+      (totalQuery: string, selectedReport: string[]) =>
+        totalQuery + 'id=' + selectedReport[this.STORAGE_ID_INDEX] + '&',
+      '?'
+    );
+    window.open('api/report/download/debugStorage/' + exportMessages + '/' + exportReports + queryString.slice(0, -1));
   }
 
-  uploadReport(event: any): void {
-    const file: File = event.target.files[0]
+  uploadReports(event: any): void {
+    const file: File = event.target.files[0];
     if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      this.httpService.uploadReport(formData).subscribe(() => {
-        this.ngOnInit();
-      })
+      const formData: any = new FormData();
+      formData.append('file', file);
+      this.showUploadedReports(formData);
     }
   }
 
-  ngOnDestroy() {
-    this.loaderService.saveTableSettings(this.reportMetadata, this.showFilter)
+  showUploadedReports(formData: any) {
+    this.httpService.uploadReport(formData).subscribe((data) => {
+      for (let report of data) {
+        report.id = this.id;
+        this.openReportEvent.next(report);
+      }
+    });
   }
 }

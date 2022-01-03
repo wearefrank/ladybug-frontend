@@ -1,20 +1,22 @@
-import {Component, OnInit, EventEmitter, Output, ViewChild} from '@angular/core';
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ToastComponent} from "../shared/components/toast/toast.component";
-import {HttpService} from "../shared/services/http.service";
-import {LoaderService} from "../shared/services/loader.service";
-import {CloneModalComponent} from "../shared/components/modals/clone-modal/clone-modal.component";
-import {TestSettingsModalComponent} from "../shared/components/modals/test-settings-modal/test-settings-modal.component";
+import { Component, OnInit, EventEmitter, Output, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { ToastComponent } from '../shared/components/toast/toast.component';
+import { HttpService } from '../shared/services/http.service';
+import { LoaderService } from '../shared/services/loader.service';
+import { CloneModalComponent } from '../shared/components/modals/clone-modal/clone-modal.component';
+import { TestSettingsModalComponent } from '../shared/components/modals/test-settings-modal/test-settings-modal.component';
+import { TestResult } from '../shared/interfaces/test-result';
+import { ReranReport } from '../shared/interfaces/reran-report';
+import { Metadata } from '../shared/interfaces/metadata';
+import { Report } from '../shared/interfaces/report';
 
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
-  styleUrls: ['./test.component.css']
+  styleUrls: ['./test.component.css'],
 })
-export class TestComponent implements OnInit{
+export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
-  reranReports: any[] = [];
-  reranReportsIndex: string[] = [];
+  reranReports: ReranReport[] = [];
   STORAGE_ID_INDEX = 5;
   NAME_INDEX = 2;
   TIMEOUT = 100;
@@ -22,16 +24,17 @@ export class TestComponent implements OnInit{
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
-  @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
+  @ViewChild(TestSettingsModalComponent)
+  testSettingsModal!: TestSettingsModalComponent;
 
   constructor(private httpService: HttpService, private loaderService: LoaderService) {}
 
-  openCloneModal() {
+  openCloneModal(): void {
     this.cloneModal.open();
   }
 
-  openSettingsModal() {
-    this.testSettingsModal.open()
+  openSettingsModal(): void {
+    this.testSettingsModal.open();
   }
 
   ngOnInit(): void {
@@ -40,232 +43,207 @@ export class TestComponent implements OnInit{
     } else {
       this.reports = this.loaderService.getTestReports();
       this.reranReports = this.loaderService.getReranReports();
-      this.reranReportsIndex = this.loaderService.getReranReportsIndex();
-      this.addCopiedReports();
+      this.getCopiedReports();
     }
   }
 
-  addCopiedReports() {
-    this.httpService.getTestReports().subscribe({
-      next: response => {
-        const amountAdded = response.values.length - this.reports.length
-        if (amountAdded > 0) {
-          for (let i = this.reports.length; i <= response.values.length - 1; i++) {
-            this.reports.push(response.values[i])
-          }
-        }
-      }, error: () => {
-        this.httpService.handleError('Could not retrieve data for test!')
+  ngAfterViewInit() {
+    this.reranReports.forEach((report) => {
+      this.showResults(report.result, report.originalIndex);
+    });
+  }
+
+  addCopiedReports(metadata: Metadata): void {
+    const amountAdded: number = metadata.values.length - this.reports.length;
+    if (amountAdded > 0) {
+      for (let index = this.reports.length; index <= metadata.values.length - 1; index++) {
+        this.reports.push(metadata.values[index]);
       }
-    })
+    }
   }
 
-  ngOnDestroy() {
-    console.log(this.reports)
-    this.loaderService.saveTestSettings(this.reports, this.reranReports, this.reranReportsIndex)
+  getCopiedReports(): void {
+    this.httpService.getTestReports().subscribe({
+      next: (response) => this.addCopiedReports(response),
+      error: () => this.httpService.handleError('Could not retrieve data for test!'),
+    });
   }
 
-  /**
-   * Load in the report data from testStorage
-   */
+  ngOnDestroy(): void {
+    this.loaderService.saveTestSettings(this.reports, this.reranReports);
+  }
+
   loadData(): void {
     this.httpService.getTestReports().subscribe({
-      next: value => {
-        this.reports = value.values
-      }, error: () => {
-        this.httpService.handleError('Could not retrieve data for test!')
-      }
-    })
+      next: (value) => (this.reports = value.values),
+      error: () => this.httpService.handleError('Could not retrieve data for test!'),
+    });
   }
 
-  /**
-   * Reset the runner
-   */
   resetRunner(): void {
-    // @ts-ignore
-    this.httpService.reset().subscribe()
+    this.httpService.reset().subscribe();
   }
 
-  /**
-   * Run a test
-   */
   run(reportId: string): void {
-    const data: any = {}
-    data['testStorage'] = [reportId]
-
-    this.httpService.runReport(data).subscribe(() => {
-      setTimeout(() => {
-        this.queryResults()
-      }, this.TIMEOUT)
-    })
+    const data: any = { testStorage: [reportId] };
+    this.httpService.runReport(data).subscribe(() => this.timeOut());
   }
 
-  /**
-   * Runs all tests
-   */
   runAll(): void {
-    const selectedReports = this.reports.filter(report => report.checked);
-    let data: any = {}
-    data['testStorage'] = []
-    for (let i = 0; i < selectedReports.length; i++) {
-      data['testStorage'].push(selectedReports[i][this.STORAGE_ID_INDEX])
-    }
-
-    this.httpService.runReport(data).subscribe(() => {
-      setTimeout(() => {
-        this.queryResults();
-      }, this.TIMEOUT)
-    })
+    const data: any = { testStorage: [] };
+    this.reports
+      .filter((report) => report.checked)
+      .forEach((report) => data['testStorage'].push(report[this.STORAGE_ID_INDEX]));
+    this.httpService.runReport(data).subscribe(() => this.timeOut());
   }
 
-  /**
-   * Query the results of the test run
-   */
-  queryResults(): void {
-    this.httpService.queryResults().subscribe(response => {
+  timeOut(): void {
+    setTimeout(() => this.queryResults(), this.TIMEOUT);
+  }
 
-      // Retrieve each report in the result runner
-      for (let reportIndex in response.results) {
-        if (response.results.hasOwnProperty(reportIndex)) {
-          this.httpService.getReport(reportIndex).subscribe(report => {
-            // See if the report element exist, where we will attach the results to
-            const element = document.getElementById('testReport#' + reportIndex)
-            if (element) {
-              if (element.childElementCount > 5 && element.lastChild != null) {
-                // element.removeChild(element.lastChild)
-              }
-              this.createResultElement(response.results, reportIndex, report)
-              // element.appendChild(this.reranReports[this.reranReportsIndex.indexOf(reportIndex)].element)
-            }
-          })
+  queryResults(): void {
+    this.httpService.queryResults().subscribe((response) => {
+      for (let oldReportIndex in response.results) {
+        if (response.results.hasOwnProperty(oldReportIndex)) {
+          this.showResults(response.results[oldReportIndex], oldReportIndex);
         }
       }
-    })
+    });
   }
 
-  createResultElement(results: any, reportIndex: string, originalReport: any): void {
-    const tdElement = document.createElement('td')
-    const resultReport = results[reportIndex];
-    tdElement.appendChild(document.createTextNode("("
-      + resultReport['previous-time'] + "ms >> "
-      + resultReport['current-time'] + "ms) ("
-      + resultReport['stubbed'] + "/"
-      + resultReport['total'] + " stubbed)"
-    ))
+  checkIfTestReportReran(id: string): boolean {
+    return this.reranReports.some((report) => report.originalIndex == id);
+  }
+
+  showResults(resultReport: TestResult, oldReportIndex: string): void {
+    let testReportElement = document.querySelector('#testReport\\#' + oldReportIndex);
+    if (testReportElement) {
+      this.appendResultToTestReport(resultReport, oldReportIndex, testReportElement);
+    }
+  }
+
+  appendResultToTestReport(resultReport: TestResult, oldReportIndex: string, testReportElement: Element): void {
+    let newResultElement = this.createNewResultElement(resultReport, oldReportIndex);
+    let existingResultElement = document.querySelector('#resultElement\\#' + oldReportIndex);
+
+    if (existingResultElement) {
+      this.replaceElement(newResultElement, existingResultElement, oldReportIndex);
+    } else {
+      this.addElement(testReportElement, newResultElement);
+    }
+
+    this.reranReports.push({
+      originalIndex: oldReportIndex,
+      newIndex: resultReport.report.storageId.toString(),
+      result: resultReport,
+    });
+  }
+
+  createNewResultElement(resultReport: TestResult, oldReportIndex: string): Element {
+    let originalReport = this.getOriginalReport(oldReportIndex);
+    return this.createElement(resultReport, oldReportIndex, originalReport);
+  }
+
+  // TODO: Fix, Returns empty value, because it does not wait for the report
+  getOriginalReport(reportId: string): Report {
+    let originalReport = {};
+    this.httpService.getReport(reportId).subscribe((report) => {
+      return (originalReport = report);
+    });
+
+    return <Report>originalReport;
+  }
+
+  replaceElement(newElement: Element, oldElement: Element, oldReportIndex: string): void {
+    this.reranReports = this.reranReports.filter((report) => report.originalIndex != oldReportIndex);
+    oldElement.replaceWith(newElement);
+  }
+
+  addElement(parentElement: Element, newElement: Element): void {
+    parentElement.append(newElement);
+  }
+
+  createElement(resultReport: TestResult, oldReportIndex: string, originalReport: Report): HTMLElement {
+    const tdElement: HTMLElement = document.createElement('td');
+    tdElement.append(
+      document.createTextNode(
+        '(' +
+          resultReport.previousTime +
+          'ms >> ' +
+          resultReport.currentTime +
+          'ms) (' +
+          resultReport.stubbed +
+          '/' +
+          resultReport.total +
+          ' stubbed)'
+      )
+    );
+    tdElement.setAttribute('id', 'resultElement#' + oldReportIndex);
 
     // If the reports are not equal, then a reportIndex color should be shown
-    const color = originalReport == results[reportIndex].report ? 'green' : 'red'
-    tdElement.setAttribute('style', 'color:' + color)
-
-    // Make sure only 1 result is shown and they don't append
-    const rerunIndex = this.reranReports.findIndex(x => x.original == reportIndex);
-    if (rerunIndex !== -1) {
-      this.reranReports.splice(rerunIndex, 1);
-      this.reranReportsIndex.splice(rerunIndex, 1)
-    }
-
-    // Keep track of the reports that have been ran
-     this.reranReports.push({original: reportIndex, reran: results[reportIndex].report.storageId, element: tdElement.innerHTML, color: color});
-    this.reranReportsIndex.push(reportIndex)
+    const color: string = originalReport == resultReport.report ? 'green' : 'red';
+    tdElement.setAttribute('style', 'color:' + color);
+    return tdElement;
   }
 
-  /**
-   * Selects the report to be displayed
-   * @param storageId - the storageId of the report
-   * @param name - the name of the report
-   */
   selectReport(storageId: number, name: string): void {
-    this.httpService.getReport(storageId.toString()).subscribe(data => {
-      this.openTestReportEvent.emit({data: data, name: name})
-    })
+    this.httpService
+      .getReport(storageId.toString())
+      .subscribe((data) => this.openTestReportEvent.emit({ data: data, name: name }));
   }
 
-  /**
-   * Removes the selected reports
-   */
   deleteSelected(): void {
-    this.reports.map(report => {
-      if (report.checked) {
-        this.httpService.deleteReport(report[this.STORAGE_ID_INDEX]).subscribe()
-      }
-    })
-
-    setTimeout(() => {
-      this.loadData()
-    }, this.TIMEOUT)
+    this.reports
+      .filter((report) => report.checked)
+      .forEach((report) => {
+        this.httpService.deleteReport(report[this.STORAGE_ID_INDEX]).subscribe();
+        this.reports.splice(this.reports.indexOf(report), 1);
+      });
   }
 
-  /**
-   * Download selected reports
-   * @param exportMessages - boolean whether to download messages
-   * @param exportReports = boolean whether to download reports
-   */
   downloadSelected(exportMessages: boolean, exportReports: boolean): void {
-    const selectedReports = this.reports.filter(report => report.checked);
-    let queryString = "?";
-    for (let i = 0; i < selectedReports.length; i++) {
-        queryString += "id=" + selectedReports[i][this.STORAGE_ID_INDEX] + "&"
-    }
-    window.open('api/report/download/testStorage/' + exportMessages + "/" + exportReports + queryString.slice(0, -1));
-
+    const queryString: string = this.reports
+      .filter((report) => report.checked)
+      .reduce(
+        (totalQuery: string, selectedReport: string[]) =>
+          totalQuery + 'id=' + selectedReport[this.STORAGE_ID_INDEX] + '&',
+        '?'
+      );
+    window.open('api/report/download/testStorage/' + exportMessages + '/' + exportReports + queryString.slice(0, -1));
   }
 
-  /**
-   * Upload a report
-   * @param event - the target file to upload
-   */
   uploadReport(event: any): void {
-    const file: File = event.target.files[0]
+    const file: File = event.target.files[0];
     if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      this.httpService.uploadReport(formData).subscribe(() => {
-        this.loadData()
-      })
+      const formData: any = new FormData();
+      formData.append('file', file);
+      this.httpService.uploadReportToStorage(formData).subscribe(() => this.loadData());
     }
   }
 
-  /**
-   * Compare two reports with each other in compare tab
-   * @param originalReport - the original report that will be compared to the new one
-   */
   compareReports(originalReport: string): void {
-    let index = this.reranReportsIndex.indexOf(originalReport);
-    let newReport = this.reranReports[index].reran;
-    this.openCompareReportsEvent.emit({oldReport: originalReport, newReport: newReport})
+    let newReport = this.reranReports.find((report) => report.originalIndex == originalReport)?.newIndex;
+    this.openCompareReportsEvent.emit({
+      oldReport: originalReport,
+      newReport: newReport,
+    });
   }
 
-  /**
-   * Replace the original report
-   * @param reportId - report that will be replaced
-   */
   replaceReport(reportId: string): void {
     this.httpService.replaceReport(reportId).subscribe(() => {
-      let index = this.reranReportsIndex.indexOf(reportId);
-      this.reranReportsIndex.splice(index, 1);
-      this.reranReports.splice(index, 1);
-    })
+      this.reranReports = this.reranReports.filter((report) => report.originalIndex != reportId);
+    });
   }
 
-  /**
-   * Toggle the checkbox
-   * @param report - the report that is toggled
-   */
   toggleCheck(report: any): void {
-    report.checked = !report.checked
+    report.checked = !report.checked;
   }
 
-  /**
-   * Checks all checkboxes
-   */
   checkAll(): void {
-    this.reports.map(report => report.checked = true)
+    this.reports.forEach((report) => (report.checked = true));
   }
 
-  /**
-   * Unchecks all checkboxes
-   */
   uncheckAll(): void {
-    this.reports.map(report => report.checked = false)
+    this.reports.forEach((report) => (report.checked = false));
   }
 }

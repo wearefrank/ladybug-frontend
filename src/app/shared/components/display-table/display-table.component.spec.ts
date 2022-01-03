@@ -8,9 +8,8 @@ describe('DisplayTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DisplayTableComponent ]
-    })
-    .compileComponents();
+      declarations: [DisplayTableComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
