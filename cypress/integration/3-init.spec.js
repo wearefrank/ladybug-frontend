@@ -11,9 +11,4 @@ describe('Ladybug simple protractor test', function() {
     // Please update the version here when you update the version in package.json
     cy.title().should('eq', 'Ladybug - v0.0.15');
   });
-
-  it('Create first two report', function() {
-    cy.createReport();
-    cy.createOtherReport();
-  })
 });

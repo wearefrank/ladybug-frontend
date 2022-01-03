@@ -24,6 +24,8 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+import { createJSDocTypeExpression, createYield } from "typescript";
+
 function createReport() {
     // No cy.visit because then the API call can happen multiple times.
     cy.request('http://localhost/index.jsp?createReport=simple').then(resp => {
@@ -41,3 +43,9 @@ function createOtherReport() {
 }
 
 Cypress.Commands.add('createOtherReport', createOtherReport);
+
+function clearDebugStore() {
+    cy.request('http://localhost/index.jsp?clearDebugStorage=true');
+}
+
+Cypress.Commands.add('clearDebugStore', clearDebugStore);

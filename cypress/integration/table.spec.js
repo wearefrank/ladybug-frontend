@@ -1,31 +1,25 @@
-describe('Changing the table size', function () {
+describe('Table size and toggle filter', function () {
   beforeEach(() => {
+    cy.createReport();
+    cy.createOtherReport();
     cy.visit('')
   })
-  
-  it('Typing in a table size', function () {
+
+  afterEach(() => {
+    cy.clearDebugStore();
+  })
+
+  it('Typing in a table size and retyping it', function () {
     cy.get('#displayAmount').type(2)
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
-  })
-
-  it('Remove table size', function () {
     cy.get('#displayAmount').clear()
     cy.get('.table-responsive tbody').find('tr').should('have.length', 0)
-  })
-
-  it('Retype larger table size', function () {
     cy.get('#displayAmount').type(10)
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
-})
-
-
-describe('Toggle filter and filter results', function () {
-  it('At first the filters should not be visible', function () {
-    cy.get('#filterRow').should('not.exist')
-  })
 
   it('After clicking filter button, the filters should appear', function () {
+    cy.get('#filterRow').should('not.exist')
     cy.get('#FilterButton').click()
     cy.get('#filterRow').should('be.visible')
 
@@ -37,10 +31,6 @@ describe('Toggle filter and filter results', function () {
     cy.get('#FilterButton').click()
     cy.get('#filterRow #filter').eq(2).type("name{enter}")
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1)
-  })
-
-  it('Empty the filter', function () {
-    // Filter is on because of previous test
     cy.get('#filterRow #filter').eq(2).clear().type("{enter}")
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
