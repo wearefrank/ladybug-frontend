@@ -23,3 +23,21 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+function createReport() {
+    // No cy.visit because then the API call can happen multiple times.
+    cy.request('http://localhost/index.jsp?createReport=simple').then(resp => {
+        expect(resp.status).equal(200);
+    });
+}
+
+Cypress.Commands.add('createReport', createReport);
+
+function createOtherReport() {
+    // No cy.visit because then the API call can happen multiple times.
+    cy.request('http://localhost/index.jsp?createReport=otherSimple').then(resp => {
+        expect(resp.status).equal(200);
+    });
+}
+
+Cypress.Commands.add('createOtherReport', createOtherReport);
