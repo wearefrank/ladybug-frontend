@@ -4,7 +4,7 @@ describe('Clicking a report', function () {
   })
   
   it('Selecting report should show a tree', function() {
-    cy.get('#treeButtons').should('not.be.visible')
+    cy.get('#treeButtons').should('not.exist')
     cy.get('.table-responsive tbody').find('tr').first().click()
     cy.get('#treeButtons').should('be.visible')
   })
