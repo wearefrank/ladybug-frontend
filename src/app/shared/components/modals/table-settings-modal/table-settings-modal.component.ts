@@ -8,7 +8,7 @@ import { HttpService } from '../../../services/http.service';
   templateUrl: './table-settings-modal.component.html',
   styleUrls: ['./table-settings-modal.component.css'],
 })
-export class TableSettingsModalComponent implements OnInit {
+export class TableSettingsModalComponent {
   @ViewChild('modal') modal!: any;
   settingsForm = new FormGroup({
     generatorEnabled: new FormControl(''),
@@ -21,15 +21,9 @@ export class TableSettingsModalComponent implements OnInit {
 
   constructor(private modalService: NgbModal, private httpService: HttpService) {}
 
-  open() {
+  open(): void {
+    this.loadSettings();
     this.modalService.open(this.modal);
-  }
-
-  ngOnInit(): void {
-    this.httpService.getTransformation().subscribe((response) => {
-      // Also load in the default transformation
-      this.settingsForm.get('transformation')?.setValue(response.transformation);
-    });
   }
 
   /**
@@ -50,7 +44,22 @@ export class TableSettingsModalComponent implements OnInit {
     }
   }
 
-  openReports(amount: number) {
+  openReports(amount: number): void {
     this.openReportsEvent.next(amount);
+  }
+
+  refreshModal(): void {
+    this.loadSettings();
+  }
+
+  loadSettings() {
+    this.httpService.getTransformation().subscribe((response) => {
+      this.settingsForm.get('transformation')?.setValue(response.transformation);
+    });
+
+    this.httpService.getSettings().subscribe((response) => {
+      this.settingsForm.get('generatorEnabled')?.setValue(response.generatorEnabled ? 'Enabled' : 'Disabled');
+      this.settingsForm.get('regexFilter')?.setValue(response.regexFilter);
+    });
   }
 }
