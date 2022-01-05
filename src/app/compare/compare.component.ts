@@ -62,7 +62,7 @@ export class CompareComponent implements OnChanges {
   addReportNodeLeft(newReport: Report): void {
     if (this.leftReport.id === newReport.id) {
       this.leftReport.reports.push(newReport);
-      this.leftTreeComponent?.handleChange(newReport, true);
+      this.leftTreeComponent?.handleChange(newReport);
     }
   }
 
@@ -73,7 +73,7 @@ export class CompareComponent implements OnChanges {
   addReportNodeRight(newReport: Report): void {
     if (this.rightReport.id === newReport.id) {
       this.rightReport.reports.push(newReport);
-      this.rightTreeComponent?.handleChange(newReport, true);
+      this.rightTreeComponent?.handleChange(newReport);
     }
   }
 

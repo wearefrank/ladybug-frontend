@@ -99,10 +99,10 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     return this.treeSettings.tree.findIndex((report) => report.id == node.id);
   }
 
-  handleChange(report: Report, showTreeInCompare: boolean): void {
+  handleChange(report: Report): void {
     this.treeSettings.tree = [];
     this.treeNodeId = 0;
-    const reportsToShow = this.getReportsToShow(report, showTreeInCompare);
+    const reportsToShow = this.getReportsToShow(report);
 
     for (const reportRoot of reportsToShow) {
       this.parentMap = [];
@@ -115,13 +115,9 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   // TODO: Return and use it as type where it is called
-  getReportsToShow(report: Report, showTreeInCompare: boolean) {
-    let reportsToShow: Report[] = [report];
-    if (!showTreeInCompare) {
-      this.treeSettings.selectedReports.push(report);
-      reportsToShow = this.treeSettings.selectedReports;
-    }
-    return reportsToShow;
+  getReportsToShow(report: Report) {
+    this.treeSettings.selectedReports.push(report);
+    return this.treeSettings.selectedReports;
   }
 
   createRootNode(report: Report): TreeNode {

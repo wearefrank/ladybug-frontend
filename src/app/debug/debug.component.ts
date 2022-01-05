@@ -16,7 +16,7 @@ export class DebugComponent {
   constructor() {}
 
   addReportToTree(newReport: Report): void {
-    this.treeComponent.handleChange(newReport, false);
+    this.treeComponent.handleChange(newReport);
   }
 
   showReportInDisplay(currentReport: TreeNode): void {
