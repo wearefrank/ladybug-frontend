@@ -150,7 +150,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   createChildNode(checkpoint: Checkpoint): TreeNode {
     const img: string = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0);
     return {
-      text: '<img src="assets/tree-icons/' + img + '" alt="">' + checkpoint.name,
+      text: '<img src="' + img + '" alt="">' + checkpoint.name,
       ladybug: checkpoint,
       root: false,
       id: this.treeNodeId++,
