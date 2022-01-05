@@ -47,8 +47,10 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    let selectedNode: number = -1;
     if (this.treeSettings.tree.length > 0) {
-      const selectedNode: number = $('#' + this._id).treeview('getSelected')[0].id;
+      selectedNode = $('#' + this._id).treeview('getSelected')[0].id;
+    }
       this.loaderService.saveTreeSettings(
         this._id,
         true,
@@ -56,7 +58,6 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
         this.treeSettings.selectedReports,
         selectedNode
       );
-    }
   }
 
   collapseAll(): void {
@@ -68,9 +69,15 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   closeAll(): void {
-    this.treeSettings.selectedReports.length = 0;
     $('#' + this._id).treeview('remove');
     this.closeEntireTreeEvent.emit();
+    this.treeSettings = {
+      selectedReports: [],
+      tree: [],
+      treeId: '',
+      treeLoaded: false,
+      selectedNode: -1,
+    };
   }
 
   removeNode(node: TreeNode): void {
