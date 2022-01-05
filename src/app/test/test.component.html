@@ -1,9 +1,8 @@
 <div class="row">
   <div class="col">
     <div class="row">
-      <app-button [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="loadData()"></app-button>
       <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runAll()"></app-button>
-      <app-button [icon]="'fa fa-repeat'" [title]="'Reset'" (click)="resetRunner()"></app-button>
+      <app-button [icon]="'fa fa-undo'" [title]="'Reset'" (click)="resetRunner()"></app-button>
       <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="openSettingsModal()"></app-button>
       <app-button [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
       <app-button [title]="'Deselect All'" [text]="'Deselect All'" (click)="uncheckAll()"></app-button>

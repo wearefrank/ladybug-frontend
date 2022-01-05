@@ -82,6 +82,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
 
   resetRunner(): void {
     this.httpService.reset().subscribe();
+    this.reranReports = [];
   }
 
   run(reportId: string): void {
@@ -132,6 +133,10 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addElement(testReportElement, newResultElement);
     }
 
+    this.addResultToReranReports(oldReportIndex, resultReport);
+  }
+
+  addResultToReranReports(oldReportIndex: string, resultReport: TestResult): void {
     this.reranReports.push({
       originalIndex: oldReportIndex,
       newIndex: resultReport.report.storageId.toString(),
