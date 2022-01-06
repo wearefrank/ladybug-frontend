@@ -12,15 +12,16 @@ import { TableSettings } from '../../interfaces/table-settings';
   styleUrls: ['./table.component.css'],
 })
 export class TableComponent implements OnInit, OnDestroy {
+  DEFAULT_DISPLAY_AMOUNT: number = 10;
+  STORAGE_ID_INDEX: number = 5;
   tableSettings: TableSettings = {
     tableId: '', // this._id might not be defined yet
     reportMetadata: { fields: [], values: [] },
     tableLoaded: false,
-    displayAmount: 10,
+    displayAmount: this.DEFAULT_DISPLAY_AMOUNT,
     showFilter: false,
     filterValue: '',
   };
-  STORAGE_ID_INDEX = 5;
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
@@ -96,7 +97,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   changeTableLimit(event: any): void {
-    this.tableSettings.displayAmount = event.target.value;
+    this.tableSettings.displayAmount = event.target.value === '' ? 0 : event.target.value;
     this.loadData();
   }
 

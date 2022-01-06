@@ -51,13 +51,13 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     if (this.treeSettings.tree.length > 0) {
       selectedNode = $('#' + this._id).treeview('getSelected')[0].id;
     }
-      this.loaderService.saveTreeSettings(
-        this._id,
-        true,
-        this.treeSettings.tree,
-        this.treeSettings.selectedReports,
-        selectedNode
-      );
+    this.loaderService.saveTreeSettings(
+      this._id,
+      true,
+      this.treeSettings.tree,
+      this.treeSettings.selectedReports,
+      selectedNode
+    );
   }
 
   collapseAll(): void {
