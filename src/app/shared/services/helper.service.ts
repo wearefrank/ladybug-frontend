@@ -9,7 +9,7 @@ export class HelperService {
   constructor() {}
 
   getImage(type: number, encoding: string, even: boolean): string {
-    let img = '../../../../assets/tree-icons/';
+    let img = 'assets/tree-icons/';
     switch (type) {
       case 1:
         img += 'start';

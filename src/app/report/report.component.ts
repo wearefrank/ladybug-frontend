@@ -24,7 +24,7 @@ export class ReportComponent implements AfterViewInit {
    Add a new report and notify the tree of the change
    */
   ngAfterViewInit(): void {
-    this.treeComponent?.handleChange(<Report>(<unknown>this.reportData), false);
+    this.treeComponent?.handleChange(<Report>(<unknown>this.reportData));
   }
 
   /**

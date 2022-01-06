@@ -47,16 +47,17 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    let selectedNode: number = -1;
     if (this.treeSettings.tree.length > 0) {
-      const selectedNode: number = $('#' + this._id).treeview('getSelected')[0].id;
-      this.loaderService.saveTreeSettings(
-        this._id,
-        true,
-        this.treeSettings.tree,
-        this.treeSettings.selectedReports,
-        selectedNode
-      );
+      selectedNode = $('#' + this._id).treeview('getSelected')[0].id;
     }
+    this.loaderService.saveTreeSettings(
+      this._id,
+      true,
+      this.treeSettings.tree,
+      this.treeSettings.selectedReports,
+      selectedNode
+    );
   }
 
   collapseAll(): void {
@@ -68,9 +69,15 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   closeAll(): void {
-    this.treeSettings.selectedReports.length = 0;
     $('#' + this._id).treeview('remove');
     this.closeEntireTreeEvent.emit();
+    this.treeSettings = {
+      selectedReports: [],
+      tree: [],
+      treeId: '',
+      treeLoaded: false,
+      selectedNode: -1,
+    };
   }
 
   removeNode(node: TreeNode): void {
@@ -99,10 +106,10 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     return this.treeSettings.tree.findIndex((report) => report.id == node.id);
   }
 
-  handleChange(report: Report, showTreeInCompare: boolean): void {
+  handleChange(report: Report): void {
     this.treeSettings.tree = [];
     this.treeNodeId = 0;
-    const reportsToShow = this.getReportsToShow(report, showTreeInCompare);
+    const reportsToShow = this.getReportsToShow(report);
 
     for (const reportRoot of reportsToShow) {
       this.parentMap = [];
@@ -115,13 +122,9 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   // TODO: Return and use it as type where it is called
-  getReportsToShow(report: Report, showTreeInCompare: boolean) {
-    let reportsToShow: Report[] = [report];
-    if (!showTreeInCompare) {
-      this.treeSettings.selectedReports.push(report);
-      reportsToShow = this.treeSettings.selectedReports;
-    }
-    return reportsToShow;
+  getReportsToShow(report: Report) {
+    this.treeSettings.selectedReports.push(report);
+    return this.treeSettings.selectedReports;
   }
 
   createRootNode(report: Report): TreeNode {

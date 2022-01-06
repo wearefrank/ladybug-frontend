@@ -113,6 +113,10 @@ export class HttpService {
       .pipe(catchError(this.handleError('Could not retrieve transformation!')));
   }
 
+  getSettings(): Observable<any> {
+    return this.http.get<any>('api/testtool').pipe(catchError(this.handleError('Could not retrieve settings!')));
+  }
+
   reset(): Observable<void> {
     return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError('Could not reset runner!')));
   }
