@@ -97,6 +97,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   changeTableLimit(event: any): void {
+    event.preventDefault();
     this.tableSettings.displayAmount = event.target.value === '' ? 0 : event.target.value;
     this.loadData();
   }
