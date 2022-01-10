@@ -32,9 +32,10 @@ export class TableSettingsModalComponent {
   saveSettings(): void {
     const form: any = this.settingsForm.value;
     this.httpService.setTransformationEnabled(form.transformationEnabled);
-    let map: { generatorEnabled: string; regexFilter: string } = {
+    let map: { generatorEnabled: string; regexFilter: string; transformationEnabled: string } = {
       generatorEnabled: form.generatorEnabled,
       regexFilter: form.regexFilter,
+      transformationEnabled: form.transformationEnabled.toString(),
     };
     this.httpService.postSettings(map).subscribe();
 
@@ -48,7 +49,7 @@ export class TableSettingsModalComponent {
     this.openLatestReportsEvent.next(amount);
   }
 
-  refreshModal(): void {
+  resetModal(): void {
     this.loadSettings();
   }
 
@@ -60,6 +61,7 @@ export class TableSettingsModalComponent {
     this.httpService.getSettings().subscribe((response) => {
       this.settingsForm.get('generatorEnabled')?.setValue(response.generatorEnabled ? 'Enabled' : 'Disabled');
       this.settingsForm.get('regexFilter')?.setValue(response.regexFilter);
+      this.settingsForm.get('transformationEnabled')?.setValue(response.transformationEnabled);
     });
   }
 }
