@@ -17,7 +17,7 @@ export class TableSettingsModalComponent {
     transformation: new FormControl(''),
   });
 
-  @Output() openReportsEvent = new EventEmitter<any>();
+  @Output() openLatestReportsEvent = new EventEmitter<any>();
 
   constructor(private modalService: NgbModal, private httpService: HttpService) {}
 
@@ -44,8 +44,8 @@ export class TableSettingsModalComponent {
     }
   }
 
-  openReports(amount: number): void {
-    this.openReportsEvent.next(amount);
+  openLatestReports(amount: number): void {
+    this.openLatestReportsEvent.next(amount);
   }
 
   refreshModal(): void {

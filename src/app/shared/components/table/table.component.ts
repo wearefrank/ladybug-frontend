@@ -128,6 +128,15 @@ export class TableComponent implements OnInit, OnDestroy {
       .forEach((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]));
   }
 
+  openLatestReports(amount: number): void {
+    this.httpService.getLatestReports(amount).subscribe((data) => {
+      data.forEach((report: any) => {
+        report.id = this.id;
+        this.openReportEvent.next(report);
+      });
+    });
+  }
+
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
     console.log(this.tableSettings.reportMetadata.values);
     const queryString: string = this.tableSettings.reportMetadata.values.reduce(
