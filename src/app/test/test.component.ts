@@ -17,6 +17,7 @@ import { Report } from '../shared/interfaces/report';
 export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
+  generatorStatus: string = 'disabled';
   STORAGE_ID_INDEX = 5;
   NAME_INDEX = 2;
   TIMEOUT = 100;
@@ -45,6 +46,9 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       this.reranReports = this.loaderService.getReranReports();
       this.getCopiedReports();
     }
+    this.httpService.getSettings().subscribe(response => {
+      this.generatorStatus = response.generatorEnabled ? 'enabled' : 'disabled';
+    })
   }
 
   ngAfterViewInit() {
