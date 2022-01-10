@@ -80,6 +80,14 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     };
   }
 
+  downloadReports(exportBinary: boolean, exportXML: boolean): void {
+    const queryString: string = this.treeSettings.selectedReports.reduce(
+      (totalQuery: string, selectedReport: Report) => totalQuery + 'id=' + selectedReport.storageId + '&',
+      '?'
+    );
+    window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + queryString.slice(0, -1));
+  }
+
   removeNode(node: TreeNode): void {
     if (node.root) {
       const indexToBeRemoved = this.getNodeIndexToBeRemoved(node);

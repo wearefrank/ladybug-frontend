@@ -11,14 +11,14 @@
         <i class="fa fa-download px-2"></i><span class="caret"></span>
       </button>
       <div ngbDropdownMenu aria-labelledby="dropdownDownload">
-        <button ngbDropdownItem (click)="downloadReports(true, true)">Reports & Messages</button>
-        <button ngbDropdownItem (click)="downloadReports(false, true)">Reports</button>
-        <button ngbDropdownItem (click)="downloadReports(true, false)">Messages</button>
+        <button ngbDropdownItem (click)="downloadReports(true, true)">XML & Binary</button>
+        <button ngbDropdownItem (click)="downloadReports(false, true)">XML</button>
+        <button ngbDropdownItem (click)="downloadReports(true, false)">Binary</button>
       </div>
     </div>
     <app-button [title]="'Open All'" [text]="'Open All'" (click)="openAllReports()"></app-button>
     <div class="col-md-3">
-      <form class="form-horizontal pt-2" (keydown.enter)="changeTableLimit($event)" (keyup)="changeTableLimit($event)">
+      <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();" (keyup)="changeTableLimit($event)">
         <div class="input-group-append">
             <input type="number" id="displayAmount" class="form-control px-1" placeholder="{{tableSettings.displayAmount}}">
           <div class="input-group-text">/</div>

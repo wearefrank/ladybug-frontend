@@ -206,7 +206,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  downloadSelected(exportMessages: boolean, exportReports: boolean): void {
+  downloadSelected(): void {
     const queryString: string = this.reports
       .filter((report) => report.checked)
       .reduce(
@@ -214,7 +214,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
           totalQuery + 'id=' + selectedReport[this.STORAGE_ID_INDEX] + '&',
         '?'
       );
-    window.open('api/report/download/testStorage/' + exportMessages + '/' + exportReports + queryString.slice(0, -1));
+    window.open('api/report/download/testStorage/true/false' + queryString.slice(0, -1));
   }
 
   uploadReport(event: any): void {

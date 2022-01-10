@@ -97,7 +97,6 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   changeTableLimit(event: any): void {
-    event.preventDefault();
     this.tableSettings.displayAmount = event.target.value === '' ? 0 : event.target.value;
     this.loadData();
   }
@@ -129,13 +128,14 @@ export class TableComponent implements OnInit, OnDestroy {
       .forEach((report: string[]) => this.openReport(report[this.STORAGE_ID_INDEX]));
   }
 
-  downloadReports(exportMessages: boolean, exportReports: boolean): void {
+  downloadReports(exportBinary: boolean, exportXML: boolean): void {
+    console.log(this.tableSettings.reportMetadata.values);
     const queryString: string = this.tableSettings.reportMetadata.values.reduce(
       (totalQuery: string, selectedReport: string[]) =>
         totalQuery + 'id=' + selectedReport[this.STORAGE_ID_INDEX] + '&',
       '?'
     );
-    window.open('api/report/download/debugStorage/' + exportMessages + '/' + exportReports + queryString.slice(0, -1));
+    window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + queryString.slice(0, -1));
   }
 
   uploadReports(event: any): void {

@@ -148,9 +148,9 @@ export class DisplayComponent {
     this.httpService.copyReport(data).subscribe();
   }
 
-  downloadReport(exportMessages: boolean, exportReports: boolean): void {
+  downloadReport(exportBinary: boolean, exportXML: boolean): void {
     const queryString: string = '?id=' + this.report.ladybug.uid.split('#')[0];
-    window.open('api/report/download/debugStorage/' + exportMessages + '/' + exportReports + queryString);
+    window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + queryString);
     this.httpService.handleSuccess('Report Downloaded!');
   }
 
