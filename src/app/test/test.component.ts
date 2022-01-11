@@ -18,6 +18,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'disabled';
+  RUN_RESULT_SELECTOR = '#runResult\\#';
   STORAGE_ID_INDEX = 5;
   NAME_INDEX = 2;
   TIMEOUT = 100;
@@ -46,9 +47,9 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       this.reranReports = this.loaderService.getReranReports();
       this.getCopiedReports();
     }
-    this.httpService.getSettings().subscribe(response => {
+    this.httpService.getSettings().subscribe((response) => {
       this.generatorStatus = response.generatorEnabled ? 'enabled' : 'disabled';
-    })
+    });
   }
 
   ngAfterViewInit() {
@@ -121,23 +122,13 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showResults(resultReport: TestResult, oldReportIndex: string): void {
-    let testReportElement = document.querySelector('#testReport\\#' + oldReportIndex);
-    if (testReportElement) {
-      this.appendResultToTestReport(resultReport, oldReportIndex, testReportElement);
-    }
-  }
-
-  appendResultToTestReport(resultReport: TestResult, oldReportIndex: string, testReportElement: Element): void {
-    let newResultElement = this.createNewResultElement(resultReport, oldReportIndex);
-    let existingResultElement = document.querySelector('#resultElement\\#' + oldReportIndex);
-
+    const existingResultElement = document.querySelector(this.RUN_RESULT_SELECTOR + oldReportIndex);
     if (existingResultElement) {
-      this.replaceElement(newResultElement, existingResultElement, oldReportIndex);
-    } else {
-      this.addElement(testReportElement, newResultElement);
+      existingResultElement.innerHTML = '';
+      this.createNewResultElement(resultReport, oldReportIndex);
+      this.reranReports = this.reranReports.filter((report) => report.originalIndex != oldReportIndex);
+      this.addResultToReranReports(oldReportIndex, resultReport);
     }
-
-    this.addResultToReranReports(oldReportIndex, resultReport);
   }
 
   addResultToReranReports(oldReportIndex: string, resultReport: TestResult): void {
@@ -149,7 +140,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   createNewResultElement(resultReport: TestResult, oldReportIndex: string): Element {
-    let originalReport = this.getOriginalReport(oldReportIndex);
+    const originalReport = this.getOriginalReport(oldReportIndex);
     return this.createElement(resultReport, oldReportIndex, originalReport);
   }
 
@@ -163,17 +154,8 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     return <Report>originalReport;
   }
 
-  replaceElement(newElement: Element, oldElement: Element, oldReportIndex: string): void {
-    this.reranReports = this.reranReports.filter((report) => report.originalIndex != oldReportIndex);
-    oldElement.replaceWith(newElement);
-  }
-
-  addElement(parentElement: Element, newElement: Element): void {
-    parentElement.append(newElement);
-  }
-
   createElement(resultReport: TestResult, oldReportIndex: string, originalReport: Report): HTMLElement {
-    const tdElement: HTMLElement = document.createElement('td');
+    const tdElement: HTMLElement = document.querySelector(this.RUN_RESULT_SELECTOR + oldReportIndex)!;
     tdElement.append(
       document.createTextNode(
         '(' +
@@ -187,9 +169,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
           ' stubbed)'
       )
     );
-    tdElement.setAttribute('id', 'resultElement#' + oldReportIndex);
 
-    // If the reports are not equal, then a reportIndex color should be shown
     const color: string = originalReport == resultReport.report ? 'green' : 'red';
     tdElement.setAttribute('style', 'color:' + color);
     return tdElement;
@@ -241,7 +221,15 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   replaceReport(reportId: string): void {
     this.httpService.replaceReport(reportId).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.originalIndex != reportId);
+      this.removeRunResult(reportId);
     });
+  }
+
+  removeRunResult(reportId: string) {
+    const runResult = document.querySelector(this.RUN_RESULT_SELECTOR + reportId);
+    if (runResult) {
+      runResult.innerHTML = '';
+    }
   }
 
   toggleCheck(report: any): void {

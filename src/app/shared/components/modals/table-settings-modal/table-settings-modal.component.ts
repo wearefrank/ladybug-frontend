@@ -33,7 +33,7 @@ export class TableSettingsModalComponent {
     const form: any = this.settingsForm.value;
     this.httpService.setTransformationEnabled(form.transformationEnabled);
     let map: { generatorEnabled: string; regexFilter: string; transformationEnabled: string } = {
-      generatorEnabled: (form.generatorEnabled === "Enabled").toString(),
+      generatorEnabled: (form.generatorEnabled === 'Enabled').toString(),
       regexFilter: form.regexFilter,
       transformationEnabled: form.transformationEnabled.toString(),
     };
