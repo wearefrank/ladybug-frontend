@@ -18,7 +18,6 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'disabled';
-  RUN_RESULT_SELECTOR = '#runResult\\#';
   STORAGE_ID_INDEX = 5;
   NAME_INDEX = 2;
   TIMEOUT = 100;
@@ -117,18 +116,30 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  checkIfTestReportReran(id: string): boolean {
-    return this.reranReports.some((report) => report.originalIndex == id);
+  getReranReport(id: string): ReranReport {
+    return <ReranReport>this.reranReports.find((report) => report.originalIndex == id);
   }
 
   showResults(resultReport: TestResult, oldReportIndex: string): void {
-    const existingResultElement = document.querySelector(this.RUN_RESULT_SELECTOR + oldReportIndex);
-    if (existingResultElement) {
-      existingResultElement.innerHTML = '';
-      this.createNewResultElement(resultReport, oldReportIndex);
-      this.reranReports = this.reranReports.filter((report) => report.originalIndex != oldReportIndex);
+    const resultElement = document.querySelector('#runResult\\#' + oldReportIndex);
+    if (resultElement) {
+      this.reranReports = this.reranReports.filter((report) => report.originalIndex != oldReportIndex); // Remove report
       this.addResultToReranReports(oldReportIndex, resultReport);
     }
+  }
+
+  transformResultToText(resultReport: TestResult): string {
+    return (
+      '(' +
+      resultReport.previousTime +
+      'ms >> ' +
+      resultReport.currentTime +
+      'ms) (' +
+      resultReport.stubbed +
+      '/' +
+      resultReport.total +
+      ' stubbed)'
+    );
   }
 
   addResultToReranReports(oldReportIndex: string, resultReport: TestResult): void {
@@ -136,43 +147,17 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       originalIndex: oldReportIndex,
       newIndex: resultReport.report.storageId.toString(),
       result: resultReport,
+      color: this.extractResultColor(oldReportIndex, resultReport),
+      resultString: this.transformResultToText(resultReport),
     });
   }
 
-  createNewResultElement(resultReport: TestResult, oldReportIndex: string): Element {
-    const originalReport = this.getOriginalReport(oldReportIndex);
-    return this.createElement(resultReport, oldReportIndex, originalReport);
-  }
-
-  // TODO: Fix, Returns empty value, because it does not wait for the report
-  getOriginalReport(reportId: string): Report {
-    let originalReport = {};
+  extractResultColor(reportId: string, resultReport: TestResult): string {
     this.httpService.getReport(reportId).subscribe((report) => {
-      return (originalReport = report);
+      return report === resultReport ? 'green' : 'red';
     });
 
-    return <Report>originalReport;
-  }
-
-  createElement(resultReport: TestResult, oldReportIndex: string, originalReport: Report): HTMLElement {
-    const tdElement: HTMLElement = document.querySelector(this.RUN_RESULT_SELECTOR + oldReportIndex)!;
-    tdElement.append(
-      document.createTextNode(
-        '(' +
-          resultReport.previousTime +
-          'ms >> ' +
-          resultReport.currentTime +
-          'ms) (' +
-          resultReport.stubbed +
-          '/' +
-          resultReport.total +
-          ' stubbed)'
-      )
-    );
-
-    const color: string = originalReport == resultReport.report ? 'green' : 'red';
-    tdElement.setAttribute('style', 'color:' + color);
-    return tdElement;
+    return 'red';
   }
 
   selectReport(storageId: number, name: string): void {
@@ -221,15 +206,20 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   replaceReport(reportId: string): void {
     this.httpService.replaceReport(reportId).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.originalIndex != reportId);
-      this.removeRunResult(reportId);
     });
   }
 
-  removeRunResult(reportId: string) {
-    const runResult = document.querySelector(this.RUN_RESULT_SELECTOR + reportId);
-    if (runResult) {
-      runResult.innerHTML = '';
-    }
+  copySelected() {
+    let copiedIds: string[] = [];
+    this.reports.forEach((report) => {
+      if (report.checked) {
+        copiedIds.push(report[this.STORAGE_ID_INDEX]);
+      }
+    });
+
+    this.httpService.copyReport({ testStorage: copiedIds }).subscribe(() => {
+      this.loadData();
+    });
   }
 
   toggleCheck(report: any): void {
