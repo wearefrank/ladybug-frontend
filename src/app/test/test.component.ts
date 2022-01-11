@@ -17,6 +17,7 @@ import { Report } from '../shared/interfaces/report';
 export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
+  generatorStatus: string = 'disabled';
   STORAGE_ID_INDEX = 5;
   NAME_INDEX = 2;
   TIMEOUT = 100;
@@ -45,6 +46,9 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       this.reranReports = this.loaderService.getReranReports();
       this.getCopiedReports();
     }
+    this.httpService.getSettings().subscribe((response) => {
+      this.generatorStatus = response.generatorEnabled ? 'enabled' : 'disabled';
+    });
   }
 
   ngAfterViewInit() {
@@ -112,28 +116,30 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  checkIfTestReportReran(id: string): boolean {
-    return this.reranReports.some((report) => report.originalIndex == id);
+  getReranReport(id: string): ReranReport {
+    return <ReranReport>this.reranReports.find((report) => report.originalIndex == id);
   }
 
   showResults(resultReport: TestResult, oldReportIndex: string): void {
-    let testReportElement = document.querySelector('#testReport\\#' + oldReportIndex);
-    if (testReportElement) {
-      this.appendResultToTestReport(resultReport, oldReportIndex, testReportElement);
+    const resultElement = document.querySelector('#runResult\\#' + oldReportIndex);
+    if (resultElement) {
+      this.reranReports = this.reranReports.filter((report) => report.originalIndex != oldReportIndex); // Remove report
+      this.addResultToReranReports(oldReportIndex, resultReport);
     }
   }
 
-  appendResultToTestReport(resultReport: TestResult, oldReportIndex: string, testReportElement: Element): void {
-    let newResultElement = this.createNewResultElement(resultReport, oldReportIndex);
-    let existingResultElement = document.querySelector('#resultElement\\#' + oldReportIndex);
-
-    if (existingResultElement) {
-      this.replaceElement(newResultElement, existingResultElement, oldReportIndex);
-    } else {
-      this.addElement(testReportElement, newResultElement);
-    }
-
-    this.addResultToReranReports(oldReportIndex, resultReport);
+  transformResultToText(resultReport: TestResult): string {
+    return (
+      '(' +
+      resultReport.previousTime +
+      'ms >> ' +
+      resultReport.currentTime +
+      'ms) (' +
+      resultReport.stubbed +
+      '/' +
+      resultReport.total +
+      ' stubbed)'
+    );
   }
 
   addResultToReranReports(oldReportIndex: string, resultReport: TestResult): void {
@@ -141,54 +147,17 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       originalIndex: oldReportIndex,
       newIndex: resultReport.report.storageId.toString(),
       result: resultReport,
+      color: this.extractResultColor(oldReportIndex, resultReport),
+      resultString: this.transformResultToText(resultReport),
     });
   }
 
-  createNewResultElement(resultReport: TestResult, oldReportIndex: string): Element {
-    let originalReport = this.getOriginalReport(oldReportIndex);
-    return this.createElement(resultReport, oldReportIndex, originalReport);
-  }
-
-  // TODO: Fix, Returns empty value, because it does not wait for the report
-  getOriginalReport(reportId: string): Report {
-    let originalReport = {};
+  extractResultColor(reportId: string, resultReport: TestResult): string {
     this.httpService.getReport(reportId).subscribe((report) => {
-      return (originalReport = report);
+      return report === resultReport ? 'green' : 'red';
     });
 
-    return <Report>originalReport;
-  }
-
-  replaceElement(newElement: Element, oldElement: Element, oldReportIndex: string): void {
-    this.reranReports = this.reranReports.filter((report) => report.originalIndex != oldReportIndex);
-    oldElement.replaceWith(newElement);
-  }
-
-  addElement(parentElement: Element, newElement: Element): void {
-    parentElement.append(newElement);
-  }
-
-  createElement(resultReport: TestResult, oldReportIndex: string, originalReport: Report): HTMLElement {
-    const tdElement: HTMLElement = document.createElement('td');
-    tdElement.append(
-      document.createTextNode(
-        '(' +
-          resultReport.previousTime +
-          'ms >> ' +
-          resultReport.currentTime +
-          'ms) (' +
-          resultReport.stubbed +
-          '/' +
-          resultReport.total +
-          ' stubbed)'
-      )
-    );
-    tdElement.setAttribute('id', 'resultElement#' + oldReportIndex);
-
-    // If the reports are not equal, then a reportIndex color should be shown
-    const color: string = originalReport == resultReport.report ? 'green' : 'red';
-    tdElement.setAttribute('style', 'color:' + color);
-    return tdElement;
+    return 'red';
   }
 
   selectReport(storageId: number, name: string): void {
@@ -206,7 +175,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  downloadSelected(exportMessages: boolean, exportReports: boolean): void {
+  downloadSelected(): void {
     const queryString: string = this.reports
       .filter((report) => report.checked)
       .reduce(
@@ -214,7 +183,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
           totalQuery + 'id=' + selectedReport[this.STORAGE_ID_INDEX] + '&',
         '?'
       );
-    window.open('api/report/download/testStorage/' + exportMessages + '/' + exportReports + queryString.slice(0, -1));
+    window.open('api/report/download/testStorage/true/false' + queryString.slice(0, -1));
   }
 
   uploadReport(event: any): void {
@@ -237,6 +206,19 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   replaceReport(reportId: string): void {
     this.httpService.replaceReport(reportId).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.originalIndex != reportId);
+    });
+  }
+
+  copySelected() {
+    let copiedIds: string[] = [];
+    this.reports.forEach((report) => {
+      if (report.checked) {
+        copiedIds.push(report[this.STORAGE_ID_INDEX]);
+      }
+    });
+
+    this.httpService.copyReport({ testStorage: copiedIds }).subscribe(() => {
+      this.loadData();
     });
   }
 

@@ -4,4 +4,6 @@ export interface ReranReport {
   originalIndex: string;
   newIndex: string;
   result: TestResult;
+  color: string;
+  resultString: string;
 }

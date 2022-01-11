@@ -17,7 +17,7 @@ export class TableSettingsModalComponent {
     transformation: new FormControl(''),
   });
 
-  @Output() openReportsEvent = new EventEmitter<any>();
+  @Output() openLatestReportsEvent = new EventEmitter<any>();
 
   constructor(private modalService: NgbModal, private httpService: HttpService) {}
 
@@ -32,9 +32,10 @@ export class TableSettingsModalComponent {
   saveSettings(): void {
     const form: any = this.settingsForm.value;
     this.httpService.setTransformationEnabled(form.transformationEnabled);
-    let map: { generatorEnabled: string; regexFilter: string } = {
-      generatorEnabled: form.generatorEnabled,
+    let map: { generatorEnabled: string; regexFilter: string; transformationEnabled: string } = {
+      generatorEnabled: (form.generatorEnabled === 'Enabled').toString(),
       regexFilter: form.regexFilter,
+      transformationEnabled: form.transformationEnabled.toString(),
     };
     this.httpService.postSettings(map).subscribe();
 
@@ -44,11 +45,11 @@ export class TableSettingsModalComponent {
     }
   }
 
-  openReports(amount: number): void {
-    this.openReportsEvent.next(amount);
+  openLatestReports(amount: number): void {
+    this.openLatestReportsEvent.next(amount);
   }
 
-  refreshModal(): void {
+  resetModal(): void {
     this.loadSettings();
   }
 
@@ -60,6 +61,7 @@ export class TableSettingsModalComponent {
     this.httpService.getSettings().subscribe((response) => {
       this.settingsForm.get('generatorEnabled')?.setValue(response.generatorEnabled ? 'Enabled' : 'Disabled');
       this.settingsForm.get('regexFilter')?.setValue(response.regexFilter);
+      this.settingsForm.get('transformationEnabled')?.setValue(response.transformationEnabled);
     });
   }
 }

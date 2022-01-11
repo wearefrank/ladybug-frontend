@@ -39,6 +39,13 @@ export class HttpService {
     });
   }
 
+  getLatestReports(amount: number): Observable<any> {
+    return this.http
+      .get('api/report/latest/debugStorage/' + amount)
+      .pipe(tap(() => this.handleSuccess('Lastest' + amount + 'reports opened!')))
+      .pipe(catchError(this.handleError('Could not open latest reports!')));
+  }
+
   getTestReports(): Observable<any> {
     return this.http.get<any>('api/metadata/testStorage/');
   }

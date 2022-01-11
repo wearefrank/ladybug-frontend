@@ -7,17 +7,9 @@
       <app-button [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
       <app-button [title]="'Deselect All'" [text]="'Deselect All'" (click)="uncheckAll()"></app-button>
       <app-button [icon]="'fa fa-trash'" [title]="'Delete Selected'" (click)="deleteSelected()"></app-button>
-
-      <div ngbDropdown title="Download">
-        <button class="btn btn-info my-2 mx-1" id="dropdownDownload" ngbDropdownToggle>
-          <i class="fa fa-download px-2"></i><span class="caret"></span>
-        </button>
-        <div ngbDropdownMenu aria-labelledby="dropdownDownload">
-          <button ngbDropdownItem (click)="downloadSelected(true, true)">Reports & Messages</button>
-          <button ngbDropdownItem (click)="downloadSelected(false, true)">Reports</button>
-          <button ngbDropdownItem (click)="downloadSelected(true, false)">Messages</button>
-        </div>
-      </div>
+      <app-button [icon]="'fa fa-download'" [title]="'Download'" (click)="downloadSelected()"></app-button>
+      <app-button [text]="'Clone'" [title]="'Clone report'" (click)="openCloneModal()"></app-button>
+      <app-button [icon]="'fa fa-clone'" [title]="'Copy Selected'" (click)="copySelected()"></app-button>
       <app-button [icon]="'fa fa-upload'" [title]="'Upload'" (click)="uploadFile.click()">
         <input #uploadFile (change)="uploadReport($event)" type="file" style="display: none">
       </app-button>
@@ -31,6 +23,10 @@
         <app-button class="mt-0" [title]="'Move'" [text]="'Move'"></app-button>
       </div>
     </div>
+    <div>
+      <p>Generator is {{ generatorStatus }}</p>
+    </div>
+
     <div class="row">
       <table>
         <tbody id="testReports">
@@ -38,23 +34,24 @@
           <td>
             <input class="form-check-input" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
           </td>
+          <td>[{{report[STORAGE_ID_INDEX]}}]</td>
           <td>
             <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report[STORAGE_ID_INDEX])"></app-button>
           </td>
           <td>
             <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="selectReport(report[STORAGE_ID_INDEX], report[NAME_INDEX])"></app-button>
           </td>
-          <td>
-            <app-button [icon]="'fa fa-clone'" [title]="'Clone report'" (click)="openCloneModal()"></app-button>
-          </td>
-          <td *ngIf="checkIfTestReportReran(report[STORAGE_ID_INDEX])">
+          <td *ngIf="getReranReport(report[STORAGE_ID_INDEX])">
             <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report[STORAGE_ID_INDEX])"></app-button>
           </td>
-          <td *ngIf="checkIfTestReportReran(report[STORAGE_ID_INDEX])">
+          <td *ngIf="getReranReport(report[STORAGE_ID_INDEX])">
             <app-button [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report[STORAGE_ID_INDEX])"></app-button>
           </td>
           <td>
-            /{{ report[2]}}
+            /{{ report[NAME_INDEX]}}
+          </td>
+          <td id="runResult#{{report[STORAGE_ID_INDEX]}}">
+            <span *ngIf="getReranReport(report[STORAGE_ID_INDEX])" style="color: {{getReranReport(report[STORAGE_ID_INDEX]).color}}">{{ getReranReport(report[STORAGE_ID_INDEX]).resultString }}</span>
           </td>
         </tr>
         </tbody>
