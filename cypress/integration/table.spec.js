@@ -10,11 +10,18 @@ describe('Table size and toggle filter', function () {
   })
 
   it('Typing in a table size and retyping it', function () {
-    cy.get('#displayAmount').type(2)
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
-    cy.get('#displayAmount').clear()
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 0)
-    cy.get('#displayAmount').type(10)
+    // The default value for the maximum is 10 and there are 2 reports, so expect 2.
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
+    cy.get('#displayAmount').type(1);
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
+    cy.get('#displayAmount').type("{backspace}2");
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
+    // If we would omit typing 1 here, we would test that the length remained 2
+    // when the edit field changed from 2 to 10. This would not be a good test, because
+    // Cypress would not see when the typing of 10 would have effect.
+    cy.get('#displayAmount').type("{backspace}1");
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
+    cy.get('#displayAmount').type("{backspace}10")
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
 
