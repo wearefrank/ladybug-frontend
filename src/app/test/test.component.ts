@@ -94,7 +94,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       const data: any = { testStorage: [reportId] };
       this.httpService.runReport(data).subscribe(() => this.timeOut());
     } else {
-      this.toastComponent.addAlert({type: 'warning', message: 'Generator is disabled!'})
+      this.toastComponent.addAlert({ type: 'warning', message: 'Generator is disabled!' });
     }
   }
 
@@ -106,7 +106,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
         .forEach((report) => data['testStorage'].push(report[this.STORAGE_ID_INDEX]));
       this.httpService.runReport(data).subscribe(() => this.timeOut());
     } else {
-      this.toastComponent.addAlert({type: 'warning', message: 'Generator is disabled!'})
+      this.toastComponent.addAlert({ type: 'warning', message: 'Generator is disabled!' });
     }
   }
 
