@@ -8,7 +8,7 @@ import { Alert } from '../../interfaces/alert';
   styleUrls: ['./toast.component.css'],
 })
 export class ToastComponent implements OnInit {
-  TIMEOUT = 1000;
+  TIMEOUT = 3000;
   alerts: Alert[] = [
     // {type: 'warning', message: 'There is some error wow!'},
     // {type: 'danger', message: 'There is a big error wow!'},

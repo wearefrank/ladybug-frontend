@@ -35,7 +35,7 @@ export class TableSettingsModalComponent {
     let map: { generatorEnabled: string; regexFilter: string; transformationEnabled: string } = {
       generatorEnabled: (form.generatorEnabled === 'Enabled').toString(),
       regexFilter: form.regexFilter,
-      transformationEnabled: form.transformationEnabled.toString(),
+      transformationEnabled: form.transformationEnabled,
     };
     this.httpService.postSettings(map).subscribe();
 

@@ -90,16 +90,24 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   run(reportId: string): void {
-    const data: any = { testStorage: [reportId] };
-    this.httpService.runReport(data).subscribe(() => this.timeOut());
+    if (this.generatorStatus === 'enabled') {
+      const data: any = { testStorage: [reportId] };
+      this.httpService.runReport(data).subscribe(() => this.timeOut());
+    } else {
+      this.toastComponent.addAlert({type: 'warning', message: 'Generator is disabled!'})
+    }
   }
 
   runAll(): void {
-    const data: any = { testStorage: [] };
-    this.reports
-      .filter((report) => report.checked)
-      .forEach((report) => data['testStorage'].push(report[this.STORAGE_ID_INDEX]));
-    this.httpService.runReport(data).subscribe(() => this.timeOut());
+    if (this.generatorStatus === 'enabled') {
+      const data: any = { testStorage: [] };
+      this.reports
+        .filter((report) => report.checked)
+        .forEach((report) => data['testStorage'].push(report[this.STORAGE_ID_INDEX]));
+      this.httpService.runReport(data).subscribe(() => this.timeOut());
+    } else {
+      this.toastComponent.addAlert({type: 'warning', message: 'Generator is disabled!'})
+    }
   }
 
   timeOut(): void {
