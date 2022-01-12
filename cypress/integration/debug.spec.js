@@ -1,16 +1,21 @@
-let URL = "http://localhost:4200"
-
-beforeEach(() => {
-  cy.visit(URL)
-})
-
 describe('Clicking a report', function () {
+  beforeEach(() => {
+    cy.createReport();
+    cy.createOtherReport();
+    cy.visit('')
+  })
+
+  afterEach(() => {
+    cy.clearDebugStore();
+  })
+
   it('Selecting report should show a tree', function() {
-    cy.get('#treeButtons').should('not.be.visible')
+    cy.get('#treeButtons').should('not.exist')
     cy.get('.table-responsive tbody').find('tr').first().click()
     cy.get('#treeButtons').should('be.visible')
   })
 
+  // This test depends on the previous test
   it('Selecting report should show display', function () {
     cy.get('#displayButtons').should('not.exist')
     cy.get('#monacoEditor').should('not.exist')

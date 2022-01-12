@@ -7,7 +7,7 @@
 
 describe('Ladybug simple protractor test', function() {
   it('Confirm title of ladybug app', function() {
-    cy.visit('http://localhost:4200');
+    cy.visit('');
     cy.title().should('match', /Ladybug - v[0-9]+.[0-9]+.[0-9]+/);
   });
 });

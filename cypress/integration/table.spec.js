@@ -1,33 +1,32 @@
-let URL = "http://localhost:4200"
-
-beforeEach(() => {
-  cy.visit(URL)
-})
-
-describe('Changing the table size', function () {
-  it('Typing in a table size', function () {
-    cy.get('#displayAmount').type(5)
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 5)
+describe('Table size and toggle filter', function () {
+  beforeEach(() => {
+    cy.createReport();
+    cy.createOtherReport();
+    cy.visit('')
   })
 
-  it('Remove table size', function () {
-    cy.get('#displayAmount').clear()
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 0)
+  afterEach(() => {
+    cy.clearDebugStore();
   })
 
-  it('Retype larger table size', function () {
-    cy.get('#displayAmount').type(10)
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 10)
-  })
-})
-
-
-describe('Toggle filter and filter results', function () {
-  it('At first the filters should not be visible', function () {
-    cy.get('#filterRow').should('not.exist')
+  it('Typing in a table size and retyping it', function () {
+    // The default value for the maximum is 10 and there are 2 reports, so expect 2.
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
+    cy.get('#displayAmount').type(1);
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
+    cy.get('#displayAmount').type("{backspace}2");
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
+    // If we would omit typing 1 here, we would test that the length remained 2
+    // when the edit field changed from 2 to 10. This would not be a good test, because
+    // Cypress would not see when the typing of 10 would have effect.
+    cy.get('#displayAmount').type("{backspace}1");
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
+    cy.get('#displayAmount').type("{backspace}10")
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
 
   it('After clicking filter button, the filters should appear', function () {
+    cy.get('#filterRow').should('not.exist')
     cy.get('#FilterButton').click()
     cy.get('#filterRow').should('be.visible')
 
@@ -37,14 +36,9 @@ describe('Toggle filter and filter results', function () {
 
   it('Type in a filter parameter', function () {
     cy.get('#FilterButton').click()
-    cy.get('#filterRow #filter').eq(2).type("testRerun{enter}")
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 0)
-  })
-
-  it('Empty the filter', function () {
-    cy.get('#FilterButton').click()
-    cy.get('#filterRow #filter').eq(2).type("testRerun{enter}")
+    cy.get('#filterRow #filter').eq(2).type("name{enter}")
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 1)
     cy.get('#filterRow #filter').eq(2).clear().type("{enter}")
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 10)
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
 })
