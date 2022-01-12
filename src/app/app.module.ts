@@ -24,6 +24,7 @@ import { TestSettingsModalComponent } from './shared/components/modals/test-sett
 import { CloneModalComponent } from './shared/components/modals/clone-modal/clone-modal.component';
 import { DisplayTableComponent } from './shared/components/display-table/display-table.component';
 import { TableSettingsModalComponent } from './shared/components/modals/table-settings-modal/table-settings-modal.component';
+import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { TableSettingsModalComponent } from './shared/components/modals/table-se
     CloneModalComponent,
     DisplayTableComponent,
     TableSettingsModalComponent,
+    TestFolderTreeComponent,
   ],
   imports: [
     BrowserModule,

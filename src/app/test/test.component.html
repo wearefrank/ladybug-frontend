@@ -1,9 +1,13 @@
 <div class="row">
+  <div class="resizable-horizontal w-25 pr-2 border-right">
+    <app-test-folder-tree></app-test-folder-tree>
+  </div>
   <div class="col">
     <div class="row">
       <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runAll()"></app-button>
       <app-button [icon]="'fa fa-undo'" [title]="'Reset'" (click)="resetRunner()"></app-button>
       <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="openSettingsModal()"></app-button>
+      <app-button [icon]="'fa fa-copy'" [title]="'Copy'"></app-button>
       <app-button [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
       <app-button [title]="'Deselect All'" [text]="'Deselect All'" (click)="uncheckAll()"></app-button>
       <app-button [icon]="'fa fa-trash'" [title]="'Delete Selected'" (click)="deleteSelected()"></app-button>
@@ -19,7 +23,6 @@
       <label for="moveToInput">Move/Copy to:</label>
       <div class="input-group">
         <input type="text" class="form-control mr-1 my-2 py-0" placeholder="1" id="moveToInput"/>
-        <app-button class="mt-0" [icon]="'fa fa-copy'" [title]="'Copy'"></app-button>
         <app-button class="mt-0" [title]="'Move'" [text]="'Move'"></app-button>
       </div>
     </div>
