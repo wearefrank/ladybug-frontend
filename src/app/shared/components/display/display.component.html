@@ -1,6 +1,6 @@
 <div *ngIf="displayReport">
   <div class="row" id="displayButtons">
-    <app-button [icon]="'fa fa-repeat'" [title]="'Rerun'"></app-button>
+    <app-button *ngIf="report.root" [icon]="'fa fa-repeat'" [title]="'Rerun'" (click)="rerunReport()"></app-button>
     <app-button [icon]="'fa fa-edit'" [title]="'Edit'" *ngIf="!editingChildNode && !editingRootNode"
                 (click)="editReport()"></app-button>
     <app-button [icon]="'fa fa-trash'" [title]="'Discard Changes'" *ngIf="editingChildNode || editingRootNode"
@@ -30,6 +30,10 @@
       </select>
     </div>
   </div>
+
+  <p id="showRerunResult">
+
+  </p>
 
   <div id="monacoEditor" style="height: 100px">
     <app-monaco-editor [value]="report.ladybug.message"></app-monaco-editor>

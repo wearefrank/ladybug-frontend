@@ -59,12 +59,7 @@ export class HttpService {
 
   getMonacoCode(reportId: string): Observable<any> {
     return this.http
-      .get<any>(
-        this.REPORT_DEBUG_STORAGE +
-          reportId +
-          '/?xml=true&globalTransformer=' +
-          this.xmlTransformationEnabled.toString()
-      )
+      .get<any>(this.REPORT_DEBUG_STORAGE + reportId + '/?xml=true&globalTransformer=' + this.xmlTransformationEnabled)
       .pipe(catchError(this.handleError('Could not retrieve monaco code!')));
   }
 
@@ -135,6 +130,15 @@ export class HttpService {
         observe: 'response',
       })
       .pipe(catchError(this.handleError('Could not correctly run report(s)!')));
+  }
+
+  runDisplayReport(reportId: string): Observable<any> {
+    return this.http
+      .put<any>('/api/runner/replace/debugStorage/' + reportId, {
+        headers: this.headers,
+        observe: 'response',
+      })
+      .pipe(catchError(this.handleError('Could not correctly run display report!')));
   }
 
   queryResults(): Observable<any> {

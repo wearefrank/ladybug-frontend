@@ -69,6 +69,7 @@ export class DisplayComponent {
     this.report = report;
     this.loadMonacoCode();
     this.displayReport = true;
+    document.querySelector('#showRerunResult')!.innerHTML = '';
     this.disableEditing(); // For switching from editing current report to another
   }
 
@@ -160,5 +161,19 @@ export class DisplayComponent {
       this.monacoEditorComponent?.disableEdit();
     }
     this.editingRootNode = false;
+  }
+
+  rerunReport() {
+    let reportId: string = this.report.ladybug.storageId;
+    this.httpService.runDisplayReport(reportId).subscribe((response) => {
+      let element = document.querySelector('#showRerunResult')!;
+      if (this.report.ladybug == response) {
+        element.setAttribute('style', 'background-color: green');
+        element.innerHTML = '[Rerun succeeded]';
+      } else {
+        element.setAttribute('style', 'background-color: red');
+        element.innerHTML = '[Rerun failed]';
+      }
+    });
   }
 }
