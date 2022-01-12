@@ -8,6 +8,7 @@ import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
 import { Metadata } from '../shared/interfaces/metadata';
 import { Report } from '../shared/interfaces/report';
+import { TestSettings } from '../shared/interfaces/test-settings';
 
 @Component({
   selector: 'app-test',
@@ -18,6 +19,10 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'disabled';
+  testSettings: TestSettings = {
+    showReportStorageIds: false,
+    showCheckpointIds: false,
+  };
   STORAGE_ID_INDEX = 5;
   NAME_INDEX = 2;
   TIMEOUT = 100;
@@ -36,6 +41,10 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openSettingsModal(): void {
     this.testSettingsModal.open();
+  }
+
+  saveSettings(settings: TestSettings): void {
+    this.testSettings = settings;
   }
 
   ngOnInit(): void {

@@ -34,7 +34,7 @@
           <td>
             <input class="form-check-input" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
           </td>
-          <td>[{{report[STORAGE_ID_INDEX]}}]</td>
+          <td *ngIf="testSettings.showReportStorageIds">[{{report[STORAGE_ID_INDEX]}}]</td>
           <td>
             <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report[STORAGE_ID_INDEX])"></app-button>
           </td>
@@ -63,7 +63,7 @@
 
 
 <!-- Settings modal -->
-<app-test-settings-modal></app-test-settings-modal>
+<app-test-settings-modal (saveSettingsEvent)="saveSettings($event)"></app-test-settings-modal>
 
 <!-- Clone modal -->
 <app-clone-modal></app-clone-modal>
