@@ -5,6 +5,7 @@ import { TreeNode } from '../../interfaces/tree-node';
 import { Report } from '../../interfaces/report';
 import { Checkpoint } from '../../interfaces/checkpoint';
 import { TreeSettings } from '../../interfaces/tree-settings';
+import { CookieService } from 'ngx-cookie-service';
 declare var $: any;
 
 @Component({
@@ -33,7 +34,11 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
   public _id: string = 'debug';
 
-  constructor(private helperService: HelperService, private loaderService: LoaderService) {}
+  constructor(
+    private helperService: HelperService,
+    private loaderService: LoaderService,
+    private cookieService: CookieService
+  ) {}
 
   ngAfterViewInit(): void {
     const treeSettings = this.loaderService.getTreeSettings(this._id);
@@ -136,8 +141,9 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   createRootNode(report: Report): TreeNode {
+    const storageId: string = this.getStorageId(report);
     const rootNode: TreeNode = {
-      text: report.name,
+      text: storageId + report.name,
       ladybug: report,
       root: true,
       id: this.treeNodeId++,
@@ -157,13 +163,29 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
 
   createChildNode(checkpoint: Checkpoint): TreeNode {
     const img: string = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0);
+    const checkpointId: string = this.getCheckpointId(checkpoint);
     return {
-      text: '<img src="' + img + '" alt="">' + checkpoint.name,
+      text: '<img src="' + img + '" alt="">' + checkpointId + checkpoint.name,
       ladybug: checkpoint,
       root: false,
       id: this.treeNodeId++,
       level: checkpoint.level,
     };
+  }
+
+  getCheckpointId(checkpoint: Checkpoint): string {
+    if (this.cookieService.get('showCheckpointIds')) {
+      return this.cookieService.get('showCheckpointIds') === 'true' ? checkpoint.index + '. ' : '';
+    }
+
+    return '';
+  }
+
+  getStorageId(checkpoint: any): string {
+    if (this.cookieService.get('showReportStorageIds')) {
+      return this.cookieService.get('showReportStorageIds') === 'true' ? '[' + checkpoint.storageId + '] ' : '';
+    }
+    return '';
   }
 
   createHierarchy(previousNode: TreeNode, node: TreeNode): void {

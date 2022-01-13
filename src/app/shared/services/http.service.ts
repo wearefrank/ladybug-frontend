@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ToastComponent } from '../components/toast/toast.component';
 import { catchError, Observable, of, tap } from 'rxjs';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,14 +10,9 @@ import { catchError, Observable, of, tap } from 'rxjs';
 export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   toastComponent!: ToastComponent;
-  xmlTransformationEnabled: boolean = false;
   REPORT_DEBUG_STORAGE: string = 'api/report/debugStorage/';
 
-  constructor(private http: HttpClient) {}
-
-  setTransformationEnabled(xmlTransformationEnabled: boolean) {
-    this.xmlTransformationEnabled = xmlTransformationEnabled;
-  }
+  constructor(private http: HttpClient, private cookieService: CookieService) {}
 
   initializeToastComponent(toastComponent: ToastComponent) {
     this.toastComponent = toastComponent;
@@ -58,8 +54,11 @@ export class HttpService {
   }
 
   getMonacoCode(reportId: string): Observable<any> {
+    const xmlTransformationEnabled: string = this.cookieService.get('xmlTransformationEnabled')
+      ? this.cookieService.get('xmlTransformationEnabled')
+      : 'false';
     return this.http
-      .get<any>(this.REPORT_DEBUG_STORAGE + reportId + '/?xml=true&globalTransformer=' + this.xmlTransformationEnabled)
+      .get<any>(this.REPORT_DEBUG_STORAGE + reportId + '/?xml=true&globalTransformer=' + xmlTransformationEnabled)
       .pipe(catchError(this.handleError('Could not retrieve monaco code!')));
   }
 

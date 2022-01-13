@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 declare var $: any;
 
 @Component({
@@ -6,11 +6,11 @@ declare var $: any;
   templateUrl: './test-folder-tree.component.html',
   styleUrls: ['./test-folder-tree.component.css'],
 })
-export class TestFolderTreeComponent implements OnInit {
+export class TestFolderTreeComponent implements AfterViewInit {
   folders: any[] = [];
   constructor() {}
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.updateTreeView();
     this.addFolder('hoi');
   }
