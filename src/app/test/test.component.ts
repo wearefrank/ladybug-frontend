@@ -272,7 +272,13 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reports
       .filter((report) => report.checked)
       .forEach((report) => {
-        report[this.NAME_INDEX] = this.currentFilter + '/' + report[this.NAME_INDEX];
+        let previous = report[this.NAME_INDEX];
+
+        if (previous.includes('/')) {
+          report[this.NAME_INDEX] = this.currentFilter + '/' + previous.substring(previous.indexOf('/'));
+        } else {
+          report[this.NAME_INDEX] = this.currentFilter + '/' + previous;
+        }
       });
   }
 
