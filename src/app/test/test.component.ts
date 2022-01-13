@@ -262,12 +262,10 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reports.forEach((report) => (report.checked = false));
   }
 
-  moveTestReportToFolder(currentFilter: string) {
-    if (currentFilter != '') {
-      this.currentFilter = currentFilter;
-      this.testFolderTreeComponent.addFolder(this.currentFilter);
-      this.changeMovedTestReportNames();
-    }
+  moveTestReportToFolder(currentFilter: any) {
+    this.currentFilter = currentFilter.target.filter.value
+    this.testFolderTreeComponent.addFolder(this.currentFilter);
+    this.changeMovedTestReportNames();
   }
 
   changeMovedTestReportNames() {
@@ -283,7 +281,6 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   matches(name: string) {
-    // console.log(name.match(this.currentFilter + '/' + '.*'))
     return name.match(this.currentFilter + '/' + '.*') != undefined;
   }
 }

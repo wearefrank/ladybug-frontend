@@ -21,10 +21,10 @@
 
     <div class="form-group mt-2">
       <label for="moveToInput">Move/Copy to:</label>
-      <div class="input-group">
-        <input type="text" class="form-control mr-1 my-2 py-0" id="moveToInput" value="{{currentFilter}}" [(ngModel)]="currentFilter"/>
-        <app-button class="mt-0" [title]="'Move'" [text]="'Move'" (click)="moveTestReportToFolder(currentFilter)"></app-button>
-      </div>
+      <form class="input-group" (ngSubmit)="moveTestReportToFolder($event)">
+        <input type="text" class="form-control mr-1 my-2 py-0" id="moveToInput" name="filter" value="{{currentFilter}}"/>
+        <button type="submit" class="mt-0 btn btn-info">Move</button>
+      </form>
     </div>
     <div>
       <p>Generator is {{ generatorStatus.toLocaleLowerCase() }}</p>
