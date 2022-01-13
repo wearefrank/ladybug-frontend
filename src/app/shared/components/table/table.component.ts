@@ -63,10 +63,6 @@ export class TableComponent implements OnInit, OnDestroy {
     );
   }
 
-  resetAllCookies() {
-    this.cookieService.deleteAll();
-  }
-
   loadData(): void {
     this.httpService.getReports(this.tableSettings.displayAmount).subscribe({
       next: (value) => {
