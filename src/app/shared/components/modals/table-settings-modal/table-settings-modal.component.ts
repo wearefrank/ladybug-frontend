@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/cor
 import { FormControl, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../services/http.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -11,15 +12,15 @@ import { HttpService } from '../../../services/http.service';
 export class TableSettingsModalComponent {
   @ViewChild('modal') modal!: any;
   settingsForm = new FormGroup({
-    generatorEnabled: new FormControl(''),
-    regexFilter: new FormControl(''), // Report filter
+    generatorEnabled: new FormControl('Enabled'),
+    regexFilter: new FormControl('.*'), // Report filter
     transformationEnabled: new FormControl(false),
     transformation: new FormControl(''),
   });
 
   @Output() openLatestReportsEvent = new EventEmitter<any>();
 
-  constructor(private modalService: NgbModal, private httpService: HttpService) {}
+  constructor(private modalService: NgbModal, private httpService: HttpService, private cookieService: CookieService) {}
 
   open(): void {
     this.loadSettings();
@@ -31,18 +32,10 @@ export class TableSettingsModalComponent {
    */
   saveSettings(): void {
     const form: any = this.settingsForm.value;
-    this.httpService.setTransformationEnabled(form.transformationEnabled);
-    let map: { generatorEnabled: string; regexFilter: string; transformationEnabled: string } = {
-      generatorEnabled: (form.generatorEnabled === 'Enabled').toString(),
-      regexFilter: form.regexFilter,
-      transformationEnabled: form.transformationEnabled,
-    };
-    this.httpService.postSettings(map).subscribe();
-
-    if (form.transformationEnabled) {
-      let transformation = { transformation: form.transformation };
-      this.httpService.postTransformation(transformation).subscribe();
-    }
+    this.cookieService.set('generatorEnabled', form.generatorEnabled);
+    this.cookieService.set('regexFilter', form.regexFilter);
+    this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
+    this.cookieService.set('transformation', form.transformation);
   }
 
   openLatestReports(amount: number): void {
@@ -53,15 +46,37 @@ export class TableSettingsModalComponent {
     this.loadSettings();
   }
 
-  loadSettings() {
+  factoryReset(): void {
+    this.settingsForm.get('generatorEnabled')?.setValue('Enabled');
+    this.settingsForm.get('regexFilter')?.setValue('.*');
+    this.settingsForm.get('transformationEnabled')?.setValue(false);
     this.httpService.getTransformation().subscribe((response) => {
       this.settingsForm.get('transformation')?.setValue(response.transformation);
     });
+  }
 
-    this.httpService.getSettings().subscribe((response) => {
-      this.settingsForm.get('generatorEnabled')?.setValue(response.generatorEnabled ? 'Enabled' : 'Disabled');
-      this.settingsForm.get('regexFilter')?.setValue(response.regexFilter);
-      this.settingsForm.get('transformationEnabled')?.setValue(response.transformationEnabled);
-    });
+  loadSettings(): void {
+    if (this.cookieService.get('generatorEnabled')) {
+      this.settingsForm.get('generatorEnabled')?.setValue(this.cookieService.get('generatorEnabled'));
+    }
+
+    if (this.cookieService.get('regexFilter')) {
+      this.settingsForm.get('regexFilter')?.setValue(this.cookieService.get('regexFilter'));
+    }
+
+    if (this.cookieService.get('transformationEnabled')) {
+      this.settingsForm
+        .get('transformationEnabled')
+        ?.setValue(this.cookieService.get('transformationEnabled') == 'true');
+    }
+
+    if (this.cookieService.get('transformation')) {
+      this.settingsForm.get('transformation')?.setValue(this.cookieService.get('transformation'));
+    } else {
+      this.httpService.getTransformation().subscribe((response) => {
+        this.settingsForm.get('transformation')?.setValue(response.transformation);
+        this.cookieService.set('transformation', response.transformation);
+      });
+    }
   }
 }

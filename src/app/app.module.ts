@@ -25,6 +25,7 @@ import { CloneModalComponent } from './shared/components/modals/clone-modal/clon
 import { DisplayTableComponent } from './shared/components/display-table/display-table.component';
 import { TableSettingsModalComponent } from './shared/components/modals/table-settings-modal/table-settings-modal.component';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,7 @@ import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.com
     MatSortModule,
     ReactiveFormsModule,
   ],
-  providers: [],
+  providers: [CookieService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -7,8 +7,7 @@ import { TestSettingsModalComponent } from '../shared/components/modals/test-set
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
 import { Metadata } from '../shared/interfaces/metadata';
-import { Report } from '../shared/interfaces/report';
-import { TestSettings } from '../shared/interfaces/test-settings';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-test',
@@ -18,11 +17,7 @@ import { TestSettings } from '../shared/interfaces/test-settings';
 export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
-  generatorStatus: string = 'disabled';
-  testSettings: TestSettings = {
-    showReportStorageIds: false,
-    showCheckpointIds: false,
-  };
+  generatorStatus: string = 'Disabled';
   STORAGE_ID_INDEX = 5;
   NAME_INDEX = 2;
   TIMEOUT = 100;
@@ -33,7 +28,11 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(TestSettingsModalComponent)
   testSettingsModal!: TestSettingsModalComponent;
 
-  constructor(private httpService: HttpService, private loaderService: LoaderService) {}
+  constructor(
+    private httpService: HttpService,
+    private loaderService: LoaderService,
+    private cookieService: CookieService
+  ) {}
 
   openCloneModal(): void {
     this.cloneModal.open();
@@ -43,8 +42,8 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     this.testSettingsModal.open();
   }
 
-  saveSettings(settings: TestSettings): void {
-    this.testSettings = settings;
+  showStorageIds(): boolean {
+    return this.cookieService.get('showReportStorageIds') === 'true';
   }
 
   ngOnInit(): void {
@@ -55,9 +54,18 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       this.reranReports = this.loaderService.getReranReports();
       this.getCopiedReports();
     }
-    this.httpService.getSettings().subscribe((response) => {
-      this.generatorStatus = response.generatorEnabled ? 'enabled' : 'disabled';
-    });
+    this.getGeneratorStatus();
+  }
+
+  getGeneratorStatus() {
+    if (this.cookieService.get('generatorEnabled')) {
+      this.generatorStatus = this.cookieService.get('generatorEnabled');
+    } else {
+      this.httpService.getSettings().subscribe((response) => {
+        this.generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
+        this.cookieService.set('generatorEnabled', this.generatorStatus);
+      });
+    }
   }
 
   ngAfterViewInit() {
@@ -99,7 +107,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   run(reportId: string): void {
-    if (this.generatorStatus === 'enabled') {
+    if (this.generatorStatus === 'Enabled') {
       const data: any = { testStorage: [reportId] };
       this.httpService.runReport(data).subscribe(() => this.timeOut());
     } else {
@@ -108,7 +116,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   runAll(): void {
-    if (this.generatorStatus === 'enabled') {
+    if (this.generatorStatus === 'Enabled') {
       const data: any = { testStorage: [] };
       this.reports
         .filter((report) => report.checked)
