@@ -36,7 +36,7 @@ export class TestFolderTreeComponent implements AfterViewInit {
         collapseIcon: 'fa fa-minus',
         selectedBackColor: '#1ab394',
       });
-    })
+    });
   }
 
   removeFolder() {}
