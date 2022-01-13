@@ -63,14 +63,8 @@ export class TableComponent implements OnInit, OnDestroy {
     );
   }
 
-<<<<<<< HEAD
   resetAllCookies() {
     this.cookieService.deleteAll();
-=======
-  testTheCookie() {
-    let value = this.cookieService.get('storageIdsEnabled');
-    console.log(value);
->>>>>>> f69d7de42ad66adde36d8a864e140a5482a244dd
   }
 
   loadData(): void {
