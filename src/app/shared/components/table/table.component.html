@@ -1,6 +1,10 @@
 <div class="row" *ngIf="tableSettings.tableLoaded">
   <div class="row">
+<<<<<<< HEAD
     <app-button [icon]="'fa fa-circle'" [title]="'RESET ALL COOKIES'" (click)="resetAllCookies()"></app-button>
+=======
+    <app-button [icon]="'fa fa-circle'" (click)="testTheCookie()"></app-button>
+>>>>>>> f69d7de42ad66adde36d8a864e140a5482a244dd
     <app-button [icon]="'fa fa-undo'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openModal()"></app-button>
     <app-button [icon]="'fa fa-upload'" [title]="'Upload'" (click)="uploadFile.click()">

@@ -52,7 +52,7 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
       $(this.TREE_SELECTOR).on('nodeSelected', (event: any, folder: any) => {
         this.currentSelectedFolder = folder.nodeId;
       });
-    })
+    });
   }
 
   removeFolder(): void {}
