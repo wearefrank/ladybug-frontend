@@ -1,6 +1,6 @@
 <div class="row">
   <div class="resizable-horizontal w-25 pr-2 border-right">
-    <app-test-folder-tree></app-test-folder-tree>
+    <app-test-folder-tree (changeFolderEvent)="changeFilter($event)"></app-test-folder-tree>
   </div>
   <div class="col">
     <div class="row">
@@ -22,40 +22,42 @@
     <div class="form-group mt-2">
       <label for="moveToInput">Move/Copy to:</label>
       <div class="input-group">
-        <input type="text" class="form-control mr-1 my-2 py-0" placeholder="1" id="moveToInput"/>
-        <app-button class="mt-0" [title]="'Move'" [text]="'Move'"></app-button>
+        <input type="text" class="form-control mr-1 my-2 py-0" id="moveToInput" value="{{currentFilter}}" [(ngModel)]="currentFilter"/>
+        <app-button class="mt-0" [title]="'Move'" [text]="'Move'" (click)="moveTestReportToFolder(currentFilter)"></app-button>
       </div>
     </div>
     <div>
-      <p >Generator is {{ generatorStatus.toLocaleLowerCase() }}</p>
+      <p>Generator is {{ generatorStatus.toLocaleLowerCase() }}</p>
     </div>
 
     <div class="row">
       <table>
         <tbody id="testReports">
         <tr *ngFor="let report of reports" class="form-inline" id="testReport#{{report[STORAGE_ID_INDEX]}}">
-          <td>
-            <input class="form-check-input" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
-          </td>
-          <td *ngIf="showStorageIds()">[{{report[STORAGE_ID_INDEX]}}]</td>
-          <td>
-            <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report[STORAGE_ID_INDEX])"></app-button>
-          </td>
-          <td>
-            <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="selectReport(report[STORAGE_ID_INDEX], report[NAME_INDEX])"></app-button>
-          </td>
-          <td *ngIf="getReranReport(report[STORAGE_ID_INDEX])">
-            <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report[STORAGE_ID_INDEX])"></app-button>
-          </td>
-          <td *ngIf="getReranReport(report[STORAGE_ID_INDEX])">
-            <app-button [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report[STORAGE_ID_INDEX])"></app-button>
-          </td>
-          <td>
-            /{{ report[NAME_INDEX]}}
-          </td>
-          <td id="runResult#{{report[STORAGE_ID_INDEX]}}">
-            <span *ngIf="getReranReport(report[STORAGE_ID_INDEX])" style="color: {{getReranReport(report[STORAGE_ID_INDEX]).color}}">{{ getReranReport(report[STORAGE_ID_INDEX]).resultString }}</span>
-          </td>
+          <span *ngIf="matches('/' + report[NAME_INDEX])">
+            <td>
+              <input class="form-check-input" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
+            </td>
+            <td *ngIf="showStorageIds()">[{{report[STORAGE_ID_INDEX]}}]</td>
+            <td>
+              <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report[STORAGE_ID_INDEX])"></app-button>
+            </td>
+            <td>
+              <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="selectReport(report[STORAGE_ID_INDEX], report[NAME_INDEX])"></app-button>
+            </td>
+            <td *ngIf="getReranReport(report[STORAGE_ID_INDEX])">
+              <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report[STORAGE_ID_INDEX])"></app-button>
+            </td>
+            <td *ngIf="getReranReport(report[STORAGE_ID_INDEX])">
+              <app-button [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report[STORAGE_ID_INDEX])"></app-button>
+            </td>
+            <td>
+              /{{ report[NAME_INDEX]}}
+            </td>
+            <td id="runResult#{{report[STORAGE_ID_INDEX]}}">
+              <span *ngIf="getReranReport(report[STORAGE_ID_INDEX])" style="color: {{getReranReport(report[STORAGE_ID_INDEX]).color}}">{{ getReranReport(report[STORAGE_ID_INDEX]).resultString }}</span>
+            </td>
+          </span>
         </tr>
         </tbody>
       </table>

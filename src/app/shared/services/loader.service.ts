@@ -105,13 +105,15 @@ export class LoaderService {
   testLoaded: boolean = false;
   testReports: any[] = [];
   reranReports: ReranReport[] = [];
+  folderFilter: string = '';
 
   constructor() {}
 
-  saveTestSettings(testReports: any[], reranReports: ReranReport[]): void {
+  saveTestSettings(testReports: any[], reranReports: ReranReport[], folderFilter: string): void {
     this.testLoaded = true;
     this.testReports = testReports;
     this.reranReports = reranReports;
+    this.folderFilter = folderFilter;
   }
 
   getTestReports() {
@@ -120,6 +122,10 @@ export class LoaderService {
 
   getReranReports(): ReranReport[] {
     return this.reranReports;
+  }
+
+  getFolderFilter() {
+    return this.folderFilter;
   }
 
   isTestLoaded(): boolean {

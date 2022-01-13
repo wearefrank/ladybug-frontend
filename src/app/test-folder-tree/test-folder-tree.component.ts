@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { LoaderService } from '../shared/services/loader.service';
 declare var $: any;
 
@@ -11,6 +11,8 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
   folders: any[] = [];
   currentSelectedFolder: number = 0;
   TREE_SELECTOR: string = '#testFolderTree';
+  @Output() changeFolderEvent = new EventEmitter<any>();
+
   constructor(private loaderService: LoaderService) {}
 
   ngAfterViewInit(): void {
@@ -26,21 +28,23 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
   }
 
   addFolder(name: string): void {
-    this.currentSelectedFolder = this.folders.push({
-      text: name,
-      filter: '/' + name + '/.*',
-      nodes: [],
-      state: {
-        expanded: true,
-      },
-    });
+    if (!this.folders.some((folder) => folder.text === name) && name != '') {
+      this.currentSelectedFolder = this.folders.push({
+        text: name,
+        filter: name,
+        nodes: [],
+        state: {
+          expanded: true,
+        },
+      });
+    }
     this.updateTreeView();
   }
 
   updateTreeView(): void {
     $(() => {
       $(this.TREE_SELECTOR).treeview({
-        data: [{ text: 'Reports', filter: '/.*', nodes: this.folders, state: { expanded: true, selected: true } }],
+        data: [{ text: 'Reports', filter: '', nodes: this.folders, state: { expanded: true, selected: true } }],
         levels: 5,
         expandIcon: 'fa fa-plus',
         collapseIcon: 'fa fa-minus',
@@ -48,9 +52,9 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
       });
       $(this.TREE_SELECTOR).treeview('selectNode', [this.currentSelectedFolder, { silent: true }]);
 
-
       $(this.TREE_SELECTOR).on('nodeSelected', (event: any, folder: any) => {
         this.currentSelectedFolder = folder.nodeId;
+        this.changeFolderEvent.next(folder.filter);
       });
     });
   }

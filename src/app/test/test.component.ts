@@ -8,6 +8,7 @@ import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
 import { Metadata } from '../shared/interfaces/metadata';
 import { CookieService } from 'ngx-cookie-service';
+import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.component';
 
 @Component({
   selector: 'app-test',
@@ -18,6 +19,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
+  currentFilter: string = '';
   STORAGE_ID_INDEX = 5;
   NAME_INDEX = 2;
   TIMEOUT = 100;
@@ -25,8 +27,8 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
-  @ViewChild(TestSettingsModalComponent)
-  testSettingsModal!: TestSettingsModalComponent;
+  @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
+  @ViewChild(TestFolderTreeComponent) testFolderTreeComponent!: TestFolderTreeComponent;
 
   constructor(
     private httpService: HttpService,
@@ -52,6 +54,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.reports = this.loaderService.getTestReports();
       this.reranReports = this.loaderService.getReranReports();
+      this.currentFilter = this.loaderService.getFolderFilter();
       this.getCopiedReports();
     }
     this.getGeneratorStatus();
@@ -91,7 +94,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.loaderService.saveTestSettings(this.reports, this.reranReports);
+    this.loaderService.saveTestSettings(this.reports, this.reranReports, this.currentFilter);
   }
 
   loadData(): void {
@@ -257,5 +260,30 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
 
   uncheckAll(): void {
     this.reports.forEach((report) => (report.checked = false));
+  }
+
+  moveTestReportToFolder(currentFilter: string) {
+    if (currentFilter != '') {
+      this.currentFilter = currentFilter;
+      this.testFolderTreeComponent.addFolder(this.currentFilter);
+      this.changeMovedTestReportNames();
+    }
+  }
+
+  changeMovedTestReportNames() {
+    this.reports
+      .filter((report) => report.checked)
+      .forEach((report) => {
+        report[this.NAME_INDEX] = this.currentFilter + '/' + report[this.NAME_INDEX];
+      });
+  }
+
+  changeFilter(filter: string) {
+    this.currentFilter = filter;
+  }
+
+  matches(name: string) {
+    // console.log(name.match(this.currentFilter + '/' + '.*'))
+    return name.match(this.currentFilter + '/' + '.*') != undefined;
   }
 }
