@@ -28,13 +28,15 @@ export class TestFolderTreeComponent implements AfterViewInit {
   }
 
   updateTreeView() {
-    $('#testFolder').treeview({
-      data: [{ text: 'Reports', filter: '/.*', nodes: this.folders, state: { expanded: true, selected: true } }],
-      levels: 1,
-      expandIcon: 'fa fa-plus',
-      collapseIcon: 'fa fa-minus',
-      selectedBackColor: '#1ab394',
-    });
+    $(() => {
+      $('#testFolder').treeview({
+        data: [{ text: 'Reports', filter: '/.*', nodes: this.folders, state: { expanded: true, selected: true } }],
+        levels: 1,
+        expandIcon: 'fa fa-plus',
+        collapseIcon: 'fa fa-minus',
+        selectedBackColor: '#1ab394',
+      });
+    })
   }
 
   removeFolder() {}
