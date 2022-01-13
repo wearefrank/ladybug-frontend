@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { HelperService } from '../../services/helper.service';
 import { LoaderService } from '../../services/loader.service';
 import { TreeNode } from '../../interfaces/tree-node';
@@ -25,7 +25,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   };
   parentMap: any[] = []; // {id: number, parent: TreeNode}
   treeNodeId: number = 0;
-  @Input() // Needed to make a distinction between the two halves in compare component
+  @Input()
   get id() {
     return this._id;
   }
@@ -134,7 +134,6 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     this.selectFirstChildNode();
   }
 
-  // TODO: Return and use it as type where it is called
   getReportsToShow(report: Report) {
     this.treeSettings.selectedReports.push(report);
     return this.treeSettings.selectedReports;
