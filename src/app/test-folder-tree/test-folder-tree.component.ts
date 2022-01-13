@@ -12,7 +12,6 @@ export class TestFolderTreeComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.updateTreeView();
-    this.addFolder('hoi');
   }
 
   addFolder(name: string) {
