@@ -18,11 +18,11 @@ jobs:
           path: ladybug-frontend
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v2.4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          path: ladybug-frontend
+          cache-dependency-path: '**/package-lock.json'
 
       - name: Install packages
         run: npm ci
