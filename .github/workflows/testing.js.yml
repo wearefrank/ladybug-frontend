@@ -61,6 +61,9 @@ jobs:
           repository: ibissource/ibis-ladybug-test-webapp
           path: ibis-ladybug-test-webapp
 
+      - name: Show files
+        run: tree -d -L 3 .
+
       - name: Cache Frank!Runner dependencies
         uses: actions/cache@v2
         with:
@@ -73,7 +76,6 @@ jobs:
       - name: Run cypress using the Frank!Runner
         uses: cypress-io/github-action@v2.9.7
         with:
-          working-directory: ladybug-frontend
           start: |
             ../frank-runner/specials/ibis-ladybug/restart.sh
             ng serve
