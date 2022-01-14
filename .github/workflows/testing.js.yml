@@ -26,6 +26,7 @@ jobs:
 
       - name: Install packages
         run: npm ci
+        working-directory: ladybug-frontend
 
       - name: Build project
         run: npm run build
