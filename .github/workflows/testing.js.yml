@@ -30,12 +30,15 @@ jobs:
 
       - name: Build project
         run: npm run build
+        working-directory: ladybug-frontend
 
       - name: Run linter
         run: npm run lint
+        working-directory: ladybug-frontend
 
       - name: Run unit tests
         run: npm run test-headless
+        working-directory: ladybug-frontend
         continue-on-error: false
 
       - name: Checkout frank-runner
