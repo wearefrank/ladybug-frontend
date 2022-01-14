@@ -46,6 +46,8 @@ jobs:
         with:
           repository: ibissource/frank-runner
           path: frank-runner
+      - name: Set port where ibis-ladybug-test-webapp is served
+        run: echo "tomcat.connector.port=8080" > frank-doc/build.properties
 
       - name: Checkout ibis-ladybug
         uses: actions/checkout@v2
@@ -59,5 +61,30 @@ jobs:
           repository: ibissource/ibis-ladybug-test-webapp
           path: ibis-ladybug-test-webapp
 
-      - name: List all files
-        run: ls
+      - name: Cache Frank!Runner dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            frank-runner/build
+            frank-runner/download
+          key: ${{ runner.os }}-frank-runner
+          restore-keys: |
+            ${{ runner.os }}-frank-runner
+      - name: Run cypress using the Frank!Runner
+        uses: cypress-io/github-action@v2.9.7
+        with:
+          working-directory: ladybug-frontend
+          start: |
+            run frank-runner/specials/ibis-ladybug/restart.sh
+            run ng serve
+          wait-on: |
+            "http://localhost:8080"
+            "http://localhost:4200"
+          wait-on-timeout: 240
+      - name: Store (logging) information as artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: logs
+          path: |
+            frank-runner/build/apache-tomcat-9.0.50/logs/catalina.out
+            ladybug-frontend/cypress/screenshots/
