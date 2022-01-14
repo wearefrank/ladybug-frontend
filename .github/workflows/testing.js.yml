@@ -14,7 +14,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        path: ladybug-frontend
+        with:
+          path: ladybug-frontend
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
