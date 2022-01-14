@@ -24,13 +24,33 @@ jobs:
       - name: Install packages
         run: npm ci
 
+      - name: Build project
+        run: npm run build
+
+      - name: Run linter
+        run: npm run lint
+
       - name: Run unit tests
         run: npm run test-headless
         continue-on-error: false
 
-#      - name: Run Cypress tests
-#        run: npm run e3e
-#        continue-on-error: false
+      - name: Checkout frank-runner
+        uses: actions/checkout@v2
+        with:
+          repository: ibissource/frank-runner
+          path: frank-runner
 
+      - name: Checkout ibis-ladybug
+        uses: actions/checkout@v2
+        with:
+          repository: ibissource/ibis-ladybug
+          path: ibis-ladybug
 
+      - name: Checkout ibis-ladybug-test-webapp
+        uses: actions/checkout@v2
+        with:
+          repository: ibissource/ibis-ladybug-test-webapp
+          path: ibis-ladybug-test-webapp
 
+      - name: List all files
+        run: tree .
