@@ -49,6 +49,9 @@ jobs:
       - name: Set port where ibis-ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8080" > frank-runner/build.properties
 
+      - name: Make script executable that starts backend
+        run: chmod a+x frank-runner/specials/ibis-ladybug/restart.sh
+
       - name: Checkout ibis-ladybug
         uses: actions/checkout@v2
         with:
@@ -76,6 +79,7 @@ jobs:
       - name: Run cypress using the Frank!Runner
         uses: cypress-io/github-action@v2.9.7
         with:
+          working-directory: ladybug-frontend
           start: |
             ../frank-runner/specials/ibis-ladybug/restart.sh
             ng serve
