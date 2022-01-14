@@ -14,6 +14,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        path: ladybug-frontend
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -53,4 +54,4 @@ jobs:
           path: ibis-ladybug-test-webapp
 
       - name: List all files
-        run: tree .
+        run: ls
