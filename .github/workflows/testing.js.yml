@@ -82,7 +82,7 @@ jobs:
           working-directory: ladybug-frontend
           start: |
             npm start
-            npm startServer
+            npm run startServer
           wait-on: 'http://localhost:8080, http://localhost:4200'
           wait-on-timeout: 240
       - name: Store (logging) information as artifacts
