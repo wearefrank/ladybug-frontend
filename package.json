@@ -12,7 +12,8 @@
     "cypress:run": "cypress run",
     "e2e": "start-server-and-test 'ng serve' 4200 cypress:run",
     "e2e-interactive": "start-server-and-test 'ng serve' 4200 cypress:open",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "startServer": "cd ../frank-runner/specials/ibis-ladybug && ./restart.sh"
   },
   "dependencies": {
     "@angular/animations": "13.1.1",

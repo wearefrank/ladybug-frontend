@@ -81,8 +81,8 @@ jobs:
         with:
           working-directory: ladybug-frontend
           start: |
-            ../frank-runner/specials/ibis-ladybug/restart.sh
-            ng serve
+            npm start
+            npm startServer
           wait-on: 'http://localhost:8080, http://localhost:4200'
           wait-on-timeout: 240
       - name: Store (logging) information as artifacts
