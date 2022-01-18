@@ -91,6 +91,7 @@ jobs:
           wait-on-timeout: 240
       - name: Store (logging) information as artifacts
         uses: actions/upload-artifact@v2
+        if: always()
         with:
           name: logs
           path: |
