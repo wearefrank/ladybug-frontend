@@ -21,6 +21,9 @@ describe('Clicking a report', function () {
   })
 
   it('Selecting report should show a tree', function() {
+    // Create a screenshot, because we want to have at least one after running the tests.
+    // We can then check whether the screenshots are saved as artifacts by GitHub.
+    cy.screenshot();
     cy.get('#treeButtons').should('not.exist')
     cy.get('.table-responsive tbody').find('tr').first().click()
     cy.get('#treeButtons').should('be.visible')

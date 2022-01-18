@@ -109,9 +109,15 @@ jobs:
         with:
           name: logs
           path: frank-runner/build/apache-tomcat-9.0.50/logs/catalina.out
-      - name: Store Cypress output
+      - name: Store Cypress screenshots
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: cypress
+          name: screenshots
           path: ladybug-frontend/cypress/screenshots/
+      - name: Store Cypress videos
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: videos
+          path: ladybug-frontend/cypress/videos/
