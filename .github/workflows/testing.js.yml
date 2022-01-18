@@ -92,3 +92,4 @@ jobs:
           path: |
             frank-runner/build/apache-tomcat-9.0.50/logs/catalina.out
             ladybug-frontend/cypress/screenshots/
+
