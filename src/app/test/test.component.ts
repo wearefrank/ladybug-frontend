@@ -19,7 +19,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
-  currentFilter: string = 'one/two/three';
+  currentFilter: string = '';
   STORAGE_ID_INDEX = 5;
   NAME_INDEX = 2;
   TIMEOUT = 100;
@@ -265,6 +265,9 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   moveTestReportToFolder(currentFilter: any) {
     this.currentFilter = currentFilter.target.filter.value
     if (this.currentFilter != '') {
+      if (!this.currentFilter.startsWith("/")) {
+        this.currentFilter = "/" + this.currentFilter;
+      }
       this.testFolderTreeComponent.addFolder(this.currentFilter);
       this.changeMovedTestReportNames();
     }
@@ -274,12 +277,11 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reports
       .filter((report) => report.checked)
       .forEach((report) => {
-        let previous = report[this.NAME_INDEX];
-
-        if (previous.includes('/')) {
-          report[this.NAME_INDEX] = this.currentFilter + '/' + previous.substring(previous.indexOf('/'));
+        if (report[this.NAME_INDEX].split("/").length > 1) {
+          let name = report[this.NAME_INDEX].split("/").pop();
+          report[this.NAME_INDEX] = (this.currentFilter + "/" + name).substring(1);
         } else {
-          report[this.NAME_INDEX] = this.currentFilter + '/' + previous;
+          report[this.NAME_INDEX] = (this.currentFilter + "/" + report[this.NAME_INDEX]).substring(1);
         }
       });
   }

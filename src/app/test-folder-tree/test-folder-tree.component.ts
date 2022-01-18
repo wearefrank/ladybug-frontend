@@ -9,7 +9,6 @@ declare var $: any;
 })
 export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
   folders: any[] = [];
-  currentSelectedFolder: number = 0;
   TREE_SELECTOR: string = '#testFolderTree';
   baseFolder: any = { text: 'Reports', filter: '', nodes: this.folders, state: { expanded: true, selected: true }};
   currentFolder: any;
@@ -32,34 +31,34 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
   }
 
   addFolder(name: string) {
-    let folders = name.startsWith("/") ? name.slice(0, 1).split("/") : name.split("/");
-    this.recursive(folders, this.folders);
+    let folders = name.startsWith("/") ? name.substring(1).split("/") : name.split("/");
+    this.recursive(folders, this.folders, '');
     this.changeFolderEvent.next(this.currentFolder.filter);
     this.updateTreeView();
   }
 
-  recursive(newNames: any[], currentFolders: any[]) {
+  recursive(newNames: any[], currentFolders: any[], previousFilter: string) {
     if (newNames.length > 0) {
       let name = newNames.shift();
       let folder = currentFolders.find((folder) => folder.text === name);
       if (folder) {
         this.selectNewFolder(folder);
-        this.recursive(newNames, folder.nodes);
+        this.recursive(newNames, folder.nodes, folder.filter);
       } else {
-        let newFolder = this.createNewFolder(name);
+        let newFolder = this.createNewFolder(name, previousFilter);
         this.selectNewFolder(newFolder)
         currentFolders.push(newFolder)
         if (newNames.length > 0) {
-          this.recursive(newNames, newFolder.nodes)
+          this.recursive(newNames, newFolder.nodes, newFolder.filter)
         }
       }
     }
   }
 
-  createNewFolder(name: string) {
+  createNewFolder(name: string, previousFilter: string) {
     return {
       text: name,
-      filter: name,
+      filter: previousFilter + "/" + name,
       nodes: [],
       state: {expanded: true}
     }
@@ -79,6 +78,11 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
         expandIcon: 'fa fa-plus',
         collapseIcon: 'fa fa-minus',
         selectedBackColor: '#1ab394',
+      });
+
+
+      $(this.TREE_SELECTOR).on('nodeSelected', (event: any, folder: any) => {
+        this.changeFolderEvent.next(folder.filter);
       });
     });
   }
