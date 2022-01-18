@@ -28,6 +28,10 @@ jobs:
         run: npm ci
         working-directory: ladybug-frontend
 
+      - name: Set Cypress environment variables
+        run: cp cypress.frontend.json.cicd cypress.frontend.json
+        working-directory: ladybug-frontend
+
       - name: Build project
         run: npm run build
         working-directory: ladybug-frontend
