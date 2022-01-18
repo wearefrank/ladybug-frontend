@@ -68,18 +68,28 @@ jobs:
           repository: ibissource/ibis-ladybug-test-webapp
           path: ibis-ladybug-test-webapp
 
-      - name: Show files
-        run: tree -d -L 3 .
-
-      - name: Cache Frank!Runner dependencies
+      - name: Cache Frank!Runner dependencies - build
         uses: actions/cache@v2
         with:
-          path: |
-            frank-runner/build
-            frank-runner/download
-          key: ${{ runner.os }}-frank-runner
+          path: frank-runner/build
+          key: ${{ runner.os }}-frank-runner-build
           restore-keys: |
-            ${{ runner.os }}-frank-runner
+            ${{ runner.os }}-frank-runner-build
+      - name: Cache Frank!Runner dependencies - download
+        uses: actions/cache@v2
+        with:
+          path: frank-runner/download
+          key: ${{ runner.os }}-frank-runner-download
+          restore-keys: |
+            ${{ runner.os }}-frank-runner-download
+      - name: Cache Maven downloads
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository/
+          key: ${{ runner.os }}-maven
+          restore-keys: |
+            ${{ runner.os }}-maven
+
       - name: Run cypress using the Frank!Runner
         uses: cypress-io/github-action@v2.9.7
         with:
@@ -89,6 +99,9 @@ jobs:
             npm run startServer
           wait-on: 'http://localhost:8090, http://localhost:4200'
           wait-on-timeout: 240
+
+      - name: Show files
+        run: tree -d -L 5 .
 
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v2
