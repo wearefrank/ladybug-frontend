@@ -29,7 +29,7 @@ jobs:
         working-directory: ladybug-frontend
 
       - name: Set Cypress environment variables
-        run: cp cypress.frontend.json.cicd cypress.frontend.json
+        run: cp cypress.env.json.cicd cypress.env.json
         working-directory: ladybug-frontend
 
       - name: Build project
