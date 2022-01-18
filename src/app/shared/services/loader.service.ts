@@ -134,22 +134,22 @@ export class LoaderService {
 
   testTreeSettings: any = {
     folders: [],
-    selectedFolder: 0,
+    currentFolder: {},
     testTreeLoaded: false,
   };
 
-  saveTestTreeSettings(folders: any[], selectedFolder: number) {
+  saveTestTreeSettings(folders: any[], currentFolder: any) {
     this.testTreeSettings.testTreeLoaded = true;
     this.testTreeSettings.folders = folders;
-    this.testTreeSettings.selectedFolder = selectedFolder;
+    this.testTreeSettings.currentFolder = currentFolder;
   }
 
   getTestTreeFolders(): any[] {
     return this.testTreeSettings.folders;
   }
 
-  getTestTreeSelectedFolder(): number {
-    return this.testTreeSettings.selectedFolder;
+  getTestCurrentFolder(): any {
+    return this.testTreeSettings.currentFolder;
   }
 
   isTestTreeLoaded(): boolean {

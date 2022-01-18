@@ -34,7 +34,8 @@
       <table>
         <tbody id="testReports">
         <tr *ngFor="let report of reports" class="form-inline" id="testReport#{{report[STORAGE_ID_INDEX]}}">
-          <span *ngIf="matches('/' + report[NAME_INDEX])">
+          <span>
+<!--            *ngIf="matches('/' + report[NAME_INDEX])"-->
             <td>
               <input class="form-check-input" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
             </td>

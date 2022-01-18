@@ -19,7 +19,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
-  currentFilter: string = '';
+  currentFilter: string = 'one/two/three';
   STORAGE_ID_INDEX = 5;
   NAME_INDEX = 2;
   TIMEOUT = 100;
@@ -264,8 +264,10 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
 
   moveTestReportToFolder(currentFilter: any) {
     this.currentFilter = currentFilter.target.filter.value
-    this.testFolderTreeComponent.addFolder(this.currentFilter);
-    this.changeMovedTestReportNames();
+    if (this.currentFilter != '') {
+      this.testFolderTreeComponent.addFolder(this.currentFilter);
+      this.changeMovedTestReportNames();
+    }
   }
 
   changeMovedTestReportNames() {
