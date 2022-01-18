@@ -89,11 +89,16 @@ jobs:
             npm run startServer
           wait-on: 'http://localhost:8090, http://localhost:4200'
           wait-on-timeout: 240
-      - name: Store (logging) information as artifacts
+
+      - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v2
         if: always()
         with:
           name: logs
-          path: |
-            frank-runner/build/apache-tomcat-9.0.50/logs/catalina.out
-            ladybug-frontend/cypress/screenshots/
+          path: frank-runner/build/apache-tomcat-9.0.50/logs/catalina.out
+      - name: Store Cypress output
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: cypress
+          path: ladybug-frontend/cypress/screenshots/
