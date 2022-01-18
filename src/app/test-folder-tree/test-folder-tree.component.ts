@@ -10,7 +10,7 @@ declare var $: any;
 export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
   folders: any[] = [];
   TREE_SELECTOR: string = '#testFolderTree';
-  baseFolder: any = { text: 'Reports', filter: '', nodes: this.folders, state: { expanded: true, selected: true }};
+  baseFolder: any = { text: 'Reports', filter: '', nodes: this.folders, state: { expanded: true, selected: true } };
   currentFolder: any;
   @Output() changeFolderEvent = new EventEmitter<any>();
 
@@ -31,7 +31,7 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
   }
 
   addFolder(name: string) {
-    let folders = name.startsWith("/") ? name.substring(1).split("/") : name.split("/");
+    let folders = name.startsWith('/') ? name.slice(1).split('/') : name.split('/');
     this.recursive(folders, this.folders, '');
     this.changeFolderEvent.next(this.currentFolder.filter);
     this.updateTreeView();
@@ -46,10 +46,10 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
         this.recursive(newNames, folder.nodes, folder.filter);
       } else {
         let newFolder = this.createNewFolder(name, previousFilter);
-        this.selectNewFolder(newFolder)
-        currentFolders.push(newFolder)
+        this.selectNewFolder(newFolder);
+        currentFolders.push(newFolder);
         if (newNames.length > 0) {
-          this.recursive(newNames, newFolder.nodes, newFolder.filter)
+          this.recursive(newNames, newFolder.nodes, newFolder.filter);
         }
       }
     }
@@ -58,10 +58,10 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
   createNewFolder(name: string, previousFilter: string) {
     return {
       text: name,
-      filter: previousFilter + "/" + name,
+      filter: previousFilter + '/' + name,
       nodes: [],
-      state: {expanded: true}
-    }
+      state: { expanded: true },
+    };
   }
 
   selectNewFolder(folder: any) {
@@ -79,7 +79,6 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
         collapseIcon: 'fa fa-minus',
         selectedBackColor: '#1ab394',
       });
-
 
       $(this.TREE_SELECTOR).on('nodeSelected', (event: any, folder: any) => {
         this.changeFolderEvent.next(folder.filter);

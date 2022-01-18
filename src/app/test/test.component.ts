@@ -263,10 +263,10 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   moveTestReportToFolder(currentFilter: any) {
-    this.currentFilter = currentFilter.target.filter.value
+    this.currentFilter = currentFilter.target.filter.value;
     if (this.currentFilter != '') {
-      if (!this.currentFilter.startsWith("/")) {
-        this.currentFilter = "/" + this.currentFilter;
+      if (!this.currentFilter.startsWith('/')) {
+        this.currentFilter = '/' + this.currentFilter;
       }
       this.testFolderTreeComponent.addFolder(this.currentFilter);
       this.changeMovedTestReportNames();
@@ -277,11 +277,11 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reports
       .filter((report) => report.checked)
       .forEach((report) => {
-        if (report[this.NAME_INDEX].split("/").length > 1) {
-          let name = report[this.NAME_INDEX].split("/").pop();
-          report[this.NAME_INDEX] = (this.currentFilter + "/" + name).substring(1);
+        if (report[this.NAME_INDEX].split('/').length > 1) {
+          let name = report[this.NAME_INDEX].split('/').pop();
+          report[this.NAME_INDEX] = (this.currentFilter + '/' + name).slice(1);
         } else {
-          report[this.NAME_INDEX] = (this.currentFilter + "/" + report[this.NAME_INDEX]).substring(1);
+          report[this.NAME_INDEX] = (this.currentFilter + '/' + report[this.NAME_INDEX]).slice(1);
         }
       });
   }
