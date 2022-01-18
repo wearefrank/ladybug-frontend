@@ -85,7 +85,7 @@ jobs:
         with:
           working-directory: ladybug-frontend
           start: |
-            npm start
+            npm run startCicd
             npm run startServer
           wait-on: 'http://localhost:8090, http://localhost:4200'
           wait-on-timeout: 240
