@@ -28,7 +28,7 @@ import { createJSDocTypeExpression, createYield } from "typescript";
 
 function createReport() {
     // No cy.visit because then the API call can happen multiple times.
-    cy.request('http://localhost/index.jsp?createReport=simple').then(resp => {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=simple').then(resp => {
         expect(resp.status).equal(200);
     });
 }
@@ -37,7 +37,7 @@ Cypress.Commands.add('createReport', createReport);
 
 function createOtherReport() {
     // No cy.visit because then the API call can happen multiple times.
-    cy.request('http://localhost/index.jsp?createReport=otherSimple').then(resp => {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=otherSimple').then(resp => {
         expect(resp.status).equal(200);
     });
 }
@@ -45,7 +45,7 @@ function createOtherReport() {
 Cypress.Commands.add('createOtherReport', createOtherReport);
 
 function clearDebugStore() {
-    cy.request('http://localhost/index.jsp?clearDebugStorage=true');
+    cy.request(Cypress.env('backendServer') + '/index.jsp?clearDebugStorage=true');
 }
 
 Cypress.Commands.add('clearDebugStore', clearDebugStore);
