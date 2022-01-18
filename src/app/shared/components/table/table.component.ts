@@ -5,6 +5,7 @@ import { HttpService } from '../../services/http.service';
 import { LoaderService } from '../../services/loader.service';
 import { TableSettingsModalComponent } from '../modals/table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../interfaces/table-settings';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-table',
@@ -38,7 +39,8 @@ export class TableComponent implements OnInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    private cookieService: CookieService
   ) {}
 
   ngOnInit(): void {

@@ -28,7 +28,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   title = 'ladybug';
-  active = 2;
+  active = 1;
   tabs: { key: string; value: any }[] = [];
 
   /**

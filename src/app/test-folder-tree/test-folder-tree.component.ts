@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 declare var $: any;
 
 @Component({
@@ -6,13 +6,12 @@ declare var $: any;
   templateUrl: './test-folder-tree.component.html',
   styleUrls: ['./test-folder-tree.component.css'],
 })
-export class TestFolderTreeComponent implements OnInit {
+export class TestFolderTreeComponent implements AfterViewInit {
   folders: any[] = [];
   constructor() {}
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.updateTreeView();
-    this.addFolder('hoi');
   }
 
   addFolder(name: string) {
@@ -28,12 +27,14 @@ export class TestFolderTreeComponent implements OnInit {
   }
 
   updateTreeView() {
-    $('#testFolder').treeview({
-      data: [{ text: 'Reports', filter: '/.*', nodes: this.folders, state: { expanded: true, selected: true } }],
-      levels: 1,
-      expandIcon: 'fa fa-plus',
-      collapseIcon: 'fa fa-minus',
-      selectedBackColor: '#1ab394',
+    $(() => {
+      $('#testFolder').treeview({
+        data: [{ text: 'Reports', filter: '/.*', nodes: this.folders, state: { expanded: true, selected: true } }],
+        levels: 1,
+        expandIcon: 'fa fa-plus',
+        collapseIcon: 'fa fa-minus',
+        selectedBackColor: '#1ab394',
+      });
     });
   }
 

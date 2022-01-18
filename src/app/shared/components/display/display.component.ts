@@ -19,6 +19,7 @@ export class DisplayComponent {
   editingChildNode: boolean = false;
   editingRootNode: boolean = false;
   displayReport: boolean = false;
+  rerunResult: string = '';
   report: TreeNode = {
     id: -1,
     ladybug: undefined,
@@ -69,7 +70,7 @@ export class DisplayComponent {
     this.report = report;
     this.loadMonacoCode();
     this.displayReport = true;
-    document.querySelector('#showRerunResult')!.innerHTML = '';
+    this.rerunResult = '';
     this.disableEditing(); // For switching from editing current report to another
   }
 
@@ -169,10 +170,10 @@ export class DisplayComponent {
       let element = document.querySelector('#showRerunResult')!;
       if (this.report.ladybug == response) {
         element.setAttribute('style', 'background-color: green');
-        element.innerHTML = '[Rerun succeeded]';
+        this.rerunResult = '[Rerun succeeded]';
       } else {
         element.setAttribute('style', 'background-color: red');
-        element.innerHTML = '[Rerun failed]';
+        this.rerunResult = '[Rerun failed]';
       }
     });
   }

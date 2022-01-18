@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormControl, FormGroup } from '@angular/forms';
-import { TestSettings } from '../../../interfaces/test-settings';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-test-settings-modal',
@@ -14,24 +14,31 @@ export class TestSettingsModalComponent {
     showReportStorageIds: new FormControl(false),
     showCheckpointIds: new FormControl(false),
   });
-  @Output() saveSettingsEvent = new EventEmitter<any>();
 
-  constructor(private modalService: NgbModal) {}
+  constructor(private modalService: NgbModal, private cookieService: CookieService) {}
 
   open(): void {
+    this.loadSettings();
     this.modalService.open(this.modal);
   }
 
   saveSettings(): void {
-    const settings: TestSettings = {
-      showReportStorageIds: this.settingsForm.get('showReportStorageIds')?.value,
-      showCheckpointIds: this.settingsForm.get('showCheckpointIds')?.value,
-    };
-    this.saveSettingsEvent.next(settings);
+    this.cookieService.set('showReportStorageIds', this.settingsForm.get('showReportStorageIds')?.value.toString());
+    this.cookieService.set('showCheckpointIds', this.settingsForm.get('showCheckpointIds')?.value.toString());
   }
 
   resetSettings(): void {
     this.settingsForm.get('showReportStorageIds')?.setValue(false);
     this.settingsForm.get('showCheckpointIds')?.setValue(false);
+  }
+
+  loadSettings(): void {
+    if (this.cookieService.get('showReportStorageIds')) {
+      this.settingsForm.get('showReportStorageIds')?.setValue(this.cookieService.get('showReportStorageIds'));
+    }
+
+    if (this.cookieService.get('showCheckpointIds')) {
+      this.settingsForm.get('showCheckpointIds')?.setValue(this.cookieService.get('showCheckpointIds'));
+    }
   }
 }
