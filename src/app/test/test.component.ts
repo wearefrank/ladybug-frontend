@@ -262,18 +262,16 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reports.forEach((report) => (report.checked = false));
   }
 
-  moveTestReportToFolder(currentFilter: any) {
+  moveTestReportToFolder(currentFilter: any): void {
     this.currentFilter = currentFilter.target.filter.value;
-    if (this.currentFilter != '') {
-      if (!this.currentFilter.startsWith('/')) {
-        this.currentFilter = '/' + this.currentFilter;
-      }
-      this.testFolderTreeComponent.addFolder(this.currentFilter);
-      this.changeMovedTestReportNames();
+    if (!this.currentFilter.startsWith('/')) {
+      this.currentFilter = '/' + this.currentFilter;
     }
+    this.testFolderTreeComponent.addFolder(this.currentFilter);
+    this.changeMovedTestReportNames();
   }
 
-  changeMovedTestReportNames() {
+  changeMovedTestReportNames(): void {
     this.reports
       .filter((report) => report.checked)
       .forEach((report) => {
@@ -284,13 +282,15 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
           report[this.NAME_INDEX] = (this.currentFilter + '/' + report[this.NAME_INDEX]).slice(1);
         }
       });
+    this.testFolderTreeComponent.removeUnusedFolders(this.reports);
+    this.testFolderTreeComponent.updateTreeView();
   }
 
-  changeFilter(filter: string) {
+  changeFilter(filter: string): void {
     this.currentFilter = filter;
   }
 
-  matches(name: string) {
+  matches(name: string): boolean {
     return name.match(this.currentFilter + '/' + '.*') != undefined;
   }
 }

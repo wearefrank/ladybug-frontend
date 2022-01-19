@@ -5,6 +5,7 @@ import { ReranReport } from '../interfaces/reran-report';
 import { Report } from '../interfaces/report';
 import { TableSettings } from '../interfaces/table-settings';
 import { TreeSettings } from '../interfaces/tree-settings';
+import { TestTreeNode } from '../interfaces/test-tree-node';
 
 @Injectable({
   providedIn: 'root',
@@ -133,19 +134,19 @@ export class LoaderService {
   }
 
   testTreeSettings: any = {
-    folders: [],
+    baseFolder: {},
     currentFolder: {},
     testTreeLoaded: false,
   };
 
-  saveTestTreeSettings(folders: any[], currentFolder: any) {
+  saveTestTreeSettings(baseFolder: TestTreeNode, currentFolder: any) {
     this.testTreeSettings.testTreeLoaded = true;
-    this.testTreeSettings.folders = folders;
+    this.testTreeSettings.baseFolder = baseFolder;
     this.testTreeSettings.currentFolder = currentFolder;
   }
 
-  getTestTreeFolders(): any[] {
-    return this.testTreeSettings.folders;
+  getTestBaseFolder(): TestTreeNode {
+    return this.testTreeSettings.baseFolder;
   }
 
   getTestCurrentFolder(): any {
