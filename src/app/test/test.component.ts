@@ -1,14 +1,25 @@
-import { Component, OnInit, EventEmitter, Output, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
-import { ToastComponent } from '../shared/components/toast/toast.component';
-import { HttpService } from '../shared/services/http.service';
-import { LoaderService } from '../shared/services/loader.service';
-import { CloneModalComponent } from '../shared/components/modals/clone-modal/clone-modal.component';
-import { TestSettingsModalComponent } from '../shared/components/modals/test-settings-modal/test-settings-modal.component';
-import { TestResult } from '../shared/interfaces/test-result';
-import { ReranReport } from '../shared/interfaces/reran-report';
-import { Metadata } from '../shared/interfaces/metadata';
-import { CookieService } from 'ngx-cookie-service';
-import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.component';
+import {
+  Component,
+  OnInit,
+  EventEmitter,
+  Output,
+  ViewChild,
+  AfterViewInit,
+  OnDestroy,
+  OnChanges,
+  SimpleChanges,
+  Input
+} from '@angular/core';
+import {ToastComponent} from '../shared/components/toast/toast.component';
+import {HttpService} from '../shared/services/http.service';
+import {LoaderService} from '../shared/services/loader.service';
+import {CloneModalComponent} from '../shared/components/modals/clone-modal/clone-modal.component';
+import {TestSettingsModalComponent} from '../shared/components/modals/test-settings-modal/test-settings-modal.component';
+import {TestResult} from '../shared/interfaces/test-result';
+import {ReranReport} from '../shared/interfaces/reran-report';
+import {Metadata} from '../shared/interfaces/metadata';
+import {CookieService} from 'ngx-cookie-service';
+import {TestFolderTreeComponent} from '../test-folder-tree/test-folder-tree.component';
 
 @Component({
   selector: 'app-test',
@@ -34,7 +45,8 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     private httpService: HttpService,
     private loaderService: LoaderService,
     private cookieService: CookieService
-  ) {}
+  ) {
+  }
 
   openCloneModal(): void {
     this.cloneModal.open();
@@ -131,7 +143,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   timeOut(): void {
-    setTimeout(() => this.queryResults(), this.TIMEOUT);
+    setTimeout(() => this.queryResults(), 1000);
   }
 
   queryResults(): void {
@@ -262,26 +274,47 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reports.forEach((report) => (report.checked = false));
   }
 
-  moveTestReportToFolder(currentFilter: any): void {
-    this.currentFilter = currentFilter.target.filter.value;
-    if (!this.currentFilter.startsWith('/')) {
-      this.currentFilter = '/' + this.currentFilter;
-    }
-    this.testFolderTreeComponent.addFolder(this.currentFilter);
-    this.changeMovedTestReportNames();
+  copyAndMove() {
+    let copiedIds: string[] = [];
+    this.reports.forEach((report) => {
+      if (report.checked) {
+        copiedIds.push(report[this.STORAGE_ID_INDEX]);
+      }
+    });
+
+    this.httpService.copyReport({ testStorage: copiedIds }).subscribe((r: any) => {
+      this.loadData();
+      setTimeout(() =>{
+        this.reports.slice( r.length * -1).forEach((report) => report.checked = true)
+        this.moveTestReportToFolder();
+      }, 200)
+    });
   }
 
-  changeMovedTestReportNames(): void {
-    this.reports
-      .filter((report) => report.checked)
-      .forEach((report) => {
-        if (report[this.NAME_INDEX].split('/').length > 1) {
-          let name = report[this.NAME_INDEX].split('/').pop();
-          report[this.NAME_INDEX] = (this.currentFilter + '/' + name).slice(1);
-        } else {
-          report[this.NAME_INDEX] = (this.currentFilter + '/' + report[this.NAME_INDEX]).slice(1);
-        }
-      });
+  moveTestReportToFolder(): void {
+    let selectedReports = this.reports.filter((report) => report.checked);
+    if (selectedReports.length > 0) {
+      this.currentFilter = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
+      if (!this.currentFilter.startsWith('/')) {
+        this.currentFilter = '/' + this.currentFilter;
+      }
+      this.testFolderTreeComponent.addFolder(this.currentFilter);
+      this.changeMovedTestReportNames(selectedReports);
+    } else {
+      this.toastComponent.addAlert({type: 'warning', message: 'No Report Selected!'})
+    }
+  }
+
+  changeMovedTestReportNames(selectedReports: any[]): void {
+    console.log(selectedReports)
+    selectedReports.forEach((report) => {
+      if (report[this.NAME_INDEX].split('/').length > 1) {
+        let name = report[this.NAME_INDEX].split('/').pop();
+        report[this.NAME_INDEX] = (this.currentFilter + '/' + name).slice(1);
+      } else {
+        report[this.NAME_INDEX] = (this.currentFilter + '/' + report[this.NAME_INDEX]).slice(1);
+      }
+    });
     this.testFolderTreeComponent.removeUnusedFolders(this.reports);
     this.testFolderTreeComponent.updateTreeView();
   }
