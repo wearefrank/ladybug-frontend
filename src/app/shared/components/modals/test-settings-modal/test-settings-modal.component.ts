@@ -34,11 +34,13 @@ export class TestSettingsModalComponent {
 
   loadSettings(): void {
     if (this.cookieService.get('showReportStorageIds')) {
-      this.settingsForm.get('showReportStorageIds')?.setValue(this.cookieService.get('showReportStorageIds'));
+      this.settingsForm
+        .get('showReportStorageIds')
+        ?.setValue(this.cookieService.get('showReportStorageIds') === 'true');
     }
 
     if (this.cookieService.get('showCheckpointIds')) {
-      this.settingsForm.get('showCheckpointIds')?.setValue(this.cookieService.get('showCheckpointIds'));
+      this.settingsForm.get('showCheckpointIds')?.setValue(this.cookieService.get('showCheckpointIds') === 'true');
     }
   }
 }
