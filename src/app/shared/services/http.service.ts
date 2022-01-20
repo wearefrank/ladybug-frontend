@@ -16,7 +16,6 @@ export class HttpService {
 
   initializeToastComponent(toastComponent: ToastComponent) {
     this.toastComponent = toastComponent;
-    let hi = '';
   }
 
   handleError(message: string) {
