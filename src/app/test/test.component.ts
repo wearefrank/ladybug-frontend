@@ -6,9 +6,6 @@ import {
   ViewChild,
   AfterViewInit,
   OnDestroy,
-  OnChanges,
-  SimpleChanges,
-  Input
 } from '@angular/core';
 import {ToastComponent} from '../shared/components/toast/toast.component';
 import {HttpService} from '../shared/services/http.service';
@@ -306,7 +303,6 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changeMovedTestReportNames(selectedReports: any[]): void {
-    console.log(selectedReports)
     selectedReports.forEach((report) => {
       if (report[this.NAME_INDEX].split('/').length > 1) {
         let name = report[this.NAME_INDEX].split('/').pop();
