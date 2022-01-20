@@ -75,6 +75,5 @@ export class TableSettingsModalComponent {
         this.cookieService.set('transformation', response.transformation);
       }
     });
-
   }
 }

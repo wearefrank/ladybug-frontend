@@ -1,22 +1,14 @@
-import {
-  Component,
-  OnInit,
-  EventEmitter,
-  Output,
-  ViewChild,
-  AfterViewInit,
-  OnDestroy,
-} from '@angular/core';
-import {ToastComponent} from '../shared/components/toast/toast.component';
-import {HttpService} from '../shared/services/http.service';
-import {LoaderService} from '../shared/services/loader.service';
-import {CloneModalComponent} from '../shared/components/modals/clone-modal/clone-modal.component';
-import {TestSettingsModalComponent} from '../shared/components/modals/test-settings-modal/test-settings-modal.component';
-import {TestResult} from '../shared/interfaces/test-result';
-import {ReranReport} from '../shared/interfaces/reran-report';
-import {Metadata} from '../shared/interfaces/metadata';
-import {CookieService} from 'ngx-cookie-service';
-import {TestFolderTreeComponent} from '../test-folder-tree/test-folder-tree.component';
+import { Component, OnInit, EventEmitter, Output, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { ToastComponent } from '../shared/components/toast/toast.component';
+import { HttpService } from '../shared/services/http.service';
+import { LoaderService } from '../shared/services/loader.service';
+import { CloneModalComponent } from '../shared/components/modals/clone-modal/clone-modal.component';
+import { TestSettingsModalComponent } from '../shared/components/modals/test-settings-modal/test-settings-modal.component';
+import { TestResult } from '../shared/interfaces/test-result';
+import { ReranReport } from '../shared/interfaces/reran-report';
+import { Metadata } from '../shared/interfaces/metadata';
+import { CookieService } from 'ngx-cookie-service';
+import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.component';
 
 @Component({
   selector: 'app-test',
@@ -42,8 +34,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     private httpService: HttpService,
     private loaderService: LoaderService,
     private cookieService: CookieService
-  ) {
-  }
+  ) {}
 
   openCloneModal(): void {
     this.cloneModal.open();
@@ -247,12 +238,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   copySelected() {
-    let copiedIds: string[] = [];
-    this.reports.forEach((report) => {
-      if (report.checked) {
-        copiedIds.push(report[this.STORAGE_ID_INDEX]);
-      }
-    });
+    let copiedIds: string[] = this.getIdsToBeCopied();
 
     this.httpService.copyReport({ testStorage: copiedIds }).subscribe(() => {
       this.loadData();
@@ -271,7 +257,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reports.forEach((report) => (report.checked = false));
   }
 
-  copyAndMove() {
+  getIdsToBeCopied(): string[] {
     let copiedIds: string[] = [];
     this.reports.forEach((report) => {
       if (report.checked) {
@@ -279,12 +265,18 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+    return copiedIds;
+  }
+
+  copyAndMove() {
+    let copiedIds: string[] = this.getIdsToBeCopied();
+
     this.httpService.copyReport({ testStorage: copiedIds }).subscribe((r: any) => {
       this.loadData();
-      setTimeout(() =>{
-        this.reports.slice( r.length * -1).forEach((report) => report.checked = true)
+      setTimeout(() => {
+        this.reports.slice(r.length * -1).forEach((report) => (report.checked = true));
         this.moveTestReportToFolder();
-      }, 200)
+      }, 200);
     });
   }
 
@@ -298,7 +290,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       this.testFolderTreeComponent.addFolder(this.currentFilter);
       this.changeMovedTestReportNames(selectedReports);
     } else {
-      this.toastComponent.addAlert({type: 'warning', message: 'No Report Selected!'})
+      this.toastComponent.addAlert({ type: 'warning', message: 'No Report Selected!' });
     }
   }
 

@@ -99,7 +99,7 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
     let foldersToKeep: TestTreeNode[] = [];
     folders.forEach((folder) => {
       if (this.tryMatchingNameToFolder(folder, testReportNames)) {
-        foldersToKeep.push(folder)
+        foldersToKeep.push(folder);
       }
     });
 
