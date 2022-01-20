@@ -4,5 +4,8 @@
         "**/cypress/integration/1-getting-started/**",
         "**/cypress/integration/2-advanced-examples/**"
     ],
-    "supportFile": "cypress/support/index.ts"
+    "supportFile": "cypress/support/index.ts",
+    "env": {
+        "backendServer": "http://localhost:80"
+    }
 }
