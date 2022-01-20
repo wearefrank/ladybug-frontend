@@ -19,7 +19,7 @@ import { MonacoEditorComponent } from './shared/components/monaco-editor/monaco-
 import { MatSortModule } from '@angular/material/sort';
 import { ReportComponent } from './report/report.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TestSettingsModalComponent } from './shared/components/modals/test-settings-modal/test-settings-modal.component';
 import { CloneModalComponent } from './shared/components/modals/clone-modal/clone-modal.component';
 import { DisplayTableComponent } from './shared/components/display-table/display-table.component';
@@ -57,6 +57,7 @@ import { CookieService } from 'ngx-cookie-service';
     HttpClientModule,
     MatSortModule,
     ReactiveFormsModule,
+    FormsModule,
   ],
   providers: [CookieService],
   bootstrap: [AppComponent],

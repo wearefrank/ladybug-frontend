@@ -140,7 +140,6 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
-    console.log(this.tableSettings.reportMetadata.values);
     const queryString: string = this.tableSettings.reportMetadata.values.reduce(
       (totalQuery: string, selectedReport: string[]) =>
         totalQuery + 'id=' + selectedReport[this.STORAGE_ID_INDEX] + '&',
