@@ -13,7 +13,8 @@
     "e3e": "start-server-and-test start 4200 cypress:run",
     "e2e": "start-server-and-test 'ng serve' 4200 cypress:run",
     "e2e-interactive": "start-server-and-test 'ng serve' 4200 cypress:open",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@angular/animations": "13.1.1",
@@ -61,6 +62,7 @@
     "cypress": "^8.5.0",
     "eslint": "^8.2.0",
     "eslint-plugin-sonarjs": "^0.11.0",
+    "husky": "^7.0.4",
     "jasmine-core": "3.9.0",
     "karma": "6.3.4",
     "karma-chrome-launcher": "3.1.0",
