@@ -5,9 +5,8 @@
       <span>&times;</span>
     </button>
   </div>
-  <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
+  <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()" style="text-align: center">
     <div class="modal-body">
-      <form style="text-align: center">
         <div class="form-group form-check-inline">
           <input class="form-check-input" type="checkbox" formControlName="showReportStorageIds">
           <label class="form-check-label transform-label">
@@ -20,7 +19,6 @@
             Show checkpoint IDs
           </label>
         </div>
-      </form>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-info" (click)="resetSettings(); modal.dismiss();"><i class="fa fa-undo"></i></button>

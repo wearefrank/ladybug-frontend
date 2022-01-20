@@ -1,4 +1,6 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { LoaderService } from '../shared/services/loader.service';
+import { TestTreeNode } from '../shared/interfaces/test-tree-node';
 declare var $: any;
 
 @Component({
@@ -6,37 +8,118 @@ declare var $: any;
   templateUrl: './test-folder-tree.component.html',
   styleUrls: ['./test-folder-tree.component.css'],
 })
-export class TestFolderTreeComponent implements AfterViewInit {
-  folders: any[] = [];
-  constructor() {}
+export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
+  TREE_SELECTOR: string = '#testFolderTree';
+  NAME_INDEX: number = 2;
+  baseFolder: TestTreeNode = { text: 'Reports', filter: '', nodes: [], state: { expanded: true, selected: true } };
+  currentFolder: TestTreeNode = this.baseFolder;
+  @Output() changeFolderEvent = new EventEmitter<any>();
+
+  constructor(private loaderService: LoaderService) {}
 
   ngAfterViewInit(): void {
+    if (this.loaderService.isTestTreeLoaded()) {
+      this.baseFolder = this.loaderService.getTestBaseFolder();
+      this.currentFolder = this.loaderService.getTestCurrentFolder();
+    }
     this.updateTreeView();
   }
 
-  addFolder(name: string) {
-    this.folders.push({
+  ngOnDestroy(): void {
+    this.loaderService.saveTestTreeSettings(this.baseFolder, this.currentFolder);
+  }
+
+  addFolder(path: string): void {
+    if (path === '/') {
+      this.selectNewFolder(this.baseFolder);
+    } else {
+      let folderNames = path.startsWith('/') ? path.slice(1).split('/') : path.split('/');
+      this.recursivelyAddFolders(folderNames, this.baseFolder.nodes, '');
+    }
+    this.changeFolderEvent.next(this.currentFolder.filter);
+    this.updateTreeView();
+  }
+
+  recursivelyAddFolders(folderNames: string[], currentFolders: TestTreeNode[], previousFilter: string): void {
+    if (folderNames.length > 0) {
+      let name = folderNames.shift()!;
+      let currentFolder = currentFolders.find((folder) => folder.text === name);
+
+      if (!currentFolder) {
+        currentFolder = this.createNewFolder(name, previousFilter);
+        currentFolders.push(currentFolder);
+      }
+
+      this.selectNewFolder(currentFolder);
+      this.recursivelyAddFolders(folderNames, currentFolder.nodes, currentFolder.filter);
+    }
+  }
+
+  createNewFolder(name: string, previousFilter: string): TestTreeNode {
+    return {
       text: name,
-      filter: '/' + name + '/.*',
+      filter: previousFilter + '/' + name,
       nodes: [],
-      state: {
-        expanded: true,
-      },
-    });
-    this.updateTreeView();
+      state: { expanded: true },
+    };
   }
 
-  updateTreeView() {
+  selectNewFolder(folder: TestTreeNode): void {
+    this.currentFolder.state.selected = false;
+    this.currentFolder = folder;
+    this.currentFolder.state.selected = true;
+  }
+
+  updateTreeView(): void {
     $(() => {
-      $('#testFolder').treeview({
-        data: [{ text: 'Reports', filter: '/.*', nodes: this.folders, state: { expanded: true, selected: true } }],
-        levels: 1,
+      $(this.TREE_SELECTOR).treeview({
+        data: [this.baseFolder],
+        levels: 5,
         expandIcon: 'fa fa-plus',
         collapseIcon: 'fa fa-minus',
         selectedBackColor: '#1ab394',
       });
+
+      $(this.TREE_SELECTOR).on('nodeSelected', (event: any, folder: TestTreeNode) => {
+        this.changeFolderEvent.next(folder.filter);
+      });
     });
   }
 
-  removeFolder() {}
+  removeUnusedFolders(testReports: any[]): void {
+    let testReportNames: string[] = [];
+    testReports.forEach((report) => {
+      testReportNames.push(report[this.NAME_INDEX]);
+    });
+
+    this.baseFolder.nodes = this.recursivelyRemoveFolders(testReportNames, this.baseFolder.nodes);
+  }
+
+  recursivelyRemoveFolders(testReportNames: string[], folders: TestTreeNode[]): TestTreeNode[] {
+    let foldersToKeep: TestTreeNode[] = [];
+    folders.forEach((folder) => {
+      if (this.tryMatchingNameToFolder(folder, testReportNames)) {
+        foldersToKeep.push(folder);
+      }
+    });
+
+    return foldersToKeep;
+  }
+
+  tryMatchingNameToFolder(currentFolder: TestTreeNode, testReportNames: string[]): boolean {
+    let found: boolean = false;
+
+    for (let name of testReportNames) {
+      if (this.matches(name, currentFolder.filter)) {
+        currentFolder.nodes = this.recursivelyRemoveFolders(testReportNames, currentFolder.nodes);
+        found = true;
+        break;
+      }
+    }
+    return found;
+  }
+
+  matches(name: string, filter: string): boolean {
+    return ('/' + name).match('(/)*' + filter + '/.*') != undefined;
+  }
 }
