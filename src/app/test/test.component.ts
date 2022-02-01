@@ -8,6 +8,7 @@ import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
 import { Metadata } from '../shared/interfaces/metadata';
 import { CookieService } from 'ngx-cookie-service';
+import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.component';
 
 @Component({
   selector: 'app-test',
@@ -18,13 +19,14 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
+  currentFilter: string = '';
   TIMEOUT = 100;
   @Output() openTestReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
-  @ViewChild(TestSettingsModalComponent)
-  testSettingsModal!: TestSettingsModalComponent;
+  @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
+  @ViewChild(TestFolderTreeComponent) testFolderTreeComponent!: TestFolderTreeComponent;
 
   constructor(
     private httpService: HttpService,
@@ -50,6 +52,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.reports = this.loaderService.getTestReports();
       this.reranReports = this.loaderService.getReranReports();
+      this.currentFilter = this.loaderService.getFolderFilter();
       this.getCopiedReports();
     }
     this.getGeneratorStatus();
@@ -89,7 +92,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.loaderService.saveTestSettings(this.reports, this.reranReports);
+    this.loaderService.saveTestSettings(this.reports, this.reranReports, this.currentFilter);
   }
 
   loadData(): void {
@@ -124,7 +127,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   timeOut(): void {
-    setTimeout(() => this.queryResults(), this.TIMEOUT);
+    setTimeout(() => this.queryResults(), 1000);
   }
 
   queryResults(): void {
@@ -203,7 +206,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
         (totalQuery: string, selectedReport: Metadata) => totalQuery + 'id=' + selectedReport.storageId + '&',
         '?'
       );
-    window.open('api/report/download/testStorage/true/false' + queryString.slice(0, -1));
+    window.open('api/report/download/debugStorage/true/false' + queryString.slice(0, -1));
   }
 
   uploadReport(event: any): void {
@@ -230,12 +233,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   copySelected() {
-    let copiedIds: string[] = [];
-    this.reports.forEach((report) => {
-      if (report.checked) {
-        copiedIds.push(report.storageId);
-      }
-    });
+    let copiedIds: string[] = this.getIdsToBeCopied();
 
     this.httpService.copyReport({ testStorage: copiedIds }).subscribe(() => {
       this.loadData();
@@ -252,5 +250,63 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
 
   uncheckAll(): void {
     this.reports.forEach((report) => (report.checked = false));
+  }
+
+  getIdsToBeCopied(): string[] {
+    let copiedIds: string[] = [];
+    this.reports.forEach((report) => {
+      if (report.checked) {
+        copiedIds.push(report.storageId);
+      }
+    });
+
+    return copiedIds;
+  }
+
+  copyAndMove() {
+    let copiedIds: string[] = this.getIdsToBeCopied();
+
+    this.httpService.copyReport({ testStorage: copiedIds }).subscribe((r: any) => {
+      this.loadData();
+      setTimeout(() => {
+        this.reports.slice(r.length * -1).forEach((report) => (report.checked = true));
+        this.moveTestReportToFolder();
+      }, 200);
+    });
+  }
+
+  moveTestReportToFolder(): void {
+    let selectedReports = this.reports.filter((report) => report.checked);
+    if (selectedReports.length > 0) {
+      this.currentFilter = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
+      if (!this.currentFilter.startsWith('/')) {
+        this.currentFilter = '/' + this.currentFilter;
+      }
+      this.testFolderTreeComponent.addFolder(this.currentFilter);
+      this.changeMovedTestReportNames(selectedReports);
+    } else {
+      this.toastComponent.addAlert({ type: 'warning', message: 'No Report Selected!' });
+    }
+  }
+
+  changeMovedTestReportNames(selectedReports: any[]): void {
+    selectedReports.forEach((report) => {
+      if (report.name.split('/').length > 1) {
+        let name = report.name.split('/').pop();
+        report.name = (this.currentFilter + '/' + name).slice(1);
+      } else {
+        report.name = (this.currentFilter + '/' + report.name).slice(1);
+      }
+    });
+    this.testFolderTreeComponent.removeUnusedFolders(this.reports);
+    this.testFolderTreeComponent.updateTreeView();
+  }
+
+  changeFilter(filter: string): void {
+    this.currentFilter = filter;
+  }
+
+  matches(name: string): boolean {
+    return name.match(this.currentFilter + '/' + '.*') != undefined;
   }
 }

@@ -14,23 +14,116 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          path: ladybug-frontend
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
 
       - name: Install packages
         run: npm ci
+        working-directory: ladybug-frontend
+
+      - name: Set Cypress environment variables
+        run: cp cypress.env.json.cicd cypress.env.json
+        working-directory: ladybug-frontend
+
+      - name: Build project
+        run: npm run build
+        working-directory: ladybug-frontend
+
+      - name: Run linter
+        run: npm run lint
+        working-directory: ladybug-frontend
 
       - name: Run unit tests
         run: npm run test-headless
+        working-directory: ladybug-frontend
         continue-on-error: false
 
-#      - name: Run Cypress tests
-#        run: npm run e3e
-#        continue-on-error: false
+      - name: Checkout frank-runner
+        uses: actions/checkout@v2
+        with:
+          repository: ibissource/frank-runner
+          path: frank-runner
+      - name: Set property to skip backend unit tests
+        run: echo "maven.skip.tests=true" > frank-runner/specials/ibis-ladybug/build.properties
+      - name: Set properties to skip backend Javadoc
+        run: echo "maven.skip.javadoc=true" >> frank-runner/specials/ibis-ladybug/build.properties
 
+      - name: Set port where ibis-ladybug-test-webapp is served
+        run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
 
+      - name: Make script executable that starts backend
+        run: chmod a+x frank-runner/specials/ibis-ladybug/restart.sh
+
+      - name: Checkout ibis-ladybug
+        uses: actions/checkout@v2
+        with:
+          repository: ibissource/ibis-ladybug
+          path: ibis-ladybug
+
+      - name: Checkout ibis-ladybug-test-webapp
+        uses: actions/checkout@v2
+        with:
+          repository: ibissource/ibis-ladybug-test-webapp
+          path: ibis-ladybug-test-webapp
+
+      - name: Cache Frank!Runner dependencies - build
+        uses: actions/cache@v2
+        with:
+          path: frank-runner/build
+          key: ${{ runner.os }}-frank-runner-build
+          restore-keys: |
+            ${{ runner.os }}-frank-runner-build
+      - name: Cache Frank!Runner dependencies - download
+        uses: actions/cache@v2
+        with:
+          path: frank-runner/download
+          key: ${{ runner.os }}-frank-runner-download
+          restore-keys: |
+            ${{ runner.os }}-frank-runner-download
+      - name: Cache Maven downloads
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository/
+          key: ${{ runner.os }}-maven
+          restore-keys: |
+            ${{ runner.os }}-maven
+
+      - name: Run cypress using the Frank!Runner
+        uses: cypress-io/github-action@v2.9.7
+        with:
+          working-directory: ladybug-frontend
+          start: |
+            npm run startCicd
+            npm run startServer
+          wait-on: 'http://localhost:8090, http://localhost:4200'
+          wait-on-timeout: 240
+
+      - name: Show files
+        run: tree -d -L 5 .
+
+      - name: Store Apache Tomcat log
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: logs
+          path: frank-runner/build/apache-tomcat-9.0.50/logs/catalina.out
+      - name: Store Cypress screenshots
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: screenshots
+          path: ladybug-frontend/cypress/screenshots/
+      - name: Store Cypress videos
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: videos
+          path: ladybug-frontend/cypress/videos/
 

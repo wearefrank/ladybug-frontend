@@ -5,6 +5,7 @@ import { ReranReport } from '../interfaces/reran-report';
 import { Report } from '../interfaces/report';
 import { TableSettings } from '../interfaces/table-settings';
 import { TreeSettings } from '../interfaces/tree-settings';
+import { TestTreeNode } from '../interfaces/test-tree-node';
 
 @Injectable({
   providedIn: 'root',
@@ -105,13 +106,15 @@ export class LoaderService {
   testLoaded: boolean = false;
   testReports: any[] = [];
   reranReports: ReranReport[] = [];
+  folderFilter: string = '';
 
   constructor() {}
 
-  saveTestSettings(testReports: any[], reranReports: ReranReport[]): void {
+  saveTestSettings(testReports: any[], reranReports: ReranReport[], folderFilter: string): void {
     this.testLoaded = true;
     this.testReports = testReports;
     this.reranReports = reranReports;
+    this.folderFilter = folderFilter;
   }
 
   getTestReports() {
@@ -122,7 +125,35 @@ export class LoaderService {
     return this.reranReports;
   }
 
+  getFolderFilter() {
+    return this.folderFilter;
+  }
+
   isTestLoaded(): boolean {
     return this.testLoaded;
+  }
+
+  testTreeSettings: any = {
+    baseFolder: {},
+    currentFolder: {},
+    testTreeLoaded: false,
+  };
+
+  saveTestTreeSettings(baseFolder: TestTreeNode, currentFolder: any) {
+    this.testTreeSettings.testTreeLoaded = true;
+    this.testTreeSettings.baseFolder = baseFolder;
+    this.testTreeSettings.currentFolder = currentFolder;
+  }
+
+  getTestBaseFolder(): TestTreeNode {
+    return this.testTreeSettings.baseFolder;
+  }
+
+  getTestCurrentFolder(): any {
+    return this.testTreeSettings.currentFolder;
+  }
+
+  isTestTreeLoaded(): boolean {
+    return this.testTreeSettings.testTreeLoaded;
   }
 }
