@@ -73,7 +73,6 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addCopiedReports(metadata: Metadata[]): void {
-
     const amountAdded: number = metadata.length - this.reports.length;
     if (amountAdded > 0) {
       for (let index = this.reports.length; index <= metadata.values.length - 1; index++) {
@@ -117,9 +116,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   runAll(): void {
     if (this.generatorStatus === 'Enabled') {
       const data: any = { testStorage: [] };
-      this.reports
-        .filter((report) => report.checked)
-        .forEach((report) => data['testStorage'].push(report.storageId));
+      this.reports.filter((report) => report.checked).forEach((report) => data['testStorage'].push(report.storageId));
       this.httpService.runReport(data).subscribe(() => this.timeOut());
     } else {
       this.toastComponent.addAlert({ type: 'warning', message: 'Generator is disabled!' });
@@ -203,8 +200,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     const queryString: string = this.reports
       .filter((report) => report.checked)
       .reduce(
-        (totalQuery: string, selectedReport: Metadata) =>
-          totalQuery + 'id=' + selectedReport.storageId + '&',
+        (totalQuery: string, selectedReport: Metadata) => totalQuery + 'id=' + selectedReport.storageId + '&',
         '?'
       );
     window.open('api/report/download/testStorage/true/false' + queryString.slice(0, -1));

@@ -6,7 +6,7 @@ import { LoaderService } from '../../services/loader.service';
 import { TableSettingsModalComponent } from '../modals/table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../interfaces/table-settings';
 import { CookieService } from 'ngx-cookie-service';
-import {Metadata} from "../../interfaces/metadata";
+import { Metadata } from '../../interfaces/metadata';
 
 @Component({
   selector: 'app-table',
@@ -15,7 +15,17 @@ import {Metadata} from "../../interfaces/metadata";
 })
 export class TableComponent implements OnInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
-  HEADERS: string[] = ["Storage Id", "End Time", "Duration (ms)", "Name", "Status", "Correlation id", "Number of Checkpoints", "Estimated Memory Usage (Bytes)", "Storage Size (Bytes)"]
+  HEADERS: string[] = [
+    'Storage Id',
+    'End Time',
+    'Duration (ms)',
+    'Name',
+    'Status',
+    'Correlation id',
+    'Number of Checkpoints',
+    'Estimated Memory Usage (Bytes)',
+    'Storage Size (Bytes)',
+  ];
   tableSettings: TableSettings = {
     tableId: '', // this._id might not be defined yet
     reportMetadata: [],
@@ -120,15 +130,11 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openAllReports(): void {
-    this.tableSettings.reportMetadata.forEach((report: Metadata) =>
-      this.openReport(report.storageId)
-    );
+    this.tableSettings.reportMetadata.forEach((report: Metadata) => this.openReport(report.storageId));
   }
 
   openReports(amount: number): void {
-    this.tableSettings.reportMetadata
-      .slice(0, amount)
-      .forEach((report: Metadata) => this.openReport(report.storageId));
+    this.tableSettings.reportMetadata.slice(0, amount).forEach((report: Metadata) => this.openReport(report.storageId));
   }
 
   openLatestReports(amount: number): void {
@@ -141,10 +147,8 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
-    console.log(this.tableSettings.reportMetadata.values);
     const queryString: string = this.tableSettings.reportMetadata.reduce(
-      (totalQuery: string, selectedReport: Metadata) =>
-        totalQuery + 'id=' + selectedReport.storageId + '&',
+      (totalQuery: string, selectedReport: Metadata) => totalQuery + 'id=' + selectedReport.storageId + '&',
       '?'
     );
     window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + queryString.slice(0, -1));
