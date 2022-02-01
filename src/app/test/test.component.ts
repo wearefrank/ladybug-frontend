@@ -18,8 +18,6 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
-  STORAGE_ID_INDEX = 5;
-  NAME_INDEX = 2;
   TIMEOUT = 100;
   @Output() openTestReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
@@ -74,11 +72,12 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  addCopiedReports(metadata: Metadata): void {
-    const amountAdded: number = metadata.values.length - this.reports.length;
+  addCopiedReports(metadata: Metadata[]): void {
+
+    const amountAdded: number = metadata.length - this.reports.length;
     if (amountAdded > 0) {
       for (let index = this.reports.length; index <= metadata.values.length - 1; index++) {
-        this.reports.push(metadata.values[index]);
+        this.reports.push(metadata[index]);
       }
     }
   }
@@ -96,7 +95,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadData(): void {
     this.httpService.getTestReports().subscribe({
-      next: (value) => (this.reports = value.values),
+      next: (value) => (this.reports = value),
       error: () => this.httpService.handleError('Could not retrieve data for test!'),
     });
   }
@@ -120,7 +119,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
       const data: any = { testStorage: [] };
       this.reports
         .filter((report) => report.checked)
-        .forEach((report) => data['testStorage'].push(report[this.STORAGE_ID_INDEX]));
+        .forEach((report) => data['testStorage'].push(report.storageId));
       this.httpService.runReport(data).subscribe(() => this.timeOut());
     } else {
       this.toastComponent.addAlert({ type: 'warning', message: 'Generator is disabled!' });
@@ -195,7 +194,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reports
       .filter((report) => report.checked)
       .forEach((report) => {
-        this.httpService.deleteReport(report[this.STORAGE_ID_INDEX]).subscribe();
+        this.httpService.deleteReport(report.storageId).subscribe();
         this.reports.splice(this.reports.indexOf(report), 1);
       });
   }
@@ -204,8 +203,8 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     const queryString: string = this.reports
       .filter((report) => report.checked)
       .reduce(
-        (totalQuery: string, selectedReport: string[]) =>
-          totalQuery + 'id=' + selectedReport[this.STORAGE_ID_INDEX] + '&',
+        (totalQuery: string, selectedReport: Metadata) =>
+          totalQuery + 'id=' + selectedReport.storageId + '&',
         '?'
       );
     window.open('api/report/download/testStorage/true/false' + queryString.slice(0, -1));
@@ -238,7 +237,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     let copiedIds: string[] = [];
     this.reports.forEach((report) => {
       if (report.checked) {
-        copiedIds.push(report[this.STORAGE_ID_INDEX]);
+        copiedIds.push(report.storageId);
       }
     });
 

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
+import {Metadata} from "../interfaces/metadata";
 
 @Injectable({
   providedIn: 'root',
@@ -53,7 +54,7 @@ export class HelperService {
     return img + '-odd.gif';
   }
 
-  sortData(sort: Sort, data: string[][]): any {
+  sortData(sort: Sort, data: Metadata[]): any {
     if (!sort.active || sort.direction === '') {
       return;
     }
@@ -61,23 +62,23 @@ export class HelperService {
       const isAsc: boolean = sort.direction === 'asc';
       switch (sort.active) {
         case '0':
-          return this.compare(Number(a[0]), Number(b[0]), isAsc); // Duration
+          return this.compare(Number(a.duration), Number(b.duration), isAsc); // Duration
         case '1':
-          return this.compare(Number(a[1]), Number(b[1]), isAsc); // StorageSize
+          return this.compare(Number(a.storageSize), Number(b.storageSize), isAsc); // StorageSize
         case '2':
-          return this.compare(a[2], b[2], isAsc); // Name
+          return this.compare(a.name, b.name, isAsc); // Name
         case '3':
-          return this.compare(a[3], b[3], isAsc); // CorrelationId
+          return this.compare(a.correlationId, b.correlationId, isAsc); // CorrelationId
         case '4':
-          return this.compare(a[4], b[4], isAsc); // EndTime
+          return this.compare(a.endTime, b.endTime, isAsc); // EndTime
         case '5':
-          return this.compare(Number(a[5]), Number(b[5]), isAsc); // StorageId
+          return this.compare(Number(a.storageId), Number(b.storageId), isAsc); // StorageId
         case '6':
-          return this.compare(a[6], b[6], isAsc); // Status
+          return this.compare(a.status, b.status, isAsc); // Status
         case '7':
-          return this.compare(Number(a[7]), Number(b[7]), isAsc); // NumberOfCheckpoints
+          return this.compare(Number(a.numberOfCheckpoints), Number(b.numberOfCheckpoints), isAsc); // NumberOfCheckpoints
         case '8':
-          return this.compare(Number(a[8]), Number(b[8]), isAsc); // EstimatedMemoryUsage
+          return this.compare(Number(a.estimatedMemoryUsage), Number(b.estimatedMemoryUsage), isAsc); // EstimatedMemoryUsage
         default:
           return 0;
       }
