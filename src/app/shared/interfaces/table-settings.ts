@@ -7,4 +7,5 @@ export interface TableSettings {
   showFilter: boolean;
   filterValue: string;
   tableLoaded: boolean;
+  filterHeader: string;
 }

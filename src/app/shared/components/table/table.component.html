@@ -36,13 +36,13 @@
       <tr id="filterRow" *ngIf="tableSettings.showFilter">
         <th *ngFor="let header of HEADERS">
           <div class="input-group">
-            <input type="text" id="filter" class="form-control" placeholder="Filter" (keyup.enter)="changeFilter($event)">
+            <input type="text" id="filter" class="form-control" placeholder="Filter" (keydown.enter)="$event.preventDefault();" (keyup)="changeFilter($event, header)">
           </div>
         </th>
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount)" (click)="openReport(row.storageId)">
+      <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount) | filter:tableSettings.filterValue : tableSettings.filterHeader" (click)="openReport(row.storageId)">
         <td> {{ row.storageId }}</td>
         <td> {{ getDate(row.endTime) | date:'dd/MM/yyyy - HH:mm:ss.SSS' }}</td>
         <td> {{ row.duration }}</td>

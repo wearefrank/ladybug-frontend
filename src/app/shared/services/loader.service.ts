@@ -20,6 +20,7 @@ export class LoaderService {
       reportMetadata: [],
       displayAmount: -1,
       filterValue: '',
+      filterHeader: '',
     },
     {
       tableId: 'leftId',
@@ -28,6 +29,7 @@ export class LoaderService {
       reportMetadata: [],
       displayAmount: -1,
       filterValue: '',
+      filterHeader: '',
     },
     {
       tableId: 'rightId',
@@ -36,6 +38,7 @@ export class LoaderService {
       reportMetadata: [],
       displayAmount: -1,
       filterValue: '',
+      filterHeader: '',
     },
   ];
 
@@ -45,7 +48,8 @@ export class LoaderService {
     showFilter: boolean,
     displayAmount: number,
     filterValue: string,
-    tableLoaded: boolean
+    tableLoaded: boolean,
+    filterHeader: string
   ): void {
     let currentTable: TableSettings = this.tables.find((table) => table.tableId === tableId)!;
     currentTable.reportMetadata = reportMetadata;
@@ -53,6 +57,7 @@ export class LoaderService {
     currentTable.displayAmount = displayAmount;
     currentTable.filterValue = filterValue;
     currentTable.tableLoaded = tableLoaded;
+    currentTable.filterHeader = filterHeader;
   }
 
   getTableSettings(tableId: string): TableSettings {

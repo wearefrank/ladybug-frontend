@@ -33,6 +33,7 @@ export class TableComponent implements OnInit, OnDestroy {
     displayAmount: this.DEFAULT_DISPLAY_AMOUNT,
     showFilter: false,
     filterValue: '',
+    filterHeader: '',
   };
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
@@ -70,7 +71,8 @@ export class TableComponent implements OnInit, OnDestroy {
       this.tableSettings.showFilter,
       this.tableSettings.displayAmount,
       this.tableSettings.filterValue,
-      this.tableSettings.tableLoaded
+      this.tableSettings.tableLoaded,
+      this.tableSettings.filterHeader
     );
   }
 
@@ -105,7 +107,8 @@ export class TableComponent implements OnInit, OnDestroy {
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
   }
 
-  changeFilter(event: any): void {
+  changeFilter(event: any, header: string): void {
+    this.tableSettings.filterHeader = header;
     this.tableSettings.filterValue = event.target.value;
   }
 
