@@ -1,24 +1,24 @@
 <div class="p-3">
   <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-    <li [ngbNavItem]="1">
+    <li [ngbNavItem]="1" id="debugTab">
       <a ngbNavLink>Debug</a>
       <ng-template ngbNavContent>
         <app-debug #debug ></app-debug>
       </ng-template>
     </li>
-    <li [ngbNavItem]="2">
+    <li [ngbNavItem]="2" id="testTab">
       <a ngbNavLink>Test</a>
       <ng-template ngbNavContent>
         <app-test (openTestReportEvent)="openTestReport($event)" (openCompareReportsEvent)="openCompareReport($event)"></app-test>
       </ng-template>
     </li>
-    <li [ngbNavItem]="3">
+    <li [ngbNavItem]="3" id="compareTab">
       <a ngbNavLink>Compare</a>
       <ng-template ngbNavContent>
         <app-compare [diffReports]="diffReports"></app-compare>
       </ng-template>
     </li>
-    <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 4">
+    <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 4" id="{{tab.key}}">
       <a ngbNavLink>{{tab.key}}
         <span (click)="closeTestReport($event, i)">×</span>
       </a>
