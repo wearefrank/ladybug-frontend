@@ -16,7 +16,7 @@ import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.co
   styleUrls: ['./test.component.css'],
 })
 export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
-  reports: any[] = [];
+  reports: Metadata[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
@@ -184,9 +184,9 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     return 'red';
   }
 
-  selectReport(storageId: number, name: string): void {
+  selectReport(storageId: string, name: string): void {
     this.httpService
-      .getReport(storageId.toString())
+      .getReport(storageId)
       .subscribe((data) => this.openTestReportEvent.emit({ data: data, name: name }));
   }
 
@@ -289,7 +289,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  changeMovedTestReportNames(selectedReports: any[]): void {
+  changeMovedTestReportNames(selectedReports: Metadata[]): void {
     selectedReports.forEach((report) => {
       if (report.name.split('/').length > 1) {
         let name = report.name.split('/').pop();
