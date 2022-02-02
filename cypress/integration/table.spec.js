@@ -47,9 +47,9 @@ describe('Table size and toggle filter', function () {
 
   it('Type in a filter parameter', function () {
     cy.get('#FilterButton').click()
-    cy.get('#filterRow #filter').eq(2).type("name{enter}")
+    cy.get('#filterRow #filter').eq(3).type("name{enter}")
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1)
-    cy.get('#filterRow #filter').eq(2).clear().type("{enter}")
+    cy.get('#filterRow #filter').eq(3).clear().type("{enter}")
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
 })

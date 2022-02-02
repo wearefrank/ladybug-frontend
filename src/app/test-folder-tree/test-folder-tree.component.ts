@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { LoaderService } from '../shared/services/loader.service';
 import { TestTreeNode } from '../shared/interfaces/test-tree-node';
+import { Metadata } from '../shared/interfaces/metadata';
 declare var $: any;
 
 @Component({
@@ -10,7 +11,6 @@ declare var $: any;
 })
 export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
   TREE_SELECTOR: string = '#testFolderTree';
-  NAME_INDEX: number = 2;
   baseFolder: TestTreeNode = { text: 'Reports', filter: '', nodes: [], state: { expanded: true, selected: true } };
   currentFolder: TestTreeNode = this.baseFolder;
   @Output() changeFolderEvent = new EventEmitter<any>();
@@ -86,10 +86,10 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  removeUnusedFolders(testReports: any[]): void {
+  removeUnusedFolders(testReports: Metadata[]): void {
     let testReportNames: string[] = [];
     testReports.forEach((report) => {
-      testReportNames.push(report[this.NAME_INDEX]);
+      testReportNames.push(report.name);
     });
 
     this.baseFolder.nodes = this.recursivelyRemoveFolders(testReportNames, this.baseFolder.nodes);

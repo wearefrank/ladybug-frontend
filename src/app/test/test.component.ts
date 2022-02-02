@@ -16,12 +16,10 @@ import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.co
   styleUrls: ['./test.component.css'],
 })
 export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
-  reports: any[] = [];
+  reports: Metadata[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
-  STORAGE_ID_INDEX = 5;
-  NAME_INDEX = 2;
   TIMEOUT = 100;
   @Output() openTestReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
@@ -77,11 +75,11 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  addCopiedReports(metadata: Metadata): void {
-    const amountAdded: number = metadata.values.length - this.reports.length;
+  addCopiedReports(metadata: Metadata[]): void {
+    const amountAdded: number = metadata.length - this.reports.length;
     if (amountAdded > 0) {
       for (let index = this.reports.length; index <= metadata.values.length - 1; index++) {
-        this.reports.push(metadata.values[index]);
+        this.reports.push(metadata[index]);
       }
     }
   }
@@ -99,7 +97,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadData(): void {
     this.httpService.getTestReports().subscribe({
-      next: (value) => (this.reports = value.values),
+      next: (value) => (this.reports = value),
       error: () => this.httpService.handleError('Could not retrieve data for test!'),
     });
   }
@@ -121,9 +119,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   runAll(): void {
     if (this.generatorStatus === 'Enabled') {
       const data: any = { testStorage: [] };
-      this.reports
-        .filter((report) => report.checked)
-        .forEach((report) => data['testStorage'].push(report[this.STORAGE_ID_INDEX]));
+      this.reports.filter((report) => report.checked).forEach((report) => data['testStorage'].push(report.storageId));
       this.httpService.runReport(data).subscribe(() => this.timeOut());
     } else {
       this.toastComponent.addAlert({ type: 'warning', message: 'Generator is disabled!' });
@@ -188,9 +184,9 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     return 'red';
   }
 
-  selectReport(storageId: number, name: string): void {
+  selectReport(storageId: string, name: string): void {
     this.httpService
-      .getReport(storageId.toString())
+      .getReport(storageId)
       .subscribe((data) => this.openTestReportEvent.emit({ data: data, name: name }));
   }
 
@@ -198,7 +194,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     this.reports
       .filter((report) => report.checked)
       .forEach((report) => {
-        this.httpService.deleteReport(report[this.STORAGE_ID_INDEX]).subscribe();
+        this.httpService.deleteReport(report.storageId).subscribe();
         this.reports.splice(this.reports.indexOf(report), 1);
       });
   }
@@ -207,8 +203,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     const queryString: string = this.reports
       .filter((report) => report.checked)
       .reduce(
-        (totalQuery: string, selectedReport: string[]) =>
-          totalQuery + 'id=' + selectedReport[this.STORAGE_ID_INDEX] + '&',
+        (totalQuery: string, selectedReport: Metadata) => totalQuery + 'id=' + selectedReport.storageId + '&',
         '?'
       );
     window.open('api/report/download/debugStorage/true/false' + queryString.slice(0, -1));
@@ -261,7 +256,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     let copiedIds: string[] = [];
     this.reports.forEach((report) => {
       if (report.checked) {
-        copiedIds.push(report[this.STORAGE_ID_INDEX]);
+        copiedIds.push(report.storageId);
       }
     });
 
@@ -294,13 +289,13 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  changeMovedTestReportNames(selectedReports: any[]): void {
+  changeMovedTestReportNames(selectedReports: Metadata[]): void {
     selectedReports.forEach((report) => {
-      if (report[this.NAME_INDEX].split('/').length > 1) {
-        let name = report[this.NAME_INDEX].split('/').pop();
-        report[this.NAME_INDEX] = (this.currentFilter + '/' + name).slice(1);
+      if (report.name.split('/').length > 1) {
+        let name = report.name.split('/').pop();
+        report.name = (this.currentFilter + '/' + name).slice(1);
       } else {
-        report[this.NAME_INDEX] = (this.currentFilter + '/' + report[this.NAME_INDEX]).slice(1);
+        report.name = (this.currentFilter + '/' + report.name).slice(1);
       }
     });
     this.testFolderTreeComponent.removeUnusedFolders(this.reports);
