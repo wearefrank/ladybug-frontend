@@ -13,7 +13,7 @@ describe('About opened reports', function() {
   });
 
   it('Close one', function() {
-    cy.get('button[id="Open AllButton"]').click();
+    cy.get('button[id="OpenAllButton"]').click();
     // Each of the two reports has three lines.
     cy.get('div.treeview > ul > li').should('have.length', 6);
     cy.get('div.treeview > ul > li:contains(name)').first().click();
@@ -33,23 +33,23 @@ describe('About opened reports', function() {
     // Check sequence of opened reports. We expect "name" first, then "otherName".
     cy.get('div.treeview > ul > li:nth-child(1)').should('have.text', 'name');
     cy.get('div.treeview > ul > li:nth-child(4)').should('have.text', 'otherName');
-    cy.get('button[id="Close AllButton"]').click();
+    cy.get('button[id="CloseAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 0);
   })
 
   it('Expand and collapse', function() {
-    cy.get('button[id="Open AllButton"]').click();    
+    cy.get('button[id="OpenAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 6);
     cy.get('div.treeview > ul > li:contains(name)').within(linesFormExpandedNode);
     cy.get('div.treeview > ul > li:contains(otherName)').within(linesFormExpandedNode);
-    cy.get('button[id="Collapse allButton"]').click();
+    cy.get('button[id="CollapseAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 2);
     cy.get('div.treeview > ul > li:contains(name)').within(linesFormCollapsedNode);
     cy.get('div.treeview > ul > li:contains(otherName)').within(linesFormCollapsedNode);
-    cy.get('button[id="Expand AllButton"]').click();
+    cy.get('button[id="ExpandAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 6);
     cy.get('div.treeview > ul > li:contains(name)').within(linesFormExpandedNode);
-    cy.get('div.treeview > ul > li:contains(otherName)').within(linesFormExpandedNode);   
+    cy.get('div.treeview > ul > li:contains(otherName)').within(linesFormExpandedNode);
   });
 });
 
