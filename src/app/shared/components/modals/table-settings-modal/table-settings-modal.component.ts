@@ -76,4 +76,8 @@ export class TableSettingsModalComponent {
       }
     });
   }
+
+  getRegexFilter(): string {
+    return this.settingsForm.get('regexFilter')?.value;
+  }
 }

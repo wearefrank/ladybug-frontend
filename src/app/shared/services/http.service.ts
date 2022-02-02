@@ -29,9 +29,9 @@ export class HttpService {
     this.toastComponent.addAlert({ type: 'success', message: message });
   }
 
-  getReports(limit: number): Observable<any> {
+  getReports(limit: number, regexFilter: string): Observable<any> {
     return this.http.get('api/metadata/debugStorage/', {
-      params: { limit: limit },
+      params: { limit: limit, filter: regexFilter },
     });
   }
 

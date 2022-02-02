@@ -5,7 +5,6 @@ import { HttpService } from '../../services/http.service';
 import { LoaderService } from '../../services/loader.service';
 import { TableSettingsModalComponent } from '../modals/table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../interfaces/table-settings';
-import { CookieService } from 'ngx-cookie-service';
 import { Metadata } from '../../interfaces/metadata';
 
 @Component({
@@ -51,8 +50,7 @@ export class TableComponent implements OnInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private loaderService: LoaderService,
-    private cookieService: CookieService
+    private loaderService: LoaderService
   ) {}
 
   ngOnInit(): void {
@@ -77,7 +75,12 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    this.httpService.getReports(this.tableSettings.displayAmount).subscribe({
+    let regexFilter = '.*';
+    if (this.tableSettingsModal) {
+      regexFilter = this.tableSettingsModal.getRegexFilter();
+    }
+
+    this.httpService.getReports(this.tableSettings.displayAmount, regexFilter).subscribe({
       next: (value) => {
         this.tableSettings.reportMetadata = value;
         this.tableSettings.tableLoaded = true;
