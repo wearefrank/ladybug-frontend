@@ -17,6 +17,7 @@ export class ReportData {
 export class ReportComponent implements AfterViewInit {
   @ViewChild(TreeComponent) treeComponent!: TreeComponent;
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
+  id: string = Math.random().toString(36).slice(7);
 
   constructor(public reportData: ReportData) {}
 

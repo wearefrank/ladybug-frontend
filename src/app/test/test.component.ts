@@ -185,9 +185,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectReport(storageId: string, name: string): void {
-    this.httpService
-      .getReport(storageId)
-      .subscribe((data) => this.openTestReportEvent.emit({ data: data, name: name }));
+    this.httpService.getReport('53').subscribe((data) => this.openTestReportEvent.emit({ data: data, name: name }));
   }
 
   deleteSelected(): void {
