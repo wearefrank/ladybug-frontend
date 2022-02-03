@@ -28,39 +28,40 @@
   </div>
 
   <div class="table-responsive" id="metadataTable">
-    <table class="table table-hover" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata.values)">
+    <table class="table table-hover" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)">
       <thead>
       <tr>
-        <th mat-sort-header="5">Storage Id</th>
-        <th mat-sort-header="4">End Time</th>
-        <th mat-sort-header="0">Duration (ms)</th>
-        <th mat-sort-header="2">Name</th>
-        <th mat-sort-header="6">Status</th>
-        <th mat-sort-header="3">Correlation Id</th>
-        <th mat-sort-header="7">Number Of Checkpoints</th>
-        <th mat-sort-header="8">Estimated Memory Usage (Bytes)</th>
-        <th mat-sort-header="1">Storage Size (Bytes)</th>
+        <th *ngFor="let header of HEADERS; let i = index" mat-sort-header="{{i}}">{{header}}</th>
       </tr>
       <tr id="filterRow" *ngIf="tableSettings.showFilter">
-        <th *ngFor="let header of tableSettings.reportMetadata.fields">
+        <th *ngFor="let header of HEADERS">
           <div class="input-group">
-            <input type="text" id="filter" class="form-control" placeholder="Filter" (keyup.enter)="changeFilter($event)">
+            <input type="text" id="filter" class="form-control" placeholder="Filter" (keydown.enter)="$event.preventDefault();" (keyup)="changeFilter($event, header)">
           </div>
         </th>
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let row of tableSettings.reportMetadata.values.slice(0, tableSettings.displayAmount) | filter:tableSettings.filterValue" (click)="openReport(row[STORAGE_ID_INDEX])">
+      <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount) | filter:tableSettings.filterValue : tableSettings.filterHeader" (click)="openReport(row.storageId)">
+        <td> {{ row.storageId }}</td>
+        <td> {{ getDate(row.endTime) | date:'dd/MM/yyyy - HH:mm:ss.SSS' }}</td>
+        <td> {{ row.duration }}</td>
+        <td> {{ row.name }}</td>
+        <td> {{ row.status }}</td>
+        <td> {{ row.correlationId }}</td>
+        <td> {{ row.numberOfCheckpoints }}</td>
+        <td> {{ row.estimatedMemoryUsage }}</td>
+        <td> {{ row.storageSize }}</td>
 <!--        // StorageId EndTime Duration Name CorrelationId NrChpts EstMemusage StorageSize-->
-        <td>{{ row[5] }}</td>
-        <td> {{ getDate(row[4]) | date:'dd/MM/yyyy - HH:mm:ss.SSS'}}</td>
-        <td>{{ row[0] }}</td>
-        <td>{{ row[2] }}</td>
-        <td>{{ row[6] }}</td>
-        <td>{{ row[3] }}</td>
-        <td>{{ row[7] }}</td>
-        <td>{{ row[8] }}</td>
-        <td>{{ row[1] }}</td>
+<!--        <td>{{ row[5] }}</td>-->
+<!--        <td> {{ getDate(row[4]) | date:'dd/MM/yyyy - HH:mm:ss.SSS'}}</td>-->
+<!--        <td>{{ row[0] }}</td>-->
+<!--        <td>{{ row[2] }}</td>-->
+<!--        <td>{{ row[6] }}</td>-->
+<!--        <td>{{ row[3] }}</td>-->
+<!--        <td>{{ row[7] }}</td>-->
+<!--        <td>{{ row[8] }}</td>-->
+<!--        <td>{{ row[1] }}</td>-->
       </tr>
       </tbody>
     </table>

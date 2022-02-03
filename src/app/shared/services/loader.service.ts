@@ -17,35 +17,39 @@ export class LoaderService {
       tableId: 'debug',
       tableLoaded: false,
       showFilter: false,
-      reportMetadata: { fields: [], values: [] },
+      reportMetadata: [],
       displayAmount: -1,
       filterValue: '',
+      filterHeader: '',
     },
     {
       tableId: 'leftId',
       tableLoaded: false,
       showFilter: false,
-      reportMetadata: { fields: [], values: [] },
+      reportMetadata: [],
       displayAmount: -1,
       filterValue: '',
+      filterHeader: '',
     },
     {
       tableId: 'rightId',
       tableLoaded: false,
       showFilter: false,
-      reportMetadata: { fields: [], values: [] },
+      reportMetadata: [],
       displayAmount: -1,
       filterValue: '',
+      filterHeader: '',
     },
   ];
 
   saveTableSettings(
     tableId: string,
-    reportMetadata: Metadata,
+    reportMetadata: Metadata[],
     showFilter: boolean,
     displayAmount: number,
     filterValue: string,
-    tableLoaded: boolean
+    tableLoaded: boolean,
+    filterHeader: string
   ): void {
     let currentTable: TableSettings = this.tables.find((table) => table.tableId === tableId)!;
     currentTable.reportMetadata = reportMetadata;
@@ -53,6 +57,7 @@ export class LoaderService {
     currentTable.displayAmount = displayAmount;
     currentTable.filterValue = filterValue;
     currentTable.tableLoaded = tableLoaded;
+    currentTable.filterHeader = filterHeader;
   }
 
   getTableSettings(tableId: string): TableSettings {

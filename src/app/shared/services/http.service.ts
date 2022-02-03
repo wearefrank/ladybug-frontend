@@ -29,16 +29,16 @@ export class HttpService {
     this.toastComponent.addAlert({ type: 'success', message: message });
   }
 
-  getReports(limit: number): Observable<any> {
+  getReports(limit: number, regexFilter: string): Observable<any> {
     return this.http.get('api/metadata/debugStorage/', {
-      params: { limit: limit },
+      params: { limit: limit, filter: regexFilter },
     });
   }
 
   getLatestReports(amount: number): Observable<any> {
     return this.http
       .get('api/report/latest/debugStorage/' + amount)
-      .pipe(tap(() => this.handleSuccess('Lastest' + amount + 'reports opened!')))
+      .pipe(tap(() => this.handleSuccess('Latest' + amount + 'reports opened!')))
       .pipe(catchError(this.handleError('Could not open latest reports!')));
   }
 
