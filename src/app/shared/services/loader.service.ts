@@ -115,16 +115,15 @@ export class LoaderService {
 
   getTreeSettings(treeId: string): TreeSettings {
     let tree = this.trees.find((tree) => tree.treeId === treeId);
-    if (tree) {
-      return tree;
-    }
-    return {
-      treeId: treeId,
-      treeLoaded: false,
-      tree: [],
-      selectedReports: [],
-      selectedNode: -1,
-    };
+    return tree != undefined
+      ? tree
+      : {
+          treeId: treeId,
+          treeLoaded: false,
+          tree: [],
+          selectedReports: [],
+          selectedNode: -1,
+        };
   }
 
   // Tests
