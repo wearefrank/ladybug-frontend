@@ -13,7 +13,7 @@
       </button>
       <div ngbDropdownMenu aria-labelledby="dropdownDownload">
         <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
-        <button ngbDropdownItem (click)="downloadReport(false, true)">XML</button>
+        <button ngbDropdownItem (click)="downloadReport(false, true)">XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
         <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
       </div>
     </div>
