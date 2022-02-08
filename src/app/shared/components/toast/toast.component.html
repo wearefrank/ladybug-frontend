@@ -7,15 +7,33 @@
     </span>
 
     <span *ngIf="alert.type === 'warning'">
-      <ngb-alert style="padding-bottom: 18px" #staticAlert [type]="alert.type" (click)="close(alert)" class="fade animate-show animate-hide">
+      <ngb-alert #staticAlert [type]="alert.type" (click)="close(alert)" class="fade animate-show animate-hide">
         <i class="fa fa-warning"></i> {{ alert.message }}
       </ngb-alert>
     </span>
 
     <span *ngIf="alert.type === 'danger'">
-      <ngb-alert #staticAlert [type]="alert.type" (click)="close(alert)" class="fade animate-show animate-hide">
-        <i class="fa fa-times"></i> {{ alert.message }}
+      <ngb-alert #staticAlert [type]="alert.type" (click)="showDetailedErrorMessages(alert)" class="fade animate-show animate-hide">
+        {{ alert.message }}
+        <span *ngIf="alert.detailed">
+          <br>
+          <br>
+          <i>Click to see a more detailed description</i>
+        </span>
       </ngb-alert>
     </span>
   </p>
 </div>
+
+<ng-template #modal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="settingsModal">{{ selectedAlert.message }}</h5>
+  </div>
+  <div class="modal-body text-wrap" id="detailedErrorMessage">
+    {{ selectedAlert.detailed }}
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-info" id="CopyToClipboard" (click)="copyToClipboard()" title="Copy to Clipboard">Copy to clipboard</button>
+    <button type="button" class="btn btn-info" (click)="modal.dismiss();">Dismiss</button>
+  </div>
+</ng-template>
