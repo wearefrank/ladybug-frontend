@@ -96,15 +96,34 @@ export class LoaderService {
     selectedReports: Report[],
     selectedNode: number
   ): void {
-    let currentTree: TreeSettings = this.trees.find((tree) => tree.treeId === treeId)!;
-    currentTree.treeLoaded = treeLoaded;
-    currentTree.tree = tree;
-    currentTree.selectedReports = selectedReports;
-    currentTree.selectedNode = selectedNode;
+    let currentTree = this.trees.find((tree) => tree.treeId === treeId);
+    if (currentTree) {
+      currentTree.treeLoaded = treeLoaded;
+      currentTree.tree = tree;
+      currentTree.selectedReports = selectedReports;
+      currentTree.selectedNode = selectedNode;
+    } else {
+      this.trees.push({
+        treeId: treeId,
+        treeLoaded: treeLoaded,
+        tree: tree,
+        selectedReports: selectedReports,
+        selectedNode: selectedNode,
+      });
+    }
   }
 
   getTreeSettings(treeId: string): TreeSettings {
-    return this.trees.find((tree) => tree.treeId === treeId)!;
+    let tree = this.trees.find((tree) => tree.treeId === treeId);
+    return tree != undefined
+      ? tree
+      : {
+          treeId: treeId,
+          treeLoaded: false,
+          tree: [],
+          selectedReports: [],
+          selectedNode: -1,
+        };
   }
 
   // Tests
