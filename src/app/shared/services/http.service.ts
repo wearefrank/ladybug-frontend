@@ -49,7 +49,7 @@ export class HttpService {
 
   getReport(reportId: string): Observable<any> {
     return this.http
-      .get<any>(this.REPORT_DEBUG_STORAGE + '-1')
+      .get<any>(this.REPORT_DEBUG_STORAGE + reportId)
       .pipe(tap(() => this.handleSuccess('Report opened!')))
       .pipe(catchError(this.handleError()));
   }
