@@ -17,15 +17,14 @@
       </div>
     </div>
     <app-button [title]="'Open All'" [text]="'Open All'" (click)="openAllReports()"></app-button>
-    <div class="col-md-3">
       <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();" (keyup)="changeTableLimit($event)">
         <div class="input-group-append">
             <input type="number" id="displayAmount" class="form-control px-1" placeholder="{{tableSettings.displayAmount}}">
           <div class="input-group-text">/</div>
         </div>
       </form>
-    </div>
-    <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ reportsInProgress }}</div>
+    <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.reportsInProgress }}</div>
+    <div *ngIf="+tableSettings.estimatedMemoryUsage > 0" class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
   </div>
 
   <div class="table-responsive" id="metadataTable">
@@ -69,5 +68,5 @@
   </div>
 </div>
 
-<app-table-settings-modal (openLatestReportsEvent)="openLatestReports($event)" (openReportInProgress)="openReportInProgress($event)" [reportsInProgress]="reportsInProgress"></app-table-settings-modal>
+<app-table-settings-modal (openLatestReportsEvent)="openLatestReports($event)" (openReportInProgress)="openReportInProgress($event)" [reportsInProgress]="tableSettings.reportsInProgress"></app-table-settings-modal>
 <app-toast></app-toast>

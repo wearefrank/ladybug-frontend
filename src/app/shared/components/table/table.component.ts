@@ -33,8 +33,9 @@ export class TableComponent implements OnInit, OnDestroy {
     showFilter: false,
     filterValue: '',
     filterHeader: '',
+    reportsInProgress: '',
+    estimatedMemoryUsage: '',
   };
-  reportsInProgress: string = '';
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
@@ -64,15 +65,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.loaderService.saveTableSettings(
-      this._id,
-      this.tableSettings.reportMetadata,
-      this.tableSettings.showFilter,
-      this.tableSettings.displayAmount,
-      this.tableSettings.filterValue,
-      this.tableSettings.tableLoaded,
-      this.tableSettings.filterHeader
-    );
+    this.loaderService.saveTableSettings(this._id, this.tableSettings);
   }
 
   loadData(): void {
@@ -100,7 +93,9 @@ export class TableComponent implements OnInit, OnDestroy {
 
     this.httpService.getSettings().subscribe({
       next: (settings) => {
-        this.reportsInProgress = settings.reportsInProgress;
+        console.log(settings);
+        this.tableSettings.reportsInProgress = settings.reportsInProgress;
+        this.tableSettings.estimatedMemoryUsage = settings.estMemory;
       },
     });
   }
