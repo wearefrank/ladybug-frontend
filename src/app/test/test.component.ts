@@ -9,6 +9,7 @@ import { ReranReport } from '../shared/interfaces/reran-report';
 import { Metadata } from '../shared/interfaces/metadata';
 import { CookieService } from 'ngx-cookie-service';
 import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.component';
+import { catchError } from 'rxjs';
 
 @Component({
   selector: 'app-test',
@@ -87,7 +88,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   getCopiedReports(): void {
     this.httpService.getTestReports().subscribe({
       next: (response) => this.addCopiedReports(response),
-      error: () => this.httpService.handleError('Could not retrieve data for test!'),
+      error: () => catchError(this.httpService.handleError()),
     });
   }
 
@@ -98,7 +99,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   loadData(): void {
     this.httpService.getTestReports().subscribe({
       next: (value) => (this.reports = value),
-      error: () => this.httpService.handleError('Could not retrieve data for test!'),
+      error: () => catchError(this.httpService.handleError()),
     });
   }
 
