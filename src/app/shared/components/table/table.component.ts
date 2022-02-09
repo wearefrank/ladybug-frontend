@@ -34,6 +34,7 @@ export class TableComponent implements OnInit, OnDestroy {
     filterValue: '',
     filterHeader: '',
   };
+  reportsInProgress: string = '';
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
@@ -96,6 +97,12 @@ export class TableComponent implements OnInit, OnDestroy {
         });
       },
     });
+
+    this.httpService.getSettings().subscribe({
+      next: (settings) => {
+        this.reportsInProgress = settings.reportsInProgress;
+      },
+    });
   }
 
   openModal(): void {
@@ -149,6 +156,12 @@ export class TableComponent implements OnInit, OnDestroy {
         report.id = this.id;
         this.openReportEvent.next(report);
       });
+    });
+  }
+
+  openReportInProgress(index: number) {
+    this.httpService.getReportInProgress(index).subscribe((report) => {
+      this.openReportEvent.next(report[0]);
     });
   }
 

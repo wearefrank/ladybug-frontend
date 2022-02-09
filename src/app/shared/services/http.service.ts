@@ -37,9 +37,16 @@ export class HttpService {
 
   getLatestReports(amount: number): Observable<any> {
     return this.http
-      .get('api/report/latest/debugStorage/' + amount)
+      .get<any>('api/report/latest/debugStorage/' + amount)
       .pipe(tap(() => this.handleSuccess('Latest' + amount + 'reports opened!')))
       .pipe(catchError(this.handleError('Could not open latest reports!')));
+  }
+
+  getReportInProgress(index: number) {
+    return this.http
+      .get<any>('api/testtool/in-progress/' + index)
+      .pipe(tap(() => this.handleSuccess('Opened report in progress with index [' + index + ']')))
+      .pipe(catchError(this.handleError('Could not open report in progress')));
   }
 
   getTestReports(): Observable<any> {
@@ -94,6 +101,10 @@ export class HttpService {
       .pipe(catchError(this.handleError('Could not upload report to storage!')));
   }
 
+  getSettings(): Observable<any> {
+    return this.http.get('api/testtool').pipe(catchError(this.handleError('Could not retrieve settings!')));
+  }
+
   postSettings(settings: any): Observable<void> {
     return this.http
       .post('api/testtool', settings)
@@ -112,10 +123,6 @@ export class HttpService {
     return this.http
       .get<any>('api/testtool/transformation')
       .pipe(catchError(this.handleError('Could not retrieve transformation!')));
-  }
-
-  getSettings(): Observable<any> {
-    return this.http.get<any>('api/testtool').pipe(catchError(this.handleError('Could not retrieve settings!')));
   }
 
   reset(): Observable<void> {

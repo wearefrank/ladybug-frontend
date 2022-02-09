@@ -25,6 +25,7 @@
         </div>
       </form>
     </div>
+    <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ reportsInProgress }}</div>
   </div>
 
   <div class="table-responsive" id="metadataTable">
@@ -68,5 +69,5 @@
   </div>
 </div>
 
-<app-table-settings-modal (openLatestReportsEvent)="openLatestReports($event)"></app-table-settings-modal>
+<app-table-settings-modal (openLatestReportsEvent)="openLatestReports($event)" (openReportInProgress)="openReportInProgress($event)" [reportsInProgress]="reportsInProgress"></app-table-settings-modal>
 <app-toast></app-toast>
