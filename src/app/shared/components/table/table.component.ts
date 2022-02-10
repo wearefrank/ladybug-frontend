@@ -6,6 +6,7 @@ import { LoaderService } from '../../services/loader.service';
 import { TableSettingsModalComponent } from '../modals/table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../interfaces/table-settings';
 import { Metadata } from '../../interfaces/metadata';
+import { catchError } from 'rxjs';
 
 @Component({
   selector: 'app-table',
@@ -84,10 +85,7 @@ export class TableComponent implements OnInit, OnDestroy {
         });
       },
       error: () => {
-        this.toastComponent.addAlert({
-          type: 'danger',
-          message: 'Could not retrieve data for table',
-        });
+        catchError(this.httpService.handleError());
       },
     });
 
