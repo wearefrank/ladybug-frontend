@@ -87,6 +87,16 @@ table .form-control {
   border-color: #23c6c8 !important;
 }
 
+.btn-static {
+  background-color: white;
+  border: 1px solid lightgrey;
+  cursor: default !important;
+}
+
+.btn-static:active .btn-static:focus, .btn-static:visited {
+  outline: none !important;
+}
+
 .nav-tabs .nav-item .nav-link {
   color: #a7b1c2;
 }

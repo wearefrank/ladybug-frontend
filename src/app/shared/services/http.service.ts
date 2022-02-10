@@ -38,8 +38,15 @@ export class HttpService {
 
   getLatestReports(amount: number): Observable<any> {
     return this.http
-      .get('api/report/latest/debugStorage/' + amount)
+      .get<any>('api/report/latest/debugStorage/' + amount)
       .pipe(tap(() => this.handleSuccess('Latest' + amount + 'reports opened!')))
+      .pipe(catchError(this.handleError()));
+  }
+
+  getReportInProgress(index: number) {
+    return this.http
+      .get<any>('api/testtool/in-progress/' + index)
+      .pipe(tap(() => this.handleSuccess('Opened report in progress with index [' + index + ']')))
       .pipe(catchError(this.handleError()));
   }
 
