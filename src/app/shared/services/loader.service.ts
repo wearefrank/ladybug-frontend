@@ -21,6 +21,8 @@ export class LoaderService {
       displayAmount: -1,
       filterValue: '',
       filterHeader: '',
+      reportsInProgress: '',
+      estimatedMemoryUsage: '',
     },
     {
       tableId: 'leftId',
@@ -30,6 +32,8 @@ export class LoaderService {
       displayAmount: -1,
       filterValue: '',
       filterHeader: '',
+      reportsInProgress: '',
+      estimatedMemoryUsage: '',
     },
     {
       tableId: 'rightId',
@@ -39,25 +43,14 @@ export class LoaderService {
       displayAmount: -1,
       filterValue: '',
       filterHeader: '',
+      reportsInProgress: '',
+      estimatedMemoryUsage: '',
     },
   ];
 
-  saveTableSettings(
-    tableId: string,
-    reportMetadata: Metadata[],
-    showFilter: boolean,
-    displayAmount: number,
-    filterValue: string,
-    tableLoaded: boolean,
-    filterHeader: string
-  ): void {
-    let currentTable: TableSettings = this.tables.find((table) => table.tableId === tableId)!;
-    currentTable.reportMetadata = reportMetadata;
-    currentTable.showFilter = showFilter;
-    currentTable.displayAmount = displayAmount;
-    currentTable.filterValue = filterValue;
-    currentTable.tableLoaded = tableLoaded;
-    currentTable.filterHeader = filterHeader;
+  saveTableSettings(tableId: string, tableSettings: TableSettings): void {
+    let tableIndex: number = this.tables.findIndex((table) => table.tableId === tableId)!;
+    this.tables[tableIndex] = tableSettings;
   }
 
   getTableSettings(tableId: string): TableSettings {
@@ -96,15 +89,34 @@ export class LoaderService {
     selectedReports: Report[],
     selectedNode: number
   ): void {
-    let currentTree: TreeSettings = this.trees.find((tree) => tree.treeId === treeId)!;
-    currentTree.treeLoaded = treeLoaded;
-    currentTree.tree = tree;
-    currentTree.selectedReports = selectedReports;
-    currentTree.selectedNode = selectedNode;
+    let currentTree = this.trees.find((tree) => tree.treeId === treeId);
+    if (currentTree) {
+      currentTree.treeLoaded = treeLoaded;
+      currentTree.tree = tree;
+      currentTree.selectedReports = selectedReports;
+      currentTree.selectedNode = selectedNode;
+    } else {
+      this.trees.push({
+        treeId: treeId,
+        treeLoaded: treeLoaded,
+        tree: tree,
+        selectedReports: selectedReports,
+        selectedNode: selectedNode,
+      });
+    }
   }
 
   getTreeSettings(treeId: string): TreeSettings {
-    return this.trees.find((tree) => tree.treeId === treeId)!;
+    let tree = this.trees.find((tree) => tree.treeId === treeId);
+    return tree != undefined
+      ? tree
+      : {
+          treeId: treeId,
+          treeLoaded: false,
+          tree: [],
+          selectedReports: [],
+          selectedNode: -1,
+        };
   }
 
   // Tests

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Alert } from '../../interfaces/alert';
 
 @Component({
@@ -8,7 +8,9 @@ import { Alert } from '../../interfaces/alert';
   styleUrls: ['./toast.component.css'],
 })
 export class ToastComponent implements OnInit {
-  TIMEOUT = 5000;
+  TIMEOUT: number = 10_000;
+  selectedAlert: Alert = { type: '', message: '' };
+  @ViewChild('modal') modal!: any;
   alerts: Alert[] = [
     // {type: 'warning', message: 'There is some error wow!'},
     // {type: 'danger', message: 'There is a big error wow!'},
@@ -17,7 +19,7 @@ export class ToastComponent implements OnInit {
 
   @ViewChild('staticAlert', { static: false }) staticAlert!: NgbAlert;
 
-  constructor() {}
+  constructor(private modalService: NgbModal) {}
 
   ngOnInit(): void {
     // Show the alert for 5 seconds
@@ -45,5 +47,19 @@ export class ToastComponent implements OnInit {
   addAlert(alert: Alert): void {
     this.alerts.push(alert);
     this.ngOnInit();
+  }
+
+  showDetailedErrorMessages(alert: Alert) {
+    this.selectedAlert = alert;
+    this.modalService.open(this.modal, { size: 'lg' });
+  }
+
+  copyToClipboard() {
+    const text = document.querySelector('#detailedErrorMessage')!;
+    navigator.clipboard.writeText(text.innerHTML).then(() => {
+      const button = document.querySelector('#CopyToClipboard')!;
+      button.innerHTML = 'Copied!';
+      button.setAttribute('style', 'background-color: #23c6c8 !important');
+    });
   }
 }

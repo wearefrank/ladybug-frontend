@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../services/http.service';
@@ -19,6 +19,15 @@ export class TableSettingsModalComponent {
   });
 
   @Output() openLatestReportsEvent = new EventEmitter<any>();
+  @Output() openReportInProgress = new EventEmitter<any>();
+  @Input()
+  get reportsInProgress(): string {
+    return this._reportsInProgress;
+  }
+  set reportsInProgress(reportsInProgress: string) {
+    this._reportsInProgress = reportsInProgress;
+  }
+  public _reportsInProgress = '';
 
   constructor(private modalService: NgbModal, private httpService: HttpService, private cookieService: CookieService) {}
 
@@ -40,6 +49,10 @@ export class TableSettingsModalComponent {
 
   openLatestReports(amount: number): void {
     this.openLatestReportsEvent.next(amount);
+  }
+
+  openReportsInProgress(index: number) {
+    this.openReportInProgress.next(index);
   }
 
   resetModal(): void {
