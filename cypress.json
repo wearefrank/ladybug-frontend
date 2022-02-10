@@ -6,6 +6,7 @@
     ],
     "supportFile": "cypress/support/index.ts",
     "env": {
-        "backendServer": "http://localhost:80"
+        "backendServer": "http://localhost:80",
+        "FILESEP": "\\"
     }
 }

@@ -3,6 +3,9 @@ on:
   push:
   pull_request:
 
+env:
+  FILESEP: /
+
 jobs:
   testing:
     name: Unit tests
@@ -52,6 +55,8 @@ jobs:
           path: frank-runner
       - name: Set property to skip backend unit tests
         run: echo "maven.skip.tests=true" > frank-runner/specials/ibis-ladybug/build.properties
+      - name: Set file separator
+        run: 
       - name: Set properties to skip backend Javadoc
         run: echo "maven.skip.javadoc=true" >> frank-runner/specials/ibis-ladybug/build.properties
 

@@ -1,3 +1,5 @@
+const path = require('path');
+
 describe('Debug tab download', function() {
   beforeEach(() => {
     cy.createReport();
@@ -10,7 +12,17 @@ describe('Debug tab download', function() {
   });
 
   it('Download all opened reports', function() {
-    cy.get('button[id="OpenAllButton"]').click();
-
+    const downloadsFolder = Cypress.config('downloadsFolder')
+    cy.task('downloads', downloadsFolder).then(filesBefore => {
+      cy.get('#dropdownDownloadTable').click();
+      cy.get('button:contains("XML & Binary")[class="dropdown-item"]').click();
+      cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
+      cy.task('downloads', downloadsFolder).then(filesAfter => {
+        const newFile = filesAfter.filter(file => !filesBefore.includes(file))[0];
+        expect(newFile).to.contain('Ladybug Debug');
+        cy.readFile(downloadsFolder + Cypress.env('FILESEP') + newFile, 'binary', { timeout: 15000 })
+        .should(buffer => expect(buffer.length).to.be.gt(10));      
+      });
+    });
   });
 });

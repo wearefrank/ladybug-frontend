@@ -49,3 +49,22 @@ function clearDebugStore() {
 }
 
 Cypress.Commands.add('clearDebugStore', clearDebugStore);
+
+function waitForNumFiles(thePath, fileCount, timeLeft) {
+    cy.task('downloads', thePath).then((actualFiles) => {
+        if(actualFiles.length >= fileCount) {
+            return true;
+        } else {
+            cy.wait(1000);
+            let nextTimeLeft = timeLeft - 1000;
+            if(nextTimeLeft <= 0) {
+                return false;
+            } else {
+                return waitForNumFiles(thePath, fileCount, nextTimeLeft);
+            }
+        }
+    })
+};
+
+Cypress.Commands.add('waitForNumFiles', (thePath, expectedNumFiles) => waitForNumFiles(thePath, expectedNumFiles, 10000));
+
