@@ -19,7 +19,7 @@
     <app-button [title]="'Open All'" [text]="'Open All'" (click)="openAllReports()"></app-button>
       <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();" (keyup)="changeTableLimit($event)">
         <div class="input-group-append">
-            <input type="number" id="displayAmount" class="form-control px-1" placeholder="{{tableSettings.displayAmount}}">
+            <input type="number" id="displayAmount" class="form-control px-1" value="{{tableSettings.displayAmount}}">
           <div class="input-group-text">/</div>
         </div>
       </form>

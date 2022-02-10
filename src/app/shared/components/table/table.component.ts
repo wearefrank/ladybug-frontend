@@ -93,7 +93,6 @@ export class TableComponent implements OnInit, OnDestroy {
 
     this.httpService.getSettings().subscribe({
       next: (settings) => {
-        console.log(settings);
         this.tableSettings.reportsInProgress = settings.reportsInProgress;
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
       },
@@ -156,7 +155,8 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openReportInProgress(index: number) {
     this.httpService.getReportInProgress(index).subscribe((report) => {
-      this.openReportEvent.next(report[0]);
+      report.id = this.id;
+      this.openReportEvent.next(report);
     });
   }
 
