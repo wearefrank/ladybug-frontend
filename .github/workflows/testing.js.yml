@@ -32,8 +32,6 @@ jobs:
         run: cp cypress.env.json.cicd cypress.env.json
         working-directory: ladybug-frontend
 
-      - name: Create downloads directory
-        run: mkdir -p ladybug-frontend/cypress/downloads
       - name: Build project
         run: npm run build
         working-directory: ladybug-frontend
