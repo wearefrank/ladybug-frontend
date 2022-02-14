@@ -26,7 +26,7 @@ describe('Debug tab download', function() {
           cy.log(`Number of read bytes: ${buffer.length}`);
           cy.get('div.treeview > ul > li').should('have.length', 0);
           cy.get('input#uploadFileTable').attachFile({
-            fileContent: Cypress.Blob.base64StringToBlob(buffer),
+            fileContent: buffer,
             fileName: cy.functions.downloadPath(newFile),
             mimeType: 'application/zip'
           });
