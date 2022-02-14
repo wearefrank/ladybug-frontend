@@ -178,7 +178,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   extractResultColor(reportId: string, resultReport: TestResult): string {
-    this.httpService.getReport(reportId).subscribe((report) => {
+    this.httpService.getTestReport(reportId).subscribe((report) => {
       return report === resultReport ? 'green' : 'red';
     });
 
@@ -186,9 +186,9 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectReport(storageId: string, name: string): void {
-    this.httpService
-      .getReport(storageId)
-      .subscribe((data) => this.openTestReportEvent.emit({ data: data, name: name }));
+    this.httpService.getTestReport(storageId).subscribe((data) => {
+      this.openTestReportEvent.emit({ data: data, name: name });
+    });
   }
 
   deleteSelected(): void {

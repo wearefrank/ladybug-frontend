@@ -61,6 +61,13 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  getTestReport(reportId: string): Observable<any> {
+    return this.http
+      .get<any>('api/report/testStorage/' + reportId)
+      .pipe(tap(() => this.handleSuccess('Report opened!')))
+      .pipe(catchError(this.handleError()));
+  }
+
   getMonacoCode(reportId: string): Observable<any> {
     const xmlTransformationEnabled: string = this.cookieService.get('xmlTransformationEnabled')
       ? this.cookieService.get('xmlTransformationEnabled')
