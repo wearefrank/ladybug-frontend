@@ -2,9 +2,11 @@
   <div class="row">
     <app-button [icon]="'fa fa-undo'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openModal()"></app-button>
-    <app-button [icon]="'fa fa-upload'" [title]="'Upload'" (click)="uploadFile.click()">
-      <input #uploadFile (change)="uploadReports($event)" type="file" id="uploadFile">
-    </app-button>
+    <button type="button" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
+            title="Upload" (click)="uploadFileTable.click()">
+      <i class="fa fa-upload"></i>
+      <input #uploadFileTable (change)="uploadReports($event)" type="file" id="uploadFileTable">
+    </button>
     <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
       <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
