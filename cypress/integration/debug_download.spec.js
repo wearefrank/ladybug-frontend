@@ -25,11 +25,12 @@ describe('Debug tab download', function() {
         .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
           cy.log(`Number of read bytes: ${buffer.length}`);
           cy.get('div.treeview > ul > li').should('have.length', 0);
-          cy.get('#UploadButton').attachFile({
-            fileContent: buffer,
+          cy.get('input#uploadFileTable').attachFile({
+            fileContent: Cypress.Blob.base64StringToBlob(buffer),
             fileName: cy.functions.downloadPath(newFile),
-            mimeType: 'application/json'
+            mimeType: 'application/zip'
           });
+          // cy.get('button#UploadButton').click();
           cy.get('div.treeview > ul > li').should('have.length', 2);
         });
       });
