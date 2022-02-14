@@ -12,7 +12,7 @@ import { TreeNode } from '../shared/interfaces/tree-node';
   templateUrl: './compare.component.html',
   styleUrls: ['./compare.component.css'],
 })
-export class CompareComponent implements OnChanges {
+export class CompareComponent {
   leftReport: CompareReport = {
     reports: [],
     id: 'leftId',
@@ -33,12 +33,6 @@ export class CompareComponent implements OnChanges {
   @Input() diffReports = { oldReport: '', newReport: '' };
 
   constructor(private httpService: HttpService) {}
-
-  ngOnChanges() {
-    if (this.diffReports.oldReport != '') {
-      this.selectReportBasedOnIds();
-    }
-  }
 
   /**
    * Select report based on the specified ids in diffReports

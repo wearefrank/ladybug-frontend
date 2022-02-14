@@ -3,6 +3,7 @@ import { ReportComponent, ReportData } from './report/report.component';
 import { Title } from '@angular/platform-browser';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { HttpService } from './shared/services/http.service';
+import { CompareComponent } from './compare/compare.component';
 declare var require: any;
 const { version: appVersion } = require('../../package.json');
 
@@ -17,6 +18,7 @@ export class AppComponent implements AfterViewInit {
   diffReports = { oldReport: '', newReport: '' };
   LAST_TAB_INDEX = 3;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
+  @ViewChild(CompareComponent) compareComponent!: CompareComponent;
 
   constructor(private inj: Injector, private titleService: Title, private httpService: HttpService) {
     this.appVersion = appVersion;
@@ -47,6 +49,9 @@ export class AppComponent implements AfterViewInit {
   openCompareReport(data: any): void {
     this.active = this.LAST_TAB_INDEX;
     this.diffReports = data;
+    setTimeout(() => {
+      this.compareComponent.selectReportBasedOnIds();
+    });
   }
 
   /**
