@@ -68,3 +68,8 @@ function waitForNumFiles(thePath, fileCount, timeLeft) {
 
 Cypress.Commands.add('waitForNumFiles', (thePath, expectedNumFiles) => waitForNumFiles(thePath, expectedNumFiles, 10000));
 
+function downloadPath(theFile) {
+  return Cypress.config('downloadsFolder') + Cypress.env('FILESEP') + theFile;
+}
+
+// Cypress.Commands.add('downloadPath', (theDownloadFile) => downloadPath(theDownloadFile));

@@ -20,8 +20,18 @@ describe('Debug tab download', function() {
       cy.task('downloads', downloadsFolder).then(filesAfter => {
         const newFile = filesAfter.filter(file => !filesBefore.includes(file))[0];
         expect(newFile).to.contain('Ladybug Debug');
-        cy.readFile(downloadsFolder + Cypress.env('FILESEP') + newFile, 'binary', { timeout: 15000 })
-        .should(buffer => expect(buffer.length).to.be.gt(10));      
+        expect(newFile).to.contain('2 reports');
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary', {timeout: 15000})
+        .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
+          cy.log(`Number of read bytes: ${buffer.length}`);
+          cy.get('div.treeview > ul > li').should('have.length', 0);
+          cy.get('#UploadButton').attachFile({
+            fileContent: buffer,
+            fileName: cy.functions.downloadPath(newFile),
+            mimeType: 'application/json'
+          });
+          cy.get('div.treeview > ul > li').should('have.length', 2);
+        });
       });
     });
   });
