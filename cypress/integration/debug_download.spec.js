@@ -31,6 +31,23 @@ describe('Debug tab download', function() {
         .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
           cy.log(`Number of read bytes: ${buffer.length}`);
         });
+        // Wait for download to complete. Sometimes after the previous step
+        // not all bytes are there.
+        cy.wait(5000);
+        cy.clearDebugStore();
+        cy.get('#RefreshButton').click();
+        // cy.get('.table-responsive tbody').should('have.length', 0);
+        cy.get('div.treeview > ul > li').should('have.length', 0);
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary', {timeout: 15000})
+        .then(Cypress.Blob.binaryStringToBlob)
+        .then(fileContent => {
+          cy.get('input#uploadFileTable').attachFile({
+            fileContent,
+            fileName: 'testUploaded.ttr',
+          });
+        });
+        // cy.get('.table-responsive tbody').should('have.length', 0);
+        cy.get('div.treeview > ul > li').should('have.length', 6);
       });
     });
   });
