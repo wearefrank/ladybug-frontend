@@ -25,6 +25,7 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import { createJSDocTypeExpression, createYield } from "typescript";
+import 'cypress-file-upload';
 
 function createReport() {
     // No cy.visit because then the API call can happen multiple times.
