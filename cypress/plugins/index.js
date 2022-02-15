@@ -22,8 +22,14 @@ module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   on('task', {
-    downloads:  (downloadspath) => {
-      return fs.readdirSync(downloadspath)
+    downloads:  (downloadsPath) => {
+      return fs.readdirSync(downloadsPath)
+    },
+    deleteDownloads: (input) => {
+      const downloadsPath = input.downloadsPath;
+      const fileSep = input.fileSep;
+      fs.readdirSync(downloadsPath).forEach((f) => fs.rmSync(downloadsPath + fileSep + f));
+      return null;
     }
   });
 }
