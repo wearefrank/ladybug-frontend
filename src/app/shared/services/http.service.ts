@@ -10,7 +10,6 @@ import { CookieService } from 'ngx-cookie-service';
 export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   toastComponent!: ToastComponent;
-  REPORT_DEBUG_STORAGE: string = 'api/report/debugStorage/';
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
 
@@ -55,7 +54,7 @@ export class HttpService {
   }
 
   getReport(reportId: string): Observable<any> {
-    return this.http.get<any>(this.REPORT_DEBUG_STORAGE + reportId).pipe(catchError(this.handleError()));
+    return this.http.get<any>('api/report/debugStorage/' + reportId).pipe(catchError(this.handleError()));
   }
 
   getTestReport(reportId: string): Observable<any> {
@@ -67,13 +66,13 @@ export class HttpService {
       ? this.cookieService.get('xmlTransformationEnabled')
       : 'false';
     return this.http
-      .get<any>(this.REPORT_DEBUG_STORAGE + reportId + '/?xml=true&globalTransformer=' + xmlTransformationEnabled)
+      .get<any>('api/report/debugStorage/' + reportId + '/?xml=true&globalTransformer=' + xmlTransformationEnabled)
       .pipe(catchError(this.handleError()));
   }
 
   postReport(reportId: string, report: any): Observable<void> {
     return this.http
-      .post(this.REPORT_DEBUG_STORAGE + reportId, report)
+      .post('api/report/testStorage' + '/' + reportId, report)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }

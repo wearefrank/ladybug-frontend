@@ -28,6 +28,7 @@ export class DisplayComponent {
     text: '',
   };
   @Output() closeReportEvent = new EventEmitter<any>();
+  @Output() saveReportEvent = new EventEmitter<any>();
   @ViewChild(MonacoEditorComponent)
   monacoEditorComponent!: MonacoEditorComponent;
   @ViewChild(DisplayTableComponent)
@@ -123,7 +124,9 @@ export class DisplayComponent {
 
   saveChanges() {
     if (this.report.root) {
-      this.httpService.postReport(this.report.ladybug.storageId, this.getReportValues()).subscribe();
+      this.httpService.postReport(this.report.ladybug.storageId, this.getReportValues()).subscribe((response: any) => {
+        this.saveReportEvent.next(response.report);
+      });
     } else {
       // TODO: Save the changes in the message for child nodes (aka the editor changes)
     }
