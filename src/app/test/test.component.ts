@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { HttpService } from '../shared/services/http.service';
 import { LoaderService } from '../shared/services/loader.service';
@@ -10,6 +10,8 @@ import { Metadata } from '../shared/interfaces/metadata';
 import { CookieService } from 'ngx-cookie-service';
 import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
+import { HelperService } from '../shared/services/helper.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-test',
@@ -32,7 +34,9 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     private loaderService: LoaderService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private helperService: HelperService,
+    private http: HttpClient
   ) {}
 
   openCloneModal(): void {
@@ -168,21 +172,15 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addResultToReranReports(oldReportIndex: string, resultReport: TestResult): void {
-    this.reranReports.push({
-      originalIndex: oldReportIndex,
-      newIndex: resultReport.report.storageId.toString(),
-      result: resultReport,
-      color: this.extractResultColor(oldReportIndex, resultReport),
-      resultString: this.transformResultToText(resultReport),
+    this.httpService.getTestReport(oldReportIndex).subscribe((report: any) => {
+      this.reranReports.push({
+        originalIndex: oldReportIndex,
+        newIndex: resultReport.report.storageId.toString(),
+        result: resultReport,
+        color: this.helperService.twoReportsAreEqual(report, resultReport.report) ? 'lightgreen' : 'red',
+        resultString: this.transformResultToText(resultReport),
+      });
     });
-  }
-
-  extractResultColor(reportId: string, resultReport: TestResult): string {
-    this.httpService.getTestReport(reportId).subscribe((report) => {
-      return report === resultReport ? 'green' : 'red';
-    });
-
-    return 'red';
   }
 
   selectReport(storageId: string, name: string): void {
@@ -228,7 +226,9 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   replaceReport(reportId: string): void {
-    this.httpService.replaceReport(reportId).subscribe(() => {
+    let index = this.reranReports.findIndex((report) => report.originalIndex == reportId);
+    let repo = this.reranReports[index];
+    this.httpService.replaceReport(repo.newIndex).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.originalIndex != reportId);
     });
   }

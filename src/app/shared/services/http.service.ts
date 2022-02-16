@@ -55,17 +55,11 @@ export class HttpService {
   }
 
   getReport(reportId: string): Observable<any> {
-    return this.http
-      .get<any>(this.REPORT_DEBUG_STORAGE + reportId)
-      .pipe(tap(() => this.handleSuccess('Report opened!')))
-      .pipe(catchError(this.handleError()));
+    return this.http.get<any>(this.REPORT_DEBUG_STORAGE + reportId).pipe(catchError(this.handleError()));
   }
 
   getTestReport(reportId: string): Observable<any> {
-    return this.http
-      .get<any>('api/report/testStorage/' + reportId)
-      .pipe(tap(() => this.handleSuccess('Report opened!')))
-      .pipe(catchError(this.handleError()));
+    return this.http.get<any>('api/report/testStorage/' + reportId).pipe(catchError(this.handleError()));
   }
 
   getMonacoCode(reportId: string): Observable<any> {
@@ -156,15 +150,11 @@ export class HttpService {
   queryResults(): Observable<any> {
     return this.http
       .get('api/runner/result/debugStorage', { headers: this.headers })
-      .pipe(tap(() => this.handleSuccess('Test run(s) completed!')))
       .pipe(catchError(this.handleError()));
   }
 
   deleteReport(reportId: string): Observable<void> {
-    return this.http
-      .delete('api/report/testStorage/' + reportId)
-      .pipe(tap(() => this.handleSuccess('Report deleted!')))
-      .pipe(catchError(this.handleError()));
+    return this.http.delete('api/report/testStorage/' + reportId).pipe(catchError(this.handleError()));
   }
 
   replaceReport(reportId: string): Observable<void> {
