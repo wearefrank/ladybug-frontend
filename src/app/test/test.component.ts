@@ -226,9 +226,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   replaceReport(reportId: string): void {
-    let index = this.reranReports.findIndex((report) => report.originalIndex == reportId);
-    let repo = this.reranReports[index];
-    this.httpService.replaceReport(repo.newIndex).subscribe(() => {
+    this.httpService.replaceReport(reportId).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.originalIndex != reportId);
     });
   }

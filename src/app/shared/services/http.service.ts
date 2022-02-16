@@ -159,7 +159,7 @@ export class HttpService {
 
   replaceReport(reportId: string): Observable<void> {
     return this.http
-      .put('api/runner/replace/testStorage/' + reportId, {
+      .put('api/runner/replace/debugStorage/' + reportId, {
         headers: this.headers,
       })
       .pipe(catchError(this.handleError()));
