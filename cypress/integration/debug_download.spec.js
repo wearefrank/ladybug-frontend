@@ -17,9 +17,10 @@ describe('Debug tab download', function() {
     cy.task('deleteDownloads', {downloadsPath: downloadsFolder, fileSep: Cypress.env('FILESEP')});
   });
 
-  it('Download reports from table', function() {
+  it('Download and upload table', function() {
     const downloadsFolder = Cypress.config('downloadsFolder');
     cy.task('downloads', downloadsFolder).then(filesBefore => {
+      cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
       cy.get('#dropdownDownloadTable').click();
       cy.get('button:contains("XML & Binary")[class="dropdown-item"]').click();
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
@@ -31,22 +32,23 @@ describe('Debug tab download', function() {
         .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
           cy.log(`Number of read bytes: ${buffer.length}`);
         });
-        // Wait for download to complete. Sometimes after the previous step
-        // not all bytes are there.
-        cy.wait(5000);
         cy.clearDebugStore();
         cy.get('#RefreshButton').click();
-        // cy.get('.table-responsive tbody').should('have.length', 0);
+        cy.get('.table-responsive tbody').find('tr').should('have.length', 0);
         cy.get('div.treeview > ul > li').should('have.length', 0);
-        cy.readFile(cy.functions.downloadPath(newFile), 'binary', {timeout: 15000})
-        .then(Cypress.Blob.binaryStringToBlob)
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary')
+        .then((rawContent) => {
+          console.log(`Have content of uploaded file, length ${rawContent.length}`);
+          return Cypress.Blob.binaryStringToBlob(rawContent);
+        })
         .then(fileContent => {
+          console.log(`Have transformed content length ${fileContent.length}`);
           cy.get('input#uploadFileTable').attachFile({
             fileContent,
-            fileName: 'testUploaded.ttr',
+            fileName: newFile
           });
         });
-        // cy.get('.table-responsive tbody').should('have.length', 0);
+        cy.get('div.treeview > ul > li').should('have.length', 0);
         cy.get('div.treeview > ul > li').should('have.length', 6);
       });
     });
