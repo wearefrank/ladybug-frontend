@@ -28,7 +28,11 @@ module.exports = (on, config) => {
     deleteDownloads: (input) => {
       const downloadsPath = input.downloadsPath;
       const fileSep = input.fileSep;
-      fs.readdirSync(downloadsPath).forEach((f) => fs.rmSync(downloadsPath + fileSep + f));
+      fs.readdirSync(downloadsPath).forEach((f) => {
+        if(f != '.gitignore') {
+          fs.rmSync(downloadsPath + fileSep + f);
+        };
+      });
       return null;
     }
   });
