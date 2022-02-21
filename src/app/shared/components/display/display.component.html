@@ -8,10 +8,10 @@
     <app-button [icon]="'fa fa-save'" [title]="'Save'" *ngIf="editingChildNode || editingRootNode"
                 (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
     <div ngbDropdown title="Download">
-      <button class="btn btn-info my-2 mx-1" id="dropdownDownload" ngbDropdownToggle>
+      <button class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
       </button>
-      <div ngbDropdownMenu aria-labelledby="dropdownDownload">
+      <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
         <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
         <button ngbDropdownItem (click)="downloadReport(false, true)">XML</button>
         <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
