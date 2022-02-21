@@ -1,6 +1,3 @@
-const REGEX_START_ICON = new RegExp('.*startpoint-(even|odd)\\.gif');
-const REGEX_END_ICON = new RegExp('.*endpoint-(even|odd)\\.gif');
-
 describe('About opened reports', function() {
   beforeEach(() => {
     cy.createReport();
@@ -40,20 +37,23 @@ describe('About opened reports', function() {
   it('Expand and collapse', function() {
     cy.get('button[id="OpenAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 6);
-    cy.get('div.treeview > ul > li:contains(name)').within(linesFormExpandedNode);
-    cy.get('div.treeview > ul > li:contains(otherName)').within(linesFormExpandedNode);
+    cy.get('div.treeview > ul > li:contains(name)').within((children) => linesFormExpandedNode(children, 'even'));
+    cy.get('div.treeview > ul > li:contains(otherName)').within((children) => linesFormExpandedNode(children, 'even'));
     cy.get('button[id="CollapseAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 2);
     cy.get('div.treeview > ul > li:contains(name)').within(linesFormCollapsedNode);
     cy.get('div.treeview > ul > li:contains(otherName)').within(linesFormCollapsedNode);
     cy.get('button[id="ExpandAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 6);
-    cy.get('div.treeview > ul > li:contains(name)').within(linesFormExpandedNode);
-    cy.get('div.treeview > ul > li:contains(otherName)').within(linesFormExpandedNode);
+    cy.get('div.treeview > ul > li:contains(name)').within((children) => linesFormExpandedNode(children, 'even'));
+    cy.get('div.treeview > ul > li:contains(otherName)').within((children) => linesFormExpandedNode(children, 'even'));
   });
 });
 
-function linesFormExpandedNode($lines) {
+function linesFormExpandedNode($lines, evenOrOdd) {
+  const startIcon = `assets/tree-icons/startpoint-${evenOrOdd}.gif`;
+  const oddOrEven = (evenOrOdd == 'even') ? 'odd' : 'even';
+  const endIcon = `assets/tree-icons/endpoint-${oddOrEven}.gif`;  
   expect($lines).to.have.length(3);
   expect($lines.eq(0).children()).to.have.length(2);
   expect($lines.eq(0).children().eq(0)).to.have.prop('nodeName', 'SPAN');
@@ -71,7 +71,7 @@ function linesFormExpandedNode($lines) {
   expect($lines.eq(1).children().eq(1)).to.have.class('expand-icon');
   expect($lines.eq(1).children().eq(1)).to.have.class('fa-minus');
   expect($lines.eq(1).children().eq(2)).to.have.class('node-icon');
-  expect($lines.eq(1).children().eq(3).attr('src')).to.match(REGEX_START_ICON);
+  expect($lines.eq(1).children().eq(3).attr('src')).to.equal(startIcon);
   expect($lines.eq(2).children()).to.have.length(5);
   expect($lines.eq(2).children().eq(0)).to.have.prop('nodeName', 'SPAN');
   expect($lines.eq(2).children().eq(1)).to.have.prop('nodeName', 'SPAN');
@@ -82,7 +82,7 @@ function linesFormExpandedNode($lines) {
   expect($lines.eq(2).children().eq(1)).to.have.class('indent');
   expect($lines.eq(2).children().eq(2)).to.have.class('glyphicon');
   expect($lines.eq(2).children().eq(3)).to.have.class('node-icon');
-  expect($lines.eq(2).children().eq(4).attr('src')).to.match(REGEX_END_ICON);
+  expect($lines.eq(2).children().eq(4).attr('src')).to.equal(endIcon);
 };
 
 function linesFormCollapsedNode($lines) {
