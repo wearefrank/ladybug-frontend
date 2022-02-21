@@ -1,12 +1,12 @@
 <div class="row" id="treeButtons" *ngIf="treeSettings.selectedReports.length > 0">
   <app-button [icon]="'fa fa-expand'" [title]="'Expand All'" (click)="expandAll()"></app-button>
-  <app-button [icon]="'fa fa-compress'" [title]="'Collapse all'" (click)="collapseAll()"></app-button>
+  <app-button [icon]="'fa fa-compress'" [title]="'Collapse All'" (click)="collapseAll()"></app-button>
   <app-button [icon]="'fa fa-times'" [title]="'Close All'" (click)="closeAll()"></app-button>
   <div ngbDropdown title="Download">
-    <button class="btn btn-info my-2 mx-1" id="dropdownDownload" ngbDropdownToggle>
+    <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTree" ngbDropdownToggle>
       <i class="fa fa-download px-2"></i><span class="caret"></span>
     </button>
-    <div ngbDropdownMenu aria-labelledby="dropdownDownload">
+    <div ngbDropdownMenu aria-labelledby="dropdownDownloadTree">
       <button ngbDropdownItem (click)="downloadReports(true, true)">XML & Binary</button>
       <button ngbDropdownItem (click)="downloadReports(false, true)">XML</button>
       <button ngbDropdownItem (click)="downloadReports(true, false)">Binary</button>

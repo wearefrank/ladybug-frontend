@@ -29,7 +29,6 @@ describe('Clicking a report', function () {
     cy.get('#treeButtons').should('be.visible')
   })
 
-  // This test depends on the previous test
   it('Selecting report should show display', function () {
     cy.get('#displayButtons').should('not.exist')
     cy.get('#monacoEditor').should('not.exist')
@@ -37,6 +36,4 @@ describe('Clicking a report', function () {
     cy.get('#displayButtons').should('be.visible')
     cy.get('#monacoEditor').should('be.visible')
   })
-
-
 })
