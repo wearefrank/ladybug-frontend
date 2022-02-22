@@ -13,6 +13,10 @@ describe('Debug tab download', function() {
     // is not sufficient. If we would do that, a new download within the same minute
     // would not be noticed. The name of the downloaded file contains a file name
     // with hours and minutes.
+    //
+    // We cannot do this by setting Cypress setting "trashAssetsBeforeRuns" to "true".
+    // That would also delete downloads/.gitignore, which is not what we want.
+    // The 'deleteDownloads' task skips .gitignore.
     const downloadsFolder = Cypress.config('downloadsFolder');
     cy.task('deleteDownloads', {downloadsPath: downloadsFolder, fileSep: Cypress.env('FILESEP')});
   });
