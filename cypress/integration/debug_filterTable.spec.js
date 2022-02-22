@@ -32,7 +32,12 @@ describe('Table size and toggle filter', function () {
     // Cypress would not see when the typing of 10 would have effect.
     cy.get('#displayAmount').type("{backspace}1");
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
-    cy.get('#displayAmount').type("{backspace}10")
+    // Martijn Monday February 21. Changed {backspace}10 to {backspace}9
+    // to make this test stable. Originally, the test succeeded on Martijn's
+    // computer but was unstable on GitHub. Martijn could not reproduce the
+    // failure manually. Martijn and Chakir guessed that Cypress can
+    // type faster than real users.
+    cy.get('#displayAmount').type("{backspace}9")
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
 
