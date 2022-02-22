@@ -98,6 +98,7 @@ jobs:
 
       - name: Start server using Frank!Runner
         run: npm run startServer &
+        working-directory: ladybug-frontend
 
       - name: Run cypress with default browser
         uses: cypress-io/github-action@v2.9.7
