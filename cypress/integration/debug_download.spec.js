@@ -29,7 +29,10 @@ describe('Debug tab download', function() {
       cy.get('button:contains("XML & Binary")[class="dropdown-item"]').click();
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
       cy.task('downloads', downloadsFolder).then(filesAfter => {
+        console.log(`Files before: ${filesBefore}`);
+        console.log(`Files after: ${filesAfter}`);
         const newFile = filesAfter.filter(file => !filesBefore.includes(file))[0];
+        console.log(`Downloaded file ${newFile}`);
         expect(newFile).to.contain('Ladybug Debug');
         expect(newFile).to.contain('2 reports');
         cy.readFile(cy.functions.downloadPath(newFile), 'binary', {timeout: 15000})

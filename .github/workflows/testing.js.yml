@@ -96,13 +96,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven
 
-      - name: Run cypress using the Frank!Runner
+      - name: Start server using Frank!Runner
+        run: npm run startServer &
+
+      - name: Run cypress with default browser
         uses: cypress-io/github-action@v2.9.7
         with:
           working-directory: ladybug-frontend
           start: |
             npm run startCicd
-            npm run startServer
+          wait-on: 'http://localhost:8090, http://localhost:4200'
+          wait-on-timeout: 240
+      - name: Run cypress with Edge browser
+        uses: cypress-io/github-action@v2.9.7
+        with:
+          working-directory: ladybug-frontend
+          start: |
+            npm run startCicd-edge
           wait-on: 'http://localhost:8090, http://localhost:4200'
           wait-on-timeout: 240
 
