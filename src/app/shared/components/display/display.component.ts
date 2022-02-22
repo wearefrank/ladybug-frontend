@@ -153,14 +153,16 @@ export class DisplayComponent {
   }
 
   copyReport(): void {
-    const storageId: number = +this.report.ladybug.storageId;
+    const storageId: number = this.report.root
+      ? +this.report.ladybug.storageId
+      : +this.report.ladybug.uid.split('#')[0];
     const data: any = { debugStorage: [storageId] };
     this.httpService.copyReport(data).subscribe();
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    let queryString: string = '?id=';
-    queryString += this.report.root ? this.report.ladybug.storageId.toString() : this.report.ladybug.uid.split('#')[0];
+    let queryString: string =
+      '?id=' + this.report.root ? this.report.ladybug.storageId.toString() : this.report.ladybug.uid.split('#')[0];
     window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + queryString);
     this.httpService.handleSuccess('Report Downloaded!');
   }
