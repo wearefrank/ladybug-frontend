@@ -123,13 +123,15 @@ export class DisplayComponent {
   }
 
   saveChanges() {
-    if (this.report.root) {
-      this.httpService.postReport(this.report.ladybug.storageId, this.getReportValues()).subscribe((response: any) => {
+    let checkpointId: string = '';
+    if (!this.report.root) {
+      checkpointId = this.report.ladybug.uid.split('#')[1];
+    }
+    this.httpService
+      .postReport(this.report.ladybug.storageId, this.getReportValues(checkpointId))
+      .subscribe((response: any) => {
         this.saveReportEvent.next(response.report);
       });
-    } else {
-      // TODO: Save the changes in the message for child nodes (aka the editor changes)
-    }
   }
 
   discardChanges() {
@@ -138,12 +140,14 @@ export class DisplayComponent {
     }
   }
 
-  getReportValues(): any {
+  getReportValues(checkpointId: string): any {
     return {
-      name: this.name.nativeElement.value,
-      path: this.path.nativeElement.value,
-      description: this.description.nativeElement.value,
-      transformation: this.transformation.nativeElement.value,
+      name: this.name?.nativeElement.value ?? '',
+      path: this.path?.nativeElement.value ?? '',
+      description: this.description?.nativeElement.value ?? '',
+      transformation: this.transformation?.nativeElement.value ?? '',
+      checkpointId: checkpointId,
+      checkpointMessage: this.monacoEditorComponent?.getValue() ?? '',
     };
   }
 
