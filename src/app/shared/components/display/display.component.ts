@@ -27,6 +27,7 @@ export class DisplayComponent {
     root: false,
     text: '',
   };
+  @Input() id: string = '';
   @Output() closeReportEvent = new EventEmitter<any>();
   @Output() saveReportEvent = new EventEmitter<any>();
   @ViewChild(MonacoEditorComponent)
