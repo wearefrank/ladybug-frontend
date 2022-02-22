@@ -75,7 +75,7 @@ export class TableSettingsModalComponent {
       this.settingsForm.get('regexFilter')?.setValue(this.cookieService.get('regexFilter'));
     }
 
-    if (this.cookieService.get('transformationEnabled')) {
+    if (this.cookieService.get('transformationEnabled') != undefined) {
       this.settingsForm
         .get('transformationEnabled')
         ?.setValue(this.cookieService.get('transformationEnabled') == 'true');

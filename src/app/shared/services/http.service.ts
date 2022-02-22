@@ -62,11 +62,13 @@ export class HttpService {
   }
 
   getMonacoCode(reportId: string): Observable<any> {
-    const xmlTransformationEnabled: string = this.cookieService.get('xmlTransformationEnabled')
-      ? this.cookieService.get('xmlTransformationEnabled')
-      : 'false';
     return this.http
-      .get<any>('api/report/debugStorage/' + reportId + '/?xml=true&globalTransformer=' + xmlTransformationEnabled)
+      .get<any>(
+        'api/report/debugStorage/' +
+          reportId +
+          '/?xml=true&globalTransformer=' +
+          this.cookieService.get('transformationEnabled')
+      )
       .pipe(catchError(this.handleError()));
   }
 
