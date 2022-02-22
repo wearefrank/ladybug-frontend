@@ -22,11 +22,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          cache-dependency-path: '**/package.json'
+          cache-dependency-path: '**/package-lock.json'
 
       # Workaround because npm ci does not work. Trouble with dependency esbuild
       - name: Install packages
-        run: npm install
+        run: npm ci
         working-directory: ladybug-frontend
 
       - name: Set Cypress environment variables
