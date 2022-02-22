@@ -159,7 +159,8 @@ export class DisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    const queryString: string = '?id=' + this.report.ladybug.uid.split('#')[0];
+    let queryString: string = '?id=';
+    queryString += this.report.root ? this.report.ladybug.storageId.toString() : this.report.ladybug.uid.split('#')[0];
     window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + queryString);
     this.httpService.handleSuccess('Report Downloaded!');
   }
