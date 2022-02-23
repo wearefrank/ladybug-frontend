@@ -18,7 +18,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.css'],
 })
-export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TestComponent implements OnInit, OnDestroy {
   reports: Metadata[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
@@ -34,9 +34,7 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     private loaderService: LoaderService,
-    private cookieService: CookieService,
-    private helperService: HelperService,
-    private http: HttpClient
+    private cookieService: CookieService
   ) {}
 
   openCloneModal(): void {
@@ -72,12 +70,6 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cookieService.set('generatorEnabled', this.generatorStatus);
       });
     }
-  }
-
-  ngAfterViewInit() {
-    this.reranReports.forEach((report) => {
-      this.showResults(report.result, report.originalIndex);
-    });
   }
 
   addCopiedReports(metadata: Metadata[]): void {
@@ -135,29 +127,23 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => this.queryResults(), 1000);
   }
 
-  queryResults(): void {
-    this.httpService.queryResults().subscribe((response) => {
-      for (let oldReportIndex in response.results) {
-        if (response.results.hasOwnProperty(oldReportIndex)) {
-          this.showResults(response.results[oldReportIndex], oldReportIndex);
-        }
-      }
-    });
+  removeReranReportIfExists(id: string) {
+    this.reranReports = this.reranReports.filter((report) => report.id != id);
   }
 
-  getReranReport(id: string): ReranReport {
-    return <ReranReport>this.reranReports.find((report) => report.originalIndex == id);
+  createReranReport(result: TestResult, id: string): ReranReport {
+    return {
+      id: id,
+      originalReport: result.originalReport,
+      editedReport: result.editedReport,
+      originalXml: result.originalXml,
+      editedXml: result.editedXml,
+      color: result.equal ? 'green' : 'red',
+      resultString: this.createResultString(result),
+    };
   }
 
-  showResults(resultReport: TestResult, oldReportIndex: string): void {
-    const resultElement = document.querySelector('#runResult\\#' + oldReportIndex);
-    if (resultElement) {
-      this.reranReports = this.reranReports.filter((report) => report.originalIndex != oldReportIndex); // Remove report
-      this.addResultToReranReports(oldReportIndex, resultReport);
-    }
-  }
-
-  transformResultToText(resultReport: TestResult): string {
+  createResultString(resultReport: TestResult) {
     return (
       '(' +
       resultReport.previousTime +
@@ -171,16 +157,26 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  addResultToReranReports(oldReportIndex: string, resultReport: TestResult): void {
-    this.httpService.getTestReport(oldReportIndex).subscribe((report: any) => {
-      this.reranReports.push({
-        originalIndex: oldReportIndex,
-        newIndex: resultReport.report.storageId.toString(),
-        result: resultReport,
-        color: this.helperService.twoReportsAreEqual(report, resultReport.report) ? 'lightgreen' : 'red',
-        resultString: this.transformResultToText(resultReport),
-      });
+  showResult(result: TestResult) {
+    console.log(result);
+    const id: string = result.originalReport.storageId.toString();
+    this.removeReranReportIfExists(id);
+    const reranReport: ReranReport = this.createReranReport(result, id);
+    this.reranReports.push(reranReport);
+  }
+
+  queryResults(): void {
+    this.httpService.queryResults().subscribe((response) => {
+      for (let result in response.results) {
+        if (response.results.hasOwnProperty(result)) {
+          this.showResult(response.results[result]);
+        }
+      }
     });
+  }
+
+  getReranReport(id: string): ReranReport {
+    return <ReranReport>this.reranReports.find((report) => report.id == id);
   }
 
   selectReport(storageId: string, name: string): void {
@@ -217,23 +213,24 @@ export class TestComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  compareReports(originalReport: string): void {
-    let newReport = this.reranReports.find((report) => report.originalIndex == originalReport)?.newIndex;
-    this.openCompareReportsEvent.emit({
-      oldReport: originalReport,
-      newReport: newReport,
-    });
+  compareReports(id: string): void {
+    const reranReport = this.reranReports.find((report) => report.id === id);
+    if (reranReport) {
+      this.openCompareReportsEvent.emit({
+        originalReport: reranReport.originalReport,
+        editedReport: reranReport.editedReport,
+      });
+    }
   }
 
   replaceReport(reportId: string): void {
     this.httpService.replaceReport(reportId).subscribe(() => {
-      this.reranReports = this.reranReports.filter((report) => report.originalIndex != reportId);
+      this.reranReports = this.reranReports.filter((report) => report.id != reportId);
     });
   }
 
   copySelected() {
     let copiedIds: string[] = this.getIdsToBeCopied();
-
     this.httpService.copyReport({ testStorage: copiedIds }).subscribe(() => {
       this.loadData();
     });

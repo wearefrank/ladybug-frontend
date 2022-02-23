@@ -30,7 +30,7 @@ export class CompareComponent {
   @ViewChild('leftDisplay') leftDisplayComponent!: DisplayComponent;
   @ViewChild('rightDisplay') rightDisplayComponent!: DisplayComponent;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
-  @Input() diffReports = { oldReport: '', newReport: '' };
+  @Input() diffReports = { originalReport: {} as Report, editedReport: {} as Report };
 
   constructor(private httpService: HttpService) {}
 
@@ -38,15 +38,16 @@ export class CompareComponent {
    * Select report based on the specified ids in diffReports
    */
   selectReportBasedOnIds(): void {
-    this.httpService.getTestReport(this.diffReports.oldReport).subscribe((result) => {
-      result.id = 'leftId';
-      this.addReportNodeLeft(result);
-    });
+    if (Object.keys(this.diffReports.originalReport).length > 0) {
+      console.log(this.diffReports);
+      this.diffReports.originalReport.id = 'leftId';
+      this.addReportNodeLeft(this.diffReports.originalReport);
+    }
 
-    this.httpService.getReport(this.diffReports.newReport).subscribe((result) => {
-      result.id = 'rightId';
-      this.addReportNodeRight(result);
-    });
+    if (Object.keys(this.diffReports.editedReport).length > 0) {
+      this.diffReports.editedReport.id = 'rightId';
+      this.addReportNodeRight(this.diffReports.editedReport);
+    }
   }
 
   /**

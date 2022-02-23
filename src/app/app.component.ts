@@ -4,6 +4,7 @@ import { Title } from '@angular/platform-browser';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { HttpService } from './shared/services/http.service';
 import { CompareComponent } from './compare/compare.component';
+import { Report } from './shared/interfaces/report';
 declare var require: any;
 const { version: appVersion } = require('../../package.json');
 
@@ -15,7 +16,7 @@ const { version: appVersion } = require('../../package.json');
 export class AppComponent implements AfterViewInit {
   injector!: Injector;
   appVersion: string;
-  diffReports = { oldReport: '', newReport: '' };
+  diffReports = { originalReport: {} as Report, editedReport: {} as Report };
   LAST_TAB_INDEX = 3;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
@@ -30,7 +31,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   title = 'ladybug';
-  active = 1;
+  active = 2;
   tabs: { key: string; value: any }[] = [];
 
   /**

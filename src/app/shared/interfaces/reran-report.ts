@@ -1,9 +1,11 @@
-import { TestResult } from './test-result';
+import { Report } from './report';
 
 export interface ReranReport {
-  originalIndex: string;
-  newIndex: string;
-  result: TestResult;
+  id: string;
+  originalReport: Report;
+  editedReport: Report;
+  originalXml: string;
+  editedXml: string;
   color: string;
   resultString: string;
 }
