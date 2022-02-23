@@ -143,6 +143,7 @@ export class DisplayComponent {
   }
 
   getReportValues(checkpointId: string): any {
+    console.log(checkpointId);
     return {
       name: this.name?.nativeElement.value ?? '',
       path: this.path?.nativeElement.value ?? '',

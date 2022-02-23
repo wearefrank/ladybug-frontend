@@ -9,6 +9,17 @@
           <app-button [icon]="'fa fa-save'" [title]="'Save'" *ngIf="editingChildNode || editingRootNode"
                       (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
     </span>
+
+    <span *ngIf="id === 'debug'">
+          <button class="btn btn-info my-2 mx-1 px-3" disabled title="Disabled: to run, copy report to test tab and open it there">
+            <i class="fa fa-repeat"></i>
+          </button>
+          <button class="btn btn-info my-2 mx-1 px-3" disabled title="Disabled: to edit, copy report to test tab and open it there.">
+            <i class="fa fa-edit"></i>
+          </button>
+          <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
+    </span>
+
     <div ngbDropdown title="Download">
       <button class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
@@ -20,9 +31,6 @@
       </div>
     </div>
 
-    <span *ngIf="id === 'debug'">
-          <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
-    </span>
     <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true, report.id)"></app-button>
   </div>
 
