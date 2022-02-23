@@ -12,6 +12,7 @@ import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.co
 import { catchError } from 'rxjs';
 import { HelperService } from '../shared/services/helper.service';
 import { HttpClient } from '@angular/common/http';
+import { Report } from '../shared/interfaces/report';
 
 @Component({
   selector: 'app-test',
@@ -132,12 +133,16 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   createReranReport(result: TestResult, id: string): ReranReport {
+    let originalReport: Report = result.originalReport;
+    let editedReport: Report = result.editedReport;
+
+    originalReport.xml = result.originalXml;
+    editedReport.xml = result.editedXml;
+
     return {
       id: id,
       originalReport: result.originalReport,
       editedReport: result.editedReport,
-      originalXml: result.originalXml,
-      editedXml: result.editedXml,
       color: result.equal ? 'green' : 'red',
       resultString: this.createResultString(result),
     };
@@ -181,7 +186,9 @@ export class TestComponent implements OnInit, OnDestroy {
 
   selectReport(storageId: string, name: string): void {
     this.httpService.getTestReport(storageId).subscribe((data) => {
-      this.openTestReportEvent.emit({ data: data, name: name });
+      let report: Report = data.report;
+      report.xml = data.xml;
+      this.openTestReportEvent.emit({ data: report, name: name });
     });
   }
 

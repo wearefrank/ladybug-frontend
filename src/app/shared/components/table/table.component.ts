@@ -7,6 +7,7 @@ import { TableSettingsModalComponent } from '../modals/table-settings-modal/tabl
 import { TableSettings } from '../../interfaces/table-settings';
 import { Metadata } from '../../interfaces/metadata';
 import { catchError } from 'rxjs';
+import { Report } from '../../interfaces/report';
 
 @Component({
   selector: 'app-table',
@@ -129,17 +130,15 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openReport(storageId: string): void {
     this.httpService.getReport(storageId).subscribe((data) => {
-      data.id = this.id;
-      this.openReportEvent.next(data);
+      let report: Report = data.report;
+      report.xml = data.xml;
+      report.id = this.id;
+      this.openReportEvent.next(report);
     });
   }
 
   openAllReports(): void {
     this.tableSettings.reportMetadata.forEach((report: Metadata) => this.openReport(report.storageId));
-  }
-
-  openReports(amount: number): void {
-    this.tableSettings.reportMetadata.slice(0, amount).forEach((report: Metadata) => this.openReport(report.storageId));
   }
 
   openLatestReports(amount: number): void {

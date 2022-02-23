@@ -54,17 +54,20 @@ export class HttpService {
   }
 
   getReport(reportId: string): Observable<any> {
-    return this.http.get<any>('api/report/debugStorage/' + reportId).pipe(catchError(this.handleError()));
-  }
-
-  getTestReport(reportId: string): Observable<any> {
-    return this.http.get<any>('api/report/testStorage/' + reportId).pipe(catchError(this.handleError()));
-  }
-
-  getMonacoCode(reportId: string): Observable<any> {
     return this.http
       .get<any>(
         'api/report/debugStorage/' +
+          reportId +
+          '/?xml=true&globalTransformer=' +
+          this.cookieService.get('transformationEnabled')
+      )
+      .pipe(catchError(this.handleError()));
+  }
+
+  getTestReport(reportId: string): Observable<any> {
+    return this.http
+      .get<any>(
+        'api/report/testStorage/' +
           reportId +
           '/?xml=true&globalTransformer=' +
           this.cookieService.get('transformationEnabled')
