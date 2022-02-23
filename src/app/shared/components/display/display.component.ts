@@ -123,14 +123,17 @@ export class DisplayComponent {
 
   saveChanges() {
     let checkpointId: string = '';
+    let storageId: string = '';
     if (!this.report.root) {
+      storageId = this.report.ladybug.uid.split('#')[0];
       checkpointId = this.report.ladybug.uid.split('#')[1];
+    } else {
+      storageId = this.report.ladybug.storageId;
     }
-    this.httpService
-      .postReport(this.report.ladybug.storageId, this.getReportValues(checkpointId))
-      .subscribe((response: any) => {
-        this.saveReportEvent.next(response.report);
-      });
+
+    this.httpService.postReport(storageId, this.getReportValues(checkpointId)).subscribe((response: any) => {
+      this.saveReportEvent.next(response.report);
+    });
   }
 
   discardChanges() {
