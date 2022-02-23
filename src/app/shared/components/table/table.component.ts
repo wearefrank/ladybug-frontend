@@ -8,6 +8,7 @@ import { TableSettings } from '../../interfaces/table-settings';
 import { Metadata } from '../../interfaces/metadata';
 import { catchError } from 'rxjs';
 import { Report } from '../../interfaces/report';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-table',
@@ -54,7 +55,8 @@ export class TableComponent implements OnInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    private cookieService: CookieService
   ) {}
 
   ngOnInit(): void {
@@ -129,7 +131,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: string): void {
-    this.httpService.getReport(storageId).subscribe((data) => {
+    this.httpService.getReport(storageId, 'debugStorage').subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
       report.id = this.id;

@@ -185,7 +185,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   selectReport(storageId: string, name: string): void {
-    this.httpService.getTestReport(storageId).subscribe((data) => {
+    this.httpService.getReport(storageId, 'testStorage').subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
       this.openTestReportEvent.emit({ data: report, name: name });

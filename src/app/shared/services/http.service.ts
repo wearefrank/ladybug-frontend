@@ -53,21 +53,12 @@ export class HttpService {
     return this.http.get<any>('api/metadata/testStorage/');
   }
 
-  getReport(reportId: string): Observable<any> {
+  getReport(reportId: string, storage: string) {
     return this.http
       .get<any>(
-        'api/report/debugStorage/' +
-          reportId +
-          '/?xml=true&globalTransformer=' +
-          this.cookieService.get('transformationEnabled')
-      )
-      .pipe(catchError(this.handleError()));
-  }
-
-  getTestReport(reportId: string): Observable<any> {
-    return this.http
-      .get<any>(
-        'api/report/testStorage/' +
+        'api/report/' +
+          storage +
+          '/' +
           reportId +
           '/?xml=true&globalTransformer=' +
           this.cookieService.get('transformationEnabled')
