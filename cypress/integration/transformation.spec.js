@@ -11,12 +11,14 @@ describe('Report transformation', function() {
   });
 
   it('Update transformation', function() {
-    cy.createOtherReport();
     cy.visit('');
+    /*
+    cy.createOtherReport();
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1).click();
     cy.get('div.treeview > ul > li').should('have.length', 3);
     cy.get('div.treeview > ul > li:eq(0)').click();
     cy.get('#monacoEditor').contains('Name="otherName"');
+    */
     cy.get('#SettingsButton').click();
     cy.get('textarea[formcontrolname=transformation]').type('{selectAll}');
     cy.get('textarea[formcontrolname=transformation]').type('{del}');
@@ -25,6 +27,10 @@ describe('Report transformation', function() {
     });
     cy.get('button[type=submit]').click();
     cy.get('#RefreshButton').click();
+    cy.createOtherReport();
+    cy.get('.table-responsive tbody').find('tr').should('have.length', 1).click();
+    cy.get('div.treeview > ul > li').should('have.length', 3);
+    cy.get('div.treeview > ul > li:eq(0)').click();
     cy.get('#monacoEditor').contains('Name="IGNORE"');
   });
 });
