@@ -163,7 +163,6 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   showResult(result: TestResult) {
-    console.log(result);
     const id: string = result.originalReport.storageId.toString();
     this.removeReranReportIfExists(id);
     const reranReport: ReranReport = this.createReranReport(result, id);

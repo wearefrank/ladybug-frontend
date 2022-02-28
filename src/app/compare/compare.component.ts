@@ -39,7 +39,6 @@ export class CompareComponent {
    */
   selectReportBasedOnIds(): void {
     if (Object.keys(this.diffReports.originalReport).length > 0) {
-      console.log(this.diffReports);
       this.diffReports.originalReport.id = 'leftId';
       this.addReportNodeLeft(this.diffReports.originalReport);
     }

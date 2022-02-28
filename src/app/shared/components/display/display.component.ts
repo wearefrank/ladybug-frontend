@@ -132,6 +132,7 @@ export class DisplayComponent {
     }
 
     this.httpService.postReport(storageId, this.getReportValues(checkpointId)).subscribe((response: any) => {
+      console.log('Saving only with storageID: ' + storageId);
       this.saveReportEvent.next(response.report);
     });
   }
@@ -143,7 +144,6 @@ export class DisplayComponent {
   }
 
   getReportValues(checkpointId: string): any {
-    console.log(checkpointId);
     return {
       name: this.name?.nativeElement.value ?? '',
       path: this.path?.nativeElement.value ?? '',

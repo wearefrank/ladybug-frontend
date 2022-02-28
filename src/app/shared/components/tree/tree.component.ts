@@ -240,7 +240,6 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   selectSpecificNode(id: number) {
-    console.log(id);
     $('#' + this._id).treeview('toggleNodeSelected', [id, { silent: false }]);
   }
 

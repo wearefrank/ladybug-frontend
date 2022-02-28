@@ -32,22 +32,31 @@ export class AppComponent implements AfterViewInit {
 
   title = 'ladybug';
   active = 1;
-  tabs: { key: string; value: any }[] = [];
+  previousActive = 1;
+  tabs: { key: string; value: any; id: string }[] = [];
 
   /**
    * Open an extra tab for the test report
    * @param data - the data in the report
    */
   openTestReport(data: any): void {
-    this.injector = Injector.create({
-      providers: [{ provide: ReportData, useValue: data.data }],
-      parent: this.inj,
-    });
-    this.tabs.push({ key: data.name, value: ReportComponent });
-    this.active = this.LAST_TAB_INDEX + this.tabs.length; // Active the tab immediately
+    const tabIndex: number = this.tabs.findIndex((tab) => tab.id === data.data.storageId);
+    if (tabIndex != -1) {
+      this.active = this.LAST_TAB_INDEX + tabIndex + 1;
+    } else {
+      this.injector = Injector.create({
+        providers: [{ provide: ReportData, useValue: data.data }],
+        parent: this.inj,
+      });
+
+      this.tabs.push({ key: data.name, value: ReportComponent, id: data.data.storageId });
+      this.previousActive = this.active;
+      this.active = this.LAST_TAB_INDEX + this.tabs.length; // Active the tab immediately
+    }
   }
 
   openCompareReport(data: any): void {
+    this.previousActive = this.active;
     this.active = this.LAST_TAB_INDEX;
     this.diffReports = data;
     setTimeout(() => {
@@ -62,7 +71,7 @@ export class AppComponent implements AfterViewInit {
    */
   closeTestReport(event: MouseEvent, toRemove: number): void {
     this.tabs.splice(toRemove, 1);
-    this.active--;
+    this.active = this.previousActive;
     event.preventDefault();
     event.stopImmediatePropagation();
   }
