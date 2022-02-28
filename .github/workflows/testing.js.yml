@@ -116,6 +116,7 @@ jobs:
             npm run startCicd-edge
           wait-on: 'http://localhost:8090, http://localhost:4200'
           wait-on-timeout: 240
+          browser: edge
 
       - name: Show files
         run: tree -d -L 5 .
