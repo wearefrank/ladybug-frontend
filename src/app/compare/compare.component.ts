@@ -55,7 +55,8 @@ export class CompareComponent {
    */
   addReportNodeLeft(newReport: Report): void {
     if (this.leftReport.id === newReport.id) {
-      this.leftReport.reports.push(newReport);
+      this.leftReport.reports = [newReport];
+      this.leftTreeComponent?.resetTree();
       this.leftTreeComponent?.handleChange(newReport);
     }
   }
@@ -66,7 +67,8 @@ export class CompareComponent {
    */
   addReportNodeRight(newReport: Report): void {
     if (this.rightReport.id === newReport.id) {
-      this.rightReport.reports.push(newReport);
+      this.rightReport.reports = [newReport];
+      this.rightTreeComponent?.resetTree();
       this.rightTreeComponent?.handleChange(newReport);
     }
   }
@@ -79,6 +81,7 @@ export class CompareComponent {
     this.leftReport.selected = true;
     this.leftReport.current = currentReport;
     this.leftDisplayComponent?.showReport(this.leftReport.current);
+    this.rightTreeComponent?.selectSpecificNode(currentReport.id);
   }
 
   /**
@@ -89,6 +92,7 @@ export class CompareComponent {
     this.rightReport.selected = true;
     this.rightReport.current = currentReport;
     this.rightDisplayComponent?.showReport(this.rightReport.current);
+    this.leftTreeComponent?.selectSpecificNode(currentReport.id);
   }
 
   /**
