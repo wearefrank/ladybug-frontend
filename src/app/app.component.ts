@@ -16,7 +16,7 @@ const { version: appVersion } = require('../../package.json');
 export class AppComponent implements AfterViewInit {
   injector!: Injector;
   appVersion: string;
-  diffReports = { originalReport: {} as Report, editedReport: {} as Report };
+  diffReports = { originalReport: {} as Report, runResultReport: {} as Report };
   LAST_TAB_INDEX = 3;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;

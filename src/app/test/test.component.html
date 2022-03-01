@@ -47,7 +47,7 @@
               <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report.storageId)"></app-button>
             </td>
             <td>
-              <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="selectReport(report.storageId, report.name)"></app-button>
+              <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="openReport(report.storageId, report.name)"></app-button>
             </td>
             <td *ngIf="getReranReport(report.storageId)">
               <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report.storageId)"></app-button>

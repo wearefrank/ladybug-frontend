@@ -4,9 +4,9 @@ export interface TestResult {
   currentTime: number;
   previousTime: number;
   originalReport: Report;
-  editedReport: Report;
+  runResultReport: Report;
   originalXml: string;
-  editedXml: string;
+  runResultXml: string;
   equal: boolean;
   stubbed: number;
   total: number;

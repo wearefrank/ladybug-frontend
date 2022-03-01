@@ -134,15 +134,15 @@ export class TestComponent implements OnInit, OnDestroy {
 
   createReranReport(result: TestResult, id: string): ReranReport {
     let originalReport: Report = result.originalReport;
-    let editedReport: Report = result.editedReport;
+    let runResultReport: Report = result.runResultReport;
 
     originalReport.xml = result.originalXml;
-    editedReport.xml = result.editedXml;
+    runResultReport.xml = result.runResultXml;
 
     return {
       id: id,
       originalReport: result.originalReport,
-      editedReport: result.editedReport,
+      runResultReport: result.runResultReport,
       color: result.equal ? 'green' : 'red',
       resultString: this.createResultString(result),
     };
@@ -183,7 +183,7 @@ export class TestComponent implements OnInit, OnDestroy {
     return <ReranReport>this.reranReports.find((report) => report.id == id);
   }
 
-  selectReport(storageId: string, name: string): void {
+  openReport(storageId: string, name: string): void {
     this.httpService.getReport(storageId, 'testStorage').subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
@@ -224,12 +224,13 @@ export class TestComponent implements OnInit, OnDestroy {
     if (reranReport) {
       this.openCompareReportsEvent.emit({
         originalReport: reranReport.originalReport,
-        editedReport: reranReport.editedReport,
+        runResultReport: reranReport.runResultReport,
       });
     }
   }
 
   replaceReport(reportId: string): void {
+    console.log(reportId);
     this.httpService.replaceReport(reportId).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.id != reportId);
     });
