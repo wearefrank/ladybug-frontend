@@ -64,7 +64,7 @@
     "chai-match": "^1.1.1",
     "cypress": "^8.5.0",
     "cypress-file-upload": "^5.0.8",
-    "eslint": "^16.10.3",
+    "eslint": "^8.10.0",
     "eslint-plugin-sonarjs": "^0.11.0",
     "husky": "^7.0.4",
     "jasmine-core": "3.9.0",
