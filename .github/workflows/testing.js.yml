@@ -24,6 +24,13 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: '**/yarn.lock'
 
+      - name: Show npm version
+        run: npm -v
+      - name: Show node version
+        run: node -v
+      - name: Show yarn version
+        run: yarn -v
+
       - name: Install packages
         run: yarn install --frozen-lockfile
         working-directory: ladybug-frontend
