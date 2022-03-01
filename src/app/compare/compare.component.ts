@@ -12,7 +12,7 @@ import { TreeNode } from '../shared/interfaces/tree-node';
   templateUrl: './compare.component.html',
   styleUrls: ['./compare.component.css'],
 })
-export class CompareComponent implements OnChanges {
+export class CompareComponent {
   leftReport: CompareReport = {
     reports: [],
     id: 'leftId',
@@ -30,29 +30,23 @@ export class CompareComponent implements OnChanges {
   @ViewChild('leftDisplay') leftDisplayComponent!: DisplayComponent;
   @ViewChild('rightDisplay') rightDisplayComponent!: DisplayComponent;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
-  @Input() diffReports = { oldReport: '', newReport: '' };
+  @Input() diffReports = { originalReport: {} as Report, runResultReport: {} as Report };
 
-  constructor(private httpService: HttpService) {}
-
-  ngOnChanges() {
-    if (this.diffReports.oldReport != '') {
-      this.selectReportBasedOnIds();
-    }
-  }
+  constructor() {}
 
   /**
    * Select report based on the specified ids in diffReports
    */
   selectReportBasedOnIds(): void {
-    this.httpService.getReport(this.diffReports.oldReport).subscribe((result) => {
-      result.id = 'leftId';
-      this.addReportNodeLeft(result);
-    });
+    if (Object.keys(this.diffReports.originalReport).length > 0) {
+      this.diffReports.originalReport.id = 'leftId';
+      this.addReportNodeLeft(this.diffReports.originalReport);
+    }
 
-    this.httpService.getReport(this.diffReports.newReport).subscribe((result) => {
-      result.id = 'rightId';
-      this.addReportNodeRight(result);
-    });
+    if (Object.keys(this.diffReports.runResultReport).length > 0) {
+      this.diffReports.runResultReport.id = 'rightId';
+      this.addReportNodeRight(this.diffReports.runResultReport);
+    }
   }
 
   /**
@@ -61,7 +55,8 @@ export class CompareComponent implements OnChanges {
    */
   addReportNodeLeft(newReport: Report): void {
     if (this.leftReport.id === newReport.id) {
-      this.leftReport.reports.push(newReport);
+      this.leftReport.reports = [newReport];
+      this.leftTreeComponent?.resetTree();
       this.leftTreeComponent?.handleChange(newReport);
     }
   }
@@ -72,7 +67,8 @@ export class CompareComponent implements OnChanges {
    */
   addReportNodeRight(newReport: Report): void {
     if (this.rightReport.id === newReport.id) {
-      this.rightReport.reports.push(newReport);
+      this.rightReport.reports = [newReport];
+      this.rightTreeComponent?.resetTree();
       this.rightTreeComponent?.handleChange(newReport);
     }
   }
@@ -85,6 +81,7 @@ export class CompareComponent implements OnChanges {
     this.leftReport.selected = true;
     this.leftReport.current = currentReport;
     this.leftDisplayComponent?.showReport(this.leftReport.current);
+    this.rightTreeComponent?.selectSpecificNode(currentReport.id);
   }
 
   /**
@@ -95,6 +92,7 @@ export class CompareComponent implements OnChanges {
     this.rightReport.selected = true;
     this.rightReport.current = currentReport;
     this.rightDisplayComponent?.showReport(this.rightReport.current);
+    this.leftTreeComponent?.selectSpecificNode(currentReport.id);
   }
 
   /**

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { Metadata } from '../interfaces/metadata';
+import { Checkpoint } from '../interfaces/checkpoint';
+import { Report } from '../interfaces/report';
 
 @Injectable({
   providedIn: 'root',
@@ -87,5 +89,55 @@ export class HelperService {
 
   compare(a: number | string, b: number | string, isAsc: boolean): number {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  twoReportsAreEqual(a: Report, b: Report): boolean {
+    return (
+      a.checkpoints.length === b.checkpoints.length &&
+      this.compareAllCheckpoints(a.checkpoints, b.checkpoints) &&
+      a.description === b.description &&
+      a.estimatedMemoryUsage === b.estimatedMemoryUsage &&
+      a.fullPath === b.fullPath &&
+      this.twoCheckpointsAreEqual(a.inputCheckpoint, b.inputCheckpoint) &&
+      a.name === b.name &&
+      a.numberOfCheckpoints === b.numberOfCheckpoints &&
+      a.originalEndpointOrAbortpointForCurrentLevel === b.originalEndpointOrAbortpointForCurrentLevel &&
+      a.path === b.path &&
+      a.reportFilterMatching === b.reportFilterMatching &&
+      a.stubStrategy === b.stubStrategy &&
+      a.transformation === b.transformation &&
+      a.variableCsv === b.variableCsv &&
+      a.variablesAsMap === b.variablesAsMap
+    );
+  }
+
+  compareAllCheckpoints(a: Checkpoint[], b: Checkpoint[]) {
+    for (const [i, element] of a.entries()) {
+      if (!this.twoCheckpointsAreEqual(element, b[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  twoCheckpointsAreEqual(a: Checkpoint, b: Checkpoint): boolean {
+    return (
+      a.encoding === b.encoding &&
+      a.estimatedMemoryUsage === b.estimatedMemoryUsage &&
+      a.index === b.index &&
+      a.level === b.level &&
+      a.message === b.message &&
+      a.messageClassName === b.messageClassName &&
+      a.name === b.name &&
+      a.preTruncatedMessageLength === b.preTruncatedMessageLength &&
+      a.sourceClassName === b.sourceClassName &&
+      a.streaming === b.streaming &&
+      a.stub === b.stub &&
+      a.stubNotFound === b.stubNotFound &&
+      a.stubbed === b.stubbed &&
+      a.type === b.type &&
+      a.typeAsString === b.typeAsString &&
+      a.waitingForStream === b.waitingForStream
+    );
   }
 }

@@ -25,6 +25,7 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import { createJSDocTypeExpression, createYield } from "typescript";
+import 'cypress-file-upload';
 
 function createReport() {
     // No cy.visit because then the API call can happen multiple times.
@@ -49,3 +50,23 @@ function clearDebugStore() {
 }
 
 Cypress.Commands.add('clearDebugStore', clearDebugStore);
+
+function waitForNumFiles(thePath, fileCount, timeLeft) {
+    cy.task('downloads', thePath).then((actualFiles) => {
+        if(actualFiles.length >= fileCount) {
+            return true;
+        } else {
+            cy.wait(1000);
+            let nextTimeLeft = timeLeft - 1000;
+            if(nextTimeLeft <= 0) {
+                return false;
+            } else {
+                return waitForNumFiles(thePath, fileCount, nextTimeLeft);
+            }
+        }
+    })
+};
+
+Cypress.Commands.add('waitForNumFiles', (thePath, expectedNumFiles) => waitForNumFiles(thePath, expectedNumFiles, 10000));
+
+// Cypress.Commands.add('downloadPath', (theDownloadFile) => downloadPath(theDownloadFile));

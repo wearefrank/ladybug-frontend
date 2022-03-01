@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../services/http.service';
@@ -19,6 +19,15 @@ export class TableSettingsModalComponent {
   });
 
   @Output() openLatestReportsEvent = new EventEmitter<any>();
+  @Output() openReportInProgress = new EventEmitter<any>();
+  @Input()
+  get reportsInProgress(): string {
+    return this._reportsInProgress;
+  }
+  set reportsInProgress(reportsInProgress: string) {
+    this._reportsInProgress = reportsInProgress;
+  }
+  public _reportsInProgress = '';
 
   constructor(private modalService: NgbModal, private httpService: HttpService, private cookieService: CookieService) {}
 
@@ -42,6 +51,10 @@ export class TableSettingsModalComponent {
     this.openLatestReportsEvent.next(amount);
   }
 
+  openReportsInProgress(index: number) {
+    this.openReportInProgress.next(index);
+  }
+
   resetModal(): void {
     this.loadSettings();
   }
@@ -62,7 +75,7 @@ export class TableSettingsModalComponent {
       this.settingsForm.get('regexFilter')?.setValue(this.cookieService.get('regexFilter'));
     }
 
-    if (this.cookieService.get('transformationEnabled')) {
+    if (this.cookieService.get('transformationEnabled') != undefined) {
       this.settingsForm
         .get('transformationEnabled')
         ?.setValue(this.cookieService.get('transformationEnabled') == 'true');

@@ -5,7 +5,7 @@
   <div class="col">
     <div class="row">
       <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runAll()"></app-button>
-      <app-button [icon]="'fa fa-undo'" [title]="'Reset'" (click)="resetRunner()"></app-button>
+      <app-button [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="loadData()"></app-button>
       <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="openSettingsModal()"></app-button>
       <app-button [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
       <app-button [title]="'Deselect All'" [text]="'Deselect All'" (click)="uncheckAll()"></app-button>
@@ -13,10 +13,13 @@
       <app-button [icon]="'fa fa-download'" [title]="'Download Binary'" (click)="downloadSelected()"></app-button>
       <app-button [text]="'Clone'" [title]="'Clone report'" (click)="openCloneModal()"></app-button>
       <app-button [icon]="'fa fa-copy'" [title]="'Copy Selected'" (click)="copySelected()"></app-button>
-      <app-button [icon]="'fa fa-upload'" [title]="'Upload'" (click)="uploadFile.click()">
-        <input #uploadFile (change)="uploadReport($event)" type="file" style="display: none">
-      </app-button>
+      <button type="button" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
+              title="Upload" (click)="uploadFileTest.click()">
+        <i class="fa fa-upload"></i>
+        <input #uploadFileTest (change)="uploadReport($event)" type="file" id="uploadFileTest">
+      </button>
     </div>
+
 
     <div class="form-group mt-2">
       <label for="moveToInput">Move/Copy to:</label>
@@ -44,7 +47,7 @@
               <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report.storageId)"></app-button>
             </td>
             <td>
-              <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="selectReport(report.storageId, report.name)"></app-button>
+              <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="openReport(report.storageId, report.name)"></app-button>
             </td>
             <td *ngIf="getReranReport(report.storageId)">
               <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report.storageId)"></app-button>

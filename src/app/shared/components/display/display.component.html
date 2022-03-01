@@ -1,24 +1,36 @@
 <div *ngIf="displayReport">
   <div class="row" id="displayButtons">
-    <app-button *ngIf="report.root" [icon]="'fa fa-repeat'" [title]="'Rerun'" (click)="rerunReport()"></app-button>
-    <app-button [icon]="'fa fa-edit'" [title]="'Edit'" *ngIf="!editingChildNode && !editingRootNode"
-                (click)="editReport()"></app-button>
-    <app-button [icon]="'fa fa-trash'" [title]="'Discard Changes'" *ngIf="editingChildNode || editingRootNode"
-                (click)="openDifferenceModal(saveOrDiscardChanges, 'discard')"></app-button>
-    <app-button [icon]="'fa fa-save'" [title]="'Save'" *ngIf="editingChildNode || editingRootNode"
-                (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
+    <span *ngIf="id === 'report'">
+          <app-button *ngIf="report.root" [icon]="'fa fa-repeat'" [title]="'Rerun'" (click)="rerunReport()"></app-button>
+          <app-button [icon]="'fa fa-edit'" [title]="'Edit'" *ngIf="!editingChildNode && !editingRootNode"
+                      (click)="editReport()"></app-button>
+          <app-button [icon]="'fa fa-trash'" [title]="'Discard Changes'" *ngIf="editingChildNode || editingRootNode"
+                      (click)="openDifferenceModal(saveOrDiscardChanges, 'discard')"></app-button>
+          <app-button [icon]="'fa fa-save'" [title]="'Save'" *ngIf="editingChildNode || editingRootNode"
+                      (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
+    </span>
+
+    <span *ngIf="id === 'debug'">
+          <button class="btn btn-info my-2 mx-1 px-3" disabled title="Disabled: to run, copy report to test tab and open it there">
+            <i class="fa fa-repeat"></i>
+          </button>
+          <button class="btn btn-info my-2 mx-1 px-3" disabled title="Disabled: to edit, copy report to test tab and open it there.">
+            <i class="fa fa-edit"></i>
+          </button>
+          <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
+    </span>
+
     <div ngbDropdown title="Download">
-      <button class="btn btn-info my-2 mx-1" id="dropdownDownload" ngbDropdownToggle>
+      <button class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
       </button>
-      <div ngbDropdownMenu aria-labelledby="dropdownDownload">
+      <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
         <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
         <button ngbDropdownItem (click)="downloadReport(false, true)">XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
         <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
       </div>
     </div>
 
-    <app-button *ngIf="report.root" [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
     <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true, report.id)"></app-button>
   </div>
 

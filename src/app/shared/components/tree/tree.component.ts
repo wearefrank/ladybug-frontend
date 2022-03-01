@@ -46,7 +46,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
       this.treeSettings = treeSettings;
       this.updateTreeView();
       if (this.treeSettings.selectedNode != -1) {
-        $('#' + this._id).treeview('toggleNodeSelected', [this.treeSettings.selectedNode, { silent: false }]);
+        $('#' + this._id).treeview('selectNode', [this.treeSettings.selectedNode, { silent: false }]);
       }
     }
   }
@@ -109,7 +109,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
       const nextIndex = this.treeSettings.tree.length > 1 ? previousIndex - 1 : 0;
       const nextNode = this.treeSettings.tree[nextIndex];
       this.updateTreeView();
-      $('#' + this._id).treeview('toggleNodeSelected', [nextNode.nodes![0].id, { silent: false }]);
+      $('#' + this._id).treeview('selectNode', [nextNode.nodes![0].id, { silent: false }]);
     } else {
       this.updateTreeView();
     }
@@ -234,13 +234,28 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     });
 
     $('#' + this._id).on('nodeSelected', (event: any, data: TreeNode) => {
+      this.treeSettings.selectedNode = data.id;
       this.selectReportEvent.next(data);
     });
   }
 
+  resetTree(): void {
+    this.treeSettings = {
+      selectedReports: [],
+      tree: [],
+      treeId: '',
+      treeLoaded: false,
+      selectedNode: -1,
+    };
+  }
+
+  selectSpecificNode(id: number) {
+    $('#' + this._id).treeview('selectNode', [id, { silent: false }]);
+  }
+
   selectFirstChildNode(): void {
     if (this.treeSettings.tree.length > 0 && this.treeSettings.tree[this.treeSettings.tree.length - 1].nodes) {
-      $('#' + this._id).treeview('toggleNodeSelected', [
+      $('#' + this._id).treeview('selectNode', [
         this.treeSettings.tree[this.treeSettings.tree.length - 1].nodes![0].id,
         { silent: false },
       ]);

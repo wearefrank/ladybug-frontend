@@ -6,6 +6,9 @@ import { LoaderService } from '../../services/loader.service';
 import { TableSettingsModalComponent } from '../modals/table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../interfaces/table-settings';
 import { Metadata } from '../../interfaces/metadata';
+import { catchError } from 'rxjs';
+import { Report } from '../../interfaces/report';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-table',
@@ -33,6 +36,8 @@ export class TableComponent implements OnInit, OnDestroy {
     showFilter: false,
     filterValue: '',
     filterHeader: '',
+    reportsInProgress: '',
+    estimatedMemoryUsage: '',
   };
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
@@ -50,7 +55,8 @@ export class TableComponent implements OnInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    private cookieService: CookieService
   ) {}
 
   ngOnInit(): void {
@@ -63,15 +69,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.loaderService.saveTableSettings(
-      this._id,
-      this.tableSettings.reportMetadata,
-      this.tableSettings.showFilter,
-      this.tableSettings.displayAmount,
-      this.tableSettings.filterValue,
-      this.tableSettings.tableLoaded,
-      this.tableSettings.filterHeader
-    );
+    this.loaderService.saveTableSettings(this._id, this.tableSettings);
   }
 
   loadData(): void {
@@ -90,10 +88,14 @@ export class TableComponent implements OnInit, OnDestroy {
         });
       },
       error: () => {
-        this.toastComponent.addAlert({
-          type: 'danger',
-          message: 'Could not retrieve data for table',
-        });
+        catchError(this.httpService.handleError());
+      },
+    });
+
+    this.httpService.getSettings().subscribe({
+      next: (settings) => {
+        this.tableSettings.reportsInProgress = settings.reportsInProgress;
+        this.tableSettings.estimatedMemoryUsage = settings.estMemory;
       },
     });
   }
@@ -129,18 +131,16 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: string): void {
-    this.httpService.getReport(storageId).subscribe((data) => {
-      data.id = this.id;
-      this.openReportEvent.next(data);
+    this.httpService.getReport(storageId, 'debugStorage').subscribe((data) => {
+      let report: Report = data.report;
+      report.xml = data.xml;
+      report.id = this.id;
+      this.openReportEvent.next(report);
     });
   }
 
   openAllReports(): void {
     this.tableSettings.reportMetadata.forEach((report: Metadata) => this.openReport(report.storageId));
-  }
-
-  openReports(amount: number): void {
-    this.tableSettings.reportMetadata.slice(0, amount).forEach((report: Metadata) => this.openReport(report.storageId));
   }
 
   openLatestReports(amount: number): void {
@@ -149,6 +149,13 @@ export class TableComponent implements OnInit, OnDestroy {
         report.id = this.id;
         this.openReportEvent.next(report);
       });
+    });
+  }
+
+  openReportInProgress(index: number) {
+    this.httpService.getReportInProgress(index).subscribe((report) => {
+      report.id = this.id;
+      this.openReportEvent.next(report);
     });
   }
 

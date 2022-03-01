@@ -9,6 +9,8 @@
 // https://on.cypress.io/plugins-guide
 // ***********************************************************
 
+const fs = require('fs');
+
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
@@ -19,4 +21,19 @@
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+  on('task', {
+    downloads:  (downloadsPath) => {
+      return fs.readdirSync(downloadsPath)
+    },
+    deleteDownloads: (input) => {
+      const downloadsPath = input.downloadsPath;
+      const fileSep = input.fileSep;
+      fs.readdirSync(downloadsPath).forEach((f) => {
+        if(f != '.gitignore') {
+          fs.rmSync(downloadsPath + fileSep + f);
+        };
+      });
+      return null;
+    }
+  });
 }
