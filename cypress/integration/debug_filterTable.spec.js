@@ -18,8 +18,6 @@ describe('Table size and toggle filter', function () {
 
   afterEach(() => {
     cy.clearDebugStore();
-    cy.get('#RefreshButton').click();
-    cy.get('.table-responsive tbody').should('have.length', 0);
   })
 
   it('Typing in a table size and retyping it', function () {
