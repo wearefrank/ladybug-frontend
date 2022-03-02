@@ -10,7 +10,6 @@ import { CookieService } from 'ngx-cookie-service';
 export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   toastComponent!: ToastComponent;
-  REPORT_DEBUG_STORAGE: string = 'api/report/debugStorage/';
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
 
@@ -54,25 +53,22 @@ export class HttpService {
     return this.http.get<any>('api/metadata/testStorage/');
   }
 
-  getReport(reportId: string): Observable<any> {
+  getReport(reportId: string, storage: string) {
     return this.http
-      .get<any>(this.REPORT_DEBUG_STORAGE + reportId)
-      .pipe(tap(() => this.handleSuccess('Report opened!')))
-      .pipe(catchError(this.handleError()));
-  }
-
-  getMonacoCode(reportId: string): Observable<any> {
-    const xmlTransformationEnabled: string = this.cookieService.get('xmlTransformationEnabled')
-      ? this.cookieService.get('xmlTransformationEnabled')
-      : 'false';
-    return this.http
-      .get<any>(this.REPORT_DEBUG_STORAGE + reportId + '/?xml=true&globalTransformer=' + xmlTransformationEnabled)
+      .get<any>(
+        'api/report/' +
+          storage +
+          '/' +
+          reportId +
+          '/?xml=true&globalTransformer=' +
+          this.cookieService.get('transformationEnabled')
+      )
       .pipe(catchError(this.handleError()));
   }
 
   postReport(reportId: string, report: any): Observable<void> {
     return this.http
-      .post(this.REPORT_DEBUG_STORAGE + reportId, report)
+      .post('api/report/testStorage' + '/' + reportId, report)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }
@@ -149,20 +145,16 @@ export class HttpService {
   queryResults(): Observable<any> {
     return this.http
       .get('api/runner/result/debugStorage', { headers: this.headers })
-      .pipe(tap(() => this.handleSuccess('Test run(s) completed!')))
       .pipe(catchError(this.handleError()));
   }
 
   deleteReport(reportId: string): Observable<void> {
-    return this.http
-      .delete('api/report/testStorage/' + reportId)
-      .pipe(tap(() => this.handleSuccess('Report deleted!')))
-      .pipe(catchError(this.handleError()));
+    return this.http.delete('api/report/testStorage/' + reportId).pipe(catchError(this.handleError()));
   }
 
   replaceReport(reportId: string): Observable<void> {
     return this.http
-      .put('api/runner/replace/testStorage/' + reportId, {
+      .put('api/runner/replace/debugStorage/' + reportId, {
         headers: this.headers,
       })
       .pipe(catchError(this.handleError()));
