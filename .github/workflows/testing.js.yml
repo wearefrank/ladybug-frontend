@@ -12,9 +12,6 @@ jobs:
         node-version: [ 14.x ]
 
     steps:
-      - uses: browser-actions/setup-edge@latest
-      - name: Print Edge version
-        run: (Get-Item (Get-Command msedge).Source).VersionInfo.ProductVersion
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
@@ -111,15 +108,15 @@ jobs:
             npm run startCicd
           wait-on: 'http://localhost:8090, http://localhost:4200'
           wait-on-timeout: 240
-      - name: Run cypress with Edge browser
+      - name: Run cypress with firefox browser
         uses: cypress-io/github-action@v2.9.7
         with:
           working-directory: ladybug-frontend
           start: |
-            npm run startCicd-edge
+            npm run startCicd
           wait-on: 'http://localhost:8090, http://localhost:4200'
           wait-on-timeout: 240
-          browser: edge
+          browser: firefox
 
       - name: Show files
         run: tree -d -L 5 .
