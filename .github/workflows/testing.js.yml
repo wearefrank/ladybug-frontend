@@ -100,7 +100,7 @@ jobs:
         run: npm run startServer &
         working-directory: ladybug-frontend
 
-      - name: Run cypress with default browser
+      - name: Run cypress with chrome browser
         uses: cypress-io/github-action@v2.9.7
         with:
           working-directory: ladybug-frontend
@@ -108,6 +108,7 @@ jobs:
             npm run startCicd
           wait-on: 'http://localhost:8090, http://localhost:4200'
           wait-on-timeout: 240
+          browser: chrome
       - name: Run cypress with firefox browser
         uses: cypress-io/github-action@v2.9.7
         with:
@@ -117,6 +118,7 @@ jobs:
           wait-on: 'http://localhost:8090, http://localhost:4200'
           wait-on-timeout: 240
           browser: firefox
+          config: screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
 
       - name: Show files
         run: tree -d -L 5 .
@@ -139,4 +141,16 @@ jobs:
         with:
           name: videos
           path: ladybug-frontend/cypress/videos/
+      - name: Store Cypress screenshots for Firefox
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Firefix screenshots
+          path: ladybug-frontend/cypress/firefox/screenshots/
+      - name: Store Cypress videos for Firefox
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Firefox videos
+          path: ladybug-frontend/cypress/firefox/videos/
 
