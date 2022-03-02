@@ -8,6 +8,7 @@
     "supportFile": "cypress/support/index.ts",
     "env": {
         "backendServer": "http://localhost:80",
+        "defaultCommandTimeout": "10000",
         "FILESEP": "\\"
     }
 }
