@@ -27,7 +27,9 @@ export class DisplayComponent {
     root: false,
     text: '',
   };
+  @Input() id: string = '';
   @Output() closeReportEvent = new EventEmitter<any>();
+  @Output() saveReportEvent = new EventEmitter<any>();
   @ViewChild(MonacoEditorComponent)
   monacoEditorComponent!: MonacoEditorComponent;
   @ViewChild(DisplayTableComponent)
@@ -76,9 +78,7 @@ export class DisplayComponent {
 
   loadMonacoCode() {
     if (this.report.root) {
-      this.httpService.getMonacoCode(this.report.ladybug.storageId).subscribe((data) => {
-        this.monacoEditorComponent?.loadMonaco(data.xml);
-      });
+      this.monacoEditorComponent?.loadMonaco(this.report.ladybug.xml);
     } else {
       this.monacoEditorComponent?.loadMonaco(beautify(this.report.ladybug.message));
     }
@@ -122,11 +122,19 @@ export class DisplayComponent {
   }
 
   saveChanges() {
-    if (this.report.root) {
-      this.httpService.postReport(this.report.ladybug.storageId, this.getReportValues()).subscribe();
+    let checkpointId: string = '';
+    let storageId: string = '';
+    if (!this.report.root) {
+      storageId = this.report.ladybug.uid.split('#')[0];
+      checkpointId = this.report.ladybug.uid.split('#')[1];
     } else {
-      // TODO: Save the changes in the message for child nodes (aka the editor changes)
+      storageId = this.report.ladybug.storageId;
     }
+
+    this.httpService.postReport(storageId, this.getReportValues(checkpointId)).subscribe((response: any) => {
+      console.log('Saving only with storageID: ' + storageId);
+      this.saveReportEvent.next(response.report);
+    });
   }
 
   discardChanges() {
@@ -135,24 +143,31 @@ export class DisplayComponent {
     }
   }
 
-  getReportValues(): any {
+  getReportValues(checkpointId: string): any {
     return {
-      name: this.name.nativeElement.value,
-      path: this.path.nativeElement.value,
-      description: this.description.nativeElement.value,
-      transformation: this.transformation.nativeElement.value,
+      name: this.name?.nativeElement.value ?? '',
+      path: this.path?.nativeElement.value ?? '',
+      description: this.description?.nativeElement.value ?? '',
+      transformation: this.transformation?.nativeElement.value ?? '',
+      checkpointId: checkpointId,
+      checkpointMessage: this.monacoEditorComponent?.getValue() ?? '',
     };
   }
 
   copyReport(): void {
-    const storageId: number = +this.report.ladybug.storageId;
+    const storageId: number = this.report.root
+      ? +this.report.ladybug.storageId
+      : +this.report.ladybug.uid.split('#')[0];
     const data: any = { debugStorage: [storageId] };
     this.httpService.copyReport(data).subscribe();
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    const queryString: string = '?id=' + this.report.ladybug.uid.split('#')[0];
-    window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + queryString);
+    console.log(this.report.root);
+    let queryString: string = this.report.root
+      ? this.report.ladybug.storageId.toString()
+      : this.report.ladybug.uid.split('#')[0];
+    window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + '?id=' + queryString);
     this.httpService.handleSuccess('Report Downloaded!');
   }
 
