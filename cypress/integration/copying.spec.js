@@ -1,6 +1,9 @@
 describe('Tests about copying', function() {
   afterEach(() => {
     cy.clearDebugStore();
+    cy.get('li#testTab').click();
+    cy.get('#SelectAllButton').click();
+    cy.get('.row #DeleteSelectedButton').click();
   });
 
   it('Copy report to test tab', () => {
@@ -19,7 +22,7 @@ describe('Tests about copying', function() {
     cy.get('div.treeview > ul > li:not(:contains(other)):eq(1)').click();
     cy.get('button#CopyButton').click();
     cy.get('li#testTab').click();
-    cy.get('button#RefreshButton').click();
+    cy.get('#ReloadTestReportsButton').click();
     cy.get('tbody#testReports').find('tr').should('have.length', 1).within(function(testReport) {
       cy.wrap(testReport).contains('/name').should('have.length', 1);
     });
