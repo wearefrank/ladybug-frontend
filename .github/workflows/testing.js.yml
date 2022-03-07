@@ -7,9 +7,6 @@ jobs:
   testing:
     name: Unit tests
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 14.x ]
 
     steps:
       - name: Checkout repository
@@ -17,16 +14,33 @@ jobs:
         with:
           path: ladybug-frontend
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 16.x
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: '**/package.json'
+          node-version: 16.x
+          cache: 'yarn'
+          cache-dependency-path: '**/yarn.lock'
+      - name: 'change version'
+        uses: reedyuk/npm-version@1.1.1
+        with:
+          version: '8.1.2'
+          package: 'ladybug-frontend'
 
-      # Workaround because npm ci does not work. Trouble with dependency esbuild
+      - name: Update yarn
+        run: corepack enable
+        working-directory: 'ladybug-frontend'
+      - name: Show npm version
+        run: npm -v
+        working-directory: 'ladybug-frontend'
+      - name: Show node version
+        run: node -v
+        working-directory: 'ladybug-frontend'
+      - name: Show yarn version
+        run: yarn -v
+        working-directory: 'ladybug-frontend'
+
       - name: Install packages
-        run: npm install
+        run: yarn install --frozen-lockfile
         working-directory: ladybug-frontend
 
       - name: Set Cypress environment variables
@@ -34,15 +48,15 @@ jobs:
         working-directory: ladybug-frontend
 
       - name: Build project
-        run: npm run build
+        run: yarn run build
         working-directory: ladybug-frontend
 
       - name: Run linter
-        run: npm run lint
+        run: yarn run lint
         working-directory: ladybug-frontend
 
       - name: Run unit tests
-        run: npm run test-headless
+        run: yarn run test-headless
         working-directory: ladybug-frontend
         continue-on-error: false
 
@@ -96,15 +110,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven
 
-      - name: Run cypress using the Frank!Runner
+      - name: Start server using Frank!Runner
+        run: yarn run startServer &
+        working-directory: ladybug-frontend
+
+      - name: Run cypress with chrome browser
         uses: cypress-io/github-action@v2.9.7
         with:
           working-directory: ladybug-frontend
           start: |
-            npm run startCicd
-            npm run startServer
+            yarn run startCicd
           wait-on: 'http://localhost:8090, http://localhost:4200'
           wait-on-timeout: 240
+          browser: chrome
+      - name: Run cypress with firefox browser
+        uses: cypress-io/github-action@v2.9.7
+        with:
+          working-directory: ladybug-frontend
+          start: |
+            yarn run startCicd
+          wait-on: 'http://localhost:8090, http://localhost:4200'
+          wait-on-timeout: 240
+          browser: firefox
+          config: screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
 
       - name: Show files
         run: tree -d -L 5 .
@@ -127,4 +155,16 @@ jobs:
         with:
           name: videos
           path: ladybug-frontend/cypress/videos/
+      - name: Store Cypress screenshots for Firefox
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Firefix screenshots
+          path: ladybug-frontend/cypress/firefox/screenshots/
+      - name: Store Cypress videos for Firefox
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Firefox videos
+          path: ladybug-frontend/cypress/firefox/videos/
 
