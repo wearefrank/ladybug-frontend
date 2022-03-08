@@ -23,7 +23,7 @@ describe('Tests about copying', function() {
     cy.get('div.treeview > ul > li:not(:contains(other)):eq(1)').click();
     cy.get('button#CopyButton').click();
     cy.get('li#testTab').click();
-    cy.get('#ReloadTestReportsButton').click();
+    // We test that the user does not have to refresh here.
     cy.get('tbody#testReports').find('tr').should('have.length', 1).within(function(testReport) {
       cy.wrap(testReport).contains('/name').should('have.length', 1);
     });
