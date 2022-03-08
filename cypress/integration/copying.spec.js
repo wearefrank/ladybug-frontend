@@ -4,12 +4,13 @@ describe('Tests about copying', function() {
     cy.get('li#testTab').click();
     cy.get('#SelectAllButton').click();
     cy.get('.row #DeleteSelectedButton').click();
+    cy.get('#debugTab').click();
   });
 
   it('Copy report to test tab', () => {
     cy.visit('');
     cy.get('#testTab').click();
-    cy.get('#metadataTable tbody').find('tr').should('have.length', 0);
+    cy.get('#metadataTable tbody', {timeout: 10000}).find('tr').should('have.length', 0);
     cy.createReport();
     cy.createOtherReport();
     cy.get('#debugTab').click();
@@ -27,7 +28,12 @@ describe('Tests about copying', function() {
       cy.wrap(testReport).contains('/name').should('have.length', 1);
     });
     cy.get('#debugTab').click();
-    cy.get('#metadataTable tbody').find('tr').should('have.length', 2);
+    cy.get('#metadataTable tbody', {timeout: 10000}).find('tr').should('have.length', 2);
     cy.get('div.treeview > ul > li').should('have.length', 6);
+    cy.get('li#testTab').click();
+    // Do not refresh. The test tab should have saved its state.
+    cy.get('tbody#testReports').find('tr').should('have.length', 1).within(function(testReport) {
+      cy.wrap(testReport).contains('/name').should('have.length', 1);
+    });
   });
 });
