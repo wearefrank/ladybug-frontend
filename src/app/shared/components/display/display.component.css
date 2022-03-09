@@ -3,3 +3,7 @@
   font-size: large;
   display: inline-block;
 }
+
+#monacoEditor {
+  overflow: hidden;
+}
