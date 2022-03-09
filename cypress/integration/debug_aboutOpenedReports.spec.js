@@ -48,6 +48,13 @@ describe('About opened reports', function() {
     cy.get('div.treeview > ul > li:contains(name)').within((children) => linesFormExpandedNode(children, 'even'));
     cy.get('div.treeview > ul > li:contains(otherName)').within((children) => linesFormExpandedNode(children, 'even'));
   });
+
+  it('Node info corresponds to selected node', function() {
+    cy.get('button[id="OpenAllButton"]').click();
+    cy.get('div.treeview > ul > li').should('have.length', 6);
+    checkNodeInfo('name');
+    checkNodeInfo('otherName');
+  });
 });
 
 function linesFormExpandedNode($lines, evenOrOdd) {
@@ -93,4 +100,33 @@ function linesFormCollapsedNode($lines) {
   expect($lines.eq(0).children().eq(0)).to.have.class('expand-icon');
   expect($lines.eq(0).children().eq(0)).to.have.class('fa-plus');
   expect($lines.eq(0).children().eq(1)).to.have.class('node-icon');
+}
+
+function checkNodeInfo(name) {
+  cy.get(`div.treeview > ul > li:contains(${name}):eq(0)`).click();
+  const startOfReportTag = '<Report';
+  const quotedName = `"${name}"`;
+  cy.getShownMonacoModelElement().within(function(shownMonacoElement) {
+    cy.wrap(shownMonacoElement).find(`span:contains(${startOfReportTag})`);
+    cy.wrap(shownMonacoElement).find('span:contains(Name)');
+    cy.wrap(shownMonacoElement).find(`span:contains(${quotedName})`);  
+  });
+  cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name');
+  cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', `${name}`);
+  cy.get('#displayedNodeTable tr:eq(4) td:eq(0)').should('have.text', 'StorageId');
+  cy.get('#displayedNodeTable tr:eq(4) td:eq(1)').should('not.be.empty');
+  cy.get(`div.treeview > ul > li:contains(${name}):eq(1)`).click();
+  const helloWorld = "Hello\xa0World!";
+  cy.getShownMonacoModelElement().find(`span:contains(${helloWorld})`);
+  cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name');
+  cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', `${name}`);
+  cy.get('#displayedNodeTable tr:eq(5) td:eq(0)').should('have.text', 'CheckpointUID');
+  cy.get('#displayedNodeTable tr:eq(5) td:eq(1)').should('not.be.empty');
+  cy.get(`div.treeview > ul > li:contains(${name}):eq(2)`).click();
+  const goodbyeWorld = "Goodbye\xa0World!";
+  cy.getShownMonacoModelElement().find(`span:contains(${goodbyeWorld})`);
+  cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name');
+  cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', `${name}`);
+  cy.get('#displayedNodeTable tr:eq(5) td:eq(0)').should('have.text', 'CheckpointUID');
+  cy.get('#displayedNodeTable tr:eq(5) td:eq(1)').should('not.be.empty');
 }
