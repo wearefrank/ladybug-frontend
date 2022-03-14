@@ -146,7 +146,6 @@ export class TableComponent implements OnInit, OnDestroy {
       let report: Report = data.report;
       report.xml = data.xml;
       report.id = this.id;
-      console.log(report);
       this.openReportEvent.next(report);
     });
   }
