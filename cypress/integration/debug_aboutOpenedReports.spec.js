@@ -55,6 +55,23 @@ describe('About opened reports', function() {
     checkNodeInfo('name');
     checkNodeInfo('otherName');
   });
+
+  it('If there are open reports, then always one of them is selected', function() {
+    cy.get('.table-responsive tbody').find('tr').contains('name').click();
+    cy.get('div.treeview > ul > li').should('have.length', 3).each((node) => {
+      cy.wrap(node).should('have.text', 'name');
+    });
+    cy.get('div.treeview > ul > li.node-selected').should('have.length', 1);
+    cy.get('.table-responsive tbody').find('tr').contains('otherName').click();
+    cy.get('div.treeview > ul > li').should('have.length', 6);
+    // When you open a new report, the new report is also selected.
+    cy.get('div.treeview > ul > li.node-selected').should('have.length', 1).should('have.text', 'otherName');
+    cy.get('button#CloseButton').click();
+    cy.get('div.treeview > ul > li').should('have.length', 3).each((node) => {
+      cy.wrap(node).should('have.text', 'name');
+    });
+    cy.get('div.treeview > ul > li.node-selected').should('have.length', 1);
+  });
 });
 
 function linesFormExpandedNode($lines, evenOrOdd) {
