@@ -46,6 +46,8 @@ export class TableSettingsModalComponent {
     this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
     this.cookieService.set('transformation', form.transformation);
     this.httpService.postTransformation(form.transformation).subscribe();
+    let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled' };
+    this.httpService.postSettings(data).subscribe();
   }
 
   openLatestReports(amount: number): void {
