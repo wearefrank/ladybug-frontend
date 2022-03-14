@@ -72,9 +72,11 @@ export class TableSettingsModalComponent {
   }
 
   loadSettings(): void {
-    if (this.cookieService.get('generatorEnabled')) {
-      this.settingsForm.get('generatorEnabled')?.setValue(this.cookieService.get('generatorEnabled'));
-    }
+    this.httpService.getSettings().subscribe((response) => {
+      const generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
+      this.cookieService.set('generatorEnabled', generatorStatus);
+      this.settingsForm.get('generatorEnabled')?.setValue(generatorStatus);
+    });
 
     if (this.cookieService.get('regexFilter')) {
       this.settingsForm.get('regexFilter')?.setValue(this.cookieService.get('regexFilter'));
