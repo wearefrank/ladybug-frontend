@@ -136,6 +136,7 @@ jobs:
 
       - name: Show files
         run: tree -d -L 5 .
+        if: always()
 
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v2
