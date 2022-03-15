@@ -60,7 +60,7 @@ export class HttpService {
           storage +
           '/' +
           reportId +
-          '/?globalTransformer=' +
+          '/?xml=true&globalTransformer=' +
           this.cookieService.get('transformationEnabled')
       )
       .pipe(catchError(this.handleError()));
