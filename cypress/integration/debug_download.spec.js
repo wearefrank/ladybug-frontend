@@ -108,10 +108,9 @@ describe('Debug tab download', function() {
     // is requested here from the backend. The backend should still have the
     // report to have a valid test.
     //
-    // Martijn would expect this to work on any node of the report, not only the second.
-    // See issue https://github.com/ibissource/ladybug-frontend/issues/50.
-    //
-    cy.get('div.treeview > ul > li:contains(name):not(:contains(other)):eq(1)').click();
+    // We can not click the node to select it because it is selected already.
+    // If we click, we unselect it and then no node is selected anymore.
+    cy.get('div.treeview > ul > li:contains(name):not(:contains(other)):eq(1)').selectIfNotSelected();
     cy.task('downloads', downloadsFolder).should('have.length.at.least', 0).then(filesBefore => {
       cy.get('#dropdownDownloadDisplay').click();
       cy.get('#displayButtons button:contains("Binary"):not(:contains("XML"))[class="dropdown-item"]').click();
