@@ -1,8 +1,9 @@
 import { Report } from './report';
+import { TreeNode } from './tree-node';
 
 export interface CompareReport {
   reports: Report[];
   id: string;
-  current: any;
+  current: TreeNode;
   selected: boolean;
 }

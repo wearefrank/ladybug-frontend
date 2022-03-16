@@ -1,11 +1,12 @@
-import { Component, Input, OnChanges, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { TreeComponent } from '../shared/components/tree/tree.component';
 import { DisplayComponent } from '../shared/components/display/display.component';
-import { HttpService } from '../shared/services/http.service';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { CompareReport } from '../shared/interfaces/compare-report';
 import { Report } from '../shared/interfaces/report';
 import { TreeNode } from '../shared/interfaces/tree-node';
+// @ts-ignore
+import DiffMatchPatch from 'diff-match-patch';
 
 @Component({
   selector: 'app-compare',
@@ -16,13 +17,13 @@ export class CompareComponent {
   leftReport: CompareReport = {
     reports: [],
     id: 'leftId',
-    current: {},
+    current: {} as TreeNode,
     selected: false,
   };
   rightReport: CompareReport = {
     reports: [],
     id: 'rightId',
-    current: {},
+    current: {} as TreeNode,
     selected: false,
   };
   @ViewChild('leftTree') leftTreeComponent!: TreeComponent;
@@ -101,7 +102,7 @@ export class CompareComponent {
    */
   closeReportLeft(currentNode: TreeNode): void {
     this.leftReport.selected = false;
-    this.leftReport.current = {};
+    this.leftReport.current = {} as TreeNode;
     this.leftTreeComponent?.removeNode(currentNode);
   }
 
@@ -111,7 +112,7 @@ export class CompareComponent {
    */
   closeReportRight(currentNode: TreeNode): void {
     this.rightReport.selected = false;
-    this.rightReport.current = {};
+    this.rightReport.current = {} as TreeNode;
     this.rightTreeComponent?.removeNode(currentNode);
   }
 }

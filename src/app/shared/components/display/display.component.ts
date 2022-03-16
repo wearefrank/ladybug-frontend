@@ -70,7 +70,9 @@ export class DisplayComponent {
 
   showReport(report: TreeNode): void {
     this.report = report;
-    this.loadMonacoCode();
+    setTimeout(() => {
+      this.loadMonacoCode();
+    }, 100);
     this.displayReport = true;
     this.rerunResult = '';
     this.disableEditing(); // For switching from editing current report to another
@@ -78,9 +80,9 @@ export class DisplayComponent {
 
   loadMonacoCode() {
     if (this.report.root) {
-      this.monacoEditorComponent?.loadMonaco(this.report.ladybug.xml);
+      this.monacoEditorComponent?.loadMonaco(this.report.ladybug.xml, '');
     } else {
-      this.monacoEditorComponent?.loadMonaco(beautify(this.report.ladybug.message));
+      this.monacoEditorComponent?.loadMonaco(beautify(this.report.ladybug.message), '');
     }
   }
 
@@ -139,7 +141,7 @@ export class DisplayComponent {
 
   discardChanges() {
     if (!this.report.root) {
-      this.monacoEditorComponent.loadMonaco(this.differenceModal[0].originalValue);
+      this.monacoEditorComponent.loadMonaco(this.differenceModal[0].originalValue, '');
     }
   }
 
