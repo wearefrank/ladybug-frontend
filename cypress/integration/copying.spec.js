@@ -20,7 +20,7 @@ describe('Tests about copying', function() {
     cy.get('button[id="OpenAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 6);
     // :eq expects a zero-based index
-    cy.get('div.treeview > ul > li:not(:contains(other)):eq(1)').click();
+    cy.get('div.treeview > ul > li:not(:contains(other)):eq(1)').selectIfNotSelected();
     cy.get('div.treeview > ul > li:not(:contains(other)):eq(1)').should('have.class', 'node-selected');
     cy.get('div.treeview > ul > li.node-selected').should('have.length', 1);
     cy.get('button#CopyButton').click();
