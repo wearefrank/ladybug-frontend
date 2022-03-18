@@ -25,5 +25,8 @@ describe('Report transformation', function() {
     // We test that the top node was not selected before.
     cy.get('div.treeview > ul > li:eq(0)').click();
     cy.get('#monacoEditor').contains('Name="IGNORED"');
+    // The transformation should not affect the report table, only the XML in the Monaco editor
+    cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name');
+    cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', 'otherName');
   });
 });
