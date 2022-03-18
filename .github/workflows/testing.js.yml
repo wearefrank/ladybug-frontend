@@ -143,7 +143,7 @@ jobs:
         if: always()
         with:
           name: logs
-          path: frank-runner/build/apache-tomcat-9.0.50/logs/catalina.out
+          path: frank-runner/build/apache-tomcat-9.0.56/logs/catalina.out
       - name: Store Cypress screenshots
         uses: actions/upload-artifact@v2
         if: always()
