@@ -76,7 +76,7 @@ export class TestComponent implements OnInit, OnDestroy {
   addCopiedReports(metadata: Metadata[]): void {
     const amountAdded: number = metadata.length - this.reports.length;
     if (amountAdded > 0) {
-      for (let index = this.reports.length; index <= metadata.values.length - 1; index++) {
+      for (let index = this.reports.length; index <= metadata.length - 1; index++) {
         this.reports.push(metadata[index]);
       }
     }

@@ -79,3 +79,11 @@ function getShownMonacoModelElement() {
 };
 
 Cypress.Commands.add('getShownMonacoModelElement', getShownMonacoModelElement);
+
+function selectIfNotSelected(node) {
+    if(! node.hasClass('node-selected')) {
+        cy.wrap(node).click();
+    }
+};
+
+Cypress.Commands.add('selectIfNotSelected', {prevSubject: 'element'}, (node) => selectIfNotSelected(node));

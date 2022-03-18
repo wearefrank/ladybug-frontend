@@ -13,7 +13,7 @@ describe('About opened reports', function() {
     cy.get('button[id="OpenAllButton"]').click();
     // Each of the two reports has three lines.
     cy.get('div.treeview > ul > li').should('have.length', 6);
-    cy.get('div.treeview > ul > li:contains(name)').first().click();
+    cy.get('div.treeview > ul > li:contains(name)').first().selectIfNotSelected();
     cy.get('#CloseButton').click();
     cy.get('div.treeview > ul > li').should('have.length', 3);
     // nth-child has an 1-based index
