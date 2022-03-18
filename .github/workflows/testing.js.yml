@@ -110,6 +110,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven
 
+      - name: Show current time, allows you to check that logs are not old
+        run: date
       - name: Remove old catalina.out
         run: rm -rf frank-runner/build/apache-tomcat-9.0.56/logs/catalina.out
 
