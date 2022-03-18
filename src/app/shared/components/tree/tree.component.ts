@@ -16,6 +16,7 @@ declare var $: any;
 export class TreeComponent implements AfterViewInit, OnDestroy {
   @Output() selectReportEvent = new EventEmitter<any>();
   @Output() closeEntireTreeEvent = new EventEmitter<any>();
+  @Output() closeDisplayReportEvent = new EventEmitter<any>();
   treeSettings: TreeSettings = {
     selectedReports: [],
     tree: [],
@@ -234,8 +235,13 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     });
 
     $('#' + this._id).on('nodeSelected', (event: any, data: TreeNode) => {
+      console.log('Selecting');
       this.treeSettings.selectedNode = data.id;
       this.selectReportEvent.next(data);
+    });
+
+    $('#' + this._id).on('nodeUnselected', () => {
+      this.closeDisplayReportEvent.emit();
     });
   }
 

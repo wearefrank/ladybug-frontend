@@ -92,12 +92,23 @@ export class TableComponent implements OnInit, OnDestroy {
       },
     });
 
+    this.getTableSettings();
+    this.makeBackendUseTransformationInCookies();
+  }
+
+  getTableSettings() {
     this.httpService.getSettings().subscribe({
       next: (settings) => {
         this.tableSettings.reportsInProgress = settings.reportsInProgress;
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
       },
     });
+  }
+
+  makeBackendUseTransformationInCookies() {
+    if (this.cookieService.get('transformation')) {
+      this.httpService.postTransformation(this.cookieService.get('transformation')).subscribe();
+    }
   }
 
   openModal(): void {

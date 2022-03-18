@@ -1,9 +1,5 @@
-.resizable-vertical {
-  height: 300px !important;
-}
-
 #metadataTable {
-  height: 300px;
+  height: 30vh;
   resize: vertical;
   overflow: auto
 }

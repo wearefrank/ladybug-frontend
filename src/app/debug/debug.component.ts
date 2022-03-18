@@ -27,6 +27,10 @@ export class DebugComponent {
     this.displayComponent.closeReport(false, -1);
   }
 
+  closeDisplayReport(): void {
+    this.displayComponent.closeReport(false, -1);
+  }
+
   closeReport(currentReport: TreeNode): void {
     this.treeComponent.removeNode(currentReport);
   }

@@ -84,8 +84,8 @@ export class DisplayComponent {
     }
   }
 
-  closeReport(onlyClosingDisplay: boolean, reportId: number): void {
-    if (onlyClosingDisplay) {
+  closeReport(displayCloseButton: boolean, reportId: number): void {
+    if (displayCloseButton) {
       this.closeReportEvent.next(this.report);
       if (this.report.id === reportId) {
         this.displayReport = false;
