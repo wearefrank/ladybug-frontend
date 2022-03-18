@@ -14,7 +14,7 @@
       </button>
       <div ngbDropdownMenu aria-labelledby="dropdownDownloadTable">
         <button ngbDropdownItem (click)="downloadReports(true, true)">XML & Binary</button>
-        <button ngbDropdownItem (click)="downloadReports(false, true)">XML</button>
+        <button ngbDropdownItem (click)="downloadReports(false, true)">XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
         <button ngbDropdownItem (click)="downloadReports(true, false)">Binary</button>
       </div>
     </div>
@@ -54,16 +54,6 @@
         <td> {{ row.numberOfCheckpoints }}</td>
         <td> {{ row.estimatedMemoryUsage }}</td>
         <td> {{ row.storageSize }}</td>
-<!--        // StorageId EndTime Duration Name CorrelationId NrChpts EstMemusage StorageSize-->
-<!--        <td>{{ row[5] }}</td>-->
-<!--        <td> {{ getDate(row[4]) | date:'dd/MM/yyyy - HH:mm:ss.SSS'}}</td>-->
-<!--        <td>{{ row[0] }}</td>-->
-<!--        <td>{{ row[2] }}</td>-->
-<!--        <td>{{ row[6] }}</td>-->
-<!--        <td>{{ row[3] }}</td>-->
-<!--        <td>{{ row[7] }}</td>-->
-<!--        <td>{{ row[8] }}</td>-->
-<!--        <td>{{ row[1] }}</td>-->
       </tr>
       </tbody>
     </table>

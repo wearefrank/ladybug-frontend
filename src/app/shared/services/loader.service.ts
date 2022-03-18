@@ -51,6 +51,7 @@ export class LoaderService {
   saveTableSettings(tableId: string, tableSettings: TableSettings): void {
     let tableIndex: number = this.tables.findIndex((table) => table.tableId === tableId)!;
     this.tables[tableIndex] = tableSettings;
+    this.tables[tableIndex].tableId = tableId;
   }
 
   getTableSettings(tableId: string): TableSettings {

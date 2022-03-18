@@ -1,9 +1,10 @@
-<div class="row resizable-vertical" style="min-height: 200px">
+<div class="row resizable-vertical">
   <div class="col-6">
     <app-tree
       #leftTree
       [id]="leftReport.id"
-      (selectReportEvent)="selectReportLeft($event)"></app-tree>
+      (selectReportEvent)="selectReportLeft($event)"
+    ></app-tree>
   </div>
   <div class="col-6">
     <app-tree

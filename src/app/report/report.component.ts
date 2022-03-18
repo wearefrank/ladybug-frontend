@@ -25,7 +25,9 @@ export class ReportComponent implements AfterViewInit {
    Add a new report and notify the tree of the change
    */
   ngAfterViewInit(): void {
-    this.treeComponent?.handleChange(<Report>(<unknown>this.reportData));
+    setTimeout(() => {
+      this.treeComponent?.handleChange(<Report>(<unknown>this.reportData));
+    });
   }
 
   /**
@@ -34,5 +36,12 @@ export class ReportComponent implements AfterViewInit {
    */
   selectReport(currentReport: TreeNode): void {
     this.displayComponent.showReport(currentReport);
+  }
+
+  savingReport(something: any) {
+    let selectedNode = this.treeComponent?.treeSettings.selectedNode;
+    this.treeComponent?.closeAll();
+    this.treeComponent?.handleChange(something);
+    this.treeComponent?.selectSpecificNode(selectedNode);
   }
 }

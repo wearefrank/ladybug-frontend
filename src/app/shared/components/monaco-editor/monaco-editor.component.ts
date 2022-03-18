@@ -79,10 +79,11 @@ export class MonacoEditorComponent implements AfterViewInit {
       readOnly: true,
       language: 'xml',
       theme: 'vs-light',
-      fontSize: 10,
+      fontSize: 12,
       minimap: {
         enabled: false,
       },
+      wordWrap: 'on',
     });
   }
 

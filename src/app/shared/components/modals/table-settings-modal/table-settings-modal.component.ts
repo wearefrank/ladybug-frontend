@@ -44,7 +44,10 @@ export class TableSettingsModalComponent {
     this.cookieService.set('generatorEnabled', form.generatorEnabled);
     this.cookieService.set('regexFilter', form.regexFilter);
     this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
+    this.cookieService.set('transformation', form.transformation);
     this.httpService.postTransformation(form.transformation).subscribe();
+    let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled' };
+    this.httpService.postSettings(data).subscribe();
   }
 
   openLatestReports(amount: number): void {
@@ -63,31 +66,36 @@ export class TableSettingsModalComponent {
     this.settingsForm.get('generatorEnabled')?.setValue('Enabled');
     this.settingsForm.get('regexFilter')?.setValue('.*');
     this.settingsForm.get('transformationEnabled')?.setValue(false);
-    this.settingsForm.get('transformation')?.setValue(this.cookieService.get('transformation'));
+    fetch('assets/defaultTransformation.xslt')
+      .then((response) => response.text())
+      .then((transformation) => this.settingsForm.get('transformation')?.setValue(transformation));
   }
 
   loadSettings(): void {
-    if (this.cookieService.get('generatorEnabled')) {
-      this.settingsForm.get('generatorEnabled')?.setValue(this.cookieService.get('generatorEnabled'));
-    }
+    this.httpService.getSettings().subscribe((response) => {
+      const generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
+      this.cookieService.set('generatorEnabled', generatorStatus);
+      this.settingsForm.get('generatorEnabled')?.setValue(generatorStatus);
+    });
 
     if (this.cookieService.get('regexFilter')) {
       this.settingsForm.get('regexFilter')?.setValue(this.cookieService.get('regexFilter'));
     }
 
-    if (this.cookieService.get('transformationEnabled')) {
+    if (this.cookieService.get('transformationEnabled') != undefined) {
       this.settingsForm
         .get('transformationEnabled')
         ?.setValue(this.cookieService.get('transformationEnabled') == 'true');
     }
 
-    this.httpService.getTransformation().subscribe((response) => {
-      this.settingsForm.get('transformation')?.setValue(response.transformation);
-
-      if (!this.cookieService.get('transformation')) {
+    if (this.cookieService.get('transformation')) {
+      this.settingsForm.get('transformation')?.setValue(this.cookieService.get('transformation'));
+    } else {
+      this.httpService.getTransformation().subscribe((response) => {
+        this.settingsForm.get('transformation')?.setValue(response.transformation);
         this.cookieService.set('transformation', response.transformation);
-      }
-    });
+      });
+    }
   }
 
   getRegexFilter(): string {

@@ -69,4 +69,21 @@ function waitForNumFiles(thePath, fileCount, timeLeft) {
 
 Cypress.Commands.add('waitForNumFiles', (thePath, expectedNumFiles) => waitForNumFiles(thePath, expectedNumFiles, 10000));
 
-// Cypress.Commands.add('downloadPath', (theDownloadFile) => downloadPath(theDownloadFile));
+function getShownMonacoModelElement() {
+    cy.get('#monacoEditor [data-keybinding-context]').within(function($monacoEditor) {
+        const keybindingNumber = parseInt($monacoEditor.attr('data-keybinding-context'));
+        // Show the number
+        cy.wrap(keybindingNumber);
+        return cy.get(`[data-uri $= ${keybindingNumber}]`);
+    });
+};
+
+Cypress.Commands.add('getShownMonacoModelElement', getShownMonacoModelElement);
+
+function selectIfNotSelected(node) {
+    if(! node.hasClass('node-selected')) {
+        cy.wrap(node).click();
+    }
+};
+
+Cypress.Commands.add('selectIfNotSelected', {prevSubject: 'element'}, (node) => selectIfNotSelected(node));
