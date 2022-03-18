@@ -1,3 +1,7 @@
 #uploadFileTest {
   display: none;
 }
+
+#testContent {
+  height: 94vh;
+}
