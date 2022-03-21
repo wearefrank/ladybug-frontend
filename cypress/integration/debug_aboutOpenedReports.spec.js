@@ -55,6 +55,18 @@ describe('About opened reports', function() {
     checkNodeInfo('name');
     checkNodeInfo('otherName');
   });
+
+  it('When you deselect the selected report, no info is shown anymore', function() {
+    cy.get('.table-responsive tbody tr td:contains(name)').first().click();
+    cy.get('div.treeview > ul > li').should('have.length', 3);
+    cy.get('div.treeview > ul > li:eq(1)').should('have.class', 'node-selected');
+    cy.get('div.treeview > ul > li.node-selected').should('have.length', 1);
+    cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name').should('be.visible');
+    cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', 'name').should('be.visible');
+    // Deselect
+    cy.get('div.treeview > ul > li:eq(1)').click();  
+    cy.get('#displayedNodeTable').should('not.exist');
+  });
 });
 
 function linesFormExpandedNode($lines, evenOrOdd) {
