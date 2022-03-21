@@ -55,6 +55,38 @@ describe('About opened reports', function() {
     checkNodeInfo('name');
     checkNodeInfo('otherName');
   });
+
+  it('When you deselect the selected report, no info is shown anymore', function() {
+    cy.get('.table-responsive tbody tr td:contains(name)').first().click();
+    cy.get('div.treeview > ul > li').should('have.length', 3);
+    cy.get('div.treeview > ul > li:eq(1)').should('have.class', 'node-selected');
+    cy.get('div.treeview > ul > li.node-selected').should('have.length', 1);
+    cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name').should('be.visible');
+    cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', 'name').should('be.visible');
+    // Deselect
+    cy.get('div.treeview > ul > li:eq(1)').click();  
+    cy.get('#displayedNodeTable').should('not.exist');
+  });
+
+  it('If there are open reports, then always one of them is selected', function() {
+    cy.get('.table-responsive tbody').find('tr').contains('name').click();
+    cy.get('div.treeview > ul > li').should('have.length', 3).each((node) => {
+      cy.wrap(node).should('have.text', 'name');
+    });
+    cy.get('div.treeview > ul > li.node-selected').should('have.length', 1);
+    // Index is zero-based. We want the first node after the root.
+    cy.get('div.treeview > ul > li:eq(1)').should('have.class', 'node-selected');
+    cy.get('.table-responsive tbody').find('tr').contains('otherName').click();
+    cy.get('div.treeview > ul > li').should('have.length', 6);
+    // When you open a new report, the new report is also selected.
+    cy.get('div.treeview > ul > li.node-selected').should('have.length', 1).should('have.text', 'otherName');
+    cy.get('div.treeview > ul > li:contains(otherName):eq(1)').should('have.class', 'node-selected');
+    cy.get('button#CloseButton').click();
+    cy.get('div.treeview > ul > li').should('have.length', 3).each((node) => {
+      cy.wrap(node).should('have.text', 'name');
+    });
+    cy.get('div.treeview > ul > li.node-selected').should('have.length', 1);
+  });
 });
 
 function linesFormExpandedNode($lines, evenOrOdd) {
