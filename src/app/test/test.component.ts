@@ -13,6 +13,7 @@ import { catchError } from 'rxjs';
 import { HelperService } from '../shared/services/helper.service';
 import { HttpClient } from '@angular/common/http';
 import { Report } from '../shared/interfaces/report';
+import { report } from 'eslint-plugin-sonarjs/lib/utils/locations';
 
 @Component({
   selector: 'app-test',
@@ -108,7 +109,9 @@ export class TestComponent implements OnInit, OnDestroy {
   run(reportId: string): void {
     if (this.generatorStatus === 'Enabled') {
       const data: any = { testStorage: [reportId] };
-      this.httpService.runReport(data).subscribe(() => this.timeOut());
+      this.httpService.runReport(data).subscribe((response: any) => {
+        this.showResult(response.body);
+      });
     } else {
       this.toastComponent.addAlert({ type: 'warning', message: 'Generator is disabled!' });
     }
@@ -125,7 +128,9 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   timeOut(): void {
-    setTimeout(() => this.queryResults(), 1000);
+    setTimeout(() => {
+      this.queryResults();
+    }, 1000);
   }
 
   removeReranReportIfExists(id: string) {
@@ -169,14 +174,18 @@ export class TestComponent implements OnInit, OnDestroy {
     this.reranReports.push(reranReport);
   }
 
-  queryResults(): void {
+  queryResults(): number {
+    let responses = 0;
     this.httpService.queryResults().subscribe((response) => {
       for (let result in response.results) {
+        responses = responses + 1;
         if (response.results.hasOwnProperty(result)) {
           this.showResult(response.results[result]);
         }
       }
     });
+
+    return responses;
   }
 
   getReranReport(id: string): ReranReport {

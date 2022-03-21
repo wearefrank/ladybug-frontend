@@ -235,7 +235,6 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     });
 
     $('#' + this._id).on('nodeSelected', (event: any, data: TreeNode) => {
-      console.log('Selecting');
       this.treeSettings.selectedNode = data.id;
       this.selectReportEvent.next(data);
     });

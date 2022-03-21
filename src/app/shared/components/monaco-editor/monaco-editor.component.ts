@@ -37,7 +37,7 @@ export class MonacoEditorComponent {
   loadMonaco(message: string, modified: string): void {
     if (loadedMonaco) {
       loadPromise.then(() => {
-        this.comparing ? this.showDifferences(message, modified) : this.initializeEditor(message);
+        this.comparing ? this.initializeDifference(message, modified) : this.initializeEditor(message);
       });
     } else {
       loadedMonaco = true;
@@ -87,6 +87,7 @@ export class MonacoEditorComponent {
   }
 
   initializeDifference(message: string, modified: string): void {
+    this.editorContainer.nativeElement.innerHTML = '';
     this.codeDiffInstance = monaco.editor.createDiffEditor(this.editorContainer.nativeElement, {
       enableSplitViewResizing: false,
       renderSideBySide: true,
