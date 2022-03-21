@@ -38,4 +38,4 @@ describe('About the Test tab', function() {
       cy.wrap($reports).contains('/otherName').should('have.length', 1);
     });
   });
-});  
+});
