@@ -1,6 +1,4 @@
-const { getSystemErrorMap } = require("util");
-
-describe('About opened reports', function() {
+describe('About the Test tab', function() {
   beforeEach(() => {
     cy.createReport();
     cy.createOtherReport();
@@ -9,6 +7,10 @@ describe('About opened reports', function() {
 
   afterEach(() => {
     cy.clearDebugStore();
+    cy.get('li#testTab').click();
+    cy.get('#SelectAllButton').click();
+    cy.get('#DeleteSelectedButton').click();
+    cy.get('li#debugTab').click();
   });
 
   it('Test deleting a report', function() {
@@ -22,8 +24,14 @@ describe('About opened reports', function() {
       cy.wrap($reports).contains('/name').should('have.length', 1);
       cy.wrap($reports).contains('/otherName').should('have.length', 1);
       cy.wrap($reports).find('tr').each(function($reportRow) {
-        if($reportRow.xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-      })
+        if($reportRow.find('td').eq(3) === '/name') {
+          cy.wrap($reportRow).find('[type=checkbox]').check();
+        };
+      });
+    });
+    cy.get('#DeleteSelectedButton').click();
+    cy.get('#testReports').find('tr').should('have.length', 1).within(function($reports) {
+      cy.wrap($reports).contains('/otherName').should('have.length', 1);
     });
   });
 });  
