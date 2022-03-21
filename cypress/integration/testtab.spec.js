@@ -23,8 +23,12 @@ describe('About the Test tab', function() {
     cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
       cy.wrap($reports).contains('/name').should('have.length', 1);
       cy.wrap($reports).contains('/otherName').should('have.length', 1);
-      cy.wrap($reports).find('tr').each(function($reportRow) {
-        if($reportRow.find('td').eq(3) === '/name') {
+      cy.wrap($reports).each(function($reportRow) {
+        cy.log('Considering next report');
+        const reportName = $reportRow.find('td').eq(3).text();
+        cy.log('Name of report is: ' + reportName);
+        if(reportName.includes('name')) {
+          cy.log('Found checkbox of report with name name, checking it');
           cy.wrap($reportRow).find('[type=checkbox]').check();
         };
       });
