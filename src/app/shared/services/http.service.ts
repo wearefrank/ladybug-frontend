@@ -124,9 +124,9 @@ export class HttpService {
     return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
 
-  runReport(report: any): Observable<void> {
+  runReport(reportId: string): Observable<void> {
     return this.http
-      .post<any>('api/runner/run/debugStorage', report, {
+      .post<any>('api/runner/run/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })

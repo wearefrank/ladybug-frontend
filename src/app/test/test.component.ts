@@ -108,20 +108,9 @@ export class TestComponent implements OnInit, OnDestroy {
 
   run(reportId: string): void {
     if (this.generatorStatus === 'Enabled') {
-      const data: any = { testStorage: [reportId] };
-      this.httpService.runReport(data).subscribe((response: any) => {
-        this.showResult(response.body);
+      this.httpService.runReport(reportId).subscribe((response: any) => {
+        this.showResult(response);
       });
-    } else {
-      this.toastComponent.addAlert({ type: 'warning', message: 'Generator is disabled!' });
-    }
-  }
-
-  runAll(): void {
-    if (this.generatorStatus === 'Enabled') {
-      const data: any = { testStorage: [] };
-      this.reports.filter((report) => report.checked).forEach((report) => data['testStorage'].push(report.storageId));
-      this.httpService.runReport(data).subscribe(() => this.timeOut());
     } else {
       this.toastComponent.addAlert({ type: 'warning', message: 'Generator is disabled!' });
     }
