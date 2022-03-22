@@ -15,6 +15,12 @@ describe('About the Test tab', function() {
 
   it('Test deleting a report', function() {
     cy.get('button[id="OpenAllButton"]').click();
+    // We test many times already that opening two reports yields six nodes.
+    // Adding the test here again has another purpose. We want the DOM to
+    // be stable before we go on with the test. Without this guard, the test
+    // was flaky because the selectIfNotSelected() custom command accessed
+    // a detached DOM element.
+    cy.get('div.treeview > ul > li').should('have.length', 6);
     cy.get('div.treeview > ul > li:contains(name)').first().selectIfNotSelected();
     cy.get('button#CopyButton').click();
     cy.get('div.treeview > ul > li:contains(otherName)').first().selectIfNotSelected();
