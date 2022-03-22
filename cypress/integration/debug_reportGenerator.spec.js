@@ -14,7 +14,6 @@ describe('Report generator', function() {
     cy.get('#RefreshButton').click();
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
     cy.get('#SettingsButton').click();
-    // I want to see whether this check is correct. TODO: Maybe remove.
     cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
     cy.get('select[formcontrolname=generatorEnabled]').select('Disabled').should('have.value', 'Disabled');
     cy.get('button[title="Save changes"').click();
