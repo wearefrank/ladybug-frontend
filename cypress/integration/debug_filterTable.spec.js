@@ -33,9 +33,6 @@ describe('Table size and toggle filter', function () {
     cy.get('.table-responsive tbody').find('tr').should('have.length', 0);
     cy.get('#displayAmount').type("2");
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
-    // If we would omit typing 1 here, we would test that the length remained 2
-    // when the edit field changed from 2 to 10. This would not be a good test, because
-    // Cypress would not see when the typing of 10 would have effect.
     cy.get('#displayAmount').type("{backspace}");
     cy.get('.table-responsive tbody').find('tr').should('have.length', 0);
     cy.get('#displayAmount').type("9")
