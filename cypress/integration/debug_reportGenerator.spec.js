@@ -28,6 +28,7 @@ describe('Report generator', function() {
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
     cy.get('.alert').should('not.exist');
     cy.get('#SettingsButton').click();
+    cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
     cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
     cy.get('button[title="Save changes"').click();
     cy.get('.alert').contains('Settings saved');
