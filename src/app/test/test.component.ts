@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { HttpService } from '../shared/services/http.service';
 import { LoaderService } from '../shared/services/loader.service';
@@ -10,10 +10,7 @@ import { Metadata } from '../shared/interfaces/metadata';
 import { CookieService } from 'ngx-cookie-service';
 import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
-import { HelperService } from '../shared/services/helper.service';
-import { HttpClient } from '@angular/common/http';
 import { Report } from '../shared/interfaces/report';
-import { report } from 'eslint-plugin-sonarjs/lib/utils/locations';
 
 @Component({
   selector: 'app-test',
@@ -25,7 +22,6 @@ export class TestComponent implements OnInit, OnDestroy {
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
-  TIMEOUT = 100;
   @Output() openTestReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
@@ -116,12 +112,6 @@ export class TestComponent implements OnInit, OnDestroy {
     }
   }
 
-  timeOut(): void {
-    setTimeout(() => {
-      this.queryResults();
-    }, 1000);
-  }
-
   removeReranReportIfExists(id: string) {
     this.reranReports = this.reranReports.filter((report) => report.id != id);
   }
@@ -161,20 +151,6 @@ export class TestComponent implements OnInit, OnDestroy {
     this.removeReranReportIfExists(id);
     const reranReport: ReranReport = this.createReranReport(result, id);
     this.reranReports.push(reranReport);
-  }
-
-  queryResults(): number {
-    let responses = 0;
-    this.httpService.queryResults().subscribe((response) => {
-      for (let result in response.results) {
-        responses = responses + 1;
-        if (response.results.hasOwnProperty(result)) {
-          this.showResult(response.results[result]);
-        }
-      }
-    });
-
-    return responses;
   }
 
   getReranReport(id: string): ReranReport {
@@ -218,7 +194,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   compareReports(id: string): void {
-    const reranReport = this.reranReports.find((report) => report.id === id);
+    const reranReport = this.reranReports.find((report: ReranReport) => report.id == id);
     if (reranReport) {
       this.openCompareReportsEvent.emit({
         originalReport: reranReport.originalReport,

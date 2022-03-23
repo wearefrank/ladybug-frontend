@@ -9,6 +9,7 @@ import { HttpService } from '../../services/http.service';
 import { DisplayTableComponent } from '../display-table/display-table.component';
 import { DifferenceModal } from '../../interfaces/difference-modal';
 import { TreeNode } from '../../interfaces/tree-node';
+import { LoaderService } from '../../services/loader.service';
 
 @Component({
   selector: 'app-display',
@@ -42,7 +43,7 @@ export class DisplayComponent {
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
 
-  constructor(private modalService: NgbModal, private httpService: HttpService) {}
+  constructor(private modalService: NgbModal, private httpService: HttpService, private loaderService: LoaderService) {}
 
   openDifferenceModal(modal: any, type: string): void {
     if (this.report.root) {
@@ -134,9 +135,16 @@ export class DisplayComponent {
     }
 
     this.httpService.postReport(storageId, this.getReportValues(checkpointId)).subscribe((response: any) => {
-      console.log('Saving only with storageID: ' + storageId);
       this.saveReportEvent.next(response.report);
+      this.notifyTestTabOfSavedReport(storageId, response.report);
     });
+  }
+
+  notifyTestTabOfSavedReport(previousStorageId: string, updateReport: any): void {
+    let testReports = this.loaderService.getTestReports();
+    let reportIndex = testReports.findIndex((report) => report.storageId == previousStorageId);
+    testReports[reportIndex] = updateReport;
+    this.loaderService.setTestReports(testReports);
   }
 
   discardChanges() {
