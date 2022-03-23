@@ -55,9 +55,10 @@ describe('About the Test tab', function() {
       cy.wrap($reports).contains('/otherName').should('have.length', 1);
     });
     cy.get('#SelectAllButton').click();
-    cy.get('#testReports tr [type=checkbox][checked=true]').should('have.length', 2);
+    cy.get('#testReports tr [type=checkbox]').should('have.length', 2).each(($checkbox) => {
+      cy.wrap($checkbox).should('be.checked');
+    });
     cy.get('#DeselectAllButton').click();
-    cy.get('#testReports tr [type=checkbox][checked=true]').should('have.length', 0);
     cy.get('#DeleteSelectedButton').click();
     cy.wait(5000);
     cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
