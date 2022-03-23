@@ -14,14 +14,7 @@ export class MonacoEditorComponent {
   codeEditorInstance!: monaco.editor.IStandaloneCodeEditor;
   codeDiffInstance!: monaco.editor.IStandaloneDiffEditor;
   @Input() comparing: boolean = false;
-  @Input()
-  get value() {
-    return this._value;
-  }
-  set value(value: string) {
-    this._value = value;
-  }
-  private _value: string = '';
+  messageLength: number = 0;
 
   constructor() {}
 
@@ -84,6 +77,7 @@ export class MonacoEditorComponent {
       },
       wordWrap: 'on',
     });
+    this.messageLength = message.split(/\r\n|\r|\n/).length;
   }
 
   initializeDifference(message: string, modified: string): void {
@@ -94,6 +88,9 @@ export class MonacoEditorComponent {
     });
 
     this.showDifferences(message, modified);
+
+    this.messageLength = Math.max(message.split(/\r\n|\r|\n/).length, modified.split(/\r\n|\r|\n/).length);
+    console.log('Length is :' + this.messageLength);
   }
 
   showDifferences(message: string, modified: string) {

@@ -61,6 +61,7 @@ export class CompareComponent {
       this.leftReport.reports = [newReport];
       this.leftTreeComponent?.resetTree();
       this.leftTreeComponent?.handleChange(newReport);
+      this.leftTreeComponent?.selectSpecificNode(0);
     }
   }
 
@@ -73,6 +74,7 @@ export class CompareComponent {
       this.rightReport.reports = [newReport];
       this.rightTreeComponent?.resetTree();
       this.rightTreeComponent?.handleChange(newReport);
+      this.rightTreeComponent?.selectSpecificNode(0);
     }
   }
 

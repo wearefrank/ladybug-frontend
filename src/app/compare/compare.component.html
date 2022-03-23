@@ -1,4 +1,4 @@
-<div class="row resizable-vertical">
+<div class="row resizable-vertical h-0">
   <div class="col-6">
     <app-tree
       #leftTree
@@ -12,11 +12,14 @@
       [id]="rightReport.id"
       (selectReportEvent)="selectReportRight($event)"></app-tree>
   </div>
+</div>
+
+<div class="row h-100">
   <div class="col-6" [hidden]="!leftReport.selected">
     <app-button [icon]="'fa fa-times'" (click)="closeReportLeft()"></app-button>
   </div>
 
-  <div class="col-6" [hidden]="!rightReport.selected">
+  <div class="col-6 h-0" [hidden]="!rightReport.selected">
     <app-button [icon]="'fa fa-times'" (click)="closeReportRight()"></app-button>
   </div>
 </div>
@@ -36,7 +39,6 @@
       [id]="rightReport.id"
       (openReportEvent)="addReportNodeRight($event)"></app-table>
   </div>
-
 </div>
 
 <app-toast></app-toast>
