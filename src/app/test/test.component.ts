@@ -204,7 +204,6 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   replaceReport(reportId: string): void {
-    console.log(reportId);
     this.httpService.replaceReport(reportId).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.id != reportId);
     });

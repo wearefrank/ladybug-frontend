@@ -90,7 +90,6 @@ export class MonacoEditorComponent {
     this.showDifferences(message, modified);
 
     this.messageLength = Math.max(message.split(/\r\n|\r|\n/).length, modified.split(/\r\n|\r|\n/).length);
-    console.log('Length is :' + this.messageLength);
   }
 
   showDifferences(message: string, modified: string) {

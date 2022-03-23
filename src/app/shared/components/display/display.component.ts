@@ -173,7 +173,6 @@ export class DisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    console.log(this.report.root);
     let queryString: string = this.report.root
       ? this.report.ladybug.storageId.toString()
       : this.report.ladybug.uid.split('#')[0];
