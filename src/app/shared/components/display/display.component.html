@@ -47,6 +47,13 @@
     {{ rerunResult }}
   </p>
 
+  <div *ngIf="report.ladybug.noCloseReceivedForStream" class="btn btn-static my-2 mx-1 px-2">
+    No close received for stream
+  </div>
+  <div *ngIf="report.ladybug.streaming !== null" class="btn btn-static my-2 mx-1 px-2">
+    {{ report.ladybug.waitingForStream ? 'Waiting for message to be' : 'Message is'}} captured asynchronously from a {{report.ladybug.streaming.toLowerCase()}} stream
+  </div>
+
   <div id="monacoEditor">
     <app-monaco-editor></app-monaco-editor>
   </div>
