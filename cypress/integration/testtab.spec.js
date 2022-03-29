@@ -92,6 +92,8 @@ describe('About the Test tab', function() {
         .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
           cy.log(`Number of read bytes: ${buffer.length}`);
         });
+        // Give the system time to finish downloading
+        cy.wait(5000);
         cy.readFile(cy.functions.downloadPath(newFile), 'binary')
         .then((rawContent) => {
           console.log(`Have content of uploaded file, length ${rawContent.length}`);
