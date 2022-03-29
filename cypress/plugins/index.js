@@ -23,7 +23,7 @@ module.exports = (on, config) => {
   // `config` is the resolved Cypress config
   on('task', {
     downloads:  (downloadsPath) => {
-      return fs.readdirSync(downloadsPath).filter((f) => f !== null);
+      return fs.readdirSync(downloadsPath);
     },
     deleteDownloads: (input) => {
       const downloadsPath = input.downloadsPath;
