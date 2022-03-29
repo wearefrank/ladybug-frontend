@@ -5,19 +5,19 @@
       <span>&times;</span>
     </button>
   </div>
-  <div class="modal-body container">
-    <form>
+  <form [formGroup]="variableForm" (ngSubmit)="generateClones()">
+    <div class="modal-body container">
       <div class="form-group">
         <label>Variable CSV</label>
-        <textarea class="form-control" rows="5"></textarea>
+        <textarea class="form-control" formControlName="variables" rows="5"></textarea>
       </div>
       <div class="form-group">
-        <label>Variable CSV</label>
-        <textarea class="form-control" rows="5"></textarea>
+        <label>Report input message to clone</label>
+        <textarea class="form-control" formControlName="message" rows="5"></textarea>
       </div>
-    </form>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-info">Generate</button>
-  </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-info" (click)="modal.dismiss()">Generate</button>
+    </div>
+  </form>
 </ng-template>

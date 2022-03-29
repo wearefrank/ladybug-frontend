@@ -36,7 +36,12 @@ export class TestComponent implements OnInit, OnDestroy {
   ) {}
 
   openCloneModal(): void {
-    this.cloneModal.open();
+    let selectedReports: Metadata[] = this.reports.filter((report) => report.checked);
+    if (selectedReports.length !== 1) {
+      this.toastComponent.addAlert({ type: 'warning', message: 'Make sure exactly one report is selected at a time' });
+    } else {
+      this.cloneModal.open(selectedReports[0]);
+    }
   }
 
   openSettingsModal(): void {

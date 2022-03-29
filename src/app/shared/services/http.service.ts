@@ -142,9 +142,10 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  queryResults(): Observable<any> {
+  cloneReport(storageId: string, map: any) {
     return this.http
-      .get('api/runner/result/debugStorage', { headers: this.headers })
+      .post('/api/report/move/testStorage/' + storageId, map)
+      .pipe(tap(() => this.handleSuccess('Report cloned!')))
       .pipe(catchError(this.handleError()));
   }
 
