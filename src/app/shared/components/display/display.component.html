@@ -47,10 +47,10 @@
     {{ rerunResult }}
   </p>
 
-  <div *ngIf="report.ladybug.noCloseReceivedForStream" class="btn btn-static my-2 mx-1 px-2">
+  <div *ngIf="report.ladybug.noCloseReceivedForStream" id="first" class="btn btn-static my-2 mx-1 px-2">
     No close received for stream
   </div>
-  <div *ngIf="report.ladybug.streaming !== null" class="btn btn-static my-2 mx-1 px-2">
+  <div *ngIf="null !== report.ladybug.streaming && report.ladybug.streaming" id="second" class="btn btn-static my-2 mx-1 px-2">
     {{ report.ladybug.waitingForStream ? 'Waiting for message to be' : 'Message is'}} captured asynchronously from a {{report.ladybug.streaming.toLowerCase()}} stream
   </div>
 
@@ -83,8 +83,9 @@
     </div>
     <div class="form-group">
       <label>Variables</label>
-      <div class="form-group"
-           style="height: 100px; width: 600px; border: 1px solid #ced4da; border-radius: .25rem;"></div>
+      <div>
+        <textarea #variables class="form-control" style="height: 100px">{{report.ladybug.variableCsv}}</textarea>
+      </div>
     </div>
   </div>
 

@@ -39,6 +39,7 @@ export class DisplayComponent {
   @ViewChild('description') description!: ElementRef;
   @ViewChild('path') path!: ElementRef;
   @ViewChild('transformation') transformation!: ElementRef;
+  @ViewChild('variables') variables!: ElementRef;
   stubStrategies: string[] = ['Follow report strategy', 'No', 'Yes'];
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
@@ -51,6 +52,7 @@ export class DisplayComponent {
       this.addToDifferenceModal('description', this.description.nativeElement.value);
       this.addToDifferenceModal('path', this.path.nativeElement.value);
       this.addToDifferenceModal('transformation', this.transformation.nativeElement.value);
+      this.addToDifferenceModal('variables', this.variables.nativeElement.value);
     } else {
       this.addToDifferenceModal('message', this.monacoEditorComponent?.getValue());
     }
@@ -160,6 +162,7 @@ export class DisplayComponent {
       description: this.description?.nativeElement.value ?? '',
       transformation: this.transformation?.nativeElement.value ?? '',
       checkpointId: checkpointId,
+      variables: this.variables?.nativeElement.value ?? '',
       checkpointMessage: this.monacoEditorComponent?.getValue() ?? '',
     };
   }
