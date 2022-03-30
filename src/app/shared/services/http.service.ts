@@ -135,7 +135,7 @@ export class HttpService {
 
   runDisplayReport(reportId: string): Observable<any> {
     return this.http
-      .put<any>('/api/runner/replace/debugStorage/' + reportId, {
+      .put<any>('api/runner/replace/debugStorage/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
@@ -144,7 +144,7 @@ export class HttpService {
 
   cloneReport(storageId: string, map: any) {
     return this.http
-      .post('/api/report/move/testStorage/' + storageId, map)
+      .post('api/report/move/' + storageId, map)
       .pipe(tap(() => this.handleSuccess('Report cloned!')))
       .pipe(catchError(this.handleError()));
   }

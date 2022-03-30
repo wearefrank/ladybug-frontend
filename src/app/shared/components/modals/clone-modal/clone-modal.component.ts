@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Metadata } from '../../../interfaces/metadata';
 import { Report } from '../../../interfaces/report';
@@ -12,6 +12,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 })
 export class CloneModalComponent {
   @ViewChild('modal') modal!: any;
+  @Output() cloneReportEvent = new EventEmitter<any>();
   report: Report = {} as Report;
   variableForm = new FormGroup({
     variables: new FormControl(''),
@@ -33,9 +34,8 @@ export class CloneModalComponent {
       csv: this.variableForm.value.variables,
       message: this.variableForm.value.message,
     };
-    this.httpService.cloneReport(this.report.storageId.toString(), map).subscribe();
-    console.log(map);
-    // console.log(this.variableForm.value.variables)
-    // console.log(this.variableForm.value.message)
+    this.httpService.cloneReport(this.report.storageId.toString(), map).subscribe(() => {
+      this.cloneReportEvent.emit();
+    });
   }
 }
