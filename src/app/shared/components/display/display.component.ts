@@ -85,7 +85,8 @@ export class DisplayComponent {
     if (this.report.root) {
       this.monacoEditorComponent?.loadMonaco(this.report.ladybug.xml, '');
     } else {
-      this.monacoEditorComponent?.loadMonaco(beautify(this.report.ladybug.message), '');
+      let message: string = this.report.ladybug.message === null ? '' : this.report.ladybug.message;
+      this.monacoEditorComponent?.loadMonaco(beautify(message), '');
     }
   }
 

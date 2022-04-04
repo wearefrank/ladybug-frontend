@@ -47,11 +47,38 @@
     {{ rerunResult }}
   </p>
 
-  <div *ngIf="report.ladybug.noCloseReceivedForStream" id="first" class="btn btn-static my-2 mx-1 px-2">
-    No close received for stream
-  </div>
-  <div *ngIf="null !== report.ladybug.streaming && report.ladybug.streaming" id="second" class="btn btn-static my-2 mx-1 px-2">
-    {{ report.ladybug.waitingForStream ? 'Waiting for message to be' : 'Message is'}} captured asynchronously from a {{report.ladybug.streaming.toLowerCase()}} stream
+
+  <div *ngIf="!report.root">
+    <div *ngIf="report.ladybug.noCloseReceivedForStream" id="noCloseReceivedLabel" class="btn btn-static my-2 mx-1 px-2">
+      No close received for stream
+    </div>
+    <div *ngIf="null !== report.ladybug.streaming && report.ladybug.streaming" id="waitingForMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+      {{ report.ladybug.waitingForStream ? 'Waiting for message to be' : 'Message is'}} captured asynchronously from a {{report.ladybug.streaming.toLowerCase()}} stream
+    </div>
+
+    <div *ngIf="null === report.ladybug.message" id="nullMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+      Message is null
+    </div>
+
+    <div *ngIf="'' === report.ladybug.message" id="emptyMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+      Message is empty string
+    </div>
+
+    <div *ngIf="report.ladybug.stubbed" id="stubbedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+      Message is stubbed (copied from original report)
+    </div>
+
+    <div *ngIf="null !== report.ladybug.encoding" id="encodedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+      Message of type {{report.ladybug.messageClassName}} is encoded to string using {{report.ladybug.encoding}}
+    </div>
+
+    <div *ngIf="report.ladybug.preTruncatedMessageLength > 0" id="truncatedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+      Message is truncated ( {{ report.ladybug.preTruncatedMessageLength - report.ladybug.message.length}} characters removed)
+    </div>
+
+    <div *ngIf="null !== report.ladybug.stubNotFound" id="stubNotFoundLabel" class="btn btn-static my-2 mx-1 px-2">
+      Could not find stub message for {{report.ladybug.stubNotFound}}
+    </div>
   </div>
 
   <div id="monacoEditor">
