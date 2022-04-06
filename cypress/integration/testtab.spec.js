@@ -64,7 +64,6 @@ describe('About the Test tab', function() {
     });
   });
 
-  // Groen
   it('Download and upload', function() {
     const downloadsFolder = Cypress.config('downloadsFolder');
     cy.get('li#testTab').click();
