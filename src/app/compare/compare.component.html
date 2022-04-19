@@ -1,4 +1,4 @@
-<div class="row resizable-vertical">
+<div class="row resizable-vertical h-0">
   <div class="col-6">
     <app-tree
       #leftTree
@@ -13,26 +13,31 @@
       (selectReportEvent)="selectReportRight($event)"></app-tree>
   </div>
 </div>
+
+<div class="row h-100">
+  <div class="col-6" [hidden]="!leftReport.selected">
+    <app-button [icon]="'fa fa-times'" (click)="closeReportLeft()"></app-button>
+  </div>
+
+  <div class="col-6 h-0" [hidden]="!rightReport.selected">
+    <app-button [icon]="'fa fa-times'" (click)="closeReportRight()"></app-button>
+  </div>
+</div>
+
+<app-monaco-editor [comparing]="true" [hidden]="!leftReport.selected || !rightReport.selected" #editor ></app-monaco-editor>
+
 <div class="row">
   <div class="col-6">
     <app-table
       [hidden]="leftReport.selected"
       [id]="leftReport.id"
       (openReportEvent)="addReportNodeLeft($event)"></app-table>
-    <app-display
-      #leftDisplay
-      [hidden]="!leftReport.selected"
-      (closeReportEvent)="closeReportLeft($event)"></app-display>
   </div>
   <div class="col-6">
     <app-table
       [hidden]="rightReport.selected"
       [id]="rightReport.id"
       (openReportEvent)="addReportNodeRight($event)"></app-table>
-    <app-display
-      #rightDisplay
-      [hidden]="!rightReport.selected"
-      (closeReportEvent)="closeReportRight($event)"></app-display>
   </div>
 </div>
 

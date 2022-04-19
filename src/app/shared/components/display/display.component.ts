@@ -9,6 +9,7 @@ import { HttpService } from '../../services/http.service';
 import { DisplayTableComponent } from '../display-table/display-table.component';
 import { DifferenceModal } from '../../interfaces/difference-modal';
 import { TreeNode } from '../../interfaces/tree-node';
+import { LoaderService } from '../../services/loader.service';
 
 @Component({
   selector: 'app-display',
@@ -38,11 +39,12 @@ export class DisplayComponent {
   @ViewChild('description') description!: ElementRef;
   @ViewChild('path') path!: ElementRef;
   @ViewChild('transformation') transformation!: ElementRef;
+  @ViewChild('variables') variables!: ElementRef;
   stubStrategies: string[] = ['Follow report strategy', 'No', 'Yes'];
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
 
-  constructor(private modalService: NgbModal, private httpService: HttpService) {}
+  constructor(private modalService: NgbModal, private httpService: HttpService, private loaderService: LoaderService) {}
 
   openDifferenceModal(modal: any, type: string): void {
     if (this.report.root) {
@@ -50,6 +52,7 @@ export class DisplayComponent {
       this.addToDifferenceModal('description', this.description.nativeElement.value);
       this.addToDifferenceModal('path', this.path.nativeElement.value);
       this.addToDifferenceModal('transformation', this.transformation.nativeElement.value);
+      this.addToDifferenceModal('variables', this.variables.nativeElement.value);
     } else {
       this.addToDifferenceModal('message', this.monacoEditorComponent?.getValue());
     }
@@ -70,7 +73,9 @@ export class DisplayComponent {
 
   showReport(report: TreeNode): void {
     this.report = report;
-    this.loadMonacoCode();
+    setTimeout(() => {
+      this.loadMonacoCode();
+    }, 100);
     this.displayReport = true;
     this.rerunResult = '';
     this.disableEditing(); // For switching from editing current report to another
@@ -78,9 +83,10 @@ export class DisplayComponent {
 
   loadMonacoCode() {
     if (this.report.root) {
-      this.monacoEditorComponent?.loadMonaco(this.report.ladybug.xml);
+      this.monacoEditorComponent?.loadMonaco(this.report.ladybug.xml, '');
     } else {
-      this.monacoEditorComponent?.loadMonaco(beautify(this.report.ladybug.message));
+      let message: string = this.report.ladybug.message === null ? '' : this.report.ladybug.message;
+      this.monacoEditorComponent?.loadMonaco(beautify(message), '');
     }
   }
 
@@ -132,14 +138,21 @@ export class DisplayComponent {
     }
 
     this.httpService.postReport(storageId, this.getReportValues(checkpointId)).subscribe((response: any) => {
-      console.log('Saving only with storageID: ' + storageId);
       this.saveReportEvent.next(response.report);
+      this.notifyTestTabOfSavedReport(storageId, response.report);
     });
+  }
+
+  notifyTestTabOfSavedReport(previousStorageId: string, updateReport: any): void {
+    let testReports = this.loaderService.getTestReports();
+    let reportIndex = testReports.findIndex((report) => report.storageId == previousStorageId);
+    testReports[reportIndex] = updateReport;
+    this.loaderService.setTestReports(testReports);
   }
 
   discardChanges() {
     if (!this.report.root) {
-      this.monacoEditorComponent.loadMonaco(this.differenceModal[0].originalValue);
+      this.monacoEditorComponent.loadMonaco(this.differenceModal[0].originalValue, '');
     }
   }
 
@@ -150,6 +163,7 @@ export class DisplayComponent {
       description: this.description?.nativeElement.value ?? '',
       transformation: this.transformation?.nativeElement.value ?? '',
       checkpointId: checkpointId,
+      variables: this.variables?.nativeElement.value ?? '',
       checkpointMessage: this.monacoEditorComponent?.getValue() ?? '',
     };
   }
@@ -163,7 +177,6 @@ export class DisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    console.log(this.report.root);
     let queryString: string = this.report.root
       ? this.report.ladybug.storageId.toString()
       : this.report.ladybug.uid.split('#')[0];

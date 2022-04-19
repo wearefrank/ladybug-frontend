@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CloneModalComponent } from './clone-modal.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('CloneModalComponent', () => {
   let component: CloneModalComponent;
@@ -9,6 +10,7 @@ describe('CloneModalComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CloneModalComponent],
+      imports: [HttpClientTestingModule],
     }).compileComponents();
   });
 

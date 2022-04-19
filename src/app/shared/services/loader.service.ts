@@ -139,6 +139,10 @@ export class LoaderService {
     return this.testReports;
   }
 
+  setTestReports(testReports: any[]) {
+    this.testReports = testReports;
+  }
+
   getReranReports(): ReranReport[] {
     return this.reranReports;
   }

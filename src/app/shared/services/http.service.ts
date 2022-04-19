@@ -124,9 +124,9 @@ export class HttpService {
     return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
 
-  runReport(report: any): Observable<void> {
+  runReport(reportId: string): Observable<void> {
     return this.http
-      .post<any>('api/runner/run/debugStorage', report, {
+      .post<any>('api/runner/run/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
@@ -135,16 +135,17 @@ export class HttpService {
 
   runDisplayReport(reportId: string): Observable<any> {
     return this.http
-      .put<any>('/api/runner/replace/debugStorage/' + reportId, {
+      .put<any>('api/runner/replace/debugStorage/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
       .pipe(catchError(this.handleError()));
   }
 
-  queryResults(): Observable<any> {
+  cloneReport(storageId: string, map: any) {
     return this.http
-      .get('api/runner/result/debugStorage', { headers: this.headers })
+      .post('api/report/move/' + storageId, map)
+      .pipe(tap(() => this.handleSuccess('Report cloned!')))
       .pipe(catchError(this.handleError()));
   }
 

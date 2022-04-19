@@ -1,11 +1,13 @@
-import { Component, Input, OnChanges, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { TreeComponent } from '../shared/components/tree/tree.component';
 import { DisplayComponent } from '../shared/components/display/display.component';
-import { HttpService } from '../shared/services/http.service';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { CompareReport } from '../shared/interfaces/compare-report';
 import { Report } from '../shared/interfaces/report';
 import { TreeNode } from '../shared/interfaces/tree-node';
+// @ts-ignore
+import DiffMatchPatch from 'diff-match-patch';
+import { MonacoEditorComponent } from '../shared/components/monaco-editor/monaco-editor.component';
 
 @Component({
   selector: 'app-compare',
@@ -16,19 +18,20 @@ export class CompareComponent {
   leftReport: CompareReport = {
     reports: [],
     id: 'leftId',
-    current: {},
+    current: {} as TreeNode,
     selected: false,
   };
   rightReport: CompareReport = {
     reports: [],
     id: 'rightId',
-    current: {},
+    current: {} as TreeNode,
     selected: false,
   };
   @ViewChild('leftTree') leftTreeComponent!: TreeComponent;
   @ViewChild('rightTree') rightTreeComponent!: TreeComponent;
   @ViewChild('leftDisplay') leftDisplayComponent!: DisplayComponent;
   @ViewChild('rightDisplay') rightDisplayComponent!: DisplayComponent;
+  @ViewChild('editor') monacoEditor!: MonacoEditorComponent;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @Input() diffReports = { originalReport: {} as Report, runResultReport: {} as Report };
 
@@ -58,6 +61,7 @@ export class CompareComponent {
       this.leftReport.reports = [newReport];
       this.leftTreeComponent?.resetTree();
       this.leftTreeComponent?.handleChange(newReport);
+      this.leftTreeComponent?.selectSpecificNode(0);
     }
   }
 
@@ -70,6 +74,7 @@ export class CompareComponent {
       this.rightReport.reports = [newReport];
       this.rightTreeComponent?.resetTree();
       this.rightTreeComponent?.handleChange(newReport);
+      this.rightTreeComponent?.selectSpecificNode(0);
     }
   }
 
@@ -82,6 +87,18 @@ export class CompareComponent {
     this.leftReport.current = currentReport;
     this.leftDisplayComponent?.showReport(this.leftReport.current);
     this.rightTreeComponent?.selectSpecificNode(currentReport.id);
+
+    if (this.rightReport.current.ladybug) {
+      this.loadDifference(this.leftReport.current, this.rightReport.current);
+    }
+  }
+
+  loadDifference(leftReport: TreeNode, rightReport: TreeNode) {
+    if (leftReport.root) {
+      this.monacoEditor.loadMonaco(leftReport.ladybug.xml, rightReport.ladybug.xml);
+    } else {
+      this.monacoEditor.loadMonaco(leftReport.ladybug.message, rightReport.ladybug.message);
+    }
   }
 
   /**
@@ -93,25 +110,29 @@ export class CompareComponent {
     this.rightReport.current = currentReport;
     this.rightDisplayComponent?.showReport(this.rightReport.current);
     this.leftTreeComponent?.selectSpecificNode(currentReport.id);
+
+    if (this.leftReport.current.ladybug) {
+      this.loadDifference(this.leftReport.current, this.rightReport.current);
+    }
   }
 
   /**
    * Close the left report
    * @param currentNode - the left node to be removed
    */
-  closeReportLeft(currentNode: TreeNode): void {
+  closeReportLeft(): void {
     this.leftReport.selected = false;
-    this.leftReport.current = {};
-    this.leftTreeComponent?.removeNode(currentNode);
+    this.leftReport.current = {} as TreeNode;
+    // this.leftTreeComponent?.removeNode(currentNode);
   }
 
   /**
    * Close the right report
    * @param currentNode - the right node to be removed
    */
-  closeReportRight(currentNode: TreeNode): void {
+  closeReportRight(): void {
     this.rightReport.selected = false;
-    this.rightReport.current = {};
-    this.rightTreeComponent?.removeNode(currentNode);
+    this.rightReport.current = {} as TreeNode;
+    // this.rightTreeComponent?.removeNode(currentNode);
   }
 }
