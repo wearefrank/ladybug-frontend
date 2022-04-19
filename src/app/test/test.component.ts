@@ -186,7 +186,7 @@ export class TestComponent implements OnInit, OnDestroy {
         (totalQuery: string, selectedReport: Metadata) => totalQuery + 'id=' + selectedReport.storageId + '&',
         '?'
       );
-    window.open('api/report/download/debugStorage/true/false' + queryString.slice(0, -1));
+    window.open('api/report/download/testStorage/true/false' + queryString.slice(0, -1));
   }
 
   uploadReport(event: any): void {
