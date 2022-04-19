@@ -64,6 +64,47 @@ describe('About the Test tab', function() {
     });
   });
 
+  it('Download and upload', function() {
+    const downloadsFolder = Cypress.config('downloadsFolder');
+    cy.get('li#testTab').click();
+    cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
+      cy.wrap($reports).contains('/name').should('have.length', 1);
+      cy.wrap($reports).contains('/otherName').should('have.length', 1);
+    });
+    cy.get('#SelectAllButton').click();
+    cy.task('downloads', downloadsFolder).then(filesBefore => {
+      cy.get('#DownloadBinaryButton').click();
+      cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
+      cy.task('downloads', downloadsFolder).then(filesAfter => {
+        const newFile = filesAfter.filter(file => !filesBefore.includes(file))[0];
+        // TODO: Expect "Ladybug Test", but wait before that has been implemented.
+        expect(newFile).to.contain('Ladybug');
+        expect(newFile).to.contain('2 reports');
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary', {timeout: 15000})
+        .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
+          cy.log(`Number of read bytes: ${buffer.length}`);
+        });
+        // Give the system time to finish downloading
+        cy.wait(5000);
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary')
+        .then((rawContent) => {
+          console.log(`Have content of uploaded file, length ${rawContent.length}`);
+          return Cypress.Blob.binaryStringToBlob(rawContent);
+        })
+        .then(fileContent => {
+          console.log(`Have transformed content length ${fileContent.length}`);
+          cy.get('input#uploadFileTest').attachFile({
+            fileContent,
+            fileName: newFile
+          });
+        });
+      });  
+    });
+    cy.get('#testReports tr', {timeout: 10000}).should('have.length', 4);
+    cy.get('#testReports tr td:nth-child(4):contains(/name)').should('have.length', 2);
+    cy.get('#testReports tr td:nth-child(4):contains(/otherName)').should('have.length', 2);
+  });
+
   it('Download from tab test, upload to tab debug', function() {
     const downloadsFolder = Cypress.config('downloadsFolder');
     cy.get('li#testTab').click();
