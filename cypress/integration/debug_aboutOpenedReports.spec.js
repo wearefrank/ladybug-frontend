@@ -56,6 +56,11 @@ describe('About opened reports', function() {
     checkNodeInfo('otherName');
   });
 
+  it('Edit button in display tab is disabled', function() {
+    cy.get('button[id="OpenAllButton"]').click();
+    cy.get('.debugDisplayEditButton').should('be.disabled');
+  });
+
   it('When you deselect the selected report, no info is shown anymore', function() {
     cy.get('.table-responsive tbody tr td:contains(name)').first().click();
     cy.get('div.treeview > ul > li').should('have.length', 3);
