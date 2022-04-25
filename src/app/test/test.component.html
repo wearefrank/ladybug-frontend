@@ -4,7 +4,7 @@
   </div>
   <div class="col">
     <div class="row">
-      <app-button [icon]="'fa fa-play'" [title]="'Disabled: Run All'"></app-button>
+      <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runSelected()"></app-button>
       <app-button [icon]="'fa fa-refresh'" [title]="'ReloadTestReports'" (click)="loadData()"></app-button>
       <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="openSettingsModal()"></app-button>
       <app-button [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
