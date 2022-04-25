@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../services/http.service';
 import { CookieService } from 'ngx-cookie-service';
+import { ToastComponent } from '../../toast/toast.component';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -20,6 +21,7 @@ export class TableSettingsModalComponent {
 
   @Output() openLatestReportsEvent = new EventEmitter<any>();
   @Output() openReportInProgress = new EventEmitter<any>();
+  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @Input()
   get reportsInProgress(): string {
     return this._reportsInProgress;
@@ -48,6 +50,7 @@ export class TableSettingsModalComponent {
     this.httpService.postTransformation(form.transformation).subscribe();
     let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled' };
     this.httpService.postSettings(data).subscribe();
+    this.toastComponent.addAlert({ type: 'warning', message: 'Reopen report to see updated XML' });
   }
 
   openLatestReports(amount: number): void {

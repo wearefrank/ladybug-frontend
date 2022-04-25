@@ -106,10 +106,12 @@ export class HttpService {
   }
 
   postTransformation(transformation: any): Observable<void> {
-    return this.http
-      .post('api/testtool/transformation', { transformation: transformation })
-      .pipe(tap(() => this.handleSuccess('Transformation saved!')))
-      .pipe(catchError(this.handleError()));
+    return (
+      this.http
+        .post('api/testtool/transformation', { transformation: transformation })
+        // .pipe(tap(() => this.handleSuccess('Transformation saved!')))
+        .pipe(catchError(this.handleError()))
+    );
   }
 
   getTransformation(): Observable<any> {
