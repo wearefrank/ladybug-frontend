@@ -45,6 +45,14 @@ function createOtherReport() {
 
 Cypress.Commands.add('createOtherReport', createOtherReport);
 
+function createRunningReport() {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReportInProgress=waitingForThread').then(resp => {
+        expect(resp.status).equal(200);
+    });
+}
+
+Cypress.Commands.add('createRunningReport', createRunningReport);
+
 function clearDebugStore() {
     cy.request(Cypress.env('backendServer') + '/index.jsp?clearDebugStorage=true');
 }

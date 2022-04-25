@@ -2,7 +2,7 @@
 <ng-template #modal let-modal>
   <div class="modal-header">
     <h5 class="modal-title" id="settingsModal">Options</h5>
-    <button type="button" class="close" (click)="modal.dismiss()">
+    <button id="debugSettingsModalClose" type="button" class="close" (click)="modal.dismiss()">
       <span>&times;</span>
     </button>
   </div>
@@ -40,7 +40,7 @@
         <div class="input-group">
           <input #index type="number"  min="0" value="0" max="{{_reportsInProgress}}" class="form-control" placeholder="0" id="openInProgressNo"/>
           <div class="input-group-append">
-            <button class="btn btn-info" type="button" (click)="openReportsInProgress(+index.value)">Open</button>
+            <button id="buttonOpenInProgressNo" class="btn btn-info" type="button" (click)="openReportsInProgress(+index.value)">Open</button>
           </div>
         </div>
       </div>
