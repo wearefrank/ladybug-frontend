@@ -138,6 +138,7 @@ export class DisplayComponent {
     }
 
     this.httpService.postReport(storageId, this.getReportValues(checkpointId)).subscribe((response: any) => {
+      response.report.xml = response.xml;
       this.saveReportEvent.next(response.report);
       this.notifyTestTabOfSavedReport(storageId, response.report);
     });
