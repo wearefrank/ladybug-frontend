@@ -1,5 +1,3 @@
-const { ChildProcess } = require("child_process");
-
 describe('Edit tests', function() {
   afterEach(function() {
     cy.clearDebugStore();
