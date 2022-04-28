@@ -83,6 +83,8 @@ describe('Edit tests', function() {
     cy.get('#SaveButton').click()
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.contains('Hello Original World!');
+    // Give dialog time to initialize
+    cy.wait(1000);
     cy.get('button:contains(No)').click();
     cy.contains('Hello World!');
   });
