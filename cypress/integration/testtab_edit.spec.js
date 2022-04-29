@@ -80,13 +80,15 @@ describe('Edit tests', function() {
     cy.wait(1000);
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
     cy.get('#monacoEditor').click().focused().type('{ctrl}a').type('Hello Original World!');
-    cy.get('#SaveButton').click()
+    cy.get('#SaveButton').click();
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.contains('Hello Original World!');
     // Give dialog time to initialize
     cy.wait(1000);
     cy.get('button:contains(No)').click();
-    cy.contains('Hello World!');
+    cy.get('.modal-title').should('have.length', 0);
+    cy.get('#SaveButton').should('have.length', 1);
+    cy.contains('Hello Original World!');
   });
 });
 
