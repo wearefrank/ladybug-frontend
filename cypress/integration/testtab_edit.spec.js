@@ -67,7 +67,7 @@ describe('Edit tests', function() {
     cy.get('.message').should('have.length', 0);
   });
 
-  it('When saving edit cancelled then original text kept', function() {
+  it('When saving edit cancelled then original text kept and rerun fails', function() {
     prepareEdit();
     // TODO: These four lines are a work-around for issue https://github.com/ibissource/ladybug-frontend/issues/150
     // These lines should be removed if that issue has been fixed.
@@ -89,6 +89,14 @@ describe('Edit tests', function() {
     cy.get('.modal-title').should('have.length', 0);
     cy.get('#SaveButton').should('have.length', 1);
     cy.contains('Hello Original World!');
+    cy.get('li#testTab').click();
+    cy.get('#RunreportButton').click();
+    // TODO: The test fails. It succeeded in an earlier draft
+    // that tested for color GREEN. This is an issue of the test,
+    // not the product. When I do the test manually, the text\
+    // is shown in red as it should. When I investigated with F12,
+    // I also saw the color: rgb(...) in the CSS properties.
+    cy.get('span:contains(0/1 stubbed)').should('have.css', 'color', 'red');
   });
 });
 
