@@ -148,6 +148,6 @@ function testDownloadFromNode(nodeNum) {
       });
     });
   });
-  cy.get('div.treeview > ul > li').should('have.length', 3);
+  cy.get('div.treeview > ul > li', {timeout: 10000}).should('have.length', 3);
   cy.get('div.treeview > ul > li:contains(name):not(:contains(other))').should('have.length', 3)
 }
