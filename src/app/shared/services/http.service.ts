@@ -114,8 +114,10 @@ export class HttpService {
     );
   }
 
-  getTransformation(): Observable<any> {
-    return this.http.get<any>('api/testtool/transformation').pipe(catchError(this.handleError()));
+  getTransformation(defaultTransformation: boolean): Observable<any> {
+    return this.http
+      .get<any>('api/testtool/transformation/' + defaultTransformation)
+      .pipe(catchError(this.handleError()));
   }
 
   getSettings(): Observable<any> {

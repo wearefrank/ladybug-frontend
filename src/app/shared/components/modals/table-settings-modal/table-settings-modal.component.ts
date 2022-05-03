@@ -69,9 +69,10 @@ export class TableSettingsModalComponent {
     this.settingsForm.get('generatorEnabled')?.setValue('Enabled');
     this.settingsForm.get('regexFilter')?.setValue('.*');
     this.settingsForm.get('transformationEnabled')?.setValue(false);
-    fetch('assets/defaultTransformation.xslt')
-      .then((response) => response.text())
-      .then((transformation) => this.settingsForm.get('transformation')?.setValue(transformation));
+    this.httpService.getTransformation(true).subscribe((response) => {
+      this.settingsForm.get('transformation')?.setValue(response.transformation);
+      this.cookieService.set('transformation', response.transformation);
+    });
   }
 
   loadSettings(): void {
@@ -94,7 +95,7 @@ export class TableSettingsModalComponent {
     if (this.cookieService.get('transformation')) {
       this.settingsForm.get('transformation')?.setValue(this.cookieService.get('transformation'));
     } else {
-      this.httpService.getTransformation().subscribe((response) => {
+      this.httpService.getTransformation(false).subscribe((response) => {
         this.settingsForm.get('transformation')?.setValue(response.transformation);
         this.cookieService.set('transformation', response.transformation);
       });
