@@ -1,3 +1,6 @@
+import chaiColors from 'chai-colors'
+chai.use(chaiColors)
+
 describe('Edit tests', function() {
   afterEach(function() {
     cy.clearDebugStore();
@@ -48,8 +51,7 @@ describe('Edit tests', function() {
     cy.get('button:contains(Yes)').click();
     cy.get('li#testTab').click();
     cy.get('#RunreportButton').click();
-    const GREEN = 'rgb(33, 37, 41)'
-    cy.get('span:contains(0/1 stubbed)').should('have.css', 'color', GREEN);
+    cy.get('span:contains(0/1 stubbed) span').should('have.css', 'color').and('be.colored', 'green');
   });
 
   it('Editing without pressing Edit produces error', function() {
@@ -91,12 +93,7 @@ describe('Edit tests', function() {
     cy.contains('Hello Original World!');
     cy.get('li#testTab').click();
     cy.get('#RunreportButton').click();
-    // TODO: The test fails. It succeeded in an earlier draft
-    // that tested for color GREEN. This is an issue of the test,
-    // not the product. When I do the test manually, the text\
-    // is shown in red as it should. When I investigated with F12,
-    // I also saw the color: rgb(...) in the CSS properties.
-    cy.get('span:contains(0/1 stubbed)').should('have.css', 'color', 'red');
+    cy.get('span:contains(0/1 stubbed) span').should('have.css', 'color').and('be.colored', 'red');
   });
 });
 
