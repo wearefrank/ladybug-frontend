@@ -32,6 +32,7 @@
     "@ng-bootstrap/ng-bootstrap": "11.0.0",
     "bootstrap": "^4.6.0",
     "bower": "1.8.12",
+    "chai-colors": "^1.0.1",
     "diff-match-patch": "1.0.5",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
