@@ -45,6 +45,24 @@ function createOtherReport() {
 
 Cypress.Commands.add('createOtherReport', createOtherReport);
 
+function createReportWithLabelNull() {
+    // No cy.visit because then the API call can happen multiple times.
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=messageLabelNull').then(resp => {
+        expect(resp.status).equal(200);
+    });
+}
+
+Cypress.Commands.add('createReportWithLabelNull', createReportWithLabelNull);
+
+function createReportWithLabelEmpty() {
+    // No cy.visit because then the API call can happen multiple times.
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=messageLabelEmptyString').then(resp => {
+        expect(resp.status).equal(200);
+    });
+}
+
+Cypress.Commands.add('createReportWithLabelEmpty', createReportWithLabelEmpty);
+
 function clearDebugStore() {
     cy.request(Cypress.env('backendServer') + '/index.jsp?clearDebugStorage=true');
 }
