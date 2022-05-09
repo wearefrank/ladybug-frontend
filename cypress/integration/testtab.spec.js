@@ -28,7 +28,7 @@ describe('About the Test tab', function() {
       cy.wrap($reports).contains('/name').should('have.length', 1);
       cy.wrap($reports).contains('/otherName').should('have.length', 1);
     });
-    testTabSelectReportNamed('name');
+    cy.functions.testTabSelectReportNamed('name');
     cy.get('#DeleteSelectedButton').click();
     cy.get('#testReports').find('tr').should('have.length', 1).within(function($reports) {
       cy.wrap($reports).contains('/otherName').should('have.length', 1);
@@ -112,7 +112,7 @@ describe('About the Test tab', function() {
       cy.wrap($reports).contains('/name').should('have.length', 1);
       cy.wrap($reports).contains('/otherName').should('have.length', 1);
     });
-    testTabSelectReportNamed('name');
+    cy.functions.testTabSelectReportNamed('name');
     cy.task('downloads', downloadsFolder).then(filesBefore => {
       cy.log('Before download, downloads folder contains files: ' + filesBefore.toString());
       cy.get('#DownloadBinaryButton').click();
@@ -164,19 +164,5 @@ function copyTheReportsToTestTab() {
 function checkTestTabTwoReportsSelected() {
   cy.get('#testReports tr [type=checkbox]').should('have.length', 2).each(($checkbox) => {
     cy.wrap($checkbox).should('be.checked');
-  });
-}
-
-function testTabSelectReportNamed(nameToSelect) {
-  cy.get('#testReports').find('tr').each(function($reportRow) {
-    cy.log('Considering next report');
-    const reportName = $reportRow.find('td').eq(3).text();
-    cy.log('Name of report is: ' + reportName);
-    if(reportName.includes(nameToSelect)) {
-      cy.log('Found checkbox of report with name name, checking it');
-      cy.wrap($reportRow).find('[type=checkbox]').check();
-    };
-    cy.get('#testReports tr [type=checkbox]:checked').should('have.length', 1);
-    cy.wait(1000);
   });
 }
