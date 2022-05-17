@@ -54,6 +54,13 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  deleteReportInProgress(index: number): Observable<any> {
+    return this.http
+      .delete<any>('api/testtool/in-progress/' + index)
+      .pipe(tap(() => this.handleSuccess('Deleted report in progress with index [' + index + ']')))
+      .pipe(catchError(this.handleError()));
+  }
+
   getTestReports(): Observable<any> {
     return this.http.get<any>('api/metadata/testStorage/');
   }
