@@ -19,8 +19,13 @@ export class HttpService {
 
   handleError() {
     return (error: any): Observable<any> => {
-      const errorMessages = error.error.split('::');
-      this.toastComponent.addAlert({ type: 'danger', message: errorMessages[0], detailed: errorMessages[1] });
+      const message = error.error;
+      if (message.includes('- detailed error message -')) {
+        const errorMessageParts = message.split('- detailed error message -');
+        this.toastComponent.addAlert({ type: 'danger', message: errorMessageParts[0], detailed: errorMessageParts[1] });
+      } else {
+        this.toastComponent.addAlert({ type: 'danger', message: message, detailed: '' });
+      }
       return of(error);
     };
   }
