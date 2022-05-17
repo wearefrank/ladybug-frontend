@@ -75,6 +75,11 @@ export class TableSettingsModalComponent {
     });
   }
 
+  disableButton(index: string): void {
+    let element: HTMLButtonElement = document.querySelector('#openReportInProgressButton')!;
+    element.disabled = index == '0' || this._reportsInProgress == '0';
+  }
+
   loadSettings(): void {
     this.httpService.getSettings().subscribe((response) => {
       const generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';

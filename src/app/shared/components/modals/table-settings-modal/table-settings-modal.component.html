@@ -38,9 +38,9 @@
       <div class="form-group">
         <label for="openInProgressNo">Open report in progress number</label>
         <div class="input-group">
-          <input #index type="number"  min="0" value="{{_reportsInProgress}}" max="{{_reportsInProgress}}" class="form-control" placeholder="0" id="openInProgressNo"/>
+          <input #index type="number"  min="0" value="{{_reportsInProgress}}" max="{{_reportsInProgress}}" (change)="disableButton(index.value)" class="form-control" id="openInProgressNo"/>
           <div class="input-group-append">
-            <button class="btn btn-info" type="button" (click)="openReportsInProgress(+index.value)">Open</button>
+            <button class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportsInProgress(+index.value)">Open</button>
           </div>
         </div>
       </div>
