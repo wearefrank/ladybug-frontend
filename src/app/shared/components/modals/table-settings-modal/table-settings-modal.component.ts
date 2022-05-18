@@ -46,7 +46,6 @@ export class TableSettingsModalComponent {
     this.cookieService.set('generatorEnabled', form.generatorEnabled);
     this.cookieService.set('regexFilter', form.regexFilter);
     this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
-    this.cookieService.set('transformation', form.transformation);
     this.httpService.postTransformation(form.transformation).subscribe();
     let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled' };
     this.httpService.postSettings(data).subscribe();
@@ -71,7 +70,6 @@ export class TableSettingsModalComponent {
     this.settingsForm.get('transformationEnabled')?.setValue(false);
     this.httpService.getTransformation(true).subscribe((response) => {
       this.settingsForm.get('transformation')?.setValue(response.transformation);
-      this.cookieService.set('transformation', response.transformation);
     });
   }
 
@@ -97,14 +95,9 @@ export class TableSettingsModalComponent {
         ?.setValue(this.cookieService.get('transformationEnabled') == 'true');
     }
 
-    if (this.cookieService.get('transformation')) {
-      this.settingsForm.get('transformation')?.setValue(this.cookieService.get('transformation'));
-    } else {
-      this.httpService.getTransformation(false).subscribe((response) => {
-        this.settingsForm.get('transformation')?.setValue(response.transformation);
-        this.cookieService.set('transformation', response.transformation);
-      });
-    }
+    this.httpService.getTransformation(false).subscribe((response) => {
+      this.settingsForm.get('transformation')?.setValue(response.transformation);
+    });
   }
 
   getRegexFilter(): string {
