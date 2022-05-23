@@ -14,6 +14,7 @@ describe('About opened reports', function() {
     // Each of the two reports has three lines.
     cy.get('div.treeview > ul > li').should('have.length', 6);
     cy.get('div.treeview > ul > li:contains(name)').first().selectIfNotSelected();
+    cy.wait(1000);
     cy.get('#CloseButton').click();
     cy.get('div.treeview > ul > li').should('have.length', 3);
     // nth-child has an 1-based index
@@ -69,7 +70,7 @@ describe('About opened reports', function() {
     cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name').should('be.visible');
     cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', 'name').should('be.visible');
     // Deselect
-    cy.get('div.treeview > ul > li:eq(1)').click();  
+    cy.get('div.treeview > ul > li:eq(1)').click();
     cy.get('#displayedNodeTable').should('not.exist');
   });
 
@@ -97,7 +98,7 @@ describe('About opened reports', function() {
 function linesFormExpandedNode($lines, evenOrOdd) {
   const startIcon = `assets/tree-icons/startpoint-${evenOrOdd}.gif`;
   const oddOrEven = (evenOrOdd == 'even') ? 'odd' : 'even';
-  const endIcon = `assets/tree-icons/endpoint-${oddOrEven}.gif`;  
+  const endIcon = `assets/tree-icons/endpoint-${oddOrEven}.gif`;
   expect($lines).to.have.length(3);
   expect($lines.eq(0).children()).to.have.length(2);
   expect($lines.eq(0).children().eq(0)).to.have.prop('nodeName', 'SPAN');
@@ -146,7 +147,7 @@ function checkNodeInfo(name) {
   cy.getShownMonacoModelElement().within(function(shownMonacoElement) {
     cy.wrap(shownMonacoElement).find(`span:contains(${startOfReportTag})`);
     cy.wrap(shownMonacoElement).find('span:contains(Name)');
-    cy.wrap(shownMonacoElement).find(`span:contains(${quotedName})`);  
+    cy.wrap(shownMonacoElement).find(`span:contains(${quotedName})`);
   });
   cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name');
   cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', `${name}`);
