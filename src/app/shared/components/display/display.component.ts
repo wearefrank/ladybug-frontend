@@ -75,7 +75,7 @@ export class DisplayComponent {
     this.report = report;
     setTimeout(() => {
       this.loadMonacoCode();
-    }, 100);
+    }, 0);
     this.displayReport = true;
     this.rerunResult = '';
     this.disableEditing(); // For switching from editing current report to another

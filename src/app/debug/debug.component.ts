@@ -20,7 +20,10 @@ export class DebugComponent {
   }
 
   showReportInDisplay(currentReport: TreeNode): void {
-    this.displayComponent.showReport(currentReport);
+    this.displayComponent.closeReport(false, -1);
+    setTimeout(() => {
+      this.displayComponent.showReport(currentReport);
+    }, 100);
   }
 
   closeEntireTree(): void {
