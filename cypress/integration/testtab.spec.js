@@ -98,7 +98,7 @@ describe('About the Test tab', function() {
             fileName: newFile
           });
         });
-      });  
+      });
     });
     cy.get('#testReports tr', {timeout: 10000}).should('have.length', 4);
     cy.get('#testReports tr td:nth-child(4):contains(/name)').should('have.length', 2);
@@ -156,8 +156,10 @@ function copyTheReportsToTestTab() {
   // a detached DOM element.
   cy.get('div.treeview > ul > li').should('have.length', 6);
   cy.get('div.treeview > ul > li:contains(name)').first().selectIfNotSelected();
+  cy.wait(1000);
   cy.get('button#CopyButton').click();
   cy.get('div.treeview > ul > li:contains(otherName)').first().selectIfNotSelected();
+  cy.wait(1000);
   cy.get('button#CopyButton').click();
 }
 

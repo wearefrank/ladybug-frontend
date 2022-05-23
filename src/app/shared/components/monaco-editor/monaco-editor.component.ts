@@ -28,37 +28,39 @@ export class MonacoEditorComponent {
    * @param modified - other xml in case we are comparing
    */
   loadMonaco(message: string, modified: string): void {
-    if (loadedMonaco) {
-      loadPromise.then(() => {
-        this.comparing ? this.initializeDifference(message, modified) : this.initializeEditor(message);
-      });
-    } else {
-      loadedMonaco = true;
-      loadPromise = new Promise<void>((resolve: any) => {
-        if (typeof (window as any).monaco === 'object') {
-          resolve();
-          return;
-        }
-
-        const onAmdLoader: any = () => {
-          (window as any).require.config({ paths: { vs: 'assets/monaco/vs' } });
-          (window as any).require(['vs/editor/editor.main'], () => {
-            this.comparing ? this.initializeDifference(message, modified) : this.initializeEditor(message);
+    setTimeout(() => {
+      if (loadedMonaco) {
+        loadPromise.then(() => {
+          this.comparing ? this.initializeDifference(message, modified) : this.initializeEditor(message);
+        });
+      } else {
+        loadedMonaco = true;
+        loadPromise = new Promise<void>((resolve: any) => {
+          if (typeof (window as any).monaco === 'object') {
             resolve();
-          });
-        };
+            return;
+          }
 
-        if (!(window as any).require) {
-          const loaderScript: HTMLScriptElement = document.createElement('script');
-          loaderScript.type = 'text/javascript';
-          loaderScript.src = 'assets/monaco/vs/loader.js';
-          loaderScript.addEventListener('load', onAmdLoader);
-          document.body.append(loaderScript);
-        } else {
-          onAmdLoader();
-        }
-      });
-    }
+          const onAmdLoader: any = () => {
+            (window as any).require.config({ paths: { vs: 'assets/monaco/vs' } });
+            (window as any).require(['vs/editor/editor.main'], () => {
+              this.comparing ? this.initializeDifference(message, modified) : this.initializeEditor(message);
+              resolve();
+            });
+          };
+
+          if (!(window as any).require) {
+            const loaderScript: HTMLScriptElement = document.createElement('script');
+            loaderScript.type = 'text/javascript';
+            loaderScript.src = 'assets/monaco/vs/loader.js';
+            loaderScript.addEventListener('load', onAmdLoader);
+            document.body.append(loaderScript);
+          } else {
+            onAmdLoader();
+          }
+        });
+      }
+    }, 100);
   }
 
   /**

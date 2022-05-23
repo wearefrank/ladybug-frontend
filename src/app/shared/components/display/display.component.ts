@@ -75,7 +75,7 @@ export class DisplayComponent {
     this.report = report;
     setTimeout(() => {
       this.loadMonacoCode();
-    }, 100);
+    }, 0);
     this.displayReport = true;
     this.rerunResult = '';
     this.disableEditing(); // For switching from editing current report to another
@@ -138,6 +138,7 @@ export class DisplayComponent {
     }
 
     this.httpService.postReport(storageId, this.getReportValues(checkpointId)).subscribe((response: any) => {
+      response.report.xml = response.xml;
       this.saveReportEvent.next(response.report);
       this.notifyTestTabOfSavedReport(storageId, response.report);
     });

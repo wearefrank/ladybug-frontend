@@ -117,6 +117,14 @@ export class TestComponent implements OnInit, OnDestroy {
     }
   }
 
+  runSelected(): void {
+    this.reports.forEach((report) => {
+      if (report.checked) {
+        this.run(report.storageId);
+      }
+    });
+  }
+
   removeReranReportIfExists(id: string) {
     this.reranReports = this.reranReports.filter((report) => report.id != id);
   }

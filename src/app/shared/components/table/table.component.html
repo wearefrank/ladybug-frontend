@@ -26,7 +26,15 @@
         </div>
       </form>
     <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.reportsInProgress }}</div>
-    <div *ngIf="+tableSettings.estimatedMemoryUsage > 0" class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
+    <span class="row" *ngIf="+tableSettings.estimatedMemoryUsage > 0">
+          <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
+          <div class="col input-group my-2 mx-1 px-2">
+            <input #index type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" class="form-control" id="deleteInProgressNo"/>
+            <div class="input-group-append">
+              <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+index.value)"><i class="fa fa-trash"></i></button>
+            </div>
+          </div>
+    </span>
   </div>
 
   <div class="table-responsive" id="metadataTable">

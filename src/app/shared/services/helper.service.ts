@@ -15,36 +15,35 @@ export class HelperService {
     let img = 'assets/tree-icons/';
     switch (type) {
       case 1:
-        img += 'start';
+        img += 'startpoint';
         break;
       case 2:
-        img += 'end';
+        img += 'endpoint';
         break;
       case 3:
-        img += 'abort';
+        img += 'abortpoint';
         break;
       case 4:
-        img += 'input';
+        img += 'inputpoint';
         break;
       case 5:
-        img += 'output';
+        img += 'outputpoint';
         break;
       case 6:
-        img += 'info';
+        img += 'infopoint';
         break;
       case 7:
-        img += 'threadCreate'; // Doesn't exist?
+        img += 'threadStartpoint-error'; // Doesn't exist?
         break;
       case 8:
-        img += 'threadStart';
+        img += 'threadStartpoint';
         break;
       case 9:
-        img += 'threadEnd';
+        img += 'threadEndpoint';
         break;
       default:
         return '';
     }
-    img += 'point';
 
     if (encoding === this.THROWABLE_ENCODER) {
       img += '-error';

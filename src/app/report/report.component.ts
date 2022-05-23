@@ -35,7 +35,10 @@ export class ReportComponent implements AfterViewInit {
    * @param currentReport - the report to be viewed
    */
   selectReport(currentReport: TreeNode): void {
-    this.displayComponent.showReport(currentReport);
+    this.displayComponent.closeReport(false, -1);
+    setTimeout(() => {
+      this.displayComponent.showReport(currentReport);
+    }, 100);
   }
 
   savingReport(something: any) {
