@@ -293,6 +293,17 @@ export class TestComponent implements OnInit, OnDestroy {
 
   changeFilter(filter: string): void {
     this.currentFilter = filter;
+    let reportNames: string[] = [];
+
+    for (let report of this.reports) {
+      reportNames.push(report.name.split('/').reverse()[0]);
+    }
+
+    setTimeout(() => {
+      for (let i in this.reports) {
+        this.reports[i].checked = '/' + this.reports[i].name === this.currentFilter + '/' + reportNames[i];
+      }
+    }, 0);
   }
 
   matches(name: string): boolean {
