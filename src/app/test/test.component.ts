@@ -309,4 +309,15 @@ export class TestComponent implements OnInit, OnDestroy {
   matches(name: string): boolean {
     return name.match(this.currentFilter + '/' + '.*') != undefined;
   }
+
+  extractVariables(variables: string) {
+    let map = variables.split('\n');
+    let keys = map[0].split(',');
+    let values = map[1].split(',');
+    let resultString = '';
+    for (let i in keys) {
+      resultString += keys[i] + '=' + values[i] + ', ';
+    }
+    return resultString.slice(0, -2);
+  }
 }

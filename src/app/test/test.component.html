@@ -33,36 +33,51 @@
       <p>Generator is {{ generatorStatus.toLocaleLowerCase() }}</p>
     </div>
 
-    <div class="row">
-      <table>
+    <div class="table-responsive" id="testReportTable">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th *ngIf="showStorageIds()">StorageId</th>
+            <th>(Re)run/open</th>
+            <th>Name</th>
+            <th>Variables</th>
+            <th>Run result</th>
+            <th>Options</th>
+          </tr>
+        </thead>
         <tbody id="testReports">
-        <tr *ngFor="let report of reports" class="form-inline" id="testReport#{{report.storageId}}">
-          <span *ngIf="matches('/' + report.name)" >
-
-            <td>
-              <input class="form-check-input" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
-            </td>
-            <td *ngIf="showStorageIds()">[{{report.storageId}}]</td>
-            <td>
-              <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report.storageId)"></app-button>
-            </td>
-            <td>
-              <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="openReport(report.storageId, report.name)"></app-button>
-            </td>
-            <td *ngIf="getReranReport(report.storageId)">
-              <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report.storageId)"></app-button>
-            </td>
-            <td *ngIf="getReranReport(report.storageId)">
-              <app-button [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report.storageId)"></app-button>
-            </td>
-            <td>
-              /{{ report.name}}
-            </td>
-            <td id="runResult#{{report.storageId}}">
-              <span *ngIf="getReranReport(report.storageId)" style="color: {{getReranReport(report.storageId).color}}">{{ getReranReport(report.storageId).resultString }}</span>
-            </td>
-          </span>
-        </tr>
+        <ng-container *ngFor="let report of reports" class="form-inline">
+          <tr *ngIf="matches('/' + report.name)">
+              <td>
+                <input type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
+              </td>
+              <td *ngIf="showStorageIds()">
+                {{report.storageId}}
+              </td>
+              <td>
+                <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report.storageId)"></app-button>
+                <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="openReport(report.storageId, report.name)"></app-button>
+              </td>
+              <td>
+                /{{ report.name}}
+              </td>
+              <td>
+                <span *ngIf="report.variables !== 'null'">{{extractVariables(report.variables)}}</span>
+              </td>
+              <td>
+                <span *ngIf="getReranReport(report.storageId)" id="runResult#{{report.storageId}}" style="color: {{getReranReport(report.storageId).color}}">
+                  {{ getReranReport(report.storageId).resultString }}
+                </span>
+              </td>
+              <td>
+                <span *ngIf="getReranReport(report.storageId)">
+                  <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report.storageId)"></app-button>
+                  <app-button [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report.storageId)"></app-button>
+                </span>
+              </td>
+          </tr>
+        </ng-container>
         </tbody>
       </table>
     </div>
