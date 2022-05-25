@@ -68,4 +68,17 @@ describe('Tests with one report', function() {
       cy.wrap($report).find('span:contains(0/1 stubbed) span').should('have.css', 'color').and('be.colored', 'red');
     });
   });
+
+  it('Rerun, replace, succeed', function() {
+    cy.functions.testTabSelectReportNamed('name');
+    cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
+    cy.get('#testReports').find('tr:eq(0)').within(function($report) {
+      cy.wrap($report).find('span:contains(0/1 stubbed) span').should('have.css', 'color').and('be.colored', 'red');
+    });
+    cy.get('#testReports tr:eq(0)').find('#ReplacereportButton').click();
+    cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
+    cy.get('#testReports').find('tr:eq(0)').within(function($report) {
+      cy.wrap($report).find('span:contains(0/1 stubbed) span').should('have.css', 'color').and('be.colored', 'green');
+    });
+  });
 })
