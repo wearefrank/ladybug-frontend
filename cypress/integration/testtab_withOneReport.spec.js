@@ -1,7 +1,7 @@
 import chaiColors from 'chai-colors'
 chai.use(chaiColors)
 
-describe('Test copy in testtab', function() {
+describe('Tests with one report', function() {
   beforeEach(function() {
     cy.createReport();
     cy.visit('');
