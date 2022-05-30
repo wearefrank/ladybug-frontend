@@ -101,8 +101,8 @@ describe('About the Test tab', function() {
       });
     });
     cy.get('#testReports tr', {timeout: 10000}).should('have.length', 4);
-    cy.get('#testReports tr td:nth-child(4):contains(/name)').should('have.length', 2);
-    cy.get('#testReports tr td:nth-child(4):contains(/otherName)').should('have.length', 2);
+    cy.get('#testReports tr td:nth-child(3):contains(/name)').should('have.length', 2);
+    cy.get('#testReports tr td:nth-child(3):contains(/otherName)').should('have.length', 2);
   });
 
   it('Download from tab test, upload to tab debug', function() {

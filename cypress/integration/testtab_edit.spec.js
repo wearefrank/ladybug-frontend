@@ -51,7 +51,7 @@ describe('Edit tests', function() {
     cy.get('button:contains(Yes)').click();
     cy.get('li#testTab').click();
     cy.get('#RunreportButton').click();
-    cy.get('span:contains(0/1 stubbed) span').should('have.css', 'color').and('be.colored', 'green');
+    cy.get('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'green');
   });
 
   it('Editing without pressing Edit produces error', function() {
@@ -93,7 +93,7 @@ describe('Edit tests', function() {
     cy.contains('Hello Original World!');
     cy.get('li#testTab').click();
     cy.get('#RunreportButton').click();
-    cy.get('span:contains(0/1 stubbed) span').should('have.css', 'color').and('be.colored', 'red');
+    cy.get('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
   });
 });
 
