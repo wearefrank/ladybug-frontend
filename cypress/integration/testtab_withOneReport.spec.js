@@ -1,7 +1,7 @@
 import chaiColors from 'chai-colors'
 chai.use(chaiColors)
 
-describe('Test copy in testtab', function() {
+describe('Tests with one report', function() {
   beforeEach(function() {
     cy.createReport();
     cy.visit('');
@@ -38,15 +38,6 @@ describe('Test copy in testtab', function() {
       cy.wrap($report).find('td:eq(2)').should('include.text', 'name');
     });
     cy.get('#OpenreportButton:eq(0)').click();
-    // TODO: These four lines are a work-around for issue https://github.com/ibissource/ladybug-frontend/issues/150
-    // These lines should be removed if that issue has been fixed.
-    //
-    // Doing the "should" right after the "click" does not work. Then you
-    // get an error that the element is detached from the DOM.
-    // It seems that another node is created when the "click" is handled.
-    cy.get('.treeview ul li:nth-child(2)').click()
-    cy.get('.treeview ul li:nth-child(2)').should('not.have.class', 'node-selected');
-    cy.get('.treeview ul li:nth-child(2)').click()
     cy.get('.treeview ul li:nth-child(2)').should('have.class', 'node-selected');
     cy.wait(1000);
     cy.get('#EditButton').click();

@@ -77,8 +77,7 @@ describe('About the Test tab', function() {
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
       cy.task('downloads', downloadsFolder).then(filesAfter => {
         const newFile = filesAfter.filter(file => !filesBefore.includes(file))[0];
-        // TODO: Expect "Ladybug Test", but wait before that has been implemented.
-        expect(newFile).to.contain('Ladybug');
+        expect(newFile).to.contain('Ladybug Test');
         expect(newFile).to.contain('2 reports');
         cy.readFile(cy.functions.downloadPath(newFile), 'binary', {timeout: 15000})
         .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {

@@ -21,15 +21,6 @@ describe('Edit tests', function() {
 
   it('Edit report in test tab', function() {
     prepareEdit();
-    // TODO: These four lines are a work-around for issue https://github.com/ibissource/ladybug-frontend/issues/150
-    // These lines should be removed if that issue has been fixed.
-    //
-    // Doing the "should" right after the "click" does not work. Then you
-    // get an error that the element is detached from the DOM.
-    // It seems that another node is created when the "click" is handled.
-    cy.get('.treeview ul li:nth-child(2)').click()
-    cy.get('.treeview ul li:nth-child(2)').should('not.have.class', 'node-selected');
-    cy.get('.treeview ul li:nth-child(2)').click()
     cy.get('.treeview ul li:nth-child(2)').should('have.class', 'node-selected');
     cy.wait(1000);
     cy.get('#EditButton').click();
@@ -56,11 +47,6 @@ describe('Edit tests', function() {
 
   it('Editing without pressing Edit produces error', function() {
     prepareEdit();
-    // TODO: These four lines are a work-around for issue https://github.com/ibissource/ladybug-frontend/issues/150
-    // These lines should be removed if that issue has been fixed.
-    cy.get('.treeview ul li:nth-child(2)').click()
-    cy.get('.treeview ul li:nth-child(2)').should('not.have.class', 'node-selected');
-    cy.get('.treeview ul li:nth-child(2)').click()
     cy.get('.treeview ul li:nth-child(2)').should('have.class', 'node-selected');
     // Do not press Edit button
     cy.get('#SaveButton').should('have.length', 0);
@@ -71,11 +57,6 @@ describe('Edit tests', function() {
 
   it('When saving edit cancelled then original text kept and rerun fails', function() {
     prepareEdit();
-    // TODO: These four lines are a work-around for issue https://github.com/ibissource/ladybug-frontend/issues/150
-    // These lines should be removed if that issue has been fixed.
-    cy.get('.treeview ul li:nth-child(2)').click()
-    cy.get('.treeview ul li:nth-child(2)').should('not.have.class', 'node-selected');
-    cy.get('.treeview ul li:nth-child(2)').click()
     cy.get('.treeview ul li:nth-child(2)').should('have.class', 'node-selected');
     cy.wait(1000);
     cy.get('#EditButton').click();
