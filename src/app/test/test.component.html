@@ -63,7 +63,7 @@
                 /{{ report.name}}
               </td>
               <td>
-                <span *ngIf="report.variables !== 'null'">{{extractVariables(report.variables)}}</span>
+                <span>{{extractVariables(report.variables)}}</span>
               </td>
               <td>
                 <span *ngIf="getReranReport(report.storageId)" id="runResult#{{report.storageId}}" style="color: {{getReranReport(report.storageId).color}}">

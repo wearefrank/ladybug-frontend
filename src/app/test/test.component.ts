@@ -311,6 +311,9 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   extractVariables(variables: string) {
+    if (!variables || variables == 'null') {
+      return '';
+    }
     let map = variables.split('\n');
     let keys = map[0].split(',');
     let values = map[1].split(',');
