@@ -3,14 +3,13 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MonacoEditorComponent } from '../monaco-editor/monaco-editor.component';
 // @ts-ignore
 import DiffMatchPatch from 'diff-match-patch';
-// @ts-ignore
-import beautify from 'xml-beautifier';
 import { HttpService } from '../../services/http.service';
 import { DisplayTableComponent } from '../display-table/display-table.component';
 import { DifferenceModal } from '../../interfaces/difference-modal';
 import { TreeNode } from '../../interfaces/tree-node';
 import { LoaderService } from '../../services/loader.service';
-import { Buffer } from 'node:buffer';
+declare var require: any;
+const { Buffer } = require('buffer');
 
 @Component({
   selector: 'app-display',
@@ -82,7 +81,6 @@ export class DisplayComponent {
         if (this.report.ladybug.encoding == 'Base64') {
           this.report.ladybug.showConverted = true;
           message = this.convertMessage(message, 'base64', 'utf8');
-          this.report.ladybug.message = message;
         }
         this.loadMonacoCode(message);
       }
@@ -162,27 +160,26 @@ export class DisplayComponent {
       this.monacoEditorComponent.loadMonaco(this.differenceModal[0].originalValue, '');
     }
   }
-
   convertMessage(message: string, from: string, to: string) {
-    console.log('Converting ' + message + ' from ' + from + ' to ' + to);
     return Buffer.from(message, from).toString(to);
   }
 
   changeEncoding(button: any) {
+    let message: string = '';
     if (button.target.innerHTML.includes('Base64')) {
-      this.report.ladybug.message = this.convertMessage(this.report.ladybug.message, 'utf-8', 'base64');
+      message = this.report.ladybug.message;
       this.report.ladybug.showConverted = false;
 
       button.target.title = 'Convert to UTF-8';
       button.target.innerHTML = 'UTF-8';
     } else {
-      this.report.ladybug.message = this.convertMessage(this.report.ladybug.message, 'base64', 'utf-8');
+      message = this.convertMessage(this.report.ladybug.message, 'base64', 'utf8');
       this.report.ladybug.showConverted = true;
 
       button.target.title = 'Convert to Base64';
       button.target.innerHTML = 'Base64';
     }
-    this.loadMonacoCode(this.report.ladybug.message);
+    this.loadMonacoCode(message);
   }
 
   getReportValues(checkpointId: string): any {
