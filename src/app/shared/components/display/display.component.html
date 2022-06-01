@@ -20,6 +20,8 @@
           <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
     </span>
 
+    <app-button *ngIf="report.ladybug.encoding === 'Base64'" [text]="'Base64'" [title]="'Convert to Base64'" (click)="changeEncoding($event)"></app-button>
+
     <div ngbDropdown title="Download">
       <button class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
@@ -70,6 +72,7 @@
 
     <div *ngIf="null !== report.ladybug.encoding" id="encodedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
       Message of type {{report.ladybug.messageClassName}} is encoded to string using {{report.ladybug.encoding}}
+      <span *ngIf="this.report.ladybug.showConverted">and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
     </div>
 
     <div *ngIf="report.ladybug.preTruncatedMessageLength > 0" id="truncatedMessageLabel" class="btn btn-static my-2 mx-1 px-2">

@@ -163,11 +163,6 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteReportInProgress(index: number) {
-    this.httpService.deleteReportInProgress(index).subscribe();
-    this.getTableSettings();
-  }
-
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
     const queryString: string = this.tableSettings.reportMetadata.reduce(
       (totalQuery: string, selectedReport: Metadata) => totalQuery + 'id=' + selectedReport.storageId + '&',
