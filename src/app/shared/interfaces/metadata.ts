@@ -9,4 +9,5 @@ export interface Metadata {
   numberOfCheckpoints: string;
   estimatedMemoryUsage: string;
   checked?: boolean;
+  variables: any;
 }

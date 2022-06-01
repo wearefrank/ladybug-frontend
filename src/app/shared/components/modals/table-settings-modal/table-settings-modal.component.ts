@@ -36,6 +36,7 @@ export class TableSettingsModalComponent {
   open(): void {
     this.loadSettings();
     this.modalService.open(this.modal);
+    this.disableOpenReportInProgressButton(false);
   }
 
   /**
@@ -73,9 +74,13 @@ export class TableSettingsModalComponent {
     });
   }
 
-  disableButton(index: string): void {
+  disableOpenReportInProgressButton(disable: boolean) {
     let element: HTMLButtonElement = document.querySelector('#openReportInProgressButton')!;
-    element.disabled = index == '0' || this._reportsInProgress == '0';
+    element.disabled = disable || this._reportsInProgress == '0';
+  }
+
+  disableButton(index: string): void {
+    this.disableOpenReportInProgressButton(index == '0');
   }
 
   loadSettings(): void {

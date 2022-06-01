@@ -9,7 +9,7 @@ describe('Tests with one report', function() {
     cy.get('div.treeview > ul > li').should('have.length', 3);
     cy.get('button#CopyButton').click();
     cy.get('li#testTab').click();
-    cy.get('#testReports tr').should('have.length', 1);  
+    cy.get('#testReports tr').should('have.length', 1);
   });
 
   afterEach(function() {
@@ -35,7 +35,7 @@ describe('Tests with one report', function() {
     cy.get('#testReports').find('tr').should('have.length', 2);
     cy.get('#testReports').find('tr').each(function($report) {
       cy.wrap($report).find('[type=checkbox]').should('not.be.checked');
-      cy.wrap($report).find('td:eq(3)').should('include.text', 'name');
+      cy.wrap($report).find('td:eq(2)').should('include.text', 'name');
     });
     cy.get('#OpenreportButton:eq(0)').click();
     cy.get('.treeview ul li:nth-child(2)').should('have.class', 'node-selected');
@@ -61,11 +61,11 @@ describe('Tests with one report', function() {
     cy.get('#testReports').find('tr').should('have.length', 2);
     cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(0)').within(function($report) {
-      cy.wrap($report).find('span:contains(0/1 stubbed) span').should('have.css', 'color').and('be.colored', 'green');
+      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'green');
     });
     cy.get('#testReports tr:eq(1)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(1)').within(function($report) {
-      cy.wrap($report).find('span:contains(0/1 stubbed) span').should('have.css', 'color').and('be.colored', 'red');
+      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
     });
   });
 })
