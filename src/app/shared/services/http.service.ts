@@ -36,7 +36,21 @@ export class HttpService {
 
   getReports(limit: number, regexFilter: string): Observable<any> {
     return this.http.get('api/metadata/debugStorage/', {
-      params: { limit: limit, filter: regexFilter },
+      params: {
+        limit: limit,
+        filter: regexFilter,
+        metadataNames: [
+          'storageId',
+          'endTime',
+          'duration',
+          'name',
+          'correlationId',
+          'status',
+          'numberOfCheckpoints',
+          'estimatedMemoryUsage',
+          'storageSize',
+        ],
+      },
     });
   }
 
@@ -62,7 +76,9 @@ export class HttpService {
   }
 
   getTestReports(): Observable<any> {
-    return this.http.get<any>('api/metadata/testStorage/');
+    return this.http.get<any>('api/metadata/testStorage/', {
+      params: { metadataNames: ['name', 'storageId', 'variables'] },
+    });
   }
 
   getReport(reportId: string, storage: string) {
