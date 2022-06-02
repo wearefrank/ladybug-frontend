@@ -149,7 +149,7 @@ jobs:
         if: always()
         with:
           name: serverStartLog.log
-          path: serverStartLog.log
+          path: frank-runner/specials/ibis-ladybug/serverStartLog.log
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v3
         if: always()
