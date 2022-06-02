@@ -69,7 +69,8 @@ jobs:
         run: echo "maven.skip.tests=true" > frank-runner/specials/ibis-ladybug/build.properties
       - name: Set properties to skip backend Javadoc
         run: echo "maven.skip.javadoc=true" >> frank-runner/specials/ibis-ladybug/build.properties
-
+      - name: Set property to skip checking licenses
+        run: echo "maven.skip.copyright=true" >> frank-runner/specials/ibis-ladybug/build.properties
       - name: Set port where ibis-ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
 
@@ -143,12 +144,24 @@ jobs:
         run: tree -d -L 5 .
         if: always()
 
+      - name: Store log of starting the server with the Frank!Runner
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: serverStartLog.log
+          path: frank-runner/specials/ibis-ladybug/serverStartLog.log
+      - name: Store build.properties
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: specials_build.properties
+          path: frank-runner/specials/ibis-ladybug/build.properties
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: logs
-          path: frank-runner/build/*/logs/catalina.out
+          path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
         uses: actions/upload-artifact@v2
         if: always()
