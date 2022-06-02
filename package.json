@@ -15,7 +15,7 @@
     "e2e-interactive": "start-server-and-test 'ng serve' 4200 cypress:open",
     "lint": "ng lint",
     "prepare": "husky install",
-    "startServer": "cd ../frank-runner/specials/ibis-ladybug && ./restart.sh"
+    "startServer": "cd ../frank-runner/specials/ibis-ladybug && ./restart.sh > serverStartLog.log"
   },
   "dependencies": {
     "@angular/animations": "13.1.1",
