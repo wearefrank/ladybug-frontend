@@ -150,6 +150,12 @@ jobs:
         with:
           name: serverStartLog.log
           path: frank-runner/specials/ibis-ladybug/serverStartLog.log
+      - name: Store build.properties
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: specials_build.properties
+          path: frank-runner/specials/ibis-ladybug/build.properties
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v3
         if: always()
