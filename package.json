@@ -13,6 +13,8 @@
     "cypress:run": "cypress run",
     "e2e": "start-server-and-test 'ng serve' 4200 cypress:run",
     "e2e-interactive": "start-server-and-test 'ng serve' 4200 cypress:open",
+    "e2e-interactive-webjar": "cypress open --config baseUrl=http://localhost/ladybug/",
+    "e2e-webjar": "cypress run --config baseUrl=http://localhost/ladybug/",
     "lint": "ng lint",
     "prepare": "husky install",
     "startServer": "cd ../frank-runner/specials/ibis-ladybug && ./restart.sh > serverStartLog.log"
