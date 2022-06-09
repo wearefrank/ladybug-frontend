@@ -29,9 +29,6 @@ jobs:
     steps:
       - name: Echo inputs
         run: echo "useRealFrontend=${{ github.event.inputs.useRealFrontend}}, mergeMasterToBranch=${{ github.event.inputs.mergeMasterToBranch}}, frontendCommitToCheckout=${{ github.event.inputs.frontendCommitToCheckout}}, backendCommitToCheckout=${{ github.event.inputs.backendCommitToCheckout }}"
-      - name: Should only be run if input mergeMasterToBranch is set
-        if: ${{ github.event.inputs.mergeMasterToBranch == 'true' }}
-        run: echo "Input mergeMasterToBranch is set"
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
@@ -121,7 +118,7 @@ jobs:
         run: git checkout ${{ github.event.inputs.backendCommitToCheckout }}
         working-directory: 'ibis-ladybug'
       - name: Merge backend with its master
-        if: ${{ github.event.inputs.mergeMasterToBranch }}
+        if: ${{ github.event.inputs.mergeMasterToBranch == 'true' }}
         run: git merge master
         working-directory: 'ibis-ladybug'
       - name: Checkout ibis-ladybug-test-webapp
@@ -162,7 +159,7 @@ jobs:
         working-directory: ladybug-frontend
 
       - name: Run cypress with chrome browser
-        if: ${{ ! github.event.inputs.useRealFrontend }}
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         uses: cypress-io/github-action@v2.9.7
         with:
           working-directory: ladybug-frontend
@@ -172,7 +169,7 @@ jobs:
           wait-on-timeout: 240
           browser: chrome
       - name: Run cypress with firefox browser
-        if: ${{ ! github.event.inputs.useRealFrontend }}
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         uses: cypress-io/github-action@v2.9.7
         with:
           working-directory: ladybug-frontend
@@ -184,7 +181,7 @@ jobs:
           config: screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
 
       - name: Run cypress with chrome browser - real frontend
-        if: ${{ github.event.inputs.useRealFrontend }}
+        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
         uses: cypress-io/github-action@v2.9.7
         with:
           working-directory: ladybug-frontend
@@ -193,7 +190,7 @@ jobs:
           browser: chrome
           config: baseUrl=http://localhost:8090/ladybug/
       - name: Run cypress with firefox browser - real frontend
-        if: ${{ github.event.inputs.useRealFrontend }}
+        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
         uses: cypress-io/github-action@v2.9.7
         with:
           working-directory: ladybug-frontend
