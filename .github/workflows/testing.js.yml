@@ -9,6 +9,11 @@ on:
         type: boolean
         default: false
         required: true
+      mergeMasterToBranch:
+        description: If true, the checkout-out backend is merged with the backend master
+        type: boolean
+        default: false
+        required: true
       frontendCommitToCheckout:
         description: Tag or branch of ladybug-frontend to check out
         required: false
@@ -110,7 +115,10 @@ jobs:
         if: ${{ github.event.inputs.backendCommitToCheckout }}
         run: git checkout ${{ github.event.inputs.backendCommitToCheckout }}
         working-directory: 'ibis-ladybug'
-
+      - name: Merge backend with its master
+        if: ${{ github.event.inputs.backendCommitToCheckout && github.event.inputs.mergeMasterToBranch }}
+        run: git merge master
+        working-directory: 'ibis-ladybug'
       - name: Checkout ibis-ladybug-test-webapp
         uses: actions/checkout@v2
         with:
