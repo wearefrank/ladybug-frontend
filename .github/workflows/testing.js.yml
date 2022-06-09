@@ -30,7 +30,7 @@ jobs:
       - name: Echo inputs
         run: echo "useRealFrontend=${{ github.event.inputs.useRealFrontend}}, mergeMasterToBranch=${{ github.event.inputs.mergeMasterToBranch}}, frontendCommitToCheckout=${{ github.event.inputs.frontendCommitToCheckout}}, backendCommitToCheckout=${{ github.event.inputs.backendCommitToCheckout }}"
       - name: Should only be run if input mergeMasterToBranch is set
-        if: ${{ github.event.inputs.mergeMasterToBranch }}
+        if: ${{ github.event.inputs.mergeMasterToBranch == 'true' }}
         run: echo "Input mergeMasterToBranch is set"
       - name: Checkout repository
         uses: actions/checkout@v2
