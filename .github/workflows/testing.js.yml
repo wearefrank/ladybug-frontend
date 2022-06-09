@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Echo inputs
-        run: echo "useRealFrontend=${{ useRealFrontend}}, mergeMasterToBranch=${{ mergeMasterToBranch}}, frontendCommitToCheckout=${{ frontendCommitToCheckout}}, backendCommitToCheckout=${{ backendCommitToCheckout }}"
+        run: echo "useRealFrontend=${{ github.event.inputs.useRealFrontend}}, mergeMasterToBranch=${{ github.event.inputs.mergeMasterToBranch}}, frontendCommitToCheckout=${{ github.event.inputs.frontendCommitToCheckout}}, backendCommitToCheckout=${{ github.event.inputs.backendCommitToCheckout }}"
       - name: Should only be run if input mergeMasterToBranch is set
         if: ${{ github.event.inputs.mergeMasterToBranch }}
         run: echo "Input mergeMasterToBranch is set"
