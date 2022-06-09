@@ -116,7 +116,7 @@ jobs:
         run: git checkout ${{ github.event.inputs.backendCommitToCheckout }}
         working-directory: 'ibis-ladybug'
       - name: Merge backend with its master
-        if: ${{ github.event.inputs.backendCommitToCheckout && github.event.inputs.mergeMasterToBranch }}
+        if: ${{ github.event.inputs.mergeMasterToBranch }}
         run: git merge master
         working-directory: 'ibis-ladybug'
       - name: Checkout ibis-ladybug-test-webapp
