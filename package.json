@@ -1,6 +1,6 @@
 {
   "name": "@wearefrank/ladybug",
-  "version": "0.0.20",
+  "version": "0.0.25",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config src/proxy.conf.json",
@@ -13,9 +13,11 @@
     "cypress:run": "cypress run",
     "e2e": "start-server-and-test 'ng serve' 4200 cypress:run",
     "e2e-interactive": "start-server-and-test 'ng serve' 4200 cypress:open",
+    "e2e-interactive-webjar": "cypress open --config baseUrl=http://localhost/ladybug/",
+    "e2e-webjar": "cypress run --config baseUrl=http://localhost/ladybug/",
     "lint": "ng lint",
     "prepare": "husky install",
-    "startServer": "cd ../frank-runner/specials/ibis-ladybug && ./restart.sh"
+    "startServer": "cd ../frank-runner/specials/ibis-ladybug && ./restart.sh > serverStartLog.log"
   },
   "dependencies": {
     "@angular/animations": "13.1.1",
@@ -32,6 +34,7 @@
     "@ng-bootstrap/ng-bootstrap": "11.0.0",
     "bootstrap": "^4.6.0",
     "bower": "1.8.12",
+    "chai-colors": "^1.0.1",
     "diff-match-patch": "1.0.5",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",

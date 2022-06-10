@@ -28,7 +28,7 @@ describe('About the Test tab', function() {
       cy.wrap($reports).contains('/name').should('have.length', 1);
       cy.wrap($reports).contains('/otherName').should('have.length', 1);
     });
-    testTabSelectReportNamed('name');
+    cy.functions.testTabSelectReportNamed('name');
     cy.get('#DeleteSelectedButton').click();
     cy.get('#testReports').find('tr').should('have.length', 1).within(function($reports) {
       cy.wrap($reports).contains('/otherName').should('have.length', 1);
@@ -77,8 +77,7 @@ describe('About the Test tab', function() {
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
       cy.task('downloads', downloadsFolder).then(filesAfter => {
         const newFile = filesAfter.filter(file => !filesBefore.includes(file))[0];
-        // TODO: Expect "Ladybug Test", but wait before that has been implemented.
-        expect(newFile).to.contain('Ladybug');
+        expect(newFile).to.contain('Ladybug Test');
         expect(newFile).to.contain('2 reports');
         cy.readFile(cy.functions.downloadPath(newFile), 'binary', {timeout: 15000})
         .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
@@ -98,11 +97,11 @@ describe('About the Test tab', function() {
             fileName: newFile
           });
         });
-      });  
+      });
     });
     cy.get('#testReports tr', {timeout: 10000}).should('have.length', 4);
-    cy.get('#testReports tr td:nth-child(4):contains(/name)').should('have.length', 2);
-    cy.get('#testReports tr td:nth-child(4):contains(/otherName)').should('have.length', 2);
+    cy.get('#testReports tr td:nth-child(3):contains(/name)').should('have.length', 2);
+    cy.get('#testReports tr td:nth-child(3):contains(/otherName)').should('have.length', 2);
   });
 
   it('Download from tab test, upload to tab debug', function() {
@@ -112,7 +111,7 @@ describe('About the Test tab', function() {
       cy.wrap($reports).contains('/name').should('have.length', 1);
       cy.wrap($reports).contains('/otherName').should('have.length', 1);
     });
-    testTabSelectReportNamed('name');
+    cy.functions.testTabSelectReportNamed('name');
     cy.task('downloads', downloadsFolder).then(filesBefore => {
       cy.log('Before download, downloads folder contains files: ' + filesBefore.toString());
       cy.get('#DownloadBinaryButton').click();
@@ -156,27 +155,15 @@ function copyTheReportsToTestTab() {
   // a detached DOM element.
   cy.get('div.treeview > ul > li').should('have.length', 6);
   cy.get('div.treeview > ul > li:contains(name)').first().selectIfNotSelected();
+  cy.wait(1000);
   cy.get('button#CopyButton').click();
   cy.get('div.treeview > ul > li:contains(otherName)').first().selectIfNotSelected();
+  cy.wait(1000);
   cy.get('button#CopyButton').click();
 }
 
 function checkTestTabTwoReportsSelected() {
   cy.get('#testReports tr [type=checkbox]').should('have.length', 2).each(($checkbox) => {
     cy.wrap($checkbox).should('be.checked');
-  });
-}
-
-function testTabSelectReportNamed(nameToSelect) {
-  cy.get('#testReports').find('tr').each(function($reportRow) {
-    cy.log('Considering next report');
-    const reportName = $reportRow.find('td').eq(3).text();
-    cy.log('Name of report is: ' + reportName);
-    if(reportName.includes(nameToSelect)) {
-      cy.log('Found checkbox of report with name name, checking it');
-      cy.wrap($reportRow).find('[type=checkbox]').check();
-    };
-    cy.get('#testReports tr [type=checkbox]:checked').should('have.length', 1);
-    cy.wait(1000);
   });
 }

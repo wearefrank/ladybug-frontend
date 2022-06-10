@@ -19,8 +19,13 @@ export class HttpService {
 
   handleError() {
     return (error: any): Observable<any> => {
-      const errorMessages = error.error.split('::');
-      this.toastComponent.addAlert({ type: 'danger', message: errorMessages[0], detailed: errorMessages[1] });
+      const message = error.error;
+      if (message.includes('- detailed error message -')) {
+        const errorMessageParts = message.split('- detailed error message -');
+        this.toastComponent.addAlert({ type: 'danger', message: errorMessageParts[0], detailed: errorMessageParts[1] });
+      } else {
+        this.toastComponent.addAlert({ type: 'danger', message: message, detailed: '' });
+      }
       return of(error);
     };
   }
@@ -31,7 +36,21 @@ export class HttpService {
 
   getReports(limit: number, regexFilter: string): Observable<any> {
     return this.http.get('api/metadata/debugStorage/', {
-      params: { limit: limit, filter: regexFilter },
+      params: {
+        limit: limit,
+        filter: regexFilter,
+        metadataNames: [
+          'storageId',
+          'endTime',
+          'duration',
+          'name',
+          'correlationId',
+          'status',
+          'numberOfCheckpoints',
+          'estimatedMemoryUsage',
+          'storageSize',
+        ],
+      },
     });
   }
 
@@ -49,8 +68,17 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  deleteReportInProgress(index: number): Observable<any> {
+    return this.http
+      .delete<any>('api/testtool/in-progress/' + index)
+      .pipe(tap(() => this.handleSuccess('Deleted report in progress with index [' + index + ']')))
+      .pipe(catchError(this.handleError()));
+  }
+
   getTestReports(): Observable<any> {
-    return this.http.get<any>('api/metadata/testStorage/');
+    return this.http.get<any>('api/metadata/testStorage/', {
+      params: { metadataNames: ['name', 'storageId', 'variables'] },
+    });
   }
 
   getReport(reportId: string, storage: string) {
@@ -106,14 +134,18 @@ export class HttpService {
   }
 
   postTransformation(transformation: any): Observable<void> {
-    return this.http
-      .post('api/testtool/transformation', { transformation: transformation })
-      .pipe(tap(() => this.handleSuccess('Transformation saved!')))
-      .pipe(catchError(this.handleError()));
+    return (
+      this.http
+        .post('api/testtool/transformation', { transformation: transformation })
+        // .pipe(tap(() => this.handleSuccess('Transformation saved!')))
+        .pipe(catchError(this.handleError()))
+    );
   }
 
-  getTransformation(): Observable<any> {
-    return this.http.get<any>('api/testtool/transformation').pipe(catchError(this.handleError()));
+  getTransformation(defaultTransformation: boolean): Observable<any> {
+    return this.http
+      .get<any>('api/testtool/transformation/' + defaultTransformation)
+      .pipe(catchError(this.handleError()));
   }
 
   getSettings(): Observable<any> {

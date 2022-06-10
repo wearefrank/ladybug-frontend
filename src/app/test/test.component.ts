@@ -117,6 +117,14 @@ export class TestComponent implements OnInit, OnDestroy {
     }
   }
 
+  runSelected(): void {
+    this.reports.forEach((report) => {
+      if (report.checked) {
+        this.run(report.storageId);
+      }
+    });
+  }
+
   removeReranReportIfExists(id: string) {
     this.reranReports = this.reranReports.filter((report) => report.id != id);
   }
@@ -285,9 +293,34 @@ export class TestComponent implements OnInit, OnDestroy {
 
   changeFilter(filter: string): void {
     this.currentFilter = filter;
+    let reportNames: string[] = [];
+
+    for (let report of this.reports) {
+      reportNames.push(report.name.split('/').reverse()[0]);
+    }
+
+    setTimeout(() => {
+      for (let i in this.reports) {
+        this.reports[i].checked = '/' + this.reports[i].name === this.currentFilter + '/' + reportNames[i];
+      }
+    }, 0);
   }
 
   matches(name: string): boolean {
     return name.match(this.currentFilter + '/' + '.*') != undefined;
+  }
+
+  extractVariables(variables: string) {
+    if (!variables || variables == 'null') {
+      return '';
+    }
+    let map = variables.split('\n');
+    let keys = map[0].split(',');
+    let values = map[1].split(',');
+    let resultString = '';
+    for (let i in keys) {
+      resultString += keys[i] + '=' + values[i] + ', ';
+    }
+    return resultString.slice(0, -2);
   }
 }

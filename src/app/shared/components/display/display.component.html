@@ -14,7 +14,7 @@
           <button class="btn btn-info my-2 mx-1 px-3" disabled title="Disabled: to run, copy report to test tab and open it there">
             <i class="fa fa-repeat"></i>
           </button>
-          <button class="btn btn-info my-2 mx-1 px-3" disabled title="Disabled: to edit, copy report to test tab and open it there.">
+          <button class="btn btn-info my-2 mx-1 px-3 debugDisplayEditButton" disabled title="Disabled: to edit, copy report to test tab and open it there.">
             <i class="fa fa-edit"></i>
           </button>
           <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
@@ -46,7 +46,6 @@
   <p id="showRerunResult">
     {{ rerunResult }}
   </p>
-
 
   <div *ngIf="!report.root">
     <div *ngIf="report.ladybug.noCloseReceivedForStream" id="noCloseReceivedLabel" class="btn btn-static my-2 mx-1 px-2">

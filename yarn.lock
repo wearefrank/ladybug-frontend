@@ -2640,6 +2640,7 @@ __metadata:
     "@typescript-eslint/parser": 5.3.0
     bootstrap: ^4.6.0
     bower: 1.8.12
+    chai-colors: ^1.0.1
     chai-match: ^1.1.1
     cypress: ^8.5.0
     cypress-file-upload: ^5.0.8
@@ -3660,6 +3661,15 @@ __metadata:
   version: 0.12.0
   resolution: "caseless@npm:0.12.0"
   checksum: b43bd4c440aa1e8ee6baefee8063b4850fd0d7b378f6aabc796c9ec8cb26d27fb30b46885350777d9bd079c5256c0e1329ad0dc7c2817e0bb466810ebb353751
+  languageName: node
+  linkType: hard
+
+"chai-colors@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "chai-colors@npm:1.0.1"
+  dependencies:
+    onecolor: ~2.4.2
+  checksum: 5c9de3387177a65aa152a6b7950f7b29cdf5a67671d73fb4331e7c839b42be46c258471f36992687c2c4fa84ea2606e46073aa327b6c93525ae1814c9f0b3077
   languageName: node
   linkType: hard
 
@@ -7950,6 +7960,13 @@ __metadata:
   dependencies:
     wrappy: 1
   checksum: cd0a88501333edd640d95f0d2700fbde6bff20b3d4d9bdc521bdd31af0656b5706570d6c6afe532045a20bb8dc0849f8332d6f2a416e0ba6d3d3b98806c7db68
+  languageName: node
+  linkType: hard
+
+"onecolor@npm:~2.4.2":
+  version: 2.4.2
+  resolution: "onecolor@npm:2.4.2"
+  checksum: b551e9c477b095186753bdf509c32aee48b1566f7e1abb9f153f28b374b3170ddc3f2227efbbee542c11cd3144b2733621ef4ea310fc60f40801199f0c220c95
   languageName: node
   linkType: hard
 

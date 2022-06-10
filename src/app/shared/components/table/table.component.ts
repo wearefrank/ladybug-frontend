@@ -93,7 +93,6 @@ export class TableComponent implements OnInit, OnDestroy {
     });
 
     this.getTableSettings();
-    this.makeBackendUseTransformationInCookies();
   }
 
   getTableSettings() {
@@ -103,12 +102,6 @@ export class TableComponent implements OnInit, OnDestroy {
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
       },
     });
-  }
-
-  makeBackendUseTransformationInCookies() {
-    if (this.cookieService.get('transformation')) {
-      this.httpService.postTransformation(this.cookieService.get('transformation')).subscribe();
-    }
   }
 
   openModal(): void {
@@ -168,6 +161,11 @@ export class TableComponent implements OnInit, OnDestroy {
       report.id = this.id;
       this.openReportEvent.next(report);
     });
+  }
+
+  deleteReportInProgress(index: number) {
+    this.httpService.deleteReportInProgress(index).subscribe();
+    this.getTableSettings();
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {

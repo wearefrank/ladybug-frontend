@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../services/http.service';
 import { CookieService } from 'ngx-cookie-service';
+import { ToastComponent } from '../../toast/toast.component';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -20,6 +21,7 @@ export class TableSettingsModalComponent {
 
   @Output() openLatestReportsEvent = new EventEmitter<any>();
   @Output() openReportInProgress = new EventEmitter<any>();
+  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @Input()
   get reportsInProgress(): string {
     return this._reportsInProgress;
@@ -34,6 +36,7 @@ export class TableSettingsModalComponent {
   open(): void {
     this.loadSettings();
     this.modalService.open(this.modal);
+    this.disableOpenReportInProgressButton(false);
   }
 
   /**
@@ -44,10 +47,10 @@ export class TableSettingsModalComponent {
     this.cookieService.set('generatorEnabled', form.generatorEnabled);
     this.cookieService.set('regexFilter', form.regexFilter);
     this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
-    this.cookieService.set('transformation', form.transformation);
     this.httpService.postTransformation(form.transformation).subscribe();
     let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled' };
     this.httpService.postSettings(data).subscribe();
+    this.toastComponent.addAlert({ type: 'warning', message: 'Reopen report to see updated XML' });
   }
 
   openLatestReports(amount: number): void {
@@ -66,9 +69,18 @@ export class TableSettingsModalComponent {
     this.settingsForm.get('generatorEnabled')?.setValue('Enabled');
     this.settingsForm.get('regexFilter')?.setValue('.*');
     this.settingsForm.get('transformationEnabled')?.setValue(false);
-    fetch('assets/defaultTransformation.xslt')
-      .then((response) => response.text())
-      .then((transformation) => this.settingsForm.get('transformation')?.setValue(transformation));
+    this.httpService.getTransformation(true).subscribe((response) => {
+      this.settingsForm.get('transformation')?.setValue(response.transformation);
+    });
+  }
+
+  disableOpenReportInProgressButton(disable: boolean) {
+    let element: HTMLButtonElement = document.querySelector('#openReportInProgressButton')!;
+    element.disabled = disable || this._reportsInProgress == '0';
+  }
+
+  disableButton(index: string): void {
+    this.disableOpenReportInProgressButton(index == '0');
   }
 
   loadSettings(): void {
@@ -88,14 +100,9 @@ export class TableSettingsModalComponent {
         ?.setValue(this.cookieService.get('transformationEnabled') == 'true');
     }
 
-    if (this.cookieService.get('transformation')) {
-      this.settingsForm.get('transformation')?.setValue(this.cookieService.get('transformation'));
-    } else {
-      this.httpService.getTransformation().subscribe((response) => {
-        this.settingsForm.get('transformation')?.setValue(response.transformation);
-        this.cookieService.set('transformation', response.transformation);
-      });
-    }
+    this.httpService.getTransformation(false).subscribe((response) => {
+      this.settingsForm.get('transformation')?.setValue(response.transformation);
+    });
   }
 
   getRegexFilter(): string {
