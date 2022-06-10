@@ -2,6 +2,24 @@ name: Testing
 on:
   push:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      useRealFrontend:
+        description: If true, visit the front-end that is available in ibis-ladybug
+        type: boolean
+        default: false
+        required: true
+      mergeMasterToBranch:
+        description: If true, the checkout-out backend is merged with the backend master
+        type: boolean
+        default: false
+        required: true
+      frontendCommitToCheckout:
+        description: Tag or branch of ladybug-frontend to check out
+        required: false
+      backendCommitToCheckout:
+        description: Tag or branch of the backend to test against
+        required: false
 
 jobs:
   testing:
@@ -9,11 +27,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Echo inputs
+        run: echo "useRealFrontend=${{ github.event.inputs.useRealFrontend}}, mergeMasterToBranch=${{ github.event.inputs.mergeMasterToBranch}}, frontendCommitToCheckout=${{ github.event.inputs.frontendCommitToCheckout}}, backendCommitToCheckout=${{ github.event.inputs.backendCommitToCheckout }}"
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           path: ladybug-frontend
-
+      - name: Fetch all tags
+        if:  ${{ github.event.inputs.frontendCommitToCheckout }}
+        run: git fetch --all --tags
+        working-directory: 'ladybug-frontend'
+      - name: Checkout required version
+        if: ${{ github.event.inputs.frontendCommitToCheckout }}
+        run: git checkout ${{ github.event.inputs.frontendCommitToCheckout }}
+        working-directory: 'ladybug-frontend'
       - name: Use Node.js 16.x
         uses: actions/setup-node@v2
         with:
@@ -69,7 +96,8 @@ jobs:
         run: echo "maven.skip.tests=true" > frank-runner/specials/ibis-ladybug/build.properties
       - name: Set properties to skip backend Javadoc
         run: echo "maven.skip.javadoc=true" >> frank-runner/specials/ibis-ladybug/build.properties
-
+      - name: Set property to skip checking licenses
+        run: echo "maven.skip.copyright=true" >> frank-runner/specials/ibis-ladybug/build.properties
       - name: Set port where ibis-ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
 
@@ -81,7 +109,18 @@ jobs:
         with:
           repository: ibissource/ibis-ladybug
           path: ibis-ladybug
-
+      - name: Fetch all tags of ibis-ladybug
+        if:  ${{ github.event.inputs.backendCommitToCheckout }}
+        run: git fetch --all --tags
+        working-directory: 'ibis-ladybug'
+      - name: Checkout required version of ibis-ladybug
+        if: ${{ github.event.inputs.backendCommitToCheckout }}
+        run: git checkout ${{ github.event.inputs.backendCommitToCheckout }}
+        working-directory: 'ibis-ladybug'
+      - name: Merge backend with its master
+        if: ${{ github.event.inputs.mergeMasterToBranch == 'true' }}
+        run: git merge master
+        working-directory: 'ibis-ladybug'
       - name: Checkout ibis-ladybug-test-webapp
         uses: actions/checkout@v2
         with:
@@ -120,6 +159,7 @@ jobs:
         working-directory: ladybug-frontend
 
       - name: Run cypress with chrome browser
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         uses: cypress-io/github-action@v2.9.7
         with:
           working-directory: ladybug-frontend
@@ -129,6 +169,7 @@ jobs:
           wait-on-timeout: 240
           browser: chrome
       - name: Run cypress with firefox browser
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         uses: cypress-io/github-action@v2.9.7
         with:
           working-directory: ladybug-frontend
@@ -139,16 +180,47 @@ jobs:
           browser: firefox
           config: screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
 
+      - name: Run cypress with chrome browser - real frontend
+        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
+        uses: cypress-io/github-action@v2.9.7
+        with:
+          working-directory: ladybug-frontend
+          wait-on: 'http://localhost:8090'
+          wait-on-timeout: 240
+          browser: chrome
+          config: baseUrl=http://localhost:8090/ladybug/
+      - name: Run cypress with firefox browser - real frontend
+        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
+        uses: cypress-io/github-action@v2.9.7
+        with:
+          working-directory: ladybug-frontend
+          wait-on: 'http://localhost:8090'
+          wait-on-timeout: 240
+          browser: firefox
+          config: baseUrl=http://localhost:8090/ladybug/,screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
+
       - name: Show files
         run: tree -d -L 5 .
         if: always()
 
+      - name: Store log of starting the server with the Frank!Runner
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: serverStartLog.log
+          path: frank-runner/specials/ibis-ladybug/serverStartLog.log
+      - name: Store build.properties
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: specials_build.properties
+          path: frank-runner/specials/ibis-ladybug/build.properties
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: logs
-          path: frank-runner/build/*/logs/catalina.out
+          path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
         uses: actions/upload-artifact@v2
         if: always()
