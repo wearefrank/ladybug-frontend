@@ -1,7 +1,7 @@
 <!--Debug panel-->
 <div class="resizable-vertical row pl-3">
   <div class="w-100">
-    <app-table (openReportEvent)="addReportToTree($event)"></app-table>
+    <app-table (openReportEvent)="addReportToTree($event)" (openCompareReportsEvent)="openCompareReport($event)"></app-table>
   </div>
 </div>
 <div class="row pl-3" >

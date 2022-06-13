@@ -36,7 +36,7 @@
           </div>
     </span>
 
-    <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()"></app-button>
+    <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
   </div>
 
   <div class="table-responsive" id="metadataTable">

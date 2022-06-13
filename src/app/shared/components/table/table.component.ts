@@ -40,6 +40,7 @@ export class TableComponent implements OnInit, OnDestroy {
     estimatedMemoryUsage: '',
   };
   @Output() openReportEvent = new EventEmitter<any>();
+  @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
@@ -122,6 +123,27 @@ export class TableComponent implements OnInit, OnDestroy {
 
   showCompareButton(): boolean {
     return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 2;
+  }
+
+  compareTwoReports() {
+    let compareReports: Report[] = [];
+
+    this.tableSettings.reportMetadata
+      .filter((report) => report.checked)
+      .forEach((checkedReport) => {
+        this.httpService.getReport(checkedReport.storageId, 'debugStorage').subscribe((data) => {
+          let report: Report = data.report;
+          report.xml = data.xml;
+          compareReports.push(report);
+        });
+      });
+
+    setTimeout(() => {
+      this.openCompareReportsEvent.emit({
+        originalReport: compareReports[0],
+        runResultReport: compareReports[1],
+      });
+    }, 100);
   }
 
   changeFilter(event: any, header: string): void {

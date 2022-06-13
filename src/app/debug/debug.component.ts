@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { TreeComponent } from '../shared/components/tree/tree.component';
 import { DisplayComponent } from '../shared/components/display/display.component';
 import { Report } from '../shared/interfaces/report';
@@ -11,6 +11,7 @@ import { TreeNode } from '../shared/interfaces/tree-node';
 })
 export class DebugComponent {
   @ViewChild(TreeComponent) treeComponent!: TreeComponent;
+  @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
 
   constructor() {}
@@ -36,5 +37,9 @@ export class DebugComponent {
 
   closeReport(currentReport: TreeNode): void {
     this.treeComponent.removeNode(currentReport);
+  }
+
+  openCompareReport(reports: any) {
+    this.openCompareReportsEvent.emit(reports);
   }
 }
