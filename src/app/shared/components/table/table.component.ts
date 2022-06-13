@@ -116,6 +116,14 @@ export class TableComponent implements OnInit, OnDestroy {
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
   }
 
+  toggleCheck(report: any): void {
+    report.checked = !report.checked;
+  }
+
+  showCompareButton(): boolean {
+    return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 2;
+  }
+
   changeFilter(event: any, header: string): void {
     this.tableSettings.filterHeader = header;
     this.tableSettings.filterValue = event.target.value;

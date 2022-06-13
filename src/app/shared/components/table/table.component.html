@@ -35,12 +35,15 @@
             </div>
           </div>
     </span>
+
+    <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
   </div>
 
   <div class="table-responsive" id="metadataTable">
     <table class="table table-hover" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)">
       <thead>
       <tr>
+        <th>Select</th>
         <th *ngFor="let header of HEADERS; let i = index" mat-sort-header="{{i}}">{{header}}</th>
       </tr>
       <tr id="filterRow" *ngIf="tableSettings.showFilter">
@@ -53,6 +56,9 @@
       </thead>
       <tbody>
       <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount) | filter:tableSettings.filterValue : tableSettings.filterHeader">
+        <td>
+          <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)">
+        </td>
         <td *ngFor="let metadataValue of row | enumToArray" (click)="openReport(row.storageId)">{{metadataValue}}</td>
 <!--        <td> {{ getDate(row.endTime) | date:'dd/MM/yyyy - HH:mm:ss.SSS' }}</td>-->
       </tr>
