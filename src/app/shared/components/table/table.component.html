@@ -52,16 +52,9 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount) | filter:tableSettings.filterValue : tableSettings.filterHeader" (click)="openReport(row.storageId)">
-        <td> {{ row.storageId }}</td>
-        <td> {{ getDate(row.endTime) | date:'dd/MM/yyyy - HH:mm:ss.SSS' }}</td>
-        <td> {{ row.duration }}</td>
-        <td> {{ row.name }}</td>
-        <td> {{ row.status }}</td>
-        <td> {{ row.correlationId }}</td>
-        <td> {{ row.numberOfCheckpoints }}</td>
-        <td> {{ row.estimatedMemoryUsage }}</td>
-        <td> {{ row.storageSize }}</td>
+      <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount) | filter:tableSettings.filterValue : tableSettings.filterHeader">
+        <td *ngFor="let metadataValue of row | enumToArray" (click)="openReport(row.storageId)">{{metadataValue}}</td>
+<!--        <td> {{ getDate(row.endTime) | date:'dd/MM/yyyy - HH:mm:ss.SSS' }}</td>-->
       </tr>
       </tbody>
     </table>

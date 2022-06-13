@@ -1,13 +1,13 @@
 export interface Metadata {
+  storageId: string;
+  endTime: string;
   duration: string;
-  storageSize: string;
   name: string;
   correlationId: string;
-  endTime: string;
-  storageId: string;
   status: string;
   numberOfCheckpoints: string;
   estimatedMemoryUsage: string;
+  storageSize: string;
   checked?: boolean;
   variables: any;
 }
