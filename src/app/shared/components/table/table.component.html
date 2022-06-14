@@ -2,12 +2,15 @@
   <div class="row">
     <app-button [icon]="'fa fa-undo'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openModal()"></app-button>
+
     <button type="button" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
             title="Upload" (click)="uploadFileTable.click()">
       <i class="fa fa-upload"></i>
       <input #uploadFileTable (change)="uploadReports($event)" type="file" id="uploadFileTable">
     </button>
+
     <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
+
     <div ngbDropdown title="Download">
       <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
@@ -18,13 +21,22 @@
         <button ngbDropdownItem (click)="downloadReports(true, false)">Binary</button>
       </div>
     </div>
+
     <app-button [title]="'Open All'" [text]="'Open All'" (click)="openAllReports()"></app-button>
-      <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();" (keyup)="changeTableLimit($event)">
-        <div class="input-group-append">
-            <input type="number" id="displayAmount" class="form-control px-1" placeholder="{{tableSettings.displayAmount}}">
-          <div class="input-group-text">/</div>
-        </div>
-      </form>
+
+    <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();" (keyup)="changeTableLimit($event)">
+      <div class="input-group-append">
+          <input type="number" id="displayAmount" class="form-control px-1" placeholder="{{tableSettings.displayAmount}}">
+        <div class="input-group-text">/</div>
+      </div>
+    </form>
+
+    <div class="col my-2 mx-1 px-2">
+      <select class="form-control" (change)="changeView($event)">
+        <option *ngFor="let view of getViewNames()" value="{{view}}">{{view}}</option>
+      </select>
+    </div>
+
     <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.reportsInProgress }}</div>
     <span class="row" *ngIf="+tableSettings.estimatedMemoryUsage > 0">
       <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
@@ -46,6 +58,7 @@
     </span>
 
     <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
+
   </div>
 
   <div class="table-responsive" id="metadataTable">

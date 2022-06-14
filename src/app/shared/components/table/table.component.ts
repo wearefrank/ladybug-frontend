@@ -67,31 +67,44 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loaderService.saveViewSettings(this.viewSettings);
   }
 
-  loadData(): void {
+  retrieveRecords() {
     let regexFilter = '.*';
     if (this.tableSettingsModal) {
       regexFilter = this.tableSettingsModal.getRegexFilter();
     }
 
+    this.httpService
+      .getReports(this.tableSettings.displayAmount, regexFilter, this.viewSettings.currentView.metadataNames)
+      .subscribe({
+        next: (value) => {
+          this.tableSettings.reportMetadata = value;
+          this.tableSettings.tableLoaded = true;
+          this.toastComponent.addAlert({
+            type: 'success',
+            message: 'Data loaded!',
+          });
+        },
+        error: () => {
+          catchError(this.httpService.handleError());
+        },
+      });
+  }
+
+  getViewNames() {
+    return Object.keys(this.viewSettings.views);
+  }
+
+  changeView(event: any) {
+    this.viewSettings.currentView = this.viewSettings.views[event.target.value];
+    this.retrieveRecords();
+  }
+
+  loadData(): void {
     this.httpService.getViews().subscribe((views) => {
       this.viewSettings.views = views;
       this.viewSettings.currentView = views[Object.keys(views)[0]];
 
-      this.httpService
-        .getReports(this.tableSettings.displayAmount, regexFilter, this.viewSettings.currentView.metadataNames)
-        .subscribe({
-          next: (value) => {
-            this.tableSettings.reportMetadata = value;
-            this.tableSettings.tableLoaded = true;
-            this.toastComponent.addAlert({
-              type: 'success',
-              message: 'Data loaded!',
-            });
-          },
-          error: () => {
-            catchError(this.httpService.handleError());
-          },
-        });
+      this.retrieveRecords();
     });
 
     this.getTableSettings();
@@ -201,7 +214,8 @@ export class TableComponent implements OnInit, OnDestroy {
 
   disableOpenReportInProgressButton(index: string) {
     let element: HTMLButtonElement = document.querySelector('#openReportInProgressButton')!;
-    element.disabled = index == '0' || this.tableSettings.reportsInProgress == '0';
+    element.disabled =
+      index == '0' || this.tableSettings.reportsInProgress == '0' || index > this.tableSettings.reportsInProgress;
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
