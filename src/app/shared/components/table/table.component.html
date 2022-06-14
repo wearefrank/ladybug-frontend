@@ -33,7 +33,7 @@
 
     <div class="col my-2 mx-1 px-2">
       <select class="form-control" (change)="changeView($event)">
-        <option *ngFor="let view of getViewNames()" value="{{view}}">{{view}}</option>
+        <option *ngFor="let view of getViewNames()" [selected]="viewSettings.defaultView === view" value="{{view}}">{{view}}</option>
       </select>
     </div>
 

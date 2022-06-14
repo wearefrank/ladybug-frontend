@@ -16,6 +16,7 @@ import { Report } from '../../interfaces/report';
 export class TableComponent implements OnInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
   viewSettings: any = {
+    defaultView: '',
     views: [],
     currentView: {},
   };
@@ -57,6 +58,7 @@ export class TableComponent implements OnInit, OnDestroy {
     if (!tableSettings.tableLoaded) {
       this.loadData();
     } else {
+      console.log(viewSettings.defaultView);
       this.tableSettings = tableSettings;
       this.viewSettings = viewSettings;
     }
@@ -102,7 +104,10 @@ export class TableComponent implements OnInit, OnDestroy {
   loadData(): void {
     this.httpService.getViews().subscribe((views) => {
       this.viewSettings.views = views;
-      this.viewSettings.currentView = views[Object.keys(views)[0]];
+      this.viewSettings.defaultView = Object.keys(this.viewSettings.views).find(
+        (view) => this.viewSettings.views[view].defaultView
+      );
+      this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.defaultView];
 
       this.retrieveRecords();
     });

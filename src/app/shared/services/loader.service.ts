@@ -58,11 +58,13 @@ export class LoaderService {
   }
 
   viewSettings: any = {
+    defaultView: '',
     views: [],
     currentView: {},
   };
 
   saveViewSettings(viewSettings: any) {
+    this.viewSettings.defaultView = viewSettings.defaultView;
     this.viewSettings.views = viewSettings.views;
     this.viewSettings.currentView = viewSettings.currentView;
   }
