@@ -1,6 +1,5 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Metadata } from '../../../interfaces/metadata';
 import { Report } from '../../../interfaces/report';
 import { HttpService } from '../../../services/http.service';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -21,7 +20,7 @@ export class CloneModalComponent {
 
   constructor(private modalService: NgbModal, private httpService: HttpService) {}
 
-  open(selectedReport: Metadata) {
+  open(selectedReport: any) {
     this.httpService.getReport(selectedReport.storageId, 'testStorage').subscribe((response) => {
       this.report = response.report;
       this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);

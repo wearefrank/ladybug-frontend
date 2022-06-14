@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Metadata } from '../interfaces/metadata';
 import { TreeNode } from '../interfaces/tree-node';
 import { ReranReport } from '../interfaces/reran-report';
 import { Report } from '../interfaces/report';
@@ -56,6 +55,20 @@ export class LoaderService {
 
   getTableSettings(tableId: string): TableSettings {
     return this.tables.find((table) => table.tableId === tableId)!;
+  }
+
+  viewSettings: any = {
+    views: [],
+    currentView: {},
+  };
+
+  saveViewSettings(viewSettings: any) {
+    this.viewSettings.views = viewSettings.views;
+    this.viewSettings.currentView = viewSettings.currentView;
+  }
+
+  getViewSettings(): any {
+    return this.viewSettings;
   }
 
   // Tree

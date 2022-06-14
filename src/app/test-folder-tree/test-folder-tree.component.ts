@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { LoaderService } from '../shared/services/loader.service';
 import { TestTreeNode } from '../shared/interfaces/test-tree-node';
-import { Metadata } from '../shared/interfaces/metadata';
 declare var $: any;
 
 @Component({
@@ -86,7 +85,7 @@ export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  removeUnusedFolders(testReports: Metadata[]): void {
+  removeUnusedFolders(testReports: any[]): void {
     let testReportNames: string[] = [];
     testReports.forEach((report) => {
       testReportNames.push(report.name);

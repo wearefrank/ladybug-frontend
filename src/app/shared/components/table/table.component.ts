@@ -1,14 +1,12 @@
-import { Component, OnInit, Output, EventEmitter, Input, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild, OnDestroy } from '@angular/core';
 import { ToastComponent } from '../toast/toast.component';
 import { HelperService } from '../../services/helper.service';
 import { HttpService } from '../../services/http.service';
 import { LoaderService } from '../../services/loader.service';
 import { TableSettingsModalComponent } from '../modals/table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../interfaces/table-settings';
-import { Metadata } from '../../interfaces/metadata';
 import { catchError } from 'rxjs';
 import { Report } from '../../interfaces/report';
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-table',
@@ -17,17 +15,11 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class TableComponent implements OnInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
-  HEADERS: string[] = [
-    'Storage Id',
-    'End Time',
-    'Duration (ms)',
-    'Name',
-    'Status',
-    'Correlation id',
-    'Number of Checkpoints',
-    'Estimated Memory Usage (Bytes)',
-    'Storage Size (Bytes)',
-  ];
+  viewSettings: any = {
+    views: [],
+    currentView: {},
+  };
+
   tableSettings: TableSettings = {
     tableId: '', // this._id might not be defined yet
     reportMetadata: [],
@@ -56,21 +48,23 @@ export class TableComponent implements OnInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private loaderService: LoaderService,
-    private cookieService: CookieService
+    private loaderService: LoaderService
   ) {}
 
   ngOnInit(): void {
     const tableSettings = this.loaderService.getTableSettings(this._id);
+    const viewSettings = this.loaderService.getViewSettings();
     if (!tableSettings.tableLoaded) {
       this.loadData();
     } else {
       this.tableSettings = tableSettings;
+      this.viewSettings = viewSettings;
     }
   }
 
   ngOnDestroy(): void {
     this.loaderService.saveTableSettings(this._id, this.tableSettings);
+    this.loaderService.saveViewSettings(this.viewSettings);
   }
 
   loadData(): void {
@@ -79,18 +73,25 @@ export class TableComponent implements OnInit, OnDestroy {
       regexFilter = this.tableSettingsModal.getRegexFilter();
     }
 
-    this.httpService.getReports(this.tableSettings.displayAmount, regexFilter).subscribe({
-      next: (value) => {
-        this.tableSettings.reportMetadata = value;
-        this.tableSettings.tableLoaded = true;
-        this.toastComponent.addAlert({
-          type: 'success',
-          message: 'Data loaded!',
+    this.httpService.getViews().subscribe((views) => {
+      this.viewSettings.views = views;
+      this.viewSettings.currentView = views[Object.keys(views)[0]];
+
+      this.httpService
+        .getReports(this.tableSettings.displayAmount, regexFilter, this.viewSettings.currentView.metadataNames)
+        .subscribe({
+          next: (value) => {
+            this.tableSettings.reportMetadata = value;
+            this.tableSettings.tableLoaded = true;
+            this.toastComponent.addAlert({
+              type: 'success',
+              message: 'Data loaded!',
+            });
+          },
+          error: () => {
+            catchError(this.httpService.handleError());
+          },
         });
-      },
-      error: () => {
-        catchError(this.httpService.handleError());
-      },
     });
 
     this.getTableSettings();
@@ -174,7 +175,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openAllReports(): void {
-    this.tableSettings.reportMetadata.forEach((report: Metadata) => this.openReport(report.storageId));
+    this.tableSettings.reportMetadata.forEach((report: any) => this.openReport(report.storageId));
   }
 
   openLatestReports(amount: number): void {
@@ -205,7 +206,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
     const queryString: string = this.tableSettings.reportMetadata.reduce(
-      (totalQuery: string, selectedReport: Metadata) => totalQuery + 'id=' + selectedReport.storageId + '&',
+      (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
       '?'
     );
     window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + queryString.slice(0, -1));

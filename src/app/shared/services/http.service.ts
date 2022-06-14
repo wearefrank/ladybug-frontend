@@ -34,22 +34,16 @@ export class HttpService {
     this.toastComponent.addAlert({ type: 'success', message: message });
   }
 
-  getReports(limit: number, regexFilter: string): Observable<any> {
+  getViews(): Observable<any> {
+    return this.http.get('api/testtool/views').pipe(catchError(this.handleError()));
+  }
+
+  getReports(limit: number, regexFilter: string, metadataNames: string[]): Observable<any> {
     return this.http.get('api/metadata/debugStorage/', {
       params: {
         limit: limit,
         filter: regexFilter,
-        metadataNames: [
-          'storageId',
-          'endTime',
-          'duration',
-          'name',
-          'correlationId',
-          'status',
-          'numberOfCheckpoints',
-          'estimatedMemoryUsage',
-          'storageSize',
-        ],
+        metadataNames: metadataNames,
       },
     });
   }

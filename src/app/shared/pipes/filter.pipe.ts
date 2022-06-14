@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Metadata } from '../interfaces/metadata';
 
 @Pipe({
   name: 'filter',
@@ -11,7 +10,7 @@ export class FilterPipe implements PipeTransform {
    * @param header
    * @param filter - the word with which to filter
    */
-  transform(items: Metadata[], filter: string, header: string): Metadata[] {
+  transform(items: any[], filter: string, header: string): any[] {
     if (!items || !filter || filter === '') {
       return items;
     }

@@ -24,7 +24,7 @@ export class DebugComponent {
     this.displayComponent.closeReport(false, -1);
     setTimeout(() => {
       this.displayComponent.showReport(currentReport);
-    }, 100);
+    }, 1000);
   }
 
   closeEntireTree(): void {

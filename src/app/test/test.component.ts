@@ -6,7 +6,6 @@ import { CloneModalComponent } from '../shared/components/modals/clone-modal/clo
 import { TestSettingsModalComponent } from '../shared/components/modals/test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { Metadata } from '../shared/interfaces/metadata';
 import { CookieService } from 'ngx-cookie-service';
 import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
@@ -18,7 +17,7 @@ import { Report } from '../shared/interfaces/report';
   styleUrls: ['./test.component.css'],
 })
 export class TestComponent implements OnInit, OnDestroy {
-  reports: Metadata[] = [];
+  reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
@@ -36,7 +35,7 @@ export class TestComponent implements OnInit, OnDestroy {
   ) {}
 
   openCloneModal(): void {
-    let selectedReports: Metadata[] = this.reports.filter((report) => report.checked);
+    let selectedReports: any[] = this.reports.filter((report) => report.checked);
     if (selectedReports.length !== 1) {
       this.toastComponent.addAlert({ type: 'warning', message: 'Make sure exactly one report is selected at a time' });
     } else {
@@ -75,7 +74,7 @@ export class TestComponent implements OnInit, OnDestroy {
     }
   }
 
-  addCopiedReports(metadata: Metadata[]): void {
+  addCopiedReports(metadata: any[]): void {
     const amountAdded: number = metadata.length - this.reports.length;
     if (amountAdded > 0) {
       for (let index = this.reports.length; index <= metadata.length - 1; index++) {
@@ -190,10 +189,7 @@ export class TestComponent implements OnInit, OnDestroy {
   downloadSelected(): void {
     const queryString: string = this.reports
       .filter((report) => report.checked)
-      .reduce(
-        (totalQuery: string, selectedReport: Metadata) => totalQuery + 'id=' + selectedReport.storageId + '&',
-        '?'
-      );
+      .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '?');
     window.open('api/report/download/testStorage/true/false' + queryString.slice(0, -1));
   }
 
@@ -278,7 +274,7 @@ export class TestComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeMovedTestReportNames(selectedReports: Metadata[]): void {
+  changeMovedTestReportNames(selectedReports: any[]): void {
     selectedReports.forEach((report) => {
       if (report.name.split('/').length > 1) {
         let name = report.name.split('/').pop();
