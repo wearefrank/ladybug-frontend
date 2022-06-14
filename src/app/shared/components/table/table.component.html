@@ -27,13 +27,22 @@
       </form>
     <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.reportsInProgress }}</div>
     <span class="row" *ngIf="+tableSettings.estimatedMemoryUsage > 0">
-          <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
+      <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
+
+        <div class="col input-group my-2 mx-1 px-2">
+          <input #index type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableOpenReportInProgressButton(index.value)" class="form-control" id="openInProgressNo"/>
+          <div class="input-group-append">
+            <button class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+index.value)">Open</button>
+          </div>
+        </div>
+
           <div class="col input-group my-2 mx-1 px-2">
             <input #index type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" class="form-control" id="deleteInProgressNo"/>
             <div class="input-group-append">
               <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+index.value)"><i class="fa fa-trash"></i></button>
             </div>
           </div>
+
     </span>
 
     <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
@@ -67,5 +76,5 @@
   </div>
 </div>
 
-<app-table-settings-modal (openLatestReportsEvent)="openLatestReports($event)" (openReportInProgress)="openReportInProgress($event)" [reportsInProgress]="tableSettings.reportsInProgress"></app-table-settings-modal>
+<app-table-settings-modal (openLatestReportsEvent)="openLatestReports($event)"></app-table-settings-modal>
 <app-toast></app-toast>
