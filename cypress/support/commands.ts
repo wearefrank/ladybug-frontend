@@ -26,6 +26,7 @@
 
 import { createJSDocTypeExpression, createYield } from "typescript";
 import 'cypress-file-upload';
+import { cpSync } from "fs";
 
 function createReport() {
     // No cy.visit because then the API call can happen multiple times.
@@ -44,6 +45,14 @@ function createOtherReport() {
 }
 
 Cypress.Commands.add('createOtherReport', createOtherReport);
+
+function createRunningReport() {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReportInProgress=waitingForThread').then(resp => {
+        expect(resp.status).equal(200);
+    });
+}
+
+Cypress.Commands.add('createRunningReport', createRunningReport);
 
 function createReportWithLabelNull() {
     // No cy.visit because then the API call can happen multiple times.
@@ -68,6 +77,12 @@ function clearDebugStore() {
 }
 
 Cypress.Commands.add('clearDebugStore', clearDebugStore);
+
+function removeReportInProgress() {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?removeReportInProgress=1');
+}
+
+Cypress.Commands.add('removeReportInProgress', removeReportInProgress);
 
 function waitForNumFiles(thePath, fileCount, timeLeft) {
     cy.task('downloads', thePath).then((actualFiles) => {
