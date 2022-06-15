@@ -8,6 +8,6 @@ export interface TableSettings {
   filterValue: string;
   tableLoaded: boolean;
   filterHeader: string;
-  reportsInProgress: string;
+  reportsInProgress: number;
   estimatedMemoryUsage: string;
 }
