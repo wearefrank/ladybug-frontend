@@ -21,6 +21,12 @@ export class TestComponent implements OnInit, OnDestroy {
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
+  currentView: any = {
+    testView: {
+      metadataNames: ['name', 'storageId', 'variables'],
+      storageName: 'Test',
+    },
+  }; // Hard-coded for now
   @Output() openTestReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
@@ -84,7 +90,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   getCopiedReports(): void {
-    this.httpService.getTestReports().subscribe({
+    this.httpService.getTestReports(this.currentView.metadataNames).subscribe({
       next: (response) => this.addCopiedReports(response),
       error: () => catchError(this.httpService.handleError()),
     });
@@ -95,7 +101,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    this.httpService.getTestReports().subscribe({
+    this.httpService.getTestReports(this.currentView.metadataNames).subscribe({
       next: (value) => (this.reports = value),
       error: () => catchError(this.httpService.handleError()),
     });
@@ -181,7 +187,7 @@ export class TestComponent implements OnInit, OnDestroy {
     this.reports
       .filter((report) => report.checked)
       .forEach((report) => {
-        this.httpService.deleteReport(report.storageId).subscribe();
+        this.httpService.deleteReport(report.storageId, this.currentView.storageName).subscribe();
         this.reports.splice(this.reports.indexOf(report), 1);
       });
   }
@@ -213,7 +219,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   replaceReport(reportId: string): void {
-    this.httpService.replaceReport(reportId).subscribe(() => {
+    this.httpService.replaceReport(reportId, this.currentView.storageName).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.id != reportId);
     });
   }

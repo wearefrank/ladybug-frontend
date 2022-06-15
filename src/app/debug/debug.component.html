@@ -1,15 +1,15 @@
 <!--Debug panel-->
 <div class="resizable-vertical row pl-3">
   <div class="w-100">
-    <app-table (openReportEvent)="addReportToTree($event)" (openCompareReportsEvent)="openCompareReport($event)"></app-table>
+    <app-table (openReportEvent)="addReportToTree($event)" (openCompareReportsEvent)="openCompareReport($event)" (changeViewEvent)="changeView($event)"></app-table>
   </div>
 </div>
 <div class="row pl-3" >
   <div class="resizable-horizontal border-right pr-3" style="min-width: 300px">
-    <app-tree (selectReportEvent)="showReportInDisplay($event)" (closeEntireTreeEvent)="closeEntireTree()" (closeDisplayReportEvent)="closeDisplayReport()"></app-tree>
+    <app-tree (selectReportEvent)="showReportInDisplay($event)" (closeEntireTreeEvent)="closeEntireTree()" (closeDisplayReportEvent)="closeDisplayReport()" [currentView]="currentView"></app-tree>
   </div>
   <!-- Content panel-->
   <div class="col pr-0 overflow-auto" style="height: 59vh">
-    <app-display (closeReportEvent)="closeReport($event)" [id]="'debug'"></app-display>
+    <app-display (closeReportEvent)="closeReport($event)" [currentView]="currentView" [id]="'debug'"></app-display>
   </div>
 </div>

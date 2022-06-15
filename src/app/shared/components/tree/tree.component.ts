@@ -17,6 +17,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   @Output() selectReportEvent = new EventEmitter<any>();
   @Output() closeEntireTreeEvent = new EventEmitter<any>();
   @Output() closeDisplayReportEvent = new EventEmitter<any>();
+  @Input() currentView: any = {};
   treeSettings: TreeSettings = {
     selectedReports: [],
     tree: [],

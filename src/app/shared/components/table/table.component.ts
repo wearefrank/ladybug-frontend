@@ -34,6 +34,7 @@ export class TableComponent implements OnInit, OnDestroy {
   };
   @Output() openReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
+  @Output() changeViewEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
@@ -58,9 +59,9 @@ export class TableComponent implements OnInit, OnDestroy {
     if (!tableSettings.tableLoaded) {
       this.loadData();
     } else {
-      console.log(viewSettings.defaultView);
       this.tableSettings = tableSettings;
       this.viewSettings = viewSettings;
+      this.changeViewEvent.emit(this.viewSettings.currentView);
     }
   }
 
@@ -76,7 +77,12 @@ export class TableComponent implements OnInit, OnDestroy {
     }
 
     this.httpService
-      .getReports(this.tableSettings.displayAmount, regexFilter, this.viewSettings.currentView.metadataNames)
+      .getReports(
+        this.tableSettings.displayAmount,
+        regexFilter,
+        this.viewSettings.currentView.metadataNames,
+        this.viewSettings.currentView.storageName
+      )
       .subscribe({
         next: (value) => {
           this.tableSettings.reportMetadata = value;
@@ -99,6 +105,7 @@ export class TableComponent implements OnInit, OnDestroy {
   changeView(event: any) {
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
     this.retrieveRecords();
+    this.changeViewEvent.emit(this.viewSettings.currentView);
   }
 
   loadData(): void {
@@ -108,6 +115,7 @@ export class TableComponent implements OnInit, OnDestroy {
         (view) => this.viewSettings.views[view].defaultView
       );
       this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.defaultView];
+      this.changeViewEvent.emit(this.viewSettings.currentView);
 
       this.retrieveRecords();
     });
@@ -197,7 +205,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openLatestReports(amount: number): void {
-    this.httpService.getLatestReports(amount).subscribe((data) => {
+    this.httpService.getLatestReports(amount, this.viewSettings.currentView.storageName).subscribe((data) => {
       data.forEach((report: any) => {
         report.id = this.id;
         this.openReportEvent.next(report);

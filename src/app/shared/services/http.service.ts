@@ -38,8 +38,8 @@ export class HttpService {
     return this.http.get('api/testtool/views').pipe(catchError(this.handleError()));
   }
 
-  getReports(limit: number, regexFilter: string, metadataNames: string[]): Observable<any> {
-    return this.http.get('api/metadata/debugStorage/', {
+  getReports(limit: number, regexFilter: string, metadataNames: string[], storage: string): Observable<any> {
+    return this.http.get('api/metadata/' + storage + '/', {
       params: {
         limit: limit,
         filter: regexFilter,
@@ -48,9 +48,9 @@ export class HttpService {
     });
   }
 
-  getLatestReports(amount: number): Observable<any> {
+  getLatestReports(amount: number, storage: string): Observable<any> {
     return this.http
-      .get<any>('api/report/latest/debugStorage/' + amount)
+      .get<any>('api/report/latest/' + storage + '/' + amount)
       .pipe(tap(() => this.handleSuccess('Latest' + amount + 'reports opened!')))
       .pipe(catchError(this.handleError()));
   }
@@ -69,9 +69,9 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  getTestReports(): Observable<any> {
+  getTestReports(metadataNames: string[]): Observable<any> {
     return this.http.get<any>('api/metadata/testStorage/', {
-      params: { metadataNames: ['name', 'storageId', 'variables'] },
+      params: { metadataNames: metadataNames },
     });
   }
 
@@ -159,9 +159,9 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  runDisplayReport(reportId: string): Observable<any> {
+  runDisplayReport(reportId: string, storage: string): Observable<any> {
     return this.http
-      .put<any>('api/runner/replace/debugStorage/' + reportId, {
+      .put<any>('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
@@ -175,13 +175,13 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  deleteReport(reportId: string): Observable<void> {
-    return this.http.delete('api/report/testStorage/' + reportId).pipe(catchError(this.handleError()));
+  deleteReport(reportId: string, storage: string): Observable<void> {
+    return this.http.delete('api/report/' + storage + '/' + reportId).pipe(catchError(this.handleError()));
   }
 
-  replaceReport(reportId: string): Observable<void> {
+  replaceReport(reportId: string, storage: string): Observable<void> {
     return this.http
-      .put('api/runner/replace/debugStorage/' + reportId, {
+      .put('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
       })
       .pipe(catchError(this.handleError()));

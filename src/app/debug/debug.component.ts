@@ -13,6 +13,7 @@ export class DebugComponent {
   @ViewChild(TreeComponent) treeComponent!: TreeComponent;
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
+  currentView: any = {};
 
   constructor() {}
 
@@ -41,5 +42,9 @@ export class DebugComponent {
 
   openCompareReport(reports: any) {
     this.openCompareReportsEvent.emit(reports);
+  }
+
+  changeView(view: any) {
+    this.currentView = view;
   }
 }

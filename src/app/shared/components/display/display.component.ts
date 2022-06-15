@@ -29,6 +29,7 @@ export class DisplayComponent {
     text: '',
   };
   @Input() id: string = '';
+  @Input() currentView: any = {};
   @Output() closeReportEvent = new EventEmitter<any>();
   @Output() saveReportEvent = new EventEmitter<any>();
   @ViewChild(MonacoEditorComponent)
@@ -195,7 +196,7 @@ export class DisplayComponent {
 
   rerunReport() {
     let reportId: string = this.report.ladybug.storageId;
-    this.httpService.runDisplayReport(reportId).subscribe((response) => {
+    this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
       let element = document.querySelector('#showRerunResult')!;
       if (this.report.ladybug == response) {
         element.setAttribute('style', 'background-color: green');
