@@ -21,7 +21,8 @@ export class CloneModalComponent {
   constructor(private modalService: NgbModal, private httpService: HttpService) {}
 
   open(selectedReport: any) {
-    this.httpService.getReport(selectedReport.storageId, 'testStorage').subscribe((response) => {
+    this.httpService.getReport(selectedReport.storageId, 'Test').subscribe((response) => {
+      // TODO: storage is hardcoded for now
       this.report = response.report;
       this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
       this.modalService.open(this.modal);

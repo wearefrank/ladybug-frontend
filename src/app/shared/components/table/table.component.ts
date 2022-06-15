@@ -158,11 +158,13 @@ export class TableComponent implements OnInit, OnDestroy {
     this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .forEach((checkedReport) => {
-        this.httpService.getReport(checkedReport.storageId, 'debugStorage').subscribe((data) => {
-          let report: Report = data.report;
-          report.xml = data.xml;
-          compareReports.push(report);
-        });
+        this.httpService
+          .getReport(checkedReport.storageId, this.viewSettings.currentView.storageName)
+          .subscribe((data) => {
+            let report: Report = data.report;
+            report.xml = data.xml;
+            compareReports.push(report);
+          });
       });
 
     setTimeout(() => {
@@ -192,7 +194,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: string): void {
-    this.httpService.getReport(storageId, 'debugStorage').subscribe((data) => {
+    this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
       report.id = this.id;
@@ -236,7 +238,15 @@ export class TableComponent implements OnInit, OnDestroy {
       (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
       '?'
     );
-    window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + queryString.slice(0, -1));
+    window.open(
+      'api/report/download/' +
+        this.viewSettings.currentView.storageName +
+        '/' +
+        exportBinary +
+        '/' +
+        exportXML +
+        queryString.slice(0, -1)
+    );
   }
 
   uploadReports(event: any): void {

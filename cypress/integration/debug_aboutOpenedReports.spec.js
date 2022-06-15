@@ -87,6 +87,7 @@ describe('About opened reports', function() {
     // When you open a new report, the new report is also selected.
     cy.get('div.treeview > ul > li.node-selected').should('have.length', 1).should('have.text', 'otherName');
     cy.get('div.treeview > ul > li:contains(otherName):eq(1)').should('have.class', 'node-selected');
+    cy.wait(1000)
     cy.get('button#CloseButton').click();
     cy.get('div.treeview > ul > li').should('have.length', 3).each((node) => {
       cy.wrap(node).should('have.text', 'name');

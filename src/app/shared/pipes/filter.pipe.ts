@@ -15,26 +15,27 @@ export class FilterPipe implements PipeTransform {
       return items;
     }
 
+    // TODO: Make this dynamic
     // @ts-ignore
     return items.filter((item) => {
       switch (header) {
-        case 'Storage Id':
+        case 'storageId':
           return item.storageId.includes(filter);
-        case 'End Time':
+        case 'endTime':
           return item.endTime.includes(filter);
-        case 'Duration (ms)':
+        case 'duration':
           return item.duration.includes(filter);
-        case 'Name':
+        case 'name':
           return item.name.includes(filter);
-        case 'Status':
+        case 'status':
           return item.status.includes(filter);
-        case 'Correlation id':
+        case 'correlationId':
           return item.correlationId.includes(filter);
-        case 'Number of Checkpoints':
+        case 'numberOfCheckpoints':
           return item.numberOfCheckpoints.includes(filter);
-        case 'Estimated Memory Usage (Bytes)':
+        case 'estimatedMemoryUsage':
           return item.estimatedMemoryUsage.includes(filter);
-        case 'Storage Size (Bytes)':
+        case 'storageSize':
           return item.storageSize.includes(filter);
       }
     });

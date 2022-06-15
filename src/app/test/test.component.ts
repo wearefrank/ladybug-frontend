@@ -22,10 +22,8 @@ export class TestComponent implements OnInit, OnDestroy {
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
   currentView: any = {
-    testView: {
-      metadataNames: ['name', 'storageId', 'variables'],
-      storageName: 'Test',
-    },
+    metadataNames: ['name', 'storageId', 'variables'],
+    storageName: 'Test',
   }; // Hard-coded for now
   @Output() openTestReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
@@ -90,7 +88,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   getCopiedReports(): void {
-    this.httpService.getTestReports(this.currentView.metadataNames).subscribe({
+    this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (response) => this.addCopiedReports(response),
       error: () => catchError(this.httpService.handleError()),
     });
@@ -101,7 +99,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    this.httpService.getTestReports(this.currentView.metadataNames).subscribe({
+    this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value) => (this.reports = value),
       error: () => catchError(this.httpService.handleError()),
     });
@@ -176,7 +174,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: string, name: string): void {
-    this.httpService.getReport(storageId, 'testStorage').subscribe((data) => {
+    this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
       this.openTestReportEvent.emit({ data: report, name: name });
@@ -196,7 +194,7 @@ export class TestComponent implements OnInit, OnDestroy {
     const queryString: string = this.reports
       .filter((report) => report.checked)
       .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '?');
-    window.open('api/report/download/testStorage/true/false' + queryString.slice(0, -1));
+    window.open('api/report/download/' + this.currentView.storageName + '/true/false' + queryString.slice(0, -1));
   }
 
   uploadReport(event: any): void {
@@ -204,7 +202,7 @@ export class TestComponent implements OnInit, OnDestroy {
     if (file) {
       const formData: any = new FormData();
       formData.append('file', file);
-      this.httpService.uploadReportToStorage(formData).subscribe(() => this.loadData());
+      this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData());
     }
   }
 
@@ -226,7 +224,9 @@ export class TestComponent implements OnInit, OnDestroy {
 
   copySelected() {
     let copiedIds: string[] = this.getIdsToBeCopied();
-    this.httpService.copyReport({ testStorage: copiedIds }).subscribe(() => {
+    let data: any = {};
+    data[this.currentView.storageName] = copiedIds;
+    this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
       this.loadData();
     });
   }
@@ -256,8 +256,9 @@ export class TestComponent implements OnInit, OnDestroy {
 
   copyAndMove() {
     let copiedIds: string[] = this.getIdsToBeCopied();
-
-    this.httpService.copyReport({ testStorage: copiedIds }).subscribe((r: any) => {
+    let data: any = {};
+    data[this.currentView.storageName] = copiedIds;
+    this.httpService.copyReport(data, this.currentView.storageName).subscribe((r: any) => {
       this.loadData();
       setTimeout(() => {
         this.reports.slice(r.length * -1).forEach((report) => (report.checked = true));

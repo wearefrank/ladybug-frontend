@@ -69,6 +69,7 @@
         <th *ngFor="let header of viewSettings.currentView.metadataNames; let i = index" mat-sort-header="{{i}}">{{header}}</th>
       </tr>
       <tr id="filterRow" *ngIf="tableSettings.showFilter">
+        <th></th>
         <th *ngFor="let header of viewSettings.currentView.metadataNames">
           <div class="input-group">
             <input type="text" id="filter" class="form-control" placeholder="Filter" (keydown.enter)="$event.preventDefault();" (keyup)="changeFilter($event, header)">

@@ -92,7 +92,15 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
       (totalQuery: string, selectedReport: Report) => totalQuery + 'id=' + selectedReport.storageId + '&',
       '?'
     );
-    window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + queryString.slice(0, -1));
+    window.open(
+      'api/report/download/' +
+        this.currentView.storageName +
+        '/' +
+        exportBinary +
+        '/' +
+        exportXML +
+        queryString.slice(0, -1)
+    );
   }
 
   removeNode(node: TreeNode): void {
