@@ -31,8 +31,8 @@ describe('Test running reports', function() {
       cy.get('#openReportInProgressButton').click();
       cy.contains('Opened report in progress');
       cy.get('div.treeview > ul > li').should('have.length', 3);
-      cy.get('div.treeview > ul > li:nth-child(1)').should('have.text', 'name');
-      cy.get('div.treeview > ul > li:nth-child(2)').should('have.text', 'name');
+      cy.get('div.treeview > ul > li:nth-child(1)').should('have.text', 'Waiting for thread to start');
+      cy.get('div.treeview > ul > li:nth-child(2)').should('have.text', 'Waiting for thread to start');
       cy.get('div.treeview > ul > li:nth-child(3)').should('include.text', 'Waiting for thread');
       cy.get('div.treeview > ul > li:nth-child(1) span.fa-minus');
       cy.get('div.treeview > ul > li:nth-child(2)').within(function($node) {

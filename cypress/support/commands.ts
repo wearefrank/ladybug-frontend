@@ -47,7 +47,7 @@ function createOtherReport() {
 Cypress.Commands.add('createOtherReport', createOtherReport);
 
 function createRunningReport() {
-    cy.request(Cypress.env('backendServer') + '/index.jsp?createReportInProgress=waitingForThread').then(resp => {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=Waiting%20for%20thread%20to%20start').then(resp => {
         expect(resp.status).equal(200);
     });
 }
@@ -56,7 +56,7 @@ Cypress.Commands.add('createRunningReport', createRunningReport);
 
 function createReportWithLabelNull() {
     // No cy.visit because then the API call can happen multiple times.
-    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=messageLabelNull').then(resp => {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=Message%20is%20null').then(resp => {
         expect(resp.status).equal(200);
     });
 }
@@ -65,7 +65,7 @@ Cypress.Commands.add('createReportWithLabelNull', createReportWithLabelNull);
 
 function createReportWithLabelEmpty() {
     // No cy.visit because then the API call can happen multiple times.
-    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=messageLabelEmptyString').then(resp => {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=Message%20is%20an%20empty%20string').then(resp => {
         expect(resp.status).equal(200);
     });
 }
