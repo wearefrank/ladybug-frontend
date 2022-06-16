@@ -30,7 +30,7 @@ import { cpSync } from "fs";
 
 function createReport() {
     // No cy.visit because then the API call can happen multiple times.
-    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=simple').then(resp => {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=Simple%20report').then(resp => {
         expect(resp.status).equal(200);
     });
 }
@@ -39,7 +39,7 @@ Cypress.Commands.add('createReport', createReport);
 
 function createOtherReport() {
     // No cy.visit because then the API call can happen multiple times.
-    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=otherSimple').then(resp => {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=Another%20simple%20report').then(resp => {
         expect(resp.status).equal(200);
     });
 }

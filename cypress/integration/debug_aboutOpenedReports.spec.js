@@ -13,24 +13,24 @@ describe('About opened reports', function() {
     cy.get('button[id="OpenAllButton"]').click();
     // Each of the two reports has three lines.
     cy.get('div.treeview > ul > li').should('have.length', 6);
-    cy.get('div.treeview > ul > li:contains(name)').first().selectIfNotSelected();
+    cy.get('div.treeview > ul > li:contains(Simple report)').first().selectIfNotSelected();
     cy.wait(1000);
     cy.get('#CloseButton').click();
     cy.get('div.treeview > ul > li').should('have.length', 3);
     // nth-child has an 1-based index
-    cy.get('div.treeview > ul > li:nth-child(1)').should('have.text', 'otherName').click();
+    cy.get('div.treeview > ul > li:nth-child(1)').should('have.text', 'Another simple report').click();
     cy.get('#CloseButton').click();
     cy.get('div.treeview > ul > li').should('have.length', 0);
   });
 
   it('Close all', function() {
-    cy.get('.table-responsive tbody tr td:contains(name)').first().click();
+    cy.get('.table-responsive tbody tr td:contains(Simple report)').first().click();
     cy.get('div.treeview > ul > li').should('have.length', 3);
-    cy.get('.table-responsive tbody tr td:contains("otherName")').first().click();
+    cy.get('.table-responsive tbody tr td:contains("Another simple report")').first().click();
     cy.get('div.treeview > ul > li').should('have.length', 6);
-    // Check sequence of opened reports. We expect "name" first, then "otherName".
-    cy.get('div.treeview > ul > li:nth-child(1)').should('have.text', 'name');
-    cy.get('div.treeview > ul > li:nth-child(4)').should('have.text', 'otherName');
+    // Check sequence of opened reports. We expect "Simple report" first, then "Another simple report".
+    cy.get('div.treeview > ul > li:nth-child(1)').should('have.text', 'Simple report');
+    cy.get('div.treeview > ul > li:nth-child(4)').should('have.text', 'Another simple report');
     cy.get('button[id="CloseAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 0);
   })
@@ -38,23 +38,23 @@ describe('About opened reports', function() {
   it('Expand and collapse', function() {
     cy.get('button[id="OpenAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 6);
-    cy.get('div.treeview > ul > li:contains(name)').within((children) => linesFormExpandedNode(children, 'even'));
-    cy.get('div.treeview > ul > li:contains(otherName)').within((children) => linesFormExpandedNode(children, 'even'));
+    cy.get('div.treeview > ul > li:contains(Simple report)').within((children) => linesFormExpandedNode(children, 'even'));
+    cy.get('div.treeview > ul > li:contains(Another simple report)').within((children) => linesFormExpandedNode(children, 'even'));
     cy.get('button[id="CollapseAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 2);
-    cy.get('div.treeview > ul > li:contains(name)').within(linesFormCollapsedNode);
-    cy.get('div.treeview > ul > li:contains(otherName)').within(linesFormCollapsedNode);
+    cy.get('div.treeview > ul > li:contains(Simple report)').within(linesFormCollapsedNode);
+    cy.get('div.treeview > ul > li:contains(Another simple report)').within(linesFormCollapsedNode);
     cy.get('button[id="ExpandAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 6);
-    cy.get('div.treeview > ul > li:contains(name)').within((children) => linesFormExpandedNode(children, 'even'));
-    cy.get('div.treeview > ul > li:contains(otherName)').within((children) => linesFormExpandedNode(children, 'even'));
+    cy.get('div.treeview > ul > li:contains(Simple report)').within((children) => linesFormExpandedNode(children, 'even'));
+    cy.get('div.treeview > ul > li:contains(Another simple report)').within((children) => linesFormExpandedNode(children, 'even'));
   });
 
   it('Node info corresponds to selected node', function() {
     cy.get('button[id="OpenAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 6);
-    checkNodeInfo('name');
-    checkNodeInfo('otherName');
+    checkNodeInfo('Simple report');
+    checkNodeInfo('Another simple report');
   });
 
   it('Edit button in display tab is disabled', function() {
@@ -63,33 +63,33 @@ describe('About opened reports', function() {
   });
 
   it('When you deselect the selected report, no info is shown anymore', function() {
-    cy.get('.table-responsive tbody tr td:contains(name)').first().click();
+    cy.get('.table-responsive tbody tr td:contains(Simple report)').first().click();
     cy.get('div.treeview > ul > li').should('have.length', 3);
     cy.get('div.treeview > ul > li:eq(1)').should('have.class', 'node-selected');
     cy.get('div.treeview > ul > li.node-selected').should('have.length', 1);
     cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name').should('be.visible');
-    cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', 'name').should('be.visible');
+    cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', 'Simple report').should('be.visible');
     // Deselect
     cy.get('div.treeview > ul > li:eq(1)').click();
     cy.get('#displayedNodeTable').should('not.exist');
   });
 
   it('If there are open reports, then always one of them is selected', function() {
-    cy.get('.table-responsive tbody').find('tr').contains('name').click();
+    cy.get('.table-responsive tbody').find('tr').contains('Simple report').click();
     cy.get('div.treeview > ul > li').should('have.length', 3).each((node) => {
-      cy.wrap(node).should('have.text', 'name');
+      cy.wrap(node).should('have.text', 'Simple report');
     });
     cy.get('div.treeview > ul > li.node-selected').should('have.length', 1);
     // Index is zero-based. We want the first node after the root.
     cy.get('div.treeview > ul > li:eq(1)').should('have.class', 'node-selected');
-    cy.get('.table-responsive tbody').find('tr').contains('otherName').click();
+    cy.get('.table-responsive tbody').find('tr').contains('Another simple report').click();
     cy.get('div.treeview > ul > li').should('have.length', 6);
     // When you open a new report, the new report is also selected.
-    cy.get('div.treeview > ul > li.node-selected').should('have.length', 1).should('have.text', 'otherName');
-    cy.get('div.treeview > ul > li:contains(otherName):eq(1)').should('have.class', 'node-selected');
+    cy.get('div.treeview > ul > li.node-selected').should('have.length', 1).should('have.text', 'Another simple report');
+    cy.get('div.treeview > ul > li:contains(Another simple report):eq(1)').should('have.class', 'node-selected');
     cy.get('button#CloseButton').click();
     cy.get('div.treeview > ul > li').should('have.length', 3).each((node) => {
-      cy.wrap(node).should('have.text', 'name');
+      cy.wrap(node).should('have.text', 'Simple report');
     });
     cy.get('div.treeview > ul > li.node-selected').should('have.length', 1);
   });
@@ -143,11 +143,14 @@ function linesFormCollapsedNode($lines) {
 function checkNodeInfo(name) {
   cy.get(`div.treeview > ul > li:contains(${name}):eq(0)`).click();
   const startOfReportTag = '<Report';
-  const quotedName = `"${name}"`;
+  const wordsInName = name.split(' ');
+  const quotedWordsInName = wordsInName.map(word => '"' + word + '"');
   cy.getShownMonacoModelElement().within(function(shownMonacoElement) {
     cy.wrap(shownMonacoElement).find(`span:contains(${startOfReportTag})`);
     cy.wrap(shownMonacoElement).find('span:contains(Name)');
-    cy.wrap(shownMonacoElement).find(`span:contains(${quotedName})`);
+    quotedWordsInName.forEach(word => {
+      cy.wrap(shownMonacoElement).find(`span:contains(${word})`);
+    });
   });
   cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name');
   cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', `${name}`);
