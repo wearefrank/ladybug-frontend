@@ -88,9 +88,9 @@ function prepareEdit() {
   cy.get('#testReports tr').should('have.length', 1);
   cy.get('#OpenreportButton').click();
   // Martijn hopes this fixes an issue in Firefox. The test
-  // should see that the fourth tab has caption "name".
+  // should see that the fourth tab has caption "Simple report".
   cy.wait(2000);
-  cy.get('ul.nav-tabs li:nth-child(4)').find('a.active').should('include.text', 'name');
+  cy.get('ul.nav-tabs li:nth-child(4)').find('a.active').should('include.text', 'Simple report');
   // Wait until the tab has been rendered
   cy.get('.treeview ul li').should('have.length', 3);
 }
