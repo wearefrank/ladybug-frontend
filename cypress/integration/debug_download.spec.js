@@ -63,8 +63,8 @@ describe('Debug tab download', function() {
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
     cy.get('button[id="OpenAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 6);
-    cy.get('div.treeview > ul > li:contains(name)').should('have.length', 3)
-    cy.get('div.treeview > ul > li:contains(otherName)').should('have.length', 3);
+    cy.get('div.treeview > ul > li:contains(Simple report)').should('have.length', 3)
+    cy.get('div.treeview > ul > li:contains(Another simple report)').should('have.length', 3);
     // Debug store should not be cleared, because the report being downloaded
     // is requested here from the backend. The backend should still have the
     // report to have a valid test.
@@ -93,8 +93,8 @@ describe('Debug tab download', function() {
       });
     });
     cy.get('div.treeview > ul > li').should('have.length', 6);
-    cy.get('div.treeview > ul > li:contains(name)').should('have.length', 3)
-    cy.get('div.treeview > ul > li:contains(otherName)').should('have.length', 3);
+    cy.get('div.treeview > ul > li:contains(Simple report)').should('have.length', 3)
+    cy.get('div.treeview > ul > li:contains(Another simple report)').should('have.length', 3);
   });
 
   it('Download displayed report, from root node', function() {
@@ -115,22 +115,22 @@ function testDownloadFromNode(nodeNum) {
   cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
   cy.get('button[id="OpenAllButton"]').click();
   cy.get('div.treeview > ul > li').should('have.length', 6);
-  cy.get('div.treeview > ul > li:contains(name)').should('have.length', 3)
-  cy.get('div.treeview > ul > li:contains(otherName)').should('have.length', 3);
+  cy.get('div.treeview > ul > li:contains(Simple report)').should('have.length', 3)
+  cy.get('div.treeview > ul > li:contains(Another simple report)').should('have.length', 3);
   // Debug store should not be cleared, because the report being downloaded
   // is requested here from the backend. The backend should still have the
   // report to have a valid test.
   //
   // We can not click the node to select it because it is selected already.
   // If we click, we unselect it and then no node is selected anymore.
-  cy.get(`div.treeview > ul > li:contains(name):not(:contains(other)):eq(${nodeNum})`).selectIfNotSelected();
+  cy.get(`div.treeview > ul > li:contains(Simple report):not(:contains(other)):eq(${nodeNum})`).selectIfNotSelected();
   cy.task('downloads', downloadsFolder).should('have.length.at.least', 0).then(filesBefore => {
     cy.get('#dropdownDownloadDisplay').click();
     cy.get('#displayButtons button:contains("Binary"):not(:contains("XML"))[class="dropdown-item"]').click();
     cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
     cy.task('downloads', downloadsFolder).then(filesAfter => {
       const newFile = filesAfter.filter(file => !filesBefore.includes(file))[0];
-      expect(newFile).to.contain('name.ttr');
+      expect(newFile).to.contain('Simple report.ttr');
       expect(newFile).not.to.contain('other');
       cy.readFile(cy.functions.downloadPath(newFile), 'binary', {timeout: 15000})
       .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
@@ -149,5 +149,5 @@ function testDownloadFromNode(nodeNum) {
     });
   });
   cy.get('div.treeview > ul > li', {timeout: 10000}).should('have.length', 3);
-  cy.get('div.treeview > ul > li:contains(name):not(:contains(other))').should('have.length', 3)
+  cy.get('div.treeview > ul > li:contains(Simple report):not(:contains(other))').should('have.length', 3)
 }

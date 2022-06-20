@@ -36,7 +36,7 @@ export class TableComponent implements OnInit, OnDestroy {
     showFilter: false,
     filterValue: '',
     filterHeader: '',
-    reportsInProgress: '',
+    reportsInProgress: 0,
     estimatedMemoryUsage: '',
   };
   @Output() openReportEvent = new EventEmitter<any>();
@@ -92,10 +92,10 @@ export class TableComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.getTableSettings();
+    this.loadReportInProgressSettings();
   }
 
-  getTableSettings() {
+  loadReportInProgressSettings() {
     this.httpService.getSettings().subscribe({
       next: (settings) => {
         this.tableSettings.reportsInProgress = settings.reportsInProgress;
@@ -164,8 +164,16 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   deleteReportInProgress(index: number) {
-    this.httpService.deleteReportInProgress(index).subscribe();
-    this.getTableSettings();
+    this.httpService.deleteReportInProgress(index).subscribe({
+      complete: () => {
+        this.loadReportInProgressSettings();
+      },
+    });
+  }
+
+  disableReportInProgressButton(index: number, selector: string) {
+    let element: HTMLButtonElement = document.querySelector(selector)!;
+    element.disabled = index == 0 || index > this.tableSettings.reportsInProgress;
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {

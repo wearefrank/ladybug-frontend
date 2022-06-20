@@ -9,7 +9,7 @@ describe('Test labels', function() {
     cy.visit('');
     cy.get('button[id="OpenAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 4);
-    testTreeView('withLabelNull', 'Null String');
+    testTreeView('Message is null', 'Null String');
   });
 
   it('Test label empty string', function() {
@@ -17,7 +17,7 @@ describe('Test labels', function() {
     cy.visit('');
     cy.get('button[id="OpenAllButton"]').click();
     cy.get('div.treeview > ul > li').should('have.length', 4);
-    testTreeView('withLabelEmptyString', 'Empty String');
+    testTreeView('Message is an empty string', 'Empty String');
   });
 });
 
@@ -43,7 +43,7 @@ function testTreeView(reportName, labelString) {
     cy.wrap($node).find(':nth-child(5)').invoke('attr', 'src').should('eq', 'assets/tree-icons/infopoint-odd.gif');
   });
   cy.get('.treeview > ul > li:nth-child(4)').within(function($node) {
-    cy.wrap($node).should('have.text', 'endpoint');
+    cy.wrap($node).should('have.text', reportName);
     cy.wrap($node).find(':nth-child(1)').should('have.class', 'indent');
     cy.wrap($node).find(':nth-child(2)').should('have.class', 'indent');
     cy.wrap($node).find(':nth-child(3)').should('have.class', 'glyphicon');

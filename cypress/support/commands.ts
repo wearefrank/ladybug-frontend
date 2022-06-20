@@ -26,10 +26,11 @@
 
 import { createJSDocTypeExpression, createYield } from "typescript";
 import 'cypress-file-upload';
+import { cpSync } from "fs";
 
 function createReport() {
     // No cy.visit because then the API call can happen multiple times.
-    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=simple').then(resp => {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=Simple%20report').then(resp => {
         expect(resp.status).equal(200);
     });
 }
@@ -38,16 +39,24 @@ Cypress.Commands.add('createReport', createReport);
 
 function createOtherReport() {
     // No cy.visit because then the API call can happen multiple times.
-    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=otherSimple').then(resp => {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=Another%20simple%20report').then(resp => {
         expect(resp.status).equal(200);
     });
 }
 
 Cypress.Commands.add('createOtherReport', createOtherReport);
 
+function createRunningReport() {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=Waiting%20for%20thread%20to%20start').then(resp => {
+        expect(resp.status).equal(200);
+    });
+}
+
+Cypress.Commands.add('createRunningReport', createRunningReport);
+
 function createReportWithLabelNull() {
     // No cy.visit because then the API call can happen multiple times.
-    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=messageLabelNull').then(resp => {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=Message%20is%20null').then(resp => {
         expect(resp.status).equal(200);
     });
 }
@@ -56,7 +65,7 @@ Cypress.Commands.add('createReportWithLabelNull', createReportWithLabelNull);
 
 function createReportWithLabelEmpty() {
     // No cy.visit because then the API call can happen multiple times.
-    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=messageLabelEmptyString').then(resp => {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?createReport=Message%20is%20an%20empty%20string').then(resp => {
         expect(resp.status).equal(200);
     });
 }
@@ -68,6 +77,12 @@ function clearDebugStore() {
 }
 
 Cypress.Commands.add('clearDebugStore', clearDebugStore);
+
+function removeReportInProgress() {
+    cy.request(Cypress.env('backendServer') + '/index.jsp?removeReportInProgress=1');
+}
+
+Cypress.Commands.add('removeReportInProgress', removeReportInProgress);
 
 function waitForNumFiles(thePath, fileCount, timeLeft) {
     cy.task('downloads', thePath).then((actualFiles) => {
