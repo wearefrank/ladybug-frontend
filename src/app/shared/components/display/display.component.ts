@@ -3,13 +3,13 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MonacoEditorComponent } from '../monaco-editor/monaco-editor.component';
 // @ts-ignore
 import DiffMatchPatch from 'diff-match-patch';
-// @ts-ignore
-import beautify from 'xml-beautifier';
 import { HttpService } from '../../services/http.service';
 import { DisplayTableComponent } from '../display-table/display-table.component';
 import { DifferenceModal } from '../../interfaces/difference-modal';
 import { TreeNode } from '../../interfaces/tree-node';
 import { LoaderService } from '../../services/loader.service';
+declare var require: any;
+const { Buffer } = require('buffer');
 
 @Component({
   selector: 'app-display',
@@ -75,20 +75,24 @@ export class DisplayComponent {
   showReport(report: TreeNode): void {
     this.report = report;
     setTimeout(() => {
-      this.loadMonacoCode();
+      if (this.report.root) {
+        this.loadMonacoCode(this.report.ladybug.xml);
+      } else {
+        let message: string = this.report.ladybug.message === null ? '' : this.report.ladybug.message;
+        if (this.report.ladybug.encoding == 'Base64') {
+          this.report.ladybug.showConverted = true;
+          message = this.convertMessage(message, 'base64', 'utf8');
+        }
+        this.loadMonacoCode(message);
+      }
     }, 0);
     this.displayReport = true;
     this.rerunResult = '';
     this.disableEditing(); // For switching from editing current report to another
   }
 
-  loadMonacoCode() {
-    if (this.report.root) {
-      this.monacoEditorComponent?.loadMonaco(this.report.ladybug.xml, '');
-    } else {
-      let message: string = this.report.ladybug.message === null ? '' : this.report.ladybug.message;
-      this.monacoEditorComponent?.loadMonaco(beautify(message), '');
-    }
+  loadMonacoCode(message: string) {
+    this.monacoEditorComponent?.loadMonaco(message, '');
   }
 
   closeReport(displayCloseButton: boolean, reportId: number): void {
@@ -119,7 +123,7 @@ export class DisplayComponent {
 
   saveOrDiscard(type: string): void {
     if (type === 'save') {
-      this.saveChanges();
+      this.saveChanges(false, this.report.ladybug.stub);
     } else {
       this.discardChanges();
     }
@@ -128,7 +132,7 @@ export class DisplayComponent {
     this.modalService.dismissAll();
   }
 
-  saveChanges() {
+  saveChanges(saveStubStrategy: boolean, stubStrategy: string) {
     let checkpointId: string = '';
     let storageId: string = '';
     if (!this.report.root) {
@@ -137,6 +141,10 @@ export class DisplayComponent {
     } else {
       storageId = this.report.ladybug.storageId;
     }
+
+    const params = saveStubStrategy
+      ? { stub: stubStrategy, checkpointId: checkpointId }
+      : this.getReportValues(checkpointId);
 
     this.httpService.postReport(storageId, this.getReportValues(checkpointId), 'Test').subscribe((response: any) => {
       // TODO: storage is hardcoded for now
@@ -157,6 +165,27 @@ export class DisplayComponent {
     if (!this.report.root) {
       this.monacoEditorComponent.loadMonaco(this.differenceModal[0].originalValue, '');
     }
+  }
+  convertMessage(message: string, from: string, to: string) {
+    return Buffer.from(message, from).toString(to);
+  }
+
+  changeEncoding(button: any) {
+    let message: string = '';
+    if (button.target.innerHTML.includes('Base64')) {
+      message = this.report.ladybug.message;
+      this.report.ladybug.showConverted = false;
+
+      button.target.title = 'Convert to UTF-8';
+      button.target.innerHTML = 'UTF-8';
+    } else {
+      message = this.convertMessage(this.report.ladybug.message, 'base64', 'utf8');
+      this.report.ladybug.showConverted = true;
+
+      button.target.title = 'Convert to Base64';
+      button.target.innerHTML = 'Base64';
+    }
+    this.loadMonacoCode(message);
   }
 
   getReportValues(checkpointId: string): any {
@@ -195,6 +224,24 @@ export class DisplayComponent {
         queryString
     );
     this.httpService.handleSuccess('Report Downloaded!');
+  }
+
+  selectStubStrategy(event: any) {
+    let stubStrategy: string;
+    switch (event.target.value) {
+      case 'Follow report strategy':
+        stubStrategy = '-1';
+        break;
+      case 'No':
+        stubStrategy = '0';
+        break;
+      case 'Yes':
+        stubStrategy = '1';
+        break;
+      default:
+        stubStrategy = this.report.ladybug.stub;
+    }
+    this.saveChanges(true, stubStrategy);
   }
 
   disableEditing() {
