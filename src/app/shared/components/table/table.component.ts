@@ -158,21 +158,20 @@ export class TableComponent implements OnInit, OnDestroy {
     this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .forEach((checkedReport) => {
-        this.httpService
-          .getReport(checkedReport.storageId, this.viewSettings.currentView.storageName)
-          .subscribe((data) => {
+        this.httpService.getReport(checkedReport.storageId, this.viewSettings.currentView.storageName).subscribe({
+          next: (data) => {
             let report: Report = data.report;
             report.xml = data.xml;
             compareReports.push(report);
-          });
+          },
+          complete: () => {
+            this.openCompareReportsEvent.emit({
+              originalReport: compareReports[0],
+              runResultReport: compareReports[1],
+            });
+          },
+        });
       });
-
-    setTimeout(() => {
-      this.openCompareReportsEvent.emit({
-        originalReport: compareReports[0],
-        runResultReport: compareReports[1],
-      });
-    }, 100);
   }
 
   changeFilter(event: any, header: string): void {
