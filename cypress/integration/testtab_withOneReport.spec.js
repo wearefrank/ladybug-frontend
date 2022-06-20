@@ -30,12 +30,12 @@ describe('Tests with one report', function() {
   });
 
   it('Test copy in testtab', function() {
-    cy.functions.testTabSelectReportNamed('name');
+    cy.functions.testTabSelectReportNamed('Simple report');
     cy.get('#CopySelectedButton').click();
     cy.get('#testReports').find('tr').should('have.length', 2);
     cy.get('#testReports').find('tr').each(function($report) {
       cy.wrap($report).find('[type=checkbox]').should('not.be.checked');
-      cy.wrap($report).find('td:eq(2)').should('include.text', 'name');
+      cy.wrap($report).find('td:eq(2)').should('include.text', 'Simple report');
     });
     cy.get('#OpenreportButton:eq(0)').click();
     cy.get('.treeview ul li:nth-child(2)').should('have.class', 'node-selected');
@@ -66,6 +66,19 @@ describe('Tests with one report', function() {
     cy.get('#testReports tr:eq(1)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(1)').within(function($report) {
       cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
+    });
+  });
+
+  it('Rerun, replace, succeed', function() {
+    cy.functions.testTabSelectReportNamed('Simple report');
+    cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
+    cy.get('#testReports').find('tr:eq(0)').within(function($report) {
+      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
+    });
+    cy.get('#testReports tr:eq(0)').find('#ReplacereportButton').click();
+    cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
+    cy.get('#testReports').find('tr:eq(0)').within(function($report) {
+      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'green');
     });
   });
 })

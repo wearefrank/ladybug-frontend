@@ -20,23 +20,13 @@ export class TableSettingsModalComponent {
   });
 
   @Output() openLatestReportsEvent = new EventEmitter<any>();
-  @Output() openReportInProgress = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
-  @Input()
-  get reportsInProgress(): string {
-    return this._reportsInProgress;
-  }
-  set reportsInProgress(reportsInProgress: string) {
-    this._reportsInProgress = reportsInProgress;
-  }
-  public _reportsInProgress = '';
 
   constructor(private modalService: NgbModal, private httpService: HttpService, private cookieService: CookieService) {}
 
   open(): void {
     this.loadSettings();
     this.modalService.open(this.modal);
-    this.disableOpenReportInProgressButton(false);
   }
 
   /**
@@ -57,10 +47,6 @@ export class TableSettingsModalComponent {
     this.openLatestReportsEvent.next(amount);
   }
 
-  openReportsInProgress(index: number) {
-    this.openReportInProgress.next(index);
-  }
-
   resetModal(): void {
     this.loadSettings();
   }
@@ -72,15 +58,6 @@ export class TableSettingsModalComponent {
     this.httpService.getTransformation(true).subscribe((response) => {
       this.settingsForm.get('transformation')?.setValue(response.transformation);
     });
-  }
-
-  disableOpenReportInProgressButton(disable: boolean) {
-    let element: HTMLButtonElement = document.querySelector('#openReportInProgressButton')!;
-    element.disabled = disable || this._reportsInProgress == '0';
-  }
-
-  disableButton(index: string): void {
-    this.disableOpenReportInProgressButton(index == '0');
   }
 
   loadSettings(): void {

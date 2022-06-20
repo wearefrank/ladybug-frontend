@@ -25,21 +25,21 @@ describe('About the Test tab', function() {
   it('Test deleting a report', function() {
     cy.get('li#testTab').click();
     cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
-      cy.wrap($reports).contains('/name').should('have.length', 1);
-      cy.wrap($reports).contains('/otherName').should('have.length', 1);
+      cy.wrap($reports).contains('/Simple report').should('have.length', 1);
+      cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
     });
-    cy.functions.testTabSelectReportNamed('name');
+    cy.functions.testTabSelectReportNamed('Simple report');
     cy.get('#DeleteSelectedButton').click();
     cy.get('#testReports').find('tr').should('have.length', 1).within(function($reports) {
-      cy.wrap($reports).contains('/otherName').should('have.length', 1);
+      cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
     });
   });
 
   it('Test select all by deleting', function() {
     cy.get('li#testTab').click();
     cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
-      cy.wrap($reports).contains('/name').should('have.length', 1);
-      cy.wrap($reports).contains('/otherName').should('have.length', 1);
+      cy.wrap($reports).contains('/Simple report').should('have.length', 1);
+      cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
     });
     cy.get('#SelectAllButton').click();
     checkTestTabTwoReportsSelected();
@@ -50,8 +50,8 @@ describe('About the Test tab', function() {
   it('Test deselect all', function() {
     cy.get('li#testTab').click();
     cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
-      cy.wrap($reports).contains('/name').should('have.length', 1);
-      cy.wrap($reports).contains('/otherName').should('have.length', 1);
+      cy.wrap($reports).contains('/Simple report').should('have.length', 1);
+      cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
     });
     cy.get('#SelectAllButton').click();
     checkTestTabTwoReportsSelected();
@@ -59,8 +59,8 @@ describe('About the Test tab', function() {
     cy.get('#DeleteSelectedButton').click();
     cy.wait(5000);
     cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
-      cy.wrap($reports).contains('/name').should('have.length', 1);
-      cy.wrap($reports).contains('/otherName').should('have.length', 1);
+      cy.wrap($reports).contains('/Simple report').should('have.length', 1);
+      cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
     });
   });
 
@@ -68,8 +68,8 @@ describe('About the Test tab', function() {
     const downloadsFolder = Cypress.config('downloadsFolder');
     cy.get('li#testTab').click();
     cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
-      cy.wrap($reports).contains('/name').should('have.length', 1);
-      cy.wrap($reports).contains('/otherName').should('have.length', 1);
+      cy.wrap($reports).contains('/Simple report').should('have.length', 1);
+      cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
     });
     cy.get('#SelectAllButton').click();
     cy.task('downloads', downloadsFolder).then(filesBefore => {
@@ -100,18 +100,18 @@ describe('About the Test tab', function() {
       });
     });
     cy.get('#testReports tr', {timeout: 10000}).should('have.length', 4);
-    cy.get('#testReports tr td:nth-child(3):contains(/name)').should('have.length', 2);
-    cy.get('#testReports tr td:nth-child(3):contains(/otherName)').should('have.length', 2);
+    cy.get('#testReports tr td:nth-child(3):contains(/Simple report)').should('have.length', 2);
+    cy.get('#testReports tr td:nth-child(3):contains(/Another simple report)').should('have.length', 2);
   });
 
   it('Download from tab test, upload to tab debug', function() {
     const downloadsFolder = Cypress.config('downloadsFolder');
     cy.get('li#testTab').click();
     cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
-      cy.wrap($reports).contains('/name').should('have.length', 1);
-      cy.wrap($reports).contains('/otherName').should('have.length', 1);
+      cy.wrap($reports).contains('/Simple report').should('have.length', 1);
+      cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
     });
-    cy.functions.testTabSelectReportNamed('name');
+    cy.functions.testTabSelectReportNamed('Simple report');
     cy.task('downloads', downloadsFolder).then(filesBefore => {
       cy.log('Before download, downloads folder contains files: ' + filesBefore.toString());
       cy.get('#DownloadBinaryButton').click();
@@ -119,7 +119,7 @@ describe('About the Test tab', function() {
       cy.task('downloads', downloadsFolder).then(filesAfter => {
         cy.log('After download, downloads folder contains files: ' + filesAfter.toString());
         const newFile = filesAfter.filter(file => !filesBefore.includes(file))[0];
-        expect(newFile).to.contain('name.ttr');
+        expect(newFile).to.contain('Simple report.ttr');
         cy.readFile(cy.functions.downloadPath(newFile), 'binary', {timeout: 15000})
         .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
           cy.log(`Number of read bytes: ${buffer.length}`);
@@ -140,7 +140,7 @@ describe('About the Test tab', function() {
           });
         });
         cy.get('div.treeview > ul > li').should('have.length', 9);
-        cy.get('div.treeview > ul > li:contains(name)').should('have.length', 6);
+        cy.get('div.treeview > ul > li:contains(Simple report)').should('have.length', 6);
       });
     });
   });
@@ -154,10 +154,10 @@ function copyTheReportsToTestTab() {
   // was flaky because the selectIfNotSelected() custom command accessed
   // a detached DOM element.
   cy.get('div.treeview > ul > li').should('have.length', 6);
-  cy.get('div.treeview > ul > li:contains(name)').first().selectIfNotSelected();
+  cy.get('div.treeview > ul > li:contains(Simple report)').first().selectIfNotSelected();
   cy.wait(1000);
   cy.get('button#CopyButton').click();
-  cy.get('div.treeview > ul > li:contains(otherName)').first().selectIfNotSelected();
+  cy.get('div.treeview > ul > li:contains(Another simple report)').first().selectIfNotSelected();
   cy.wait(1000);
   cy.get('button#CopyButton').click();
 }
