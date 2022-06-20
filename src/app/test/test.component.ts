@@ -25,6 +25,7 @@ export class TestComponent implements OnInit, OnDestroy {
     metadataNames: ['name', 'storageId', 'variables'],
     storageName: 'Test',
   }; // Hard-coded for now
+  targetStorage: string = 'Debug';
   @Output() openTestReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
@@ -217,7 +218,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   replaceReport(reportId: string): void {
-    this.httpService.replaceReport(reportId, this.currentView.storageName).subscribe(() => {
+    this.httpService.replaceReport(reportId, this.targetStorage).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.id != reportId);
     });
   }
