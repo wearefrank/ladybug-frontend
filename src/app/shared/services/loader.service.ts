@@ -20,7 +20,7 @@ export class LoaderService {
       displayAmount: -1,
       filterValue: '',
       filterHeader: '',
-      reportsInProgress: '',
+      reportsInProgress: 0,
       estimatedMemoryUsage: '',
     },
     {
@@ -31,7 +31,7 @@ export class LoaderService {
       displayAmount: -1,
       filterValue: '',
       filterHeader: '',
-      reportsInProgress: '',
+      reportsInProgress: 0,
       estimatedMemoryUsage: '',
     },
     {
@@ -42,7 +42,7 @@ export class LoaderService {
       displayAmount: -1,
       filterValue: '',
       filterHeader: '',
-      reportsInProgress: '',
+      reportsInProgress: 0,
       estimatedMemoryUsage: '',
     },
   ];
