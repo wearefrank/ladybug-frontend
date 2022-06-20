@@ -34,16 +34,21 @@
     </div>
 
     <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true, report.id)"></app-button>
-  </div>
 
-  <div class="form-row m-2">
-    <span class="col-md-2">Stub Strategy:</span>
-    <div class="form-group col-md-4">
-      <select class="form-control">
-        <option *ngFor="let strategy of stubStrategies" value="{{strategy}}">{{strategy}}</option>
-      </select>
+    <div *ngIf="id === 'report'" class="form-row my-2 px-3">
+      <div class="form-group col-md-3 pt-1">
+        <span class="">Stub Strategy:</span>
+      </div>
+      <div class="form-group col-md-8">
+        <select class="form-control" (change)="selectStubStrategy($event)">
+          <option [selected]="report.ladybug.stub === -1">Follow report strategy</option>
+          <option [selected]="report.ladybug.stub === 1">Yes</option>
+          <option [selected]="report.ladybug.stub === 0">No</option>
+        </select>
+      </div>
     </div>
   </div>
+
 
   <p id="showRerunResult">
     {{ rerunResult }}

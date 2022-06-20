@@ -122,7 +122,7 @@ export class DisplayComponent {
 
   saveOrDiscard(type: string): void {
     if (type === 'save') {
-      this.saveChanges();
+      this.saveChanges(false, this.report.ladybug.stub);
     } else {
       this.discardChanges();
     }
@@ -131,7 +131,7 @@ export class DisplayComponent {
     this.modalService.dismissAll();
   }
 
-  saveChanges() {
+  saveChanges(saveStubStrategy: boolean, stubStrategy: string) {
     let checkpointId: string = '';
     let storageId: string = '';
     if (!this.report.root) {
@@ -141,7 +141,11 @@ export class DisplayComponent {
       storageId = this.report.ladybug.storageId;
     }
 
-    this.httpService.postReport(storageId, this.getReportValues(checkpointId)).subscribe((response: any) => {
+    const params = saveStubStrategy
+      ? { stub: stubStrategy, checkpointId: checkpointId }
+      : this.getReportValues(checkpointId);
+
+    this.httpService.postReport(storageId, params).subscribe((response: any) => {
       response.report.xml = response.xml;
       this.saveReportEvent.next(response.report);
       this.notifyTestTabOfSavedReport(storageId, response.report);
@@ -208,6 +212,24 @@ export class DisplayComponent {
       : this.report.ladybug.uid.split('#')[0];
     window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + '?id=' + queryString);
     this.httpService.handleSuccess('Report Downloaded!');
+  }
+
+  selectStubStrategy(event: any) {
+    let stubStrategy: string;
+    switch (event.target.value) {
+      case 'Follow report strategy':
+        stubStrategy = '-1';
+        break;
+      case 'No':
+        stubStrategy = '0';
+        break;
+      case 'Yes':
+        stubStrategy = '1';
+        break;
+      default:
+        stubStrategy = this.report.ladybug.stub;
+    }
+    this.saveChanges(true, stubStrategy);
   }
 
   disableEditing() {
