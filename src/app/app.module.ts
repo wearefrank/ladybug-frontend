@@ -25,6 +25,7 @@ import { DisplayTableComponent } from './shared/components/display-table/display
 import { TableSettingsModalComponent } from './shared/components/modals/table-settings-modal/table-settings-modal.component';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { CookieService } from 'ngx-cookie-service';
+import { EnumToArrayPipe } from './shared/pipes/enum-to-array.pipe';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { CookieService } from 'ngx-cookie-service';
     DisplayTableComponent,
     TableSettingsModalComponent,
     TestFolderTreeComponent,
+    EnumToArrayPipe,
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Metadata } from '../interfaces/metadata';
 
 @Pipe({
   name: 'filter',
@@ -11,31 +10,32 @@ export class FilterPipe implements PipeTransform {
    * @param header
    * @param filter - the word with which to filter
    */
-  transform(items: Metadata[], filter: string, header: string): Metadata[] {
+  transform(items: any[], filter: string, header: string): any[] {
     if (!items || !filter || filter === '') {
       return items;
     }
 
+    // TODO: Make this dynamic
     // @ts-ignore
     return items.filter((item) => {
       switch (header) {
-        case 'Storage Id':
+        case 'storageId':
           return item.storageId.includes(filter);
-        case 'End Time':
+        case 'endTime':
           return item.endTime.includes(filter);
-        case 'Duration (ms)':
+        case 'duration':
           return item.duration.includes(filter);
-        case 'Name':
+        case 'name':
           return item.name.includes(filter);
-        case 'Status':
+        case 'status':
           return item.status.includes(filter);
-        case 'Correlation id':
+        case 'correlationId':
           return item.correlationId.includes(filter);
-        case 'Number of Checkpoints':
+        case 'numberOfCheckpoints':
           return item.numberOfCheckpoints.includes(filter);
-        case 'Estimated Memory Usage (Bytes)':
+        case 'estimatedMemoryUsage':
           return item.estimatedMemoryUsage.includes(filter);
-        case 'Storage Size (Bytes)':
+        case 'storageSize':
           return item.storageSize.includes(filter);
       }
     });

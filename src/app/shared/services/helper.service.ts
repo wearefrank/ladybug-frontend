@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
-import { Metadata } from '../interfaces/metadata';
 import { Checkpoint } from '../interfaces/checkpoint';
 import { Report } from '../interfaces/report';
 
@@ -55,7 +54,7 @@ export class HelperService {
     return img + '-odd.gif';
   }
 
-  sortData(sort: Sort, data: Metadata[]): any {
+  sortData(sort: Sort, data: any[]): any {
     if (!sort.active || sort.direction === '') {
       return;
     }

@@ -23,6 +23,7 @@ describe('Tests about copying', function() {
     cy.get('div.treeview > ul > li:not(:contains(Another simple report)):eq(1)').selectIfNotSelected();
     cy.get('div.treeview > ul > li:not(:contains(Another simple report)):eq(1)').should('have.class', 'node-selected');
     cy.get('div.treeview > ul > li.node-selected').should('have.length', 1);
+    cy.wait(1000)
     cy.get('button#CopyButton').click();
     cy.get('li#testTab').click();
     // We test that the user does not have to refresh here.

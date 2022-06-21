@@ -1,14 +1,12 @@
-import { Component, OnInit, Output, EventEmitter, Input, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild, OnDestroy } from '@angular/core';
 import { ToastComponent } from '../toast/toast.component';
 import { HelperService } from '../../services/helper.service';
 import { HttpService } from '../../services/http.service';
 import { LoaderService } from '../../services/loader.service';
 import { TableSettingsModalComponent } from '../modals/table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../interfaces/table-settings';
-import { Metadata } from '../../interfaces/metadata';
 import { catchError } from 'rxjs';
 import { Report } from '../../interfaces/report';
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-table',
@@ -17,17 +15,12 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class TableComponent implements OnInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
-  HEADERS: string[] = [
-    'Storage Id',
-    'End Time',
-    'Duration (ms)',
-    'Name',
-    'Status',
-    'Correlation id',
-    'Number of Checkpoints',
-    'Estimated Memory Usage (Bytes)',
-    'Storage Size (Bytes)',
-  ];
+  viewSettings: any = {
+    defaultView: '',
+    views: [],
+    currentView: {},
+  };
+
   tableSettings: TableSettings = {
     tableId: '', // this._id might not be defined yet
     reportMetadata: [],
@@ -40,6 +33,8 @@ export class TableComponent implements OnInit, OnDestroy {
     estimatedMemoryUsage: '',
   };
   @Output() openReportEvent = new EventEmitter<any>();
+  @Output() openCompareReportsEvent = new EventEmitter<any>();
+  @Output() changeViewEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
@@ -55,41 +50,74 @@ export class TableComponent implements OnInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private loaderService: LoaderService,
-    private cookieService: CookieService
+    private loaderService: LoaderService
   ) {}
 
   ngOnInit(): void {
     const tableSettings = this.loaderService.getTableSettings(this._id);
+    const viewSettings = this.loaderService.getViewSettings();
     if (!tableSettings.tableLoaded) {
       this.loadData();
     } else {
       this.tableSettings = tableSettings;
+      this.viewSettings = viewSettings;
+      this.changeViewEvent.emit(this.viewSettings.currentView);
     }
   }
 
   ngOnDestroy(): void {
     this.loaderService.saveTableSettings(this._id, this.tableSettings);
+    this.loaderService.saveViewSettings(this.viewSettings);
   }
 
-  loadData(): void {
+  retrieveRecords() {
     let regexFilter = '.*';
     if (this.tableSettingsModal) {
       regexFilter = this.tableSettingsModal.getRegexFilter();
     }
 
-    this.httpService.getReports(this.tableSettings.displayAmount, regexFilter).subscribe({
-      next: (value) => {
-        this.tableSettings.reportMetadata = value;
-        this.tableSettings.tableLoaded = true;
-        this.toastComponent.addAlert({
-          type: 'success',
-          message: 'Data loaded!',
-        });
-      },
-      error: () => {
-        catchError(this.httpService.handleError());
-      },
+    this.httpService
+      .getReports(
+        this.tableSettings.displayAmount,
+        regexFilter,
+        this.viewSettings.currentView.metadataNames,
+        this.viewSettings.currentView.storageName
+      )
+      .subscribe({
+        next: (value) => {
+          this.tableSettings.reportMetadata = value;
+          this.tableSettings.tableLoaded = true;
+          this.toastComponent.addAlert({
+            type: 'success',
+            message: 'Data loaded!',
+          });
+        },
+        error: () => {
+          catchError(this.httpService.handleError());
+        },
+      });
+  }
+
+  getViewNames() {
+    return Object.keys(this.viewSettings.views);
+  }
+
+  changeView(event: any) {
+    this.viewSettings.currentView = this.viewSettings.views[event.target.value];
+    this.retrieveRecords();
+    this.changeViewEvent.emit(this.viewSettings.currentView);
+  }
+
+  loadData(): void {
+    this.httpService.getViews().subscribe((views) => {
+      this.viewSettings.views = views;
+      this.viewSettings.defaultView = Object.keys(this.viewSettings.views).find(
+        (view) => this.viewSettings.views[view].defaultView
+      );
+      this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.defaultView];
+      this.changeViewEvent.emit(this.viewSettings.currentView);
+
+      this.retrieveRecords();
     });
 
     this.loadReportInProgressSettings();
@@ -116,6 +144,36 @@ export class TableComponent implements OnInit, OnDestroy {
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
   }
 
+  toggleCheck(report: any): void {
+    report.checked = !report.checked;
+  }
+
+  showCompareButton(): boolean {
+    return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 2;
+  }
+
+  compareTwoReports() {
+    let compareReports: Report[] = [];
+
+    this.tableSettings.reportMetadata
+      .filter((report) => report.checked)
+      .forEach((checkedReport) => {
+        this.httpService.getReport(checkedReport.storageId, this.viewSettings.currentView.storageName).subscribe({
+          next: (data) => {
+            let report: Report = data.report;
+            report.xml = data.xml;
+            compareReports.push(report);
+          },
+          complete: () => {
+            this.openCompareReportsEvent.emit({
+              originalReport: compareReports[0],
+              runResultReport: compareReports[1],
+            });
+          },
+        });
+      });
+  }
+
   changeFilter(event: any, header: string): void {
     this.tableSettings.filterHeader = header;
     this.tableSettings.filterValue = event.target.value;
@@ -135,7 +193,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: string): void {
-    this.httpService.getReport(storageId, 'debugStorage').subscribe((data) => {
+    this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
       report.id = this.id;
@@ -144,11 +202,11 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openAllReports(): void {
-    this.tableSettings.reportMetadata.forEach((report: Metadata) => this.openReport(report.storageId));
+    this.tableSettings.reportMetadata.forEach((report: any) => this.openReport(report.storageId));
   }
 
   openLatestReports(amount: number): void {
-    this.httpService.getLatestReports(amount).subscribe((data) => {
+    this.httpService.getLatestReports(amount, this.viewSettings.currentView.storageName).subscribe((data) => {
       data.forEach((report: any) => {
         report.id = this.id;
         this.openReportEvent.next(report);
@@ -178,10 +236,18 @@ export class TableComponent implements OnInit, OnDestroy {
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
     const queryString: string = this.tableSettings.reportMetadata.reduce(
-      (totalQuery: string, selectedReport: Metadata) => totalQuery + 'id=' + selectedReport.storageId + '&',
+      (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
       '?'
     );
-    window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + queryString.slice(0, -1));
+    window.open(
+      'api/report/download/' +
+        this.viewSettings.currentView.storageName +
+        '/' +
+        exportBinary +
+        '/' +
+        exportXML +
+        queryString.slice(0, -1)
+    );
   }
 
   uploadReports(event: any): void {

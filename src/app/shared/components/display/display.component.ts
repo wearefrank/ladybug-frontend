@@ -29,6 +29,7 @@ export class DisplayComponent {
     text: '',
   };
   @Input() id: string = '';
+  @Input() currentView: any = {};
   @Output() closeReportEvent = new EventEmitter<any>();
   @Output() saveReportEvent = new EventEmitter<any>();
   @ViewChild(MonacoEditorComponent)
@@ -145,7 +146,8 @@ export class DisplayComponent {
       ? { stub: stubStrategy, checkpointId: checkpointId }
       : this.getReportValues(checkpointId);
 
-    this.httpService.postReport(storageId, params).subscribe((response: any) => {
+    this.httpService.postReport(storageId, this.getReportValues(checkpointId), 'Test').subscribe((response: any) => {
+      // TODO: storage is hardcoded for now
       response.report.xml = response.xml;
       this.saveReportEvent.next(response.report);
       this.notifyTestTabOfSavedReport(storageId, response.report);
@@ -202,15 +204,25 @@ export class DisplayComponent {
     const storageId: number = this.report.root
       ? +this.report.ladybug.storageId
       : +this.report.ladybug.uid.split('#')[0];
-    const data: any = { debugStorage: [storageId] };
-    this.httpService.copyReport(data).subscribe();
+    const data: any = {};
+    data[this.currentView.storageName] = [storageId];
+    this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
     let queryString: string = this.report.root
       ? this.report.ladybug.storageId.toString()
       : this.report.ladybug.uid.split('#')[0];
-    window.open('api/report/download/debugStorage/' + exportBinary + '/' + exportXML + '?id=' + queryString);
+    window.open(
+      'api/report/download/' +
+        this.currentView.storageName +
+        '/' +
+        exportBinary +
+        '/' +
+        exportXML +
+        '?id=' +
+        queryString
+    );
     this.httpService.handleSuccess('Report Downloaded!');
   }
 
@@ -242,7 +254,7 @@ export class DisplayComponent {
 
   rerunReport() {
     let reportId: string = this.report.ladybug.storageId;
-    this.httpService.runDisplayReport(reportId).subscribe((response) => {
+    this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
       let element = document.querySelector('#showRerunResult')!;
       if (this.report.ladybug == response) {
         element.setAttribute('style', 'background-color: green');

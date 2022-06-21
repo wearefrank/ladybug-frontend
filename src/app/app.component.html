@@ -3,7 +3,7 @@
     <li [ngbNavItem]="1" id="debugTab">
       <a ngbNavLink>Debug</a>
       <ng-template ngbNavContent>
-        <app-debug #debug ></app-debug>
+        <app-debug #debug (openCompareReportsEvent)="openCompareReport($event)"></app-debug>
       </ng-template>
     </li>
     <li [ngbNavItem]="2" id="testTab">

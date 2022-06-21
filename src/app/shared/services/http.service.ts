@@ -10,6 +10,7 @@ import { CookieService } from 'ngx-cookie-service';
 export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   toastComponent!: ToastComponent;
+  apiReport: string = 'api/report/'; // Keep this since sonar is crying about it, TODO: revert this
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
 
@@ -34,29 +35,23 @@ export class HttpService {
     this.toastComponent.addAlert({ type: 'success', message: message });
   }
 
-  getReports(limit: number, regexFilter: string): Observable<any> {
-    return this.http.get('api/metadata/debugStorage/', {
+  getViews(): Observable<any> {
+    return this.http.get('api/testtool/views').pipe(catchError(this.handleError()));
+  }
+
+  getReports(limit: number, regexFilter: string, metadataNames: string[], storage: string): Observable<any> {
+    return this.http.get('api/metadata/' + storage + '/', {
       params: {
         limit: limit,
         filter: regexFilter,
-        metadataNames: [
-          'storageId',
-          'endTime',
-          'duration',
-          'name',
-          'correlationId',
-          'status',
-          'numberOfCheckpoints',
-          'estimatedMemoryUsage',
-          'storageSize',
-        ],
+        metadataNames: metadataNames,
       },
     });
   }
 
-  getLatestReports(amount: number): Observable<any> {
+  getLatestReports(amount: number, storage: string): Observable<any> {
     return this.http
-      .get<any>('api/report/latest/debugStorage/' + amount)
+      .get<any>('api/report/latest/' + storage + '/' + amount)
       .pipe(tap(() => this.handleSuccess('Latest' + amount + 'reports opened!')))
       .pipe(catchError(this.handleError()));
   }
@@ -75,16 +70,16 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  getTestReports(): Observable<any> {
-    return this.http.get<any>('api/metadata/testStorage/', {
-      params: { metadataNames: ['name', 'storageId', 'variables'] },
+  getTestReports(metadataNames: string[], storage: string): Observable<any> {
+    return this.http.get<any>('api/metadata/' + storage + '/', {
+      params: { metadataNames: metadataNames },
     });
   }
 
   getReport(reportId: string, storage: string) {
     return this.http
       .get<any>(
-        'api/report/' +
+        this.apiReport +
           storage +
           '/' +
           reportId +
@@ -94,16 +89,16 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  postReport(reportId: string, report: any): Observable<void> {
+  postReport(reportId: string, report: any, storage: string): Observable<void> {
     return this.http
-      .post('api/report/testStorage' + '/' + reportId, report)
+      .post(this.apiReport + storage + '/' + reportId, report)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }
 
-  copyReport(data: any): Observable<void> {
+  copyReport(data: any, storage: string): Observable<void> {
     return this.http
-      .put('api/report/store/testStorage', data)
+      .put('api/report/store/' + storage, data)
       .pipe(tap(() => this.handleSuccess('Report copied!')))
       .pipe(catchError(this.handleError()));
   }
@@ -117,9 +112,9 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  uploadReportToStorage(formData: FormData): Observable<any> {
+  uploadReportToStorage(formData: FormData, storage: string): Observable<any> {
     return this.http
-      .post('api/report/upload/testStorage', formData, {
+      .post('api/report/upload/' + storage, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       .pipe(tap(() => this.handleSuccess('Report uploaded to storage!')))
@@ -165,9 +160,9 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  runDisplayReport(reportId: string): Observable<any> {
+  runDisplayReport(reportId: string, storage: string): Observable<any> {
     return this.http
-      .put<any>('api/runner/replace/debugStorage/' + reportId, {
+      .put<any>('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
@@ -181,13 +176,13 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  deleteReport(reportId: string): Observable<void> {
-    return this.http.delete('api/report/testStorage/' + reportId).pipe(catchError(this.handleError()));
+  deleteReport(reportId: string, storage: string): Observable<void> {
+    return this.http.delete(this.apiReport + storage + '/' + reportId).pipe(catchError(this.handleError()));
   }
 
-  replaceReport(reportId: string): Observable<void> {
+  replaceReport(reportId: string, storage: string): Observable<void> {
     return this.http
-      .put('api/runner/replace/debugStorage/' + reportId, {
+      .put('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
       })
       .pipe(catchError(this.handleError()));

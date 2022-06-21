@@ -1,8 +1,6 @@
-import { Metadata } from './metadata';
-
 export interface TableSettings {
   tableId: string;
-  reportMetadata: Metadata[];
+  reportMetadata: any[];
   displayAmount: number;
   showFilter: boolean;
   filterValue: string;

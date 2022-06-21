@@ -6,7 +6,6 @@ import { CloneModalComponent } from '../shared/components/modals/clone-modal/clo
 import { TestSettingsModalComponent } from '../shared/components/modals/test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { Metadata } from '../shared/interfaces/metadata';
 import { CookieService } from 'ngx-cookie-service';
 import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
@@ -18,10 +17,15 @@ import { Report } from '../shared/interfaces/report';
   styleUrls: ['./test.component.css'],
 })
 export class TestComponent implements OnInit, OnDestroy {
-  reports: Metadata[] = [];
+  reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
+  currentView: any = {
+    metadataNames: ['name', 'storageId', 'variables'],
+    storageName: 'Test',
+  }; // Hard-coded for now
+  targetStorage: string = 'Debug';
   @Output() openTestReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
@@ -36,7 +40,7 @@ export class TestComponent implements OnInit, OnDestroy {
   ) {}
 
   openCloneModal(): void {
-    let selectedReports: Metadata[] = this.reports.filter((report) => report.checked);
+    let selectedReports: any[] = this.reports.filter((report) => report.checked);
     if (selectedReports.length !== 1) {
       this.toastComponent.addAlert({ type: 'warning', message: 'Make sure exactly one report is selected at a time' });
     } else {
@@ -75,7 +79,7 @@ export class TestComponent implements OnInit, OnDestroy {
     }
   }
 
-  addCopiedReports(metadata: Metadata[]): void {
+  addCopiedReports(metadata: any[]): void {
     const amountAdded: number = metadata.length - this.reports.length;
     if (amountAdded > 0) {
       for (let index = this.reports.length; index <= metadata.length - 1; index++) {
@@ -85,7 +89,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   getCopiedReports(): void {
-    this.httpService.getTestReports().subscribe({
+    this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (response) => this.addCopiedReports(response),
       error: () => catchError(this.httpService.handleError()),
     });
@@ -96,7 +100,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    this.httpService.getTestReports().subscribe({
+    this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value) => (this.reports = value),
       error: () => catchError(this.httpService.handleError()),
     });
@@ -171,7 +175,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: string, name: string): void {
-    this.httpService.getReport(storageId, 'testStorage').subscribe((data) => {
+    this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
       this.openTestReportEvent.emit({ data: report, name: name });
@@ -182,7 +186,7 @@ export class TestComponent implements OnInit, OnDestroy {
     this.reports
       .filter((report) => report.checked)
       .forEach((report) => {
-        this.httpService.deleteReport(report.storageId).subscribe();
+        this.httpService.deleteReport(report.storageId, this.currentView.storageName).subscribe();
         this.reports.splice(this.reports.indexOf(report), 1);
       });
   }
@@ -190,11 +194,8 @@ export class TestComponent implements OnInit, OnDestroy {
   downloadSelected(): void {
     const queryString: string = this.reports
       .filter((report) => report.checked)
-      .reduce(
-        (totalQuery: string, selectedReport: Metadata) => totalQuery + 'id=' + selectedReport.storageId + '&',
-        '?'
-      );
-    window.open('api/report/download/testStorage/true/false' + queryString.slice(0, -1));
+      .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '?');
+    window.open('api/report/download/' + this.currentView.storageName + '/true/false' + queryString.slice(0, -1));
   }
 
   uploadReport(event: any): void {
@@ -202,7 +203,7 @@ export class TestComponent implements OnInit, OnDestroy {
     if (file) {
       const formData: any = new FormData();
       formData.append('file', file);
-      this.httpService.uploadReportToStorage(formData).subscribe(() => this.loadData());
+      this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData());
     }
   }
 
@@ -217,14 +218,16 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   replaceReport(reportId: string): void {
-    this.httpService.replaceReport(reportId).subscribe(() => {
+    this.httpService.replaceReport(reportId, this.targetStorage).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.id != reportId);
     });
   }
 
   copySelected() {
     let copiedIds: string[] = this.getIdsToBeCopied();
-    this.httpService.copyReport({ testStorage: copiedIds }).subscribe(() => {
+    let data: any = {};
+    data[this.currentView.storageName] = copiedIds;
+    this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
       this.loadData();
     });
   }
@@ -254,8 +257,9 @@ export class TestComponent implements OnInit, OnDestroy {
 
   copyAndMove() {
     let copiedIds: string[] = this.getIdsToBeCopied();
-
-    this.httpService.copyReport({ testStorage: copiedIds }).subscribe((r: any) => {
+    let data: any = {};
+    data[this.currentView.storageName] = copiedIds;
+    this.httpService.copyReport(data, this.currentView.storageName).subscribe((r: any) => {
       this.loadData();
       setTimeout(() => {
         this.reports.slice(r.length * -1).forEach((report) => (report.checked = true));
@@ -278,7 +282,7 @@ export class TestComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeMovedTestReportNames(selectedReports: Metadata[]): void {
+  changeMovedTestReportNames(selectedReports: any[]): void {
     selectedReports.forEach((report) => {
       if (report.name.split('/').length > 1) {
         let name = report.name.split('/').pop();

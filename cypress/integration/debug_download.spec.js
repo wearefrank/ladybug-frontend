@@ -124,7 +124,8 @@ function testDownloadFromNode(nodeNum) {
   // We can not click the node to select it because it is selected already.
   // If we click, we unselect it and then no node is selected anymore.
   cy.get(`div.treeview > ul > li:contains(Simple report):not(:contains(other)):eq(${nodeNum})`).selectIfNotSelected();
-  cy.task('downloads', downloadsFolder).should('have.length.at.least', 0).then(filesBefore => {
+  cy.wait(1000);
+  cy.task('downloads', downloadsFolder).should('have.length', 1).then(filesBefore => {
     cy.get('#dropdownDownloadDisplay').click();
     cy.get('#displayButtons button:contains("Binary"):not(:contains("XML"))[class="dropdown-item"]').click();
     cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
