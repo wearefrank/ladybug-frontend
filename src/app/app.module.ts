@@ -26,6 +26,7 @@ import { TableSettingsModalComponent } from './shared/components/modals/table-se
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { CookieService } from 'ngx-cookie-service';
 import { EnumToArrayPipe } from './shared/pipes/enum-to-array.pipe';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,7 @@ import { EnumToArrayPipe } from './shared/pipes/enum-to-array.pipe';
     ReactiveFormsModule,
     FormsModule,
   ],
-  providers: [CookieService],
+  providers: [CookieService, DatePipe],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
