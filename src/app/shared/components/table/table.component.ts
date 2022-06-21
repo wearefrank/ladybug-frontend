@@ -148,6 +148,14 @@ export class TableComponent implements OnInit, OnDestroy {
     report.checked = !report.checked;
   }
 
+  getStatusColor(metadata: any): string {
+    if (this.viewSettings.currentView.metadataNames.includes('status')) {
+      return metadata.status == 'Success' ? '#c3e6cb' : '#f79c9c';
+    }
+
+    return 'none';
+  }
+
   showCompareButton(): boolean {
     return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 2;
   }
