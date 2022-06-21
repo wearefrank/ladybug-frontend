@@ -19,11 +19,14 @@ describe('Report generator', function() {
     cy.get('button[title="Save changes"').click();
     cy.contains('Settings saved', {timeout: 10000});
     cy.createOtherReport();
-    // If we do not wait here, we do not test properly that no report is created.
-    // Without waiting, the test could succeed because we would count the number of reports
-    // before refresh.
+    // If we do not wait here, we do not test properly that there is no automatic refresh.
+    // If Ladybug would refresh automatically, the test would possibly succeed by
+    // taking the situation before that imagined refresh.
     cy.wait(5000);
     cy.get('#RefreshButton').click();
+    // We wait here, otherwise we can have a false success in the next step. Without
+    // the wait, we can succeed if there was one table row before the refresh was
+    // processed.
     cy.wait(5000);
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
     cy.get('.alert').should('not.exist');

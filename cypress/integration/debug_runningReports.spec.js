@@ -23,6 +23,8 @@ describe('Test running reports', function() {
       cy.visit('');
       cy.contains('Reports in progress: 2');
       cy.get('.row #RefreshButton').click();
+      // We wait here for the refresh to take effect. Without waiting.
+      // We do not want to test the amount of table rows before refresh.
       cy.wait(5000);
       cy.get('#metadataTable tbody').find('tr').should('have.length', 0);
       cy.get('#openInProgressNo').type('{backspace}');

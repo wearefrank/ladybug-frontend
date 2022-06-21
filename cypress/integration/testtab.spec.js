@@ -57,6 +57,8 @@ describe('About the Test tab', function() {
     checkTestTabTwoReportsSelected();
     cy.get('#DeselectAllButton').click();
     cy.get('#DeleteSelectedButton').click();
+    // We are testing here that selecting no reports and doing deselect all does nothing.
+    // We wait here for the meaningless action to be processed.
     cy.wait(5000);
     cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
       cy.wrap($reports).contains('/Simple report').should('have.length', 1);
@@ -83,7 +85,8 @@ describe('About the Test tab', function() {
         .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
           cy.log(`Number of read bytes: ${buffer.length}`);
         });
-        // Give the system time to finish downloading
+        // Give the system time to finish downloading.
+        // It would be nice if the test would succeed without this wait.
         cy.wait(5000);
         cy.readFile(cy.functions.downloadPath(newFile), 'binary')
         .then((rawContent) => {

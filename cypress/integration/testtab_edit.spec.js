@@ -89,6 +89,7 @@ function prepareEdit() {
   cy.get('#OpenreportButton').click();
   // Martijn hopes this fixes an issue in Firefox. The test
   // should see that the fourth tab has caption "Simple report".
+  // It would be nice if the tests would succeed without this wait.
   cy.wait(2000);
   cy.get('ul.nav-tabs li:nth-child(4)').find('a.active').should('include.text', 'Simple report');
   // Wait until the tab has been rendered
