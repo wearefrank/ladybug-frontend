@@ -5,7 +5,7 @@ import { DatePipe } from '@angular/common';
   name: 'enumToArray',
 })
 export class EnumToArrayPipe implements PipeTransform {
-  constructor(public datePipe: DatePipe) {}
+  constructor(private datePipe: DatePipe) {}
 
   transform(data: any) {
     if (Object.keys(data).includes('endTime')) {
