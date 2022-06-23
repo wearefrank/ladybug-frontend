@@ -77,7 +77,8 @@ export class MonacoEditorComponent {
       minimap: {
         enabled: false,
       },
-      wordWrap: 'on',
+      wordWrap: 'wordWrapColumn',
+      wordWrapColumn: 120,
     });
     this.messageLength = message.split(/\r\n|\r|\n/).length;
   }
