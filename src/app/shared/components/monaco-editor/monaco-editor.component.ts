@@ -60,7 +60,7 @@ export class MonacoEditorComponent {
           }
         });
       }
-    }, 100);
+    }, 500);
   }
 
   /**
