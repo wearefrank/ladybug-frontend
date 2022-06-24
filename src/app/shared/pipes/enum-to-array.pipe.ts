@@ -4,7 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'enumToArray',
 })
 export class EnumToArrayPipe implements PipeTransform {
-  transform(data: Object) {
+  transform(data: any) {
     return Object.values(data);
   }
 }

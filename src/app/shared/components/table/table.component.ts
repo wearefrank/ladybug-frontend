@@ -7,6 +7,7 @@ import { TableSettingsModalComponent } from '../modals/table-settings-modal/tabl
 import { TableSettings } from '../../interfaces/table-settings';
 import { catchError } from 'rxjs';
 import { Report } from '../../interfaces/report';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-table',
@@ -50,13 +51,15 @@ export class TableComponent implements OnInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    private cookieService: CookieService
   ) {}
 
   ngOnInit(): void {
     const tableSettings = this.loaderService.getTableSettings(this._id);
     const viewSettings = this.loaderService.getViewSettings();
     if (!tableSettings.tableLoaded) {
+      this.cookieService.set('transformationEnabled', 'true');
       this.loadData();
     } else {
       this.tableSettings = tableSettings;
@@ -146,6 +149,18 @@ export class TableComponent implements OnInit, OnDestroy {
 
   toggleCheck(report: any): void {
     report.checked = !report.checked;
+  }
+
+  getStatusColor(metadata: any): string {
+    if (this.viewSettings.currentView.metadataNames.includes('status')) {
+      return metadata.status == 'Success' ? '#c3e6cb' : '#f79c9c';
+    }
+
+    if (this.viewSettings.currentView.metadataNames.includes('STATE')) {
+      return metadata.STATE == 'Success' ? '#c3e6cb' : '#f79c9c';
+    }
+
+    return 'none';
   }
 
   showCompareButton(): boolean {
