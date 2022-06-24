@@ -198,12 +198,8 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
 
   createHierarchy(previousNode: TreeNode, node: TreeNode): void {
-    // If it is the first one, the root is the parent
-    if (node.level == 0) {
-      this.addChild(previousNode, node);
-
-      // If the level is higher, then the previous node was its parent
-    } else if (node.level > previousNode.level) {
+    // If the level is higher, then the previous node was its parent
+    if (node.level > previousNode.level) {
       this.addChild(previousNode, node);
 
       // If the level is lower, then the previous node is a (grand)child of this node's sibling
