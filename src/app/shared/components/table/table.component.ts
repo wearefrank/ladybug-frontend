@@ -7,6 +7,7 @@ import { TableSettingsModalComponent } from '../modals/table-settings-modal/tabl
 import { TableSettings } from '../../interfaces/table-settings';
 import { catchError } from 'rxjs';
 import { Report } from '../../interfaces/report';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-table',
@@ -50,13 +51,15 @@ export class TableComponent implements OnInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    private cookieService: CookieService
   ) {}
 
   ngOnInit(): void {
     const tableSettings = this.loaderService.getTableSettings(this._id);
     const viewSettings = this.loaderService.getViewSettings();
     if (!tableSettings.tableLoaded) {
+      this.cookieService.set('transformationEnabled', 'true');
       this.loadData();
     } else {
       this.tableSettings = tableSettings;
