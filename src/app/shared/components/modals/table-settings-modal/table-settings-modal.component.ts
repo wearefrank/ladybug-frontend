@@ -15,7 +15,7 @@ export class TableSettingsModalComponent {
   settingsForm = new FormGroup({
     generatorEnabled: new FormControl('Enabled'),
     regexFilter: new FormControl('.*'), // Report filter
-    transformationEnabled: new FormControl(false),
+    transformationEnabled: new FormControl(true),
     transformation: new FormControl(''),
   });
 

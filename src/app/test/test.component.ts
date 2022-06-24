@@ -22,7 +22,7 @@ export class TestComponent implements OnInit, OnDestroy {
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
   currentView: any = {
-    metadataNames: ['name', 'storageId', 'variables'],
+    metadataNames: ['storageId', 'name', 'variables'],
     storageName: 'Test',
   }; // Hard-coded for now
   targetStorage: string = 'Debug';
