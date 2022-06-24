@@ -153,6 +153,10 @@ export class TableComponent implements OnInit, OnDestroy {
       return metadata.status == 'Success' ? '#c3e6cb' : '#f79c9c';
     }
 
+    if (this.viewSettings.currentView.metadataNames.includes('STATE')) {
+      return metadata.STATE == 'Success' ? '#c3e6cb' : '#f79c9c';
+    }
+
     return 'none';
   }
 
