@@ -1,0 +1,10 @@
+.debug-container {
+  display: grid;
+  height: fit-content;
+}
+
+.report-list {
+  overflow-y: auto;
+  min-width: 300px;
+  height: inherit;
+}

@@ -1,7 +1,24 @@
 #metadataTable {
-  height: 30vh;
+  height: 29vh;
+  min-height: 40px;
   resize: vertical;
-  overflow: auto
+  overflow: auto;
+  border-bottom: 1px solid #dee2e6;
+  border-collapse: separate;
+}
+
+.table-header {
+  position: sticky;
+  top: 0px;
+  background-color: white;
+}
+
+.table thead:nth-of-type(1) tr:nth-of-type(1) th {
+  border-top: hidden;
+}
+
+.table {
+  margin-bottom: 0;
 }
 
 #uploadFileTable {
