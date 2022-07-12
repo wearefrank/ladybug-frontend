@@ -2,26 +2,18 @@
   <div class="col-6">
     <app-tree
       #leftTree
-      [id]="leftReport.id"
-      (selectReportEvent)="selectReportLeft($event)"
+      [id]="treeLeft.id"
+      (selectReportEvent)="selectReport($event, true)"
     ></app-tree>
   </div>
   <div class="col-6">
     <app-tree
       #rightTree
-      [id]="rightReport.id"
-      (selectReportEvent)="selectReportRight($event)"></app-tree>
+      [id]="treeRight.id"
+      (selectReportEvent)="selectReport($event, false)"></app-tree>
   </div>
 </div>
 
-<div class="row h-100">
-  <div class="col-6" [hidden]="!leftReport.selected">
-  </div>
-
-  <div class="col-6 h-0" [hidden]="!rightReport.selected">
-  </div>
-</div>
-
-<app-monaco-editor [comparing]="true" [hidden]="!leftReport.selected || !rightReport.selected" #editor ></app-monaco-editor>
+<app-monaco-editor [comparing]="true" #editor ></app-monaco-editor>
 
 <app-toast></app-toast>
