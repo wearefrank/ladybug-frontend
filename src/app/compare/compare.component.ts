@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Injectable, Input, ViewChild } from '@angular/core';
 import { TreeComponent } from '../shared/components/tree/tree.component';
 import { DisplayComponent } from '../shared/components/display/display.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
@@ -9,12 +9,18 @@ import { TreeNode } from '../shared/interfaces/tree-node';
 import DiffMatchPatch from 'diff-match-patch';
 import { MonacoEditorComponent } from '../shared/components/monaco-editor/monaco-editor.component';
 
+@Injectable()
+export class CompareData {
+  originalReport: any;
+  runResultReport: any;
+}
+
 @Component({
   selector: 'app-compare',
   templateUrl: './compare.component.html',
   styleUrls: ['./compare.component.css'],
 })
-export class CompareComponent {
+export class CompareComponent implements AfterViewInit {
   leftReport: CompareReport = {
     reports: [],
     id: 'leftId',
@@ -33,22 +39,27 @@ export class CompareComponent {
   @ViewChild('rightDisplay') rightDisplayComponent!: DisplayComponent;
   @ViewChild('editor') monacoEditor!: MonacoEditorComponent;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
-  @Input() diffReports = { originalReport: {} as Report, runResultReport: {} as Report };
 
-  constructor() {}
+  constructor(public compareData: CompareData) {}
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.selectReportBasedOnIds();
+    });
+  }
 
   /**
-   * Select report based on the specified ids in diffReports
+   * Select report based on the specified ids in compareData
    */
   selectReportBasedOnIds(): void {
-    if (Object.keys(this.diffReports.originalReport).length > 0) {
-      this.diffReports.originalReport.id = 'leftId';
-      this.addReportNodeLeft(this.diffReports.originalReport);
+    if (Object.keys(this.compareData.originalReport).length > 0) {
+      this.compareData.originalReport.id = 'leftId';
+      this.addReportNodeLeft(this.compareData.originalReport);
     }
 
-    if (Object.keys(this.diffReports.runResultReport).length > 0) {
-      this.diffReports.runResultReport.id = 'rightId';
-      this.addReportNodeRight(this.diffReports.runResultReport);
+    if (Object.keys(this.compareData.runResultReport).length > 0) {
+      this.compareData.runResultReport.id = 'rightId';
+      this.addReportNodeRight(this.compareData.runResultReport);
     }
   }
 

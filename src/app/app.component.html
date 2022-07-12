@@ -3,24 +3,18 @@
     <li [ngbNavItem]="1" id="debugTab">
       <a ngbNavLink>Debug</a>
       <ng-template ngbNavContent>
-        <app-debug #debug (openCompareReportsEvent)="openCompareReport($event)"></app-debug>
+        <app-debug #debug (openSelectedReportsEvent)="openNewCompareTab($event)"></app-debug>
       </ng-template>
     </li>
     <li [ngbNavItem]="2" id="testTab">
       <a ngbNavLink>Test</a>
       <ng-template ngbNavContent>
-        <app-test (openTestReportEvent)="openTestReport($event)" (openCompareReportsEvent)="openCompareReport($event)"></app-test>
+        <app-test (openTestReportEvent)="openTestReport($event)" (openCompareReportsEvent)="openNewCompareTab($event)"></app-test>
       </ng-template>
     </li>
-    <li [ngbNavItem]="3" id="compareTab">
-      <a ngbNavLink>Compare</a>
-      <ng-template ngbNavContent>
-        <app-compare [diffReports]="diffReports"></app-compare>
-      </ng-template>
-    </li>
-    <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 4" id="{{tab.key}}">
+    <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 3" id="{{tab.key}}">
       <a ngbNavLink>{{tab.key}}
-        <span (click)="closeTestReport($event, i)">×</span>
+        <span (click)="closeTab($event, i)">×</span>
       </a>
       <ng-template ngbNavContent>
         <ng-container *ngComponentOutlet="tab.value; injector: injector"></ng-container>

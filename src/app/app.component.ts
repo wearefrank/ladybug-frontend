@@ -3,7 +3,7 @@ import { ReportComponent, ReportData } from './report/report.component';
 import { Title } from '@angular/platform-browser';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { HttpService } from './shared/services/http.service';
-import { CompareComponent } from './compare/compare.component';
+import { CompareComponent, CompareData } from './compare/compare.component';
 import { Report } from './shared/interfaces/report';
 declare var require: any;
 const { version: appVersion } = require('../../package.json');
@@ -17,7 +17,7 @@ export class AppComponent implements AfterViewInit {
   injector!: Injector;
   appVersion: string;
   diffReports = { originalReport: {} as Report, runResultReport: {} as Report };
-  LAST_TAB_INDEX = 3;
+  LAST_TAB_INDEX = 2;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
 
@@ -55,13 +55,15 @@ export class AppComponent implements AfterViewInit {
     }
   }
 
-  openCompareReport(data: any): void {
-    this.previousActive = this.active;
-    this.active = this.LAST_TAB_INDEX;
-    this.diffReports = data;
-    setTimeout(() => {
-      this.compareComponent.selectReportBasedOnIds();
+  openNewCompareTab(data: any) {
+    this.injector = Injector.create({
+      providers: [{ provide: CompareData, useValue: data }],
+      parent: this.inj,
     });
+
+    this.tabs.push({ key: 'Compare', value: CompareComponent, id: Math.random().toString(36).slice(7) });
+    this.previousActive = this.active;
+    this.active = this.LAST_TAB_INDEX + this.tabs.length;
   }
 
   /**
@@ -69,7 +71,7 @@ export class AppComponent implements AfterViewInit {
    * @param event - mouse event
    * @param toRemove - the index of the report
    */
-  closeTestReport(event: MouseEvent, toRemove: number): void {
+  closeTab(event: MouseEvent, toRemove: number): void {
     this.tabs.splice(toRemove, 1);
     this.active = this.previousActive;
     event.preventDefault();

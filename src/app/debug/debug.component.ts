@@ -11,7 +11,7 @@ import { TreeNode } from '../shared/interfaces/tree-node';
 })
 export class DebugComponent {
   @ViewChild(TreeComponent) treeComponent!: TreeComponent;
-  @Output() openCompareReportsEvent = new EventEmitter<any>();
+  @Output() openSelectedReportsEvent = new EventEmitter<any>();
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
   currentView: any = {};
 
@@ -40,8 +40,8 @@ export class DebugComponent {
     this.treeComponent.removeNode(currentReport);
   }
 
-  openCompareReport(reports: any) {
-    this.openCompareReportsEvent.emit(reports);
+  openSelectedReports(data: any) {
+    this.openSelectedReportsEvent.emit(data);
   }
 
   changeView(view: any) {

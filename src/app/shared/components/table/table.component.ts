@@ -35,6 +35,7 @@ export class TableComponent implements OnInit, OnDestroy {
   };
   @Output() openReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
+  @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @Output() changeViewEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
@@ -80,7 +81,7 @@ export class TableComponent implements OnInit, OnDestroy {
     }
 
     this.httpService
-      .getReports(
+      .getMetadataReports(
         this.tableSettings.displayAmount,
         regexFilter,
         this.viewSettings.currentView.metadataNames,
@@ -168,25 +169,31 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   compareTwoReports() {
-    let compareReports: Report[] = [];
+    let compareReports: any = {};
 
-    this.tableSettings.reportMetadata
+    let selectedReports: string[] = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
-      .forEach((checkedReport) => {
-        this.httpService.getReport(checkedReport.storageId, this.viewSettings.currentView.storageName).subscribe({
-          next: (data) => {
-            let report: Report = data.report;
-            report.xml = data.xml;
-            compareReports.push(report);
-          },
-          complete: () => {
-            this.openCompareReportsEvent.emit({
-              originalReport: compareReports[0],
-              runResultReport: compareReports[1],
-            });
-          },
-        });
-      });
+      .map((report) => report.storageId);
+    this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
+      next: (data) => {
+        let leftObject = data[selectedReports[0]];
+        let originalReport = leftObject.report;
+        originalReport.xml = leftObject.xml;
+
+        let rightObject = data[selectedReports[1]];
+        let runResultReport = rightObject.report;
+        runResultReport.xml = rightObject.xml;
+
+        compareReports = {
+          originalReport: originalReport,
+          runResultReport: runResultReport,
+        };
+      },
+
+      complete: () => {
+        this.openSelectedCompareReportsEvent.emit(compareReports);
+      },
+    });
   }
 
   changeFilter(event: any, header: string): void {

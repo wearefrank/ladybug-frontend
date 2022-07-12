@@ -39,7 +39,7 @@ export class HttpService {
     return this.http.get('api/testtool/views').pipe(catchError(this.handleError()));
   }
 
-  getReports(limit: number, regexFilter: string, metadataNames: string[], storage: string): Observable<any> {
+  getMetadataReports(limit: number, regexFilter: string, metadataNames: string[], storage: string): Observable<any> {
     return this.http.get('api/metadata/' + storage + '/', {
       params: {
         limit: limit,
@@ -85,6 +85,15 @@ export class HttpService {
           reportId +
           '/?xml=true&globalTransformer=' +
           this.cookieService.get('transformationEnabled')
+      )
+      .pipe(catchError(this.handleError()));
+  }
+
+  getReports(reportIds: string[], storage: string) {
+    return this.http
+      .get<any>(
+        this.apiReport + storage + '/?xml=true&globalTransformer=' + this.cookieService.get('transformationEnabled'),
+        { params: { storageIds: reportIds } }
       )
       .pipe(catchError(this.handleError()));
   }
