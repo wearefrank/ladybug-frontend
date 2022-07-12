@@ -2,18 +2,16 @@
   <div class="col-6">
     <app-tree
       #leftTree
-      [id]="treeLeft.id"
+      [id]="left.id"
       (selectReportEvent)="selectReport($event, true)"
     ></app-tree>
   </div>
   <div class="col-6">
     <app-tree
       #rightTree
-      [id]="treeRight.id"
+      [id]="right.id"
       (selectReportEvent)="selectReport($event, false)"></app-tree>
   </div>
 </div>
 
-<app-monaco-editor [comparing]="true" #editor ></app-monaco-editor>
-
-<app-toast></app-toast>
+<td-ngx-text-diff #diffComponent></td-ngx-text-diff>

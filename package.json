@@ -43,6 +43,7 @@
     "jquery": "3.6.0",
     "monaco-editor": "0.28.1",
     "ngx-cookie-service": "^13.1.2",
+    "ngx-text-diff": "^0.6.0",
     "path": "^0.12.7",
     "prettier": "2.5.1",
     "rxjs": "7.4.0",

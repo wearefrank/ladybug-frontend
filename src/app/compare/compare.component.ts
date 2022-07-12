@@ -1,8 +1,7 @@
 import { AfterViewInit, Component, Injectable, Input, ViewChild } from '@angular/core';
 import { TreeComponent } from '../shared/components/tree/tree.component';
-import { ToastComponent } from '../shared/components/toast/toast.component';
 import { TreeNode } from '../shared/interfaces/tree-node';
-import { MonacoEditorComponent } from '../shared/components/monaco-editor/monaco-editor.component';
+import { NgxTextDiffComponent } from 'ngx-text-diff';
 
 @Injectable()
 export class CompareData {
@@ -18,14 +17,13 @@ export class CompareData {
 export class CompareComponent implements AfterViewInit {
   @ViewChild('leftTree') treeLeftComponent!: TreeComponent;
   @ViewChild('rightTree') treeRightComponent!: TreeComponent;
-  @ViewChild('editor') monacoEditor!: MonacoEditorComponent;
-  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
-  treeLeft: any = {
+  @ViewChild('diffComponent') diffComponent!: NgxTextDiffComponent;
+  left: any = {
     currentReport: {},
     id: Math.random().toString(36).slice(7),
   };
 
-  treeRight: any = {
+  right: any = {
     currentReport: {},
     id: Math.random().toString(36).slice(7),
   };
@@ -45,26 +43,26 @@ export class CompareComponent implements AfterViewInit {
     }
 
     if (this.compareData.runResultReport) {
-      this.treeRightComponent?.handleChange(this.compareData.originalReport);
+      this.treeRightComponent?.handleChange(this.compareData.runResultReport);
       this.treeRightComponent?.selectSpecificNode(nodeNumber);
     }
   }
 
   selectReport(currentReport: TreeNode, leftReport: boolean) {
     if (leftReport) {
-      this.treeLeft.currentReport = currentReport;
-      this.selectOther(this.treeRightComponent, this.treeLeft.currentReport, this.treeRight.currentReport);
+      this.left.currentReport = currentReport;
+      this.selectOther(this.treeRightComponent, this.left.currentReport, this.right.currentReport);
     } else {
-      this.treeRight.currentReport = currentReport;
-      this.selectOther(this.treeLeftComponent, this.treeRight.currentReport, this.treeLeft.currentReport);
+      this.right.currentReport = currentReport;
+      this.selectOther(this.treeLeftComponent, this.right.currentReport, this.left.currentReport);
     }
 
-    if (this.treeLeft.currentReport.ladybug && this.treeRight.currentReport.ladybug) {
-      this.loadDifference(this.treeLeft.currentReport, this.treeRight.currentReport);
+    if (this.left.currentReport.ladybug && this.right.currentReport.ladybug) {
+      this.loadDifference(this.left.currentReport, this.right.currentReport);
     }
   }
 
-  selectOther(treeComponent: TreeComponent, thisReport: any, otherReport: any) {
+  selectOther(treeComponent: TreeComponent, thisReport: TreeNode, otherReport: TreeNode) {
     if (thisReport.id != otherReport.id) {
       treeComponent?.selectSpecificNode(thisReport.id);
     }
@@ -72,9 +70,13 @@ export class CompareComponent implements AfterViewInit {
 
   loadDifference(leftReport: TreeNode, rightReport: TreeNode) {
     if (leftReport.root) {
-      this.monacoEditor.loadMonaco(leftReport.ladybug.xml, rightReport.ladybug.xml);
+      this.diffComponent.left = leftReport.ladybug.xml;
+      this.diffComponent.right = rightReport.ladybug.xml;
     } else {
-      this.monacoEditor.loadMonaco(leftReport.ladybug.message, rightReport.ladybug.message);
+      this.diffComponent.left = leftReport.ladybug.message;
+      this.diffComponent.right = rightReport.ladybug.message;
     }
+
+    this.diffComponent.renderDiffs();
   }
 }

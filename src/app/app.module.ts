@@ -26,6 +26,7 @@ import { TableSettingsModalComponent } from './shared/components/modals/table-se
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { CookieService } from 'ngx-cookie-service';
 import { EnumToArrayPipe } from './shared/pipes/enum-to-array.pipe';
+import { NgxTextDiffModule } from 'ngx-text-diff';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { EnumToArrayPipe } from './shared/pipes/enum-to-array.pipe';
     MatSortModule,
     ReactiveFormsModule,
     FormsModule,
+    NgxTextDiffModule,
   ],
   providers: [CookieService],
   bootstrap: [AppComponent],
