@@ -138,4 +138,65 @@ export class HelperService {
       a.waitingForStream === b.waitingForStream
     );
   }
+
+  convertReportToJqxTree(report: Report) {
+    let index: number = 0;
+    let parentMap: any[] = [];
+
+    let rootNode = this.createNode(report, '', index++, -1);
+    this.createChildNodes(rootNode, index, parentMap);
+    return rootNode;
+  }
+
+  createNode(report: Report, icon: string, index: number, level: number) {
+    return {
+      label: report.name,
+      icon: icon,
+      value: report,
+      expanded: true,
+      id: index,
+      items: [],
+      level: level,
+    };
+  }
+
+  createChildNodes(previousNode: any, index: number, parentMap: any[]) {
+    for (let checkpoint of previousNode.value.checkpoints) {
+      const img: string = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0);
+      const currentNode: any = this.createNode(checkpoint, img, index++, checkpoint.level);
+      this.createHierarchy(previousNode, currentNode, parentMap);
+    }
+  }
+
+  createHierarchy(previousNode: any, node: any, parentMap: any[]): void {
+    // If the level is higher, then the previous node was its parent
+    if (node.level > previousNode.level) {
+      this.addChild(previousNode, node, parentMap);
+
+      // If the level is lower, then the previous node is a (grand)child of this node's sibling
+    } else if (node.level < previousNode.level) {
+      this.findParent(node, previousNode, parentMap);
+
+      // Else the level is equal, meaning the previous node is its sibling
+    } else {
+      const newParent: any = parentMap.find((x) => x.id == previousNode.id).parent;
+      this.addChild(newParent, node, parentMap);
+    }
+  }
+
+  findParent(currentNode: any, potentialParent: any, parentMap: any[]): any {
+    // If the level difference is only 1, then the potential parent is the actual parent
+    if (currentNode.level - 1 == potentialParent.level) {
+      this.addChild(potentialParent, currentNode, parentMap);
+      return currentNode;
+    }
+
+    const newPotentialParent: any = parentMap.find((node) => node.id == potentialParent.id).parent;
+    return this.findParent(currentNode, newPotentialParent, parentMap);
+  }
+
+  addChild(parent: any, node: any, parentMap: any[]): void {
+    parentMap.push({ order: node.id, parent: parent });
+    parent.items.push(node);
+  }
 }

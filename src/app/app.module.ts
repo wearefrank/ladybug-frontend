@@ -26,6 +26,7 @@ import { TableSettingsModalComponent } from './shared/components/modals/table-se
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { CookieService } from 'ngx-cookie-service';
 import { EnumToArrayPipe } from './shared/pipes/enum-to-array.pipe';
+import { jqxTreeModule } from 'jqwidgets-ng/jqxtree';
 import { NgxTextDiffModule } from 'ngx-text-diff';
 import { CompareTreeComponent } from './shared/components/compare-tree/compare-tree.component';
 
@@ -61,6 +62,7 @@ import { CompareTreeComponent } from './shared/components/compare-tree/compare-t
     MatSortModule,
     ReactiveFormsModule,
     FormsModule,
+    jqxTreeModule,
     NgxTextDiffModule,
   ],
   providers: [CookieService],

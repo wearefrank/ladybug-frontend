@@ -1,10 +1,8 @@
 <div class="row resizable-vertical h-0">
-  <div class="col-6">
-    {{leftId}}
-    <div id="{{leftId}}"></div>
+  <div class="col-6 p-0" style="height: 200px">
+    <jqxTree #leftTreeReference (onItemClick)="nodeSelected($event, true)" [auto-create]="false"></jqxTree>
   </div>
-  <div class="col-6">
-    {{rightId}}
-    <div id="{{rightId}}"></div>
+  <div class="col-6 p-0" style="height: 200px">
+    <jqxTree #rightTreeReference (onItemClick)="nodeSelected($event, false)" [auto-create]="false"></jqxTree>
   </div>
 </div>

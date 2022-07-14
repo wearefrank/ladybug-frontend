@@ -1,18 +1,2 @@
-<!--  <div class="col-6">-->
-<!--    <app-tree-->
-<!--      #leftTree-->
-<!--      [id]="left.id"-->
-<!--      (selectReportEvent)="selectReport($event, true)"-->
-<!--    ></app-tree>-->
-<!--  </div>-->
-<!--  <div class="col-6">-->
-<!--    <app-tree-->
-<!--      #rightTree-->
-<!--      [id]="right.id"-->
-<!--      (selectReportEvent)="selectReport($event, false)"></app-tree>-->
-<!--  </div>-->
-  <app-compare-tree #trees [leftId]="left.id" [rightId]="right.id" (selectReportEvent)="selectReport($event)" >
-
-  </app-compare-tree>
-
+<app-compare-tree #trees (compareEvent)="showDifference($event)"></app-compare-tree>
 <td-ngx-text-diff #diffComponent></td-ngx-text-diff>
