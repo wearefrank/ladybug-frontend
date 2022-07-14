@@ -1,5 +1,5 @@
 <div class="p-3">
-  <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+  <ul ngbNav #nav="ngbNav" [(activeId)]="active" (navChange)="detectTabChange($event)" class="nav-tabs">
     <li [ngbNavItem]="1" id="debugTab">
       <a ngbNavLink>Debug</a>
       <ng-template ngbNavContent>
@@ -16,8 +16,11 @@
       <a ngbNavLink>{{tab.key}}
         <span (click)="closeTab($event, i)">×</span>
       </a>
-      <ng-template ngbNavContent>
-        <ng-container *ngComponentOutlet="tab.value; injector: injector"></ng-container>
+      <ng-template ngbNavContent *ngIf="tab.key === 'Compare'">
+        <ng-container *ngComponentOutlet="tab.value; injector: compareInjector"></ng-container>
+      </ng-template>
+      <ng-template ngbNavContent *ngIf="tab.key !== 'Compare'">
+        <ng-container *ngComponentOutlet="tab.value; injector: reportInjector"></ng-container>
       </ng-template>
     </li>
     <li ngbNavItem [disabled]="true" class="ml-auto">

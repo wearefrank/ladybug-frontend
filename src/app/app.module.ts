@@ -27,6 +27,7 @@ import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.com
 import { CookieService } from 'ngx-cookie-service';
 import { EnumToArrayPipe } from './shared/pipes/enum-to-array.pipe';
 import { NgxTextDiffModule } from 'ngx-text-diff';
+import { CompareTreeComponent } from './shared/components/compare-tree/compare-tree.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { NgxTextDiffModule } from 'ngx-text-diff';
     TableSettingsModalComponent,
     TestFolderTreeComponent,
     EnumToArrayPipe,
+    CompareTreeComponent,
   ],
   imports: [
     BrowserModule,

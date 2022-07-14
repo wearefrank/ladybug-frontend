@@ -2,9 +2,11 @@ import { AfterViewInit, Component, Injectable, Input, ViewChild } from '@angular
 import { TreeComponent } from '../shared/components/tree/tree.component';
 import { TreeNode } from '../shared/interfaces/tree-node';
 import { NgxTextDiffComponent } from 'ngx-text-diff';
+import { CompareTreeComponent } from '../shared/components/compare-tree/compare-tree.component';
 
 @Injectable()
 export class CompareData {
+  id!: string;
   originalReport: any;
   runResultReport: any;
 }
@@ -17,44 +19,40 @@ export class CompareData {
 export class CompareComponent implements AfterViewInit {
   @ViewChild('leftTree') treeLeftComponent!: TreeComponent;
   @ViewChild('rightTree') treeRightComponent!: TreeComponent;
+  @ViewChild('trees') compareTreeComponent!: CompareTreeComponent;
   @ViewChild('diffComponent') diffComponent!: NgxTextDiffComponent;
   left: any = {
     currentReport: {},
-    id: Math.random().toString(36).slice(7),
+    id: this.compareData.id + '-left',
   };
 
   right: any = {
     currentReport: {},
-    id: Math.random().toString(36).slice(7),
+    id: this.compareData.id + '-right',
   };
 
   constructor(public compareData: CompareData) {}
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-      this.showReports(0);
-    });
+      this.showReports();
+    }, 100);
   }
 
-  showReports(nodeNumber: number) {
-    if (this.compareData.originalReport) {
-      this.treeLeftComponent?.handleChange(this.compareData.originalReport);
-      this.treeLeftComponent?.selectSpecificNode(nodeNumber);
-    }
-
-    if (this.compareData.runResultReport) {
-      this.treeRightComponent?.handleChange(this.compareData.runResultReport);
-      this.treeRightComponent?.selectSpecificNode(nodeNumber);
+  showReports() {
+    if (this.compareData.originalReport && this.compareData.runResultReport) {
+      this.compareTreeComponent?.createTrees(this.compareData.originalReport, this.compareData.runResultReport);
     }
   }
 
-  selectReport(currentReport: TreeNode, leftReport: boolean) {
-    if (leftReport) {
+  selectReport(data: any) {
+    let currentReport: TreeNode = data.data;
+    if (data.left) {
       this.left.currentReport = currentReport;
-      this.selectOther(this.treeRightComponent, this.left.currentReport, this.right.currentReport);
+      this.selectOther(this.left.currentReport, this.right.currentReport, false);
     } else {
       this.right.currentReport = currentReport;
-      this.selectOther(this.treeLeftComponent, this.right.currentReport, this.left.currentReport);
+      this.selectOther(this.right.currentReport, this.left.currentReport, true);
     }
 
     if (this.left.currentReport.ladybug && this.right.currentReport.ladybug) {
@@ -62,9 +60,9 @@ export class CompareComponent implements AfterViewInit {
     }
   }
 
-  selectOther(treeComponent: TreeComponent, thisReport: TreeNode, otherReport: TreeNode) {
+  selectOther(thisReport: TreeNode, otherReport: TreeNode, left: boolean) {
     if (thisReport.id != otherReport.id) {
-      treeComponent?.selectSpecificNode(thisReport.id);
+      this.compareTreeComponent?.selectSpecificNode(thisReport.id, left);
     }
   }
 
