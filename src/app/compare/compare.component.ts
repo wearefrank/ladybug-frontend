@@ -35,13 +35,18 @@ export class CompareComponent implements AfterViewInit {
   }
 
   showDifference(data: any) {
-    if (!data.leftReport.parentElement) {
-      this.diffComponent.left = data.leftReport.value.xml;
-      this.diffComponent.right = data.rightReport.value.xml;
-    } else {
-      this.diffComponent.left = data.leftReport.value.message;
-      this.diffComponent.right = data.rightReport.value.message;
-    }
+    let leftSide = data.leftReport ? this.extractMessage(data.leftReport) : '';
+    let rightSide = data.rightReport ? this.extractMessage(data.rightReport) : '';
+    this.saveDiff(leftSide, rightSide);
+  }
+
+  extractMessage(report: any): string {
+    return report.parentElement ? report.value.message ?? '' : report.value.xml ?? '';
+  }
+
+  saveDiff(leftSide: string, rightSide: string) {
+    this.diffComponent.left = leftSide;
+    this.diffComponent.right = rightSide;
     this.diffComponent.renderDiffs();
   }
 }

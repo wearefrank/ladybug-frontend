@@ -31,20 +31,50 @@ export class CompareTreeComponent {
   }
 
   createTrees(leftReport: Report, rightReport: Report) {
-    this.leftTreeReference.createComponent({
-      height: '100%',
-      source: [this.helperService.convertReportToJqxTree(leftReport)],
-    });
-    this.rightTreeReference.createComponent({
-      height: '100%',
-      source: [this.helperService.convertReportToJqxTree(rightReport)],
-    });
+    let leftTree = this.helperService.convertReportToJqxTree(leftReport);
+    let rightTree = this.helperService.convertReportToJqxTree(rightReport);
+    let both = this.iterateToMakeLabelsRed(leftTree, rightTree);
 
+    this.leftTreeReference.createComponent({ height: '100%', source: [both.left] });
+    this.rightTreeReference.createComponent({ height: '100%', source: [both.right] });
+
+    this.selectFirstItem();
+  }
+
+  selectFirstItem() {
     this.leftTreeReference.selectItem(this.leftTreeReference.getItems()[0]);
     this.rightTreeReference.selectItem(this.rightTreeReference.getItems()[0]);
     this.compareEvent.emit({
       leftReport: this.leftTreeReference.getItems()[0],
       rightReport: this.rightTreeReference.getItems()[0],
     });
+  }
+
+  makeLabelsRed(left: any, right: any) {
+    left.label = "<span style='color: red;'>" + left.label + '</span>';
+    right.label = "<span style='color: red;'>" + right.label + '</span>';
+  }
+
+  iterateToMakeLabelsRed(leftItem: any, rightItem: any) {
+    let result = this.checkIfLabelsDifferent(leftItem, rightItem);
+    let shortestTreeLength = Math.min(leftItem.items.length, rightItem.items.length);
+
+    for (let i = 0; i < shortestTreeLength; i++) {
+      let both = this.iterateToMakeLabelsRed(leftItem.items[i], rightItem.items[i]);
+      leftItem.items[i] = both.left;
+      rightItem.items[i] = both.right;
+    }
+
+    return result;
+  }
+
+  checkIfLabelsDifferent(left: any, right: any): { left: any; right: any } {
+    if (left.parentElement) {
+      if (left.value.message !== right.value.message) this.makeLabelsRed(left, right);
+    } else {
+      if (left.value.xml !== right.value.xml) this.makeLabelsRed(left, right);
+    }
+
+    return { left: left, right: right };
   }
 }
