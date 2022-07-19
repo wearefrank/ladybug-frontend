@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, EventEmitter, OnDestroy, Output } from '@angular/core';
-import { LoaderService } from '../shared/services/loader.service';
 import { TestTreeNode } from '../shared/interfaces/test-tree-node';
 declare var $: any;
 
@@ -8,24 +7,16 @@ declare var $: any;
   templateUrl: './test-folder-tree.component.html',
   styleUrls: ['./test-folder-tree.component.css'],
 })
-export class TestFolderTreeComponent implements AfterViewInit, OnDestroy {
+export class TestFolderTreeComponent implements AfterViewInit {
   TREE_SELECTOR: string = '#testFolderTree';
   baseFolder: TestTreeNode = { text: 'Reports', filter: '', nodes: [], state: { expanded: true, selected: true } };
   currentFolder: TestTreeNode = this.baseFolder;
   @Output() changeFolderEvent = new EventEmitter<any>();
 
-  constructor(private loaderService: LoaderService) {}
+  constructor() {}
 
   ngAfterViewInit(): void {
-    if (this.loaderService.isTestTreeLoaded()) {
-      this.baseFolder = this.loaderService.getTestBaseFolder();
-      this.currentFolder = this.loaderService.getTestCurrentFolder();
-    }
     this.updateTreeView();
-  }
-
-  ngOnDestroy(): void {
-    this.loaderService.saveTestTreeSettings(this.baseFolder, this.currentFolder);
   }
 
   addFolder(path: string): void {

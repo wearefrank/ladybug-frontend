@@ -1,7 +1,6 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { HttpService } from '../shared/services/http.service';
-import { LoaderService } from '../shared/services/loader.service';
 import { CloneModalComponent } from '../shared/components/modals/clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from '../shared/components/modals/test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
@@ -16,7 +15,7 @@ import { Report } from '../shared/interfaces/report';
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.css'],
 })
-export class TestComponent implements OnInit, OnDestroy {
+export class TestComponent implements OnInit {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
@@ -33,11 +32,7 @@ export class TestComponent implements OnInit, OnDestroy {
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(TestFolderTreeComponent) testFolderTreeComponent!: TestFolderTreeComponent;
 
-  constructor(
-    private httpService: HttpService,
-    private loaderService: LoaderService,
-    private cookieService: CookieService
-  ) {}
+  constructor(private httpService: HttpService, private cookieService: CookieService) {}
 
   openCloneModal(): void {
     let selectedReports: any[] = this.reports.filter((report) => report.checked);
@@ -57,14 +52,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (!this.loaderService.isTestLoaded()) {
-      this.loadData();
-    } else {
-      this.reports = this.loaderService.getTestReports();
-      this.reranReports = this.loaderService.getReranReports();
-      this.currentFilter = this.loaderService.getFolderFilter();
-      this.getCopiedReports();
-    }
+    this.loadData();
     this.getGeneratorStatus();
   }
 
@@ -93,10 +81,6 @@ export class TestComponent implements OnInit, OnDestroy {
       next: (response) => this.addCopiedReports(response),
       error: () => catchError(this.httpService.handleError()),
     });
-  }
-
-  ngOnDestroy(): void {
-    this.loaderService.saveTestSettings(this.reports, this.reranReports, this.currentFilter);
   }
 
   loadData(): void {

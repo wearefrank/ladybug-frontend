@@ -5,6 +5,7 @@ import { ToastComponent } from './shared/components/toast/toast.component';
 import { HttpService } from './shared/services/http.service';
 import { CompareComponent, CompareData } from './compare/compare.component';
 import { Report } from './shared/interfaces/report';
+import { TestComponent } from './test/test.component';
 declare var require: any;
 const { version: appVersion } = require('../../package.json');
 
@@ -21,6 +22,7 @@ export class AppComponent implements AfterViewInit {
   FIXED_TAB_AMOUNT = 2;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
+  @ViewChild(TestComponent) testComponent!: TestComponent;
 
   constructor(private inj: Injector, private titleService: Title, private httpService: HttpService) {
     this.appVersion = appVersion;
@@ -84,12 +86,18 @@ export class AppComponent implements AfterViewInit {
 
   detectTabChange(event: any) {
     let tab = this.tabs[event.nextId - this.FIXED_TAB_AMOUNT - 1];
-    if (event.nextId > this.FIXED_TAB_AMOUNT) {
+    if (event.nextId > this.FIXED_TAB_AMOUNT && tab.key == 'Compare') {
       this.changingTabs(tab.data, tab.key);
+    }
+
+    if (event.nextId == 2) {
+      this.testComponent.getCopiedReports();
+      this.testComponent.getGeneratorStatus();
     }
   }
 
   changingTabs(data: any, type: any) {
+    console.log('Changing tabis');
     if (type == 'Compare') {
       this.compareInjector = Injector.create({
         providers: [{ provide: CompareData, useValue: data }],

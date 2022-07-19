@@ -1,8 +1,7 @@
-import { Component, OnInit, Output, EventEmitter, Input, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Output, EventEmitter, Input, ViewChild, OnInit } from '@angular/core';
 import { ToastComponent } from '../toast/toast.component';
 import { HelperService } from '../../services/helper.service';
 import { HttpService } from '../../services/http.service';
-import { LoaderService } from '../../services/loader.service';
 import { TableSettingsModalComponent } from '../modals/table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../interfaces/table-settings';
 import { catchError } from 'rxjs';
@@ -14,7 +13,7 @@ import { CookieService } from 'ngx-cookie-service';
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css'],
 })
-export class TableComponent implements OnInit, OnDestroy {
+export class TableComponent implements OnInit {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
   viewSettings: any = {
     defaultView: '',
@@ -52,26 +51,12 @@ export class TableComponent implements OnInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private loaderService: LoaderService,
     private cookieService: CookieService
   ) {}
 
   ngOnInit(): void {
-    const tableSettings = this.loaderService.getTableSettings(this._id);
-    const viewSettings = this.loaderService.getViewSettings();
-    if (!tableSettings.tableLoaded) {
-      this.cookieService.set('transformationEnabled', 'true');
-      this.loadData();
-    } else {
-      this.tableSettings = tableSettings;
-      this.viewSettings = viewSettings;
-      this.changeViewEvent.emit(this.viewSettings.currentView);
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.loaderService.saveTableSettings(this._id, this.tableSettings);
-    this.loaderService.saveViewSettings(this.viewSettings);
+    this.cookieService.set('transformationEnabled', 'true');
+    this.loadData();
   }
 
   retrieveRecords() {

@@ -1,5 +1,5 @@
 <!-- Setting modal -->
-<ng-template #modal let-modal>
+<ng-template #modal let-modal >
   <div class="modal-header">
     <h5 class="modal-title" id="settingsModal">Options</h5>
     <button id="debugSettingsModalClose" type="button" class="close" (click)="modal.dismiss()">
@@ -44,12 +44,12 @@
       </div>
       <div class="form-group">
         <label>Transformation <i class="fa fa-info-circle" title="To see the change of the transformation, please reopen the current report or open a new one."></i></label>
-        <textarea class="form-control" rows="10" formControlName="transformation">Hi there</textarea>
+        <textarea class="form-control" rows="10" formControlName="transformation"></textarea>
       </div>
     </div>
     <div class="modal-footer">
       <button title="Reset to factory settings &#10; - Report generator: Enabled&#10; - Regex: .* " type="button" class="btn btn-info" (click)="factoryReset()"><i class="fa fa-refresh"></i></button>
-      <button title="Revert changes" type="button" class="btn btn-info" (click)="resetModal()"><i class="fa fa-undo"></i></button>
+      <button title="Revert changes" type="button" class="btn btn-info" (click)="loadSettings()"><i class="fa fa-undo"></i></button>
       <button title="Save changes" type="submit" class="btn btn-info" (click)="modal.dismiss()"><i class="fa fa-save"></i></button>
     </div>
   </form>

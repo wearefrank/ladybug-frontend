@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { HelperService } from '../../services/helper.service';
-import { LoaderService } from '../../services/loader.service';
 import { TreeNode } from '../../interfaces/tree-node';
 import { Report } from '../../interfaces/report';
 import { Checkpoint } from '../../interfaces/checkpoint';
@@ -13,7 +12,7 @@ declare var $: any;
   templateUrl: './tree.component.html',
   styleUrls: ['./tree.component.css'],
 })
-export class TreeComponent implements AfterViewInit, OnDestroy {
+export class TreeComponent {
   @Output() selectReportEvent = new EventEmitter<any>();
   @Output() closeEntireTreeEvent = new EventEmitter<any>();
   @Output() closeDisplayReportEvent = new EventEmitter<any>();
@@ -36,36 +35,7 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
   }
   public _id: string = 'debug';
 
-  constructor(
-    private helperService: HelperService,
-    private loaderService: LoaderService,
-    private cookieService: CookieService
-  ) {}
-
-  ngAfterViewInit(): void {
-    const treeSettings = this.loaderService.getTreeSettings(this._id);
-    if (treeSettings.treeLoaded) {
-      this.treeSettings = treeSettings;
-      this.updateTreeView();
-      if (this.treeSettings.selectedNode != -1) {
-        $('#' + this._id).treeview('selectNode', [this.treeSettings.selectedNode, { silent: false }]);
-      }
-    }
-  }
-
-  ngOnDestroy(): void {
-    let selectedNode: number = -1;
-    if (this.treeSettings.tree.length > 0) {
-      selectedNode = $('#' + this._id).treeview('getSelected')[0].id;
-    }
-    this.loaderService.saveTreeSettings(
-      this._id,
-      true,
-      this.treeSettings.tree,
-      this.treeSettings.selectedReports,
-      selectedNode
-    );
-  }
+  constructor(private helperService: HelperService, private cookieService: CookieService) {}
 
   collapseAll(): void {
     $('#' + this._id).treeview('collapseAll', { silent: true });

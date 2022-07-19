@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../services/http.service';
@@ -11,7 +11,7 @@ import { ToastComponent } from '../../toast/toast.component';
   styleUrls: ['./table-settings-modal.component.css'],
 })
 export class TableSettingsModalComponent {
-  @ViewChild('modal') modal!: any;
+  @ViewChild('modal') modal!: ElementRef;
   settingsForm = new FormGroup({
     generatorEnabled: new FormControl('Enabled'),
     regexFilter: new FormControl('.*'), // Report filter
@@ -21,12 +21,25 @@ export class TableSettingsModalComponent {
 
   @Output() openLatestReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
+  saving: boolean = false;
 
   constructor(private modalService: NgbModal, private httpService: HttpService, private cookieService: CookieService) {}
 
   open(): void {
     this.loadSettings();
     this.modalService.open(this.modal);
+    this.detectClosingModal();
+  }
+
+  detectClosingModal() {
+    setTimeout(() => {
+      if (!this.modalService.hasOpenModals()) {
+        if (!this.saving) this.loadSettings();
+        this.saving = false;
+      } else {
+        this.detectClosingModal();
+      }
+    }, 500);
   }
 
   /**
@@ -41,14 +54,11 @@ export class TableSettingsModalComponent {
     let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled' };
     this.httpService.postSettings(data).subscribe();
     this.toastComponent.addAlert({ type: 'warning', message: 'Reopen report to see updated XML' });
+    this.saving = true;
   }
 
   openLatestReports(amount: number): void {
     this.openLatestReportsEvent.next(amount);
-  }
-
-  resetModal(): void {
-    this.loadSettings();
   }
 
   factoryReset(): void {
