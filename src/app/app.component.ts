@@ -86,7 +86,7 @@ export class AppComponent implements AfterViewInit {
 
   detectTabChange(event: any) {
     let tab = this.tabs[event.nextId - this.FIXED_TAB_AMOUNT - 1];
-    if (event.nextId > this.FIXED_TAB_AMOUNT && tab.key == 'Compare') {
+    if (event.nextId > this.FIXED_TAB_AMOUNT) {
       this.changingTabs(tab.data, tab.key);
     }
 
@@ -97,7 +97,6 @@ export class AppComponent implements AfterViewInit {
   }
 
   changingTabs(data: any, type: any) {
-    console.log('Changing tabis');
     if (type == 'Compare') {
       this.compareInjector = Injector.create({
         providers: [{ provide: CompareData, useValue: data }],

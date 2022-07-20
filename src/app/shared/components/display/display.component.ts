@@ -91,7 +91,7 @@ export class DisplayComponent {
   }
 
   loadMonacoCode(message: string) {
-    this.monacoEditorComponent?.loadMonaco(message, '');
+    this.monacoEditorComponent?.loadMonaco(message);
   }
 
   closeReport(displayCloseButton: boolean, reportId: number): void {
@@ -154,7 +154,7 @@ export class DisplayComponent {
 
   discardChanges() {
     if (!this.report.root) {
-      this.monacoEditorComponent.loadMonaco(this.differenceModal[0].originalValue, '');
+      this.monacoEditorComponent.loadMonaco(this.differenceModal[0].originalValue);
     }
   }
   convertMessage(message: string, from: string, to: string) {

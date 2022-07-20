@@ -29,6 +29,8 @@ import { EnumToArrayPipe } from './shared/pipes/enum-to-array.pipe';
 import { jqxTreeModule } from 'jqwidgets-ng/jqxtree';
 import { NgxTextDiffModule } from 'ngx-text-diff';
 import { CompareTreeComponent } from './shared/components/compare-tree/compare-tree.component';
+import { EditDisplayComponent } from './report/edit-display/edit-display.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -51,6 +53,7 @@ import { CompareTreeComponent } from './shared/components/compare-tree/compare-t
     TestFolderTreeComponent,
     EnumToArrayPipe,
     CompareTreeComponent,
+    EditDisplayComponent,
   ],
   imports: [
     BrowserModule,
@@ -64,6 +67,7 @@ import { CompareTreeComponent } from './shared/components/compare-tree/compare-t
     FormsModule,
     jqxTreeModule,
     NgxTextDiffModule,
+    MatProgressSpinnerModule,
   ],
   providers: [CookieService],
   bootstrap: [AppComponent],

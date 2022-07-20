@@ -1,58 +1,58 @@
 <table class="table col-md-4 border" id="displayedNodeTable">
   <tr>
     <td>Name</td>
-    <td>{{_report.ladybug.name}}</td>
+    <td>{{_report.name}}</td>
   </tr>
-  <tr *ngIf="_report.root">
+  <tr *ngIf="_report.xml">
     <td>Description</td>
-    <td>{{_report.ladybug.description}}</td>
+    <td>{{_report.description}}</td>
   </tr>
-  <tr *ngIf="!_report.root">
+  <tr *ngIf="!_report.xml">
     <td>Thread name</td>
-    <td>{{ _report.ladybug.threadName}}</td>
+    <td>{{ _report.threadName}}</td>
   </tr>
-  <tr *ngIf="!_report.root">
+  <tr *ngIf="!_report.xml">
     <td>Source class name</td>
-    <td>{{ _report.ladybug.sourceClassName}}</td>
+    <td>{{ _report.sourceClassName}}</td>
   </tr>
-  <tr *ngIf="!_report.root">
+  <tr *ngIf="!_report.xml">
     <td>Message class name</td>
-    <td>{{ _report.ladybug.messageClassName}}</td>
+    <td>{{ _report.messageClassName}}</td>
   </tr>
   <tr>
     <td>Path</td>
-    <td>{{ _report.ladybug.path}}</td>
+    <td>{{ _report.path}}</td>
   </tr>
-  <tr *ngIf="!_report.root">
+  <tr *ngIf="!_report.xml">
     <td>CheckpointUID</td>
-    <td>{{ _report.ladybug.uid}}</td>
+    <td>{{ _report.uid}}</td>
   </tr>
-  <tr *ngIf="!_report.root">
+  <tr *ngIf="!_report.xml">
     <td>Encoding</td>
-    <td>{{ _report.ladybug.encoding}}</td>
+    <td>{{ _report.encoding}}</td>
   </tr>
-  <tr *ngIf="!_report.root && _report.ladybug.message">
+  <tr *ngIf="!_report.xml && _report.message">
     <td>Number of characters</td>
-    <td>{{ _report.ladybug.message.length}}</td>
+    <td>{{ _report.message.length}}</td>
   </tr>
-  <tr *ngIf="_report.root">
+  <tr *ngIf="_report.xml">
     <td>Transformation</td>
-    <td>{{ _report.ladybug.transformation}}</td>
+    <td>{{ _report.transformation}}</td>
   </tr>
-  <tr *ngIf="_report.root">
+  <tr *ngIf="_report.xml">
     <td>StorageId</td>
-    <td>{{ _report.ladybug.storageId}}</td>
+    <td>{{ _report.storageId}}</td>
   </tr>
-  <tr *ngIf="_report.root">
+  <tr *ngIf="_report.xml">
     <td>Storage</td>
-    <td>{{ _report.ladybug.storage}}</td>
+    <td>{{ _report.storage}}</td>
   </tr>
   <tr>
     <td>Estimated memory usage</td>
-    <td>{{ _report.ladybug.estimatedMemoryUsage}}</td>
+    <td>{{ _report.estimatedMemoryUsage}}</td>
   </tr>
-  <tr *ngIf="_report.root">
+  <tr *ngIf="_report.xml">
     <td>CorrelationId</td>
-    <td>{{ _report.ladybug.correlationId}}</td>
+    <td>{{ _report.correlationId}}</td>
   </tr>
 </table>
