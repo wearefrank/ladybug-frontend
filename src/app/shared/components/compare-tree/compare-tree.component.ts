@@ -19,11 +19,13 @@ export class CompareTreeComponent {
     let rightReport: any;
     if (left) {
       leftReport = data.owner.selectedItem;
-      rightReport = this.rightTreeReference.getItems()[leftReport.id];
+      let index = this.leftTreeReference.getItems().findIndex((item: any) => item.id == leftReport.id);
+      rightReport = this.rightTreeReference.getItems()[index];
       this.rightTreeReference.selectItem(rightReport);
     } else {
       rightReport = data.owner.selectedItem;
-      leftReport = this.leftTreeReference.getItems()[rightReport.id];
+      let index = this.rightTreeReference.getItems().findIndex((item: any) => item.id == rightReport.id);
+      leftReport = this.leftTreeReference.getItems()[index];
       this.leftTreeReference.selectItem(leftReport);
     }
 
@@ -51,13 +53,18 @@ export class CompareTreeComponent {
   }
 
   makeLabelsRed(left: any, right: any) {
-    left.label = "<span style='color: red;'>" + left.label + '</span>';
-    right.label = "<span style='color: red;'>" + right.label + '</span>';
+    this.redLabel(left);
+    this.redLabel(right);
+  }
+
+  redLabel(item: any) {
+    item.label = "<span style='color: red;'>" + item.label + '</span>';
   }
 
   iterateToMakeLabelsRed(leftItem: any, rightItem: any) {
     let result = this.checkIfLabelsDifferent(leftItem, rightItem);
     let shortestTreeLength = Math.min(leftItem.items.length, rightItem.items.length);
+    this.makeRestOfTreesRed(shortestTreeLength, rightItem.items, leftItem.items);
 
     for (let i = 0; i < shortestTreeLength; i++) {
       let both = this.iterateToMakeLabelsRed(leftItem.items[i], rightItem.items[i]);
@@ -68,8 +75,16 @@ export class CompareTreeComponent {
     return result;
   }
 
+  makeRestOfTreesRed(startPoint: number, leftItems: any[], rightItems: any[]) {
+    let items = leftItems;
+    if (rightItems.length > leftItems.length) items = rightItems;
+    for (let i = startPoint; i < items.length; i++) {
+      this.redLabel(items[i]);
+    }
+  }
+
   checkIfLabelsDifferent(left: any, right: any): { left: any; right: any } {
-    if (left.parentElement) {
+    if (left.level > -1) {
       if (left.value.message !== right.value.message) this.makeLabelsRed(left, right);
     } else {
       if (left.value.xml !== right.value.xml) this.makeLabelsRed(left, right);

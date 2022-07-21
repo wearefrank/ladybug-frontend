@@ -62,15 +62,8 @@ export class TreeComponent {
       (totalQuery: string, selectedReport: Report) => totalQuery + 'id=' + selectedReport.storageId + '&',
       '?'
     );
-    window.open(
-      'api/report/download/' +
-        this.currentView.storageName +
-        '/' +
-        exportBinary +
-        '/' +
-        exportXML +
-        queryString.slice(0, -1)
-    );
+
+    this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
   }
 
   removeNode(node: TreeNode): void {

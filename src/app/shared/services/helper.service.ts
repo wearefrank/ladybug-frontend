@@ -89,53 +89,9 @@ export class HelperService {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  twoReportsAreEqual(a: Report, b: Report): boolean {
-    return (
-      a.checkpoints.length === b.checkpoints.length &&
-      this.compareAllCheckpoints(a.checkpoints, b.checkpoints) &&
-      a.description === b.description &&
-      a.estimatedMemoryUsage === b.estimatedMemoryUsage &&
-      a.fullPath === b.fullPath &&
-      this.twoCheckpointsAreEqual(a.inputCheckpoint, b.inputCheckpoint) &&
-      a.name === b.name &&
-      a.numberOfCheckpoints === b.numberOfCheckpoints &&
-      a.originalEndpointOrAbortpointForCurrentLevel === b.originalEndpointOrAbortpointForCurrentLevel &&
-      a.path === b.path &&
-      a.reportFilterMatching === b.reportFilterMatching &&
-      a.stubStrategy === b.stubStrategy &&
-      a.transformation === b.transformation &&
-      a.variableCsv === b.variableCsv &&
-      a.variablesAsMap === b.variablesAsMap
-    );
-  }
-
-  compareAllCheckpoints(a: Checkpoint[], b: Checkpoint[]) {
-    for (const [i, element] of a.entries()) {
-      if (!this.twoCheckpointsAreEqual(element, b[i])) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  twoCheckpointsAreEqual(a: Checkpoint, b: Checkpoint): boolean {
-    return (
-      a.encoding === b.encoding &&
-      a.estimatedMemoryUsage === b.estimatedMemoryUsage &&
-      a.index === b.index &&
-      a.level === b.level &&
-      a.message === b.message &&
-      a.messageClassName === b.messageClassName &&
-      a.name === b.name &&
-      a.preTruncatedMessageLength === b.preTruncatedMessageLength &&
-      a.sourceClassName === b.sourceClassName &&
-      a.streaming === b.streaming &&
-      a.stub === b.stub &&
-      a.stubNotFound === b.stubNotFound &&
-      a.stubbed === b.stubbed &&
-      a.type === b.type &&
-      a.typeAsString === b.typeAsString &&
-      a.waitingForStream === b.waitingForStream
+  download(queryString: string, storage: string, exportBinary: boolean, exportXML: boolean) {
+    window.open(
+      'api/report/download/' + storage + '/' + exportBinary + '/' + exportXML + '?' + queryString.slice(0, -1)
     );
   }
 
@@ -154,17 +110,20 @@ export class HelperService {
       icon: icon,
       value: report,
       expanded: true,
-      id: index,
+      id: Math.random(),
+      index: index,
       items: [],
       level: level,
     };
   }
 
-  createChildNodes(previousNode: any, index: number, parentMap: any[]) {
-    for (let checkpoint of previousNode.value.checkpoints) {
+  createChildNodes(rootNode: any, index: number, parentMap: any[]) {
+    let previousNode = rootNode;
+    for (let checkpoint of rootNode.value.checkpoints) {
       const img: string = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0);
       const currentNode: any = this.createNode(checkpoint, img, index++, checkpoint.level);
       this.createHierarchy(previousNode, currentNode, parentMap);
+      previousNode = currentNode;
     }
   }
 
@@ -196,7 +155,7 @@ export class HelperService {
   }
 
   addChild(parent: any, node: any, parentMap: any[]): void {
-    parentMap.push({ order: node.id, parent: parent });
+    parentMap.push({ id: node.id, parent: parent });
     parent.items.push(node);
   }
 }

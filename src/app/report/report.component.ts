@@ -27,7 +27,7 @@ export class ReportComponent implements AfterViewInit {
     setTimeout(() => {
       this.createTree(<Report>(<unknown>this.reportData));
       this.treeReference.selectItem(this.treeReference.getItems()[0]);
-      this.editDisplayComponent.showReport(this.reportData, true);
+      this.editDisplayComponent.showReport(this.reportData);
     });
   }
 
@@ -36,19 +36,16 @@ export class ReportComponent implements AfterViewInit {
     this.treeReference.createComponent({ height: '100%', width: '100%', source: [tree] });
   }
 
-  /**
-   * Select a report to be viewed in the display
-   * @param currentReport - the report to be viewed
-   */
   selectReport(currentReport: any): void {
     let report = currentReport.owner.selectedItem.value;
-    this.editDisplayComponent.showReport(report, report.xml);
+    this.editDisplayComponent.showReport(report);
   }
 
-  savingReport(something: any) {
-    let selectedNode = this.treeReference.getSelectedItem();
-    this.treeReference.destroy();
-    this.createTree(something);
-    this.treeReference.selectItem(selectedNode);
+  savingReport(report: any) {
+    let selectedNodeIndex = this.treeReference.getItems().findIndex((item) => item.selected);
+    this.treeReference.clear();
+    let tree = this.helperService.convertReportToJqxTree(report);
+    this.treeReference.addTo(tree, null);
+    this.treeReference.selectItem(this.treeReference.getItems()[selectedNodeIndex]);
   }
 }

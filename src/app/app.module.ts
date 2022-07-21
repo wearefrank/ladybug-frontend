@@ -31,6 +31,7 @@ import { NgxTextDiffModule } from 'ngx-text-diff';
 import { CompareTreeComponent } from './shared/components/compare-tree/compare-tree.component';
 import { EditDisplayComponent } from './report/edit-display/edit-display.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DebugTreeComponent } from './debug/debug-tree/debug-tree.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     EnumToArrayPipe,
     CompareTreeComponent,
     EditDisplayComponent,
+    DebugTreeComponent,
   ],
   imports: [
     BrowserModule,

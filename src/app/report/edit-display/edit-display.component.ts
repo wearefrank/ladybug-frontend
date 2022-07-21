@@ -1,10 +1,11 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { DifferenceModal } from '../../shared/interfaces/difference-modal';
 import { MonacoEditorComponent } from '../../shared/components/monaco-editor/monaco-editor.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
 // @ts-ignore
 import DiffMatchPatch from 'diff-match-patch';
+import { HelperService } from '../../shared/services/helper.service';
 declare var require: any;
 const { Buffer } = require('buffer');
 
@@ -19,7 +20,9 @@ export class EditDisplayComponent {
   rerunResult: string = '';
   report: any = {};
   @Input() id: string = '';
-  @Input() currentView: any = {};
+  currentView: any = {
+    storageName: 'Test',
+  };
   @Output() saveReportEvent = new EventEmitter<any>();
   @ViewChild(MonacoEditorComponent) monacoEditorComponent!: MonacoEditorComponent;
   @ViewChild('name') name!: ElementRef;
@@ -30,11 +33,11 @@ export class EditDisplayComponent {
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
 
-  constructor(private modalService: NgbModal, private httpService: HttpService) {}
+  constructor(private modalService: NgbModal, private httpService: HttpService, private helperService: HelperService) {}
 
-  showReport(report: any, root: boolean): void {
+  showReport(report: any): void {
     this.report = report;
-    if (root) {
+    if (report.xml) {
       this.loadMonacoCode(this.report.xml);
     } else {
       let message: string = this.report.message === null ? '' : this.report.message;
@@ -89,17 +92,8 @@ export class EditDisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    let queryString: string = this.report.root ? this.report.storageId.toString() : this.report.uid.split('#')[0];
-    window.open(
-      'api/report/download/' +
-        this.currentView.storageName +
-        '/' +
-        exportBinary +
-        '/' +
-        exportXML +
-        '?id=' +
-        queryString
-    );
+    let queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
+    this.helperService.download(queryString + '&', this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
   }
 
@@ -122,6 +116,7 @@ export class EditDisplayComponent {
   }
 
   openDifferenceModal(modal: any, type: string): void {
+    this.differenceModal = [];
     if (this.report.xml) {
       this.addToDifferenceModal('name', this.name.nativeElement.value);
       this.addToDifferenceModal('description', this.description.nativeElement.value);
@@ -164,7 +159,7 @@ export class EditDisplayComponent {
   }
 
   editReport(): void {
-    if (this.report.root) {
+    if (this.report.xml) {
       this.editingRootNode = true;
     } else {
       this.editingChildNode = true;
@@ -192,7 +187,7 @@ export class EditDisplayComponent {
   }
 
   discardChanges() {
-    if (!this.report.root) {
+    if (!this.report.xml) {
       this.monacoEditorComponent.loadMonaco(this.differenceModal[0].originalValue);
     }
   }
@@ -200,7 +195,7 @@ export class EditDisplayComponent {
   saveChanges(saveStubStrategy: boolean, stubStrategy: string) {
     let checkpointId: string = '';
     let storageId: string = '';
-    if (!this.report.root) {
+    if (!this.report.xml) {
       storageId = this.report.uid.split('#')[0];
       checkpointId = this.report.uid.split('#')[1];
     } else {

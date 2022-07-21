@@ -246,15 +246,7 @@ export class TableComponent implements OnInit {
       (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
       '?'
     );
-    window.open(
-      'api/report/download/' +
-        this.viewSettings.currentView.storageName +
-        '/' +
-        exportBinary +
-        '/' +
-        exportXML +
-        queryString.slice(0, -1)
-    );
+    this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
   }
 
   uploadReports(event: any): void {

@@ -3,6 +3,6 @@
     <jqxTree #treeReference (onItemClick)="selectReport($event)" [auto-create]="false"></jqxTree>
   </div>
   <div class="col">
-    <app-edit-display></app-edit-display>
+    <app-edit-display (saveReportEvent)="savingReport($event)"></app-edit-display>
   </div>
 </div>

@@ -1,26 +1,7 @@
 <div *ngIf="displayReport">
   <div class="row" id="displayButtons">
-    <span *ngIf="id === 'report'">
-          <app-button *ngIf="report.root" [icon]="'fa fa-repeat'" [title]="'Rerun'" (click)="rerunReport()"></app-button>
-          <app-button [icon]="'fa fa-edit'" [title]="'Edit'" *ngIf="!editingChildNode && !editingRootNode"
-                      (click)="editReport()"></app-button>
-          <app-button [icon]="'fa fa-trash'" [title]="'Discard Changes'" *ngIf="editingChildNode || editingRootNode"
-                      (click)="openDifferenceModal(saveOrDiscardChanges, 'discard')"></app-button>
-          <app-button [icon]="'fa fa-save'" [title]="'Save'" *ngIf="editingChildNode || editingRootNode"
-                      (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
-    </span>
-
-    <span *ngIf="id === 'debug'">
-          <button class="btn btn-info my-2 mx-1 px-3" disabled title="Disabled: to run, copy report to test tab and open it there">
-            <i class="fa fa-repeat"></i>
-          </button>
-          <button class="btn btn-info my-2 mx-1 px-3 debugDisplayEditButton" disabled title="Disabled: to edit, copy report to test tab and open it there.">
-            <i class="fa fa-edit"></i>
-          </button>
-          <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
-    </span>
-
-    <app-button *ngIf="report.ladybug.encoding === 'Base64'" [text]="'Base64'" [title]="'Convert to Base64'" (click)="changeEncoding($event)"></app-button>
+    <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
+    <app-button *ngIf="report.encoding === 'Base64'" [text]="'Base64'" [title]="'Convert to Base64'" (click)="changeEncoding($event)"></app-button>
 
     <div ngbDropdown title="Download">
       <button class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
@@ -33,58 +14,40 @@
       </div>
     </div>
 
-    <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true, report.id)"></app-button>
-
-    <div *ngIf="id === 'report'" class="form-row my-2 px-3">
-      <div class="form-group col-md-3 pt-1">
-        <span class="">Stub Strategy:</span>
-      </div>
-      <div class="form-group col-md-8">
-        <select class="form-control" (change)="selectStubStrategy($event)">
-          <option [selected]="report.ladybug.stub === -1">Follow report strategy</option>
-          <option [selected]="report.ladybug.stub === 1">Yes</option>
-          <option [selected]="report.ladybug.stub === 0">No</option>
-        </select>
-      </div>
-    </div>
+    <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
   </div>
 
-
-  <p id="showRerunResult">
-    {{ rerunResult }}
-  </p>
-
-  <div *ngIf="!report.root">
-    <div *ngIf="report.ladybug.noCloseReceivedForStream" id="noCloseReceivedLabel" class="btn btn-static my-2 mx-1 px-2">
+  <div *ngIf="!report.xml">
+    <div *ngIf="report.noCloseReceivedForStream" id="noCloseReceivedLabel" class="btn btn-static my-2 mx-1 px-2">
       No close received for stream
     </div>
-    <div *ngIf="null !== report.ladybug.streaming && report.ladybug.streaming" id="waitingForMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-      {{ report.ladybug.waitingForStream ? 'Waiting for message to be' : 'Message is'}} captured asynchronously from a {{report.ladybug.streaming.toLowerCase()}} stream
+    <div *ngIf="null !== report.streaming && report.streaming" id="waitingForMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+      {{ report.waitingForStream ? 'Waiting for message to be' : 'Message is'}} captured asynchronously from a {{report.streaming.toLowerCase()}} stream
     </div>
 
-    <div *ngIf="null === report.ladybug.message" id="nullMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+    <div *ngIf="null === report.message" id="nullMessageLabel" class="btn btn-static my-2 mx-1 px-2">
       Message is null
     </div>
 
-    <div *ngIf="'' === report.ladybug.message" id="emptyMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+    <div *ngIf="'' === report.message" id="emptyMessageLabel" class="btn btn-static my-2 mx-1 px-2">
       Message is empty string
     </div>
 
-    <div *ngIf="report.ladybug.stubbed" id="stubbedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+    <div *ngIf="report.stubbed" id="stubbedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
       Message is stubbed (copied from original report)
     </div>
 
-    <div *ngIf="null !== report.ladybug.encoding" id="encodedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-      Message of type {{report.ladybug.messageClassName}} is encoded to string using {{report.ladybug.encoding}}
-      <span *ngIf="this.report.ladybug.showConverted">and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
+    <div *ngIf="null !== report.encoding" id="encodedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+      Message of type {{report.messageClassName}} is encoded to string using {{report.encoding}}
+      <span *ngIf="this.report.showConverted">and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
     </div>
 
-    <div *ngIf="report.ladybug.preTruncatedMessageLength > 0" id="truncatedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-      Message is truncated ( {{ report.ladybug.preTruncatedMessageLength - report.ladybug.message.length}} characters removed)
+    <div *ngIf="report.preTruncatedMessageLength > 0" id="truncatedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+      Message is truncated ( {{ report.preTruncatedMessageLength - report.message.length}} characters removed)
     </div>
 
-    <div *ngIf="null !== report.ladybug.stubNotFound" id="stubNotFoundLabel" class="btn btn-static my-2 mx-1 px-2">
-      Could not find stub message for {{report.ladybug.stubNotFound}}
+    <div *ngIf="null !== report.stubNotFound" id="stubNotFoundLabel" class="btn btn-static my-2 mx-1 px-2">
+      Could not find stub message for {{report.stubNotFound}}
     </div>
   </div>
 
@@ -92,73 +55,7 @@
     <app-monaco-editor></app-monaco-editor>
   </div>
 
-  <div *ngIf="!editingRootNode" class="pt-4">
-    <app-display-table [report]="report.ladybug"></app-display-table>
+  <div class="pt-4">
+    <app-display-table [report]="report"></app-display-table>
   </div>
-
-  <div *ngIf="editingRootNode">
-    <div class="form-group">
-      <label>Name</label>
-      <input #name type="text" class="form-control" placeholder="Name" value="{{report.ladybug.name}}">
-    </div>
-    <div class="form-group">
-      <label>Description</label>
-      <input #description class="form-control" placeholder="Description" value="{{report.ladybug.description}}">
-    </div>
-    <div class="form-group">
-      <label>Path</label>
-      <input #path type="text" class="form-control" placeholder="/path/to/report/" value="{{report.ladybug.path}}">
-    </div>
-    <div class="form-group">
-      <label>Transformation</label>
-      <div>
-        <textarea #transformation class="form-control" style="height: 100px">{{report.ladybug.transformation}}</textarea>
-      </div>
-    </div>
-    <div class="form-group">
-      <label>Variables</label>
-      <div>
-        <textarea #variables class="form-control" style="height: 100px">{{report.ladybug.variableCsv}}</textarea>
-      </div>
-    </div>
-  </div>
-
-  <ng-template #saveOrDiscardChanges let-modal>
-    <div class="modal-header">
-      <h3 class="modal-title">Are you sure you want to {{ saveOrDiscardType }} changes?</h3>
-      <button type="button" class="close" (click)="dismissModal()">
-        <span>&times;</span>
-      </button>
-    </div>
-    <div class="modal-content">
-      <div *ngFor="let part of differenceModal">
-        <div class="text-center">{{ part.name}}</div>
-        <div class="dropdown-divider"></div>
-        <div class="row">
-          <div class="col">
-            <div class="text-center pt-2">Before</div>
-            <div class="dropdown-divider"></div>
-            <div class="text-center pb-2 overflow-auto">{{ part.originalValue }}</div>
-          </div>
-          <div class="col text-right">
-            <div class="text-center pt-2">After</div>
-            <div class="dropdown-divider"></div>
-            <div class="text-center pb-2 overflow-auto">
-              <span *ngFor="let chunk of part.difference">
-                <span *ngIf="+chunk[0] === -1" style="background: #ff7f7f">{{chunk[1]}}</span>
-                <span *ngIf="+chunk[0] === 0">{{chunk[1]}}</span>
-                <span *ngIf="+chunk[0] === 1" style="background: #7cfc00">{{chunk[1]}}</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <div class="col-md-12 text-center">
-        <button type="button" class="btn btn-info mr-2" (click)="saveOrDiscard(saveOrDiscardType)">Yes</button>
-        <button type="button" class="btn btn-info ml-2" (click)="dismissModal()">No</button>
-      </div>
-    </div>
-  </ng-template>
 </div>
