@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, Injectable, Input, ViewChild } from '@angular/core';
 import { NgxTextDiffComponent } from 'ngx-text-diff';
-import { CompareTreeComponent } from '../shared/components/compare-tree/compare-tree.component';
+import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 
 @Injectable()
 export class CompareData {

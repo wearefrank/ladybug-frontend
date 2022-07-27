@@ -1,11 +1,11 @@
 import { Component, Output, EventEmitter, Input, ViewChild, OnInit } from '@angular/core';
-import { ToastComponent } from '../toast/toast.component';
-import { HelperService } from '../../services/helper.service';
-import { HttpService } from '../../services/http.service';
-import { TableSettingsModalComponent } from '../modals/table-settings-modal/table-settings-modal.component';
-import { TableSettings } from '../../interfaces/table-settings';
+import { ToastComponent } from '../../shared/components/toast/toast.component';
+import { HelperService } from '../../shared/services/helper.service';
+import { HttpService } from '../../shared/services/http.service';
+import { TableSettingsModalComponent } from '../../shared/components/modals/table-settings-modal/table-settings-modal.component';
+import { TableSettings } from '../../shared/interfaces/table-settings';
 import { catchError } from 'rxjs';
-import { Report } from '../../interfaces/report';
+import { Report } from '../../shared/interfaces/report';
 import { CookieService } from 'ngx-cookie-service';
 
 @Component({

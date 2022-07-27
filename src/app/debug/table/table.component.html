@@ -60,10 +60,9 @@
     <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
 
   </div>
-
   <div class="table-responsive" id="metadataTable">
-    <table class="table table-hover" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)">
-      <thead>
+    <table class="table" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)">
+      <thead id="table-header">
       <tr>
         <th>Select</th>
         <th *ngFor="let header of viewSettings.currentView.metadataNames; let i = index" mat-sort-header="{{i}}">{{header}}</th>

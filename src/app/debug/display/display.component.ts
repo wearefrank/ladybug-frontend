@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { MonacoEditorComponent } from '../monaco-editor/monaco-editor.component';
+import { MonacoEditorComponent } from '../../shared/components/monaco-editor/monaco-editor.component';
 // @ts-ignore
 import DiffMatchPatch from 'diff-match-patch';
-import { HttpService } from '../../services/http.service';
-import { DisplayTableComponent } from '../display-table/display-table.component';
-import { HelperService } from '../../services/helper.service';
+import { HttpService } from '../../shared/services/http.service';
+import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
+import { HelperService } from '../../shared/services/helper.service';
 declare var require: any;
 const { Buffer } = require('buffer');
 

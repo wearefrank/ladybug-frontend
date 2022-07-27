@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { Report } from '../../interfaces/report';
-import { HelperService } from '../../services/helper.service';
+import { Report } from '../../shared/interfaces/report';
+import { HelperService } from '../../shared/services/helper.service';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 
 @Component({

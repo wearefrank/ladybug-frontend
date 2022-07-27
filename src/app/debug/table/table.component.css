@@ -1,0 +1,16 @@
+#metadataTable {
+  height: 30%;
+  resize: vertical;
+  overflow: auto
+}
+
+#uploadFileTable {
+  display: none
+}
+
+#table-header {
+  position: sticky;
+  top: -1px;
+  background: white;
+  z-index: 2;
+}

@@ -1,4 +1,4 @@
-<div class="p-3">
+<div class="p-3" id="ladybug-tabs">
   <ul ngbNav #nav="ngbNav" [(activeId)]="active" (navChange)="detectTabChange($event)" class="nav-tabs">
     <li [ngbNavItem]="1" id="debugTab" [destroyOnHide]="false">
       <a ngbNavLink>Debug</a>
@@ -23,7 +23,7 @@
         <ng-container *ngComponentOutlet="tab.value; injector: reportInjector"></ng-container>
       </ng-template>
     </li>
-    <li ngbNavItem [disabled]="true" class="ml-auto">
+    <li ngbNavItem [disabled]="true" class="ml-auto" id="version">
       <a ngbNavLink>v{{appVersion}}</a>
       <ng-template ngbNavContent></ng-template>
     </li>

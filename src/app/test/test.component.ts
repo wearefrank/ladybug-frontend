@@ -6,7 +6,7 @@ import { TestSettingsModalComponent } from '../shared/components/modals/test-set
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
 import { CookieService } from 'ngx-cookie-service';
-import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.component';
+import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 
