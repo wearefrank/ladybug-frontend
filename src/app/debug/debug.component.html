@@ -1,15 +1,16 @@
 <!--Debug panel-->
-<div class="resizable-vertical row pl-3">
-  <div class="w-100">
+<div class="row" style="height: 28vh !important;">
+  <div class="w-100 h-100">
     <app-table (openReportEvent)="addReportToTree($event)" (changeViewEvent)="changeView($event)" (openSelectedCompareReportsEvent)="openSelectedReports($event)"></app-table>
   </div>
 </div>
-<div class="row pl-3" >
-  <div class="resizable-horizontal border-right pr-3" style="min-width: 300px;" id="selectorForTree">
+<div class="border-bottom"></div>
+<div class="row" style="height: 70% !important;">
+  <div class="col-3 resizable-horizontal border-right h-100">
     <app-debug-tree (closeEntireTreeEvent)="closeEntireTree()" (selectReportEvent)="selectReport($event)" [currentView]="currentView"></app-debug-tree>
   </div>
   <!-- Content panel-->
-  <div class="col pr-0 overflow-auto">
+  <div class="col pr-0">
     <app-display (closeReportEvent)="closeReport($event)" [currentView]="currentView" [id]="'debug'"></app-display>
   </div>
 </div>

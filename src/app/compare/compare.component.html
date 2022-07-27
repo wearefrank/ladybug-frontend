@@ -1,2 +1,4 @@
-<app-compare-tree #trees (compareEvent)="showDifference($event)"></app-compare-tree>
-<td-ngx-text-diff #diffComponent></td-ngx-text-diff>
+<div class="col" style="height: 100% !important;">
+  <app-compare-tree #trees (compareEvent)="showDifference($event)"></app-compare-tree>
+  <td-ngx-text-diff #diffComponent></td-ngx-text-diff>
+</div>

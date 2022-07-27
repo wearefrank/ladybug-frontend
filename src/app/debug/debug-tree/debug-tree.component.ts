@@ -19,7 +19,7 @@ export class DebugTreeComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.treeReference.createComponent({ source: [], height: '100%', width: '100%' });
+      this.treeReference.createComponent({ source: [], height: '90%', width: '100%' });
       this.loaded = true;
     });
   }

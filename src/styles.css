@@ -13,15 +13,24 @@ html, body {
 
 #ladybug-tabs {
   display: flex;
+  flex-grow: 0;
   flex-flow: column;
   height: 100%;
 }
 
-table .form-control {
-  padding: 0;
-  border: 0;
-  height: auto;
-  font-size: 0.7rem;
+/*table .form-control {*/
+/*  padding: 0;*/
+/*  border: 0;*/
+/*  height: auto;*/
+/*  font-size: 0.7rem;*/
+/*}*/
+
+.tab-content {
+  height: 100% !important;
+}
+
+.tab-content>.active {
+  height: 100% !important;
 }
 
 .btn {

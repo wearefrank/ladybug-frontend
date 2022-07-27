@@ -1,7 +1,7 @@
 #metadataTable {
-  height: 30%;
-  resize: vertical;
-  overflow: auto
+  /*resize: vertical;*/
+  /*overflow: auto;*/
+  height: 100%;
 }
 
 #uploadFileTable {
@@ -13,4 +13,10 @@
   top: -1px;
   background: white;
   z-index: 2;
+}
+
+#tableContent {
+  width: 100% !important;
+  flex-flow: column;
+  height: 100%;
 }

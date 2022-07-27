@@ -1,4 +1,4 @@
-<div class="row" *ngIf="tableSettings.tableLoaded">
+<div class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
   <div class="row">
     <app-button [icon]="'fa fa-undo'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openModal()"></app-button>
@@ -31,7 +31,7 @@
       </div>
     </form>
 
-    <div class="col my-2 mx-1 px-2">
+    <div class="col-2 my-2 mx-1 px-2">
       <select class="form-control" (change)="changeView($event)">
         <option *ngFor="let view of getViewNames()" [selected]="viewSettings.defaultView === view" value="{{view}}">{{view}}</option>
       </select>
@@ -63,27 +63,27 @@
   <div class="table-responsive" id="metadataTable">
     <table class="table" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)">
       <thead id="table-header">
-      <tr>
-        <th>Select</th>
-        <th *ngFor="let header of viewSettings.currentView.metadataNames; let i = index" mat-sort-header="{{i}}">{{header}}</th>
-      </tr>
-      <tr id="filterRow" *ngIf="tableSettings.showFilter">
-        <th></th>
-        <th *ngFor="let header of viewSettings.currentView.metadataNames">
-          <div class="input-group">
-            <input type="text" id="filter" class="form-control" placeholder="Filter" (keydown.enter)="$event.preventDefault();" (keyup)="changeFilter($event, header)">
-          </div>
-        </th>
-      </tr>
+        <tr>
+          <th>Select</th>
+          <th *ngFor="let header of viewSettings.currentView.metadataNames; let i = index" mat-sort-header="{{i}}">{{header}}</th>
+        </tr>
+        <tr id="filterRow" *ngIf="tableSettings.showFilter">
+          <th></th>
+          <th *ngFor="let header of viewSettings.currentView.metadataNames">
+            <div class="input-group">
+              <input type="text" id="filter" class="form-control" placeholder="Filter" (keydown.enter)="$event.preventDefault();" (keyup)="changeFilter($event, header)">
+            </div>
+          </th>
+        </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount) | filter:tableSettings.filterValue : tableSettings.filterHeader" style="background-color: {{getStatusColor(row)}}">
-        <td>
-          <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)">
-        </td>
-        <td *ngFor="let metadataValue of row | enumToArray" (click)="openReport(row.storageId)">{{metadataValue}}</td>
-<!--        <td> {{ getDate(row.endTime) | date:'dd/MM/yyyy - HH:mm:ss.SSS' }}</td>-->
-      </tr>
+        <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount) | filter:tableSettings.filterValue : tableSettings.filterHeader" style="background-color: {{getStatusColor(row)}}">
+          <td>
+            <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)">
+          </td>
+          <td *ngFor="let metadataValue of row | enumToArray" (click)="openReport(row.storageId)">{{metadataValue}}</td>
+  <!--        <td> {{ getDate(row.endTime) | date:'dd/MM/yyyy - HH:mm:ss.SSS' }}</td>-->
+        </tr>
       </tbody>
     </table>
   </div>
