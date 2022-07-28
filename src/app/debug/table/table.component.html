@@ -27,7 +27,7 @@
     <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();" (keyup)="changeTableLimit($event)">
       <div class="input-group-append">
           <input type="number" id="displayAmount" class="form-control px-1" placeholder="{{tableSettings.displayAmount}}">
-        <div class="input-group-text">/</div>
+        <div class="input-group-text">/{{metadataCount}}</div>
       </div>
     </form>
 

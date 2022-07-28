@@ -1,4 +1,4 @@
-<div  class="h-100" [hidden]="!(loaded && treeReference.getItems().length > 0)">
+<div class="h-100 pl-2" [hidden]="!(loaded && treeReference.getItems().length > 0)">
   <div class="row" id="treeButtons" *ngIf="treeReference">
     <app-button [icon]="'fa fa-expand'" [title]="'Expand All'" (click)="expandAll()"></app-button>
     <app-button [icon]="'fa fa-compress'" [title]="'Collapse All'" (click)="collapseAll()"></app-button>
@@ -14,8 +14,6 @@
         </div>
       </div>
   </div>
-  <div class="dropdown-divider"></div>
-
   <jqxTree id="debug-tree" #treeReference (onSelect)="selectReport($event)" [auto-create]="false"></jqxTree>
 </div>
 

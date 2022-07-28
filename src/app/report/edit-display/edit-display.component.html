@@ -8,23 +8,25 @@
               (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
   <app-button *ngIf="report.encoding === 'Base64'" [text]="'Base64'" [title]="'Convert to Base64'" (click)="changeEncoding($event)"></app-button>
 
-  <div ngbDropdown title="Download">
-    <button class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
-      <i class="fa fa-download px-2"></i><span class="caret"></span>
-    </button>
-    <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
-      <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
-      <button ngbDropdownItem (click)="downloadReport(false, true)">XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
-      <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
+  <div class="row my-2">
+    <div class="col-2 pl-1" ngbDropdown title="Download">
+      <button class="btn btn-info" id="dropdownDownloadDisplay" ngbDropdownToggle>
+        <i class="fa fa-download px-2"></i><span class="caret"></span>
+      </button>
+      <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
+        <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
+        <button ngbDropdownItem (click)="downloadReport(false, true)">XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
+        <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
+      </div>
     </div>
-  </div>
 
-  <div class="form-group col-md-8" *ngIf="report.stub">
-    <select class="form-control" (change)="selectStubStrategy($event)">
-      <option [selected]="report.stub === -1">Stub Strategy: Follow report strategy</option>
-      <option [selected]="report.stub === 1">Stub Strategy: Yes</option>
-      <option [selected]="report.stub === 0">Stub Strategy: No</option>
-    </select>
+    <div class="form-group col-10" *ngIf="report.stub">
+      <select class="form-control" (change)="selectStubStrategy($event)">
+        <option [selected]="report.stub === -1">Stub Strategy: Follow report strategy</option>
+        <option [selected]="report.stub === 1">Stub Strategy: Yes</option>
+        <option [selected]="report.stub === 0">Stub Strategy: No</option>
+      </select>
+    </div>
   </div>
 </div>
 

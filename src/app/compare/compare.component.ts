@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Injectable, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Injectable, ViewChild } from '@angular/core';
 import { NgxTextDiffComponent } from 'ngx-text-diff';
 import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 
@@ -48,5 +48,11 @@ export class CompareComponent implements AfterViewInit {
     this.diffComponent.left = leftSide;
     this.diffComponent.right = rightSide;
     this.diffComponent.renderDiffs();
+
+    setTimeout(() => {
+      document
+        .querySelector('.td-wrapper')
+        ?.setAttribute('style', 'background: linear-gradient(#e9ecef, #e9ecef) no-repeat center/2px 100%;');
+    });
   }
 }

@@ -1,8 +1,8 @@
-<div class="row resizable-vertical h-0">
-  <div class="col-6 p-0" style="height: 200px">
+<div class="row h-100" id="tree-container">
+  <div class="col-6 p-2 h-100">
     <jqxTree #leftTreeReference (onItemClick)="nodeSelected($event, true)" [auto-create]="false"></jqxTree>
   </div>
-  <div class="col-6 p-0" style="height: 200px">
+  <div class="col-6 p-2 h-100">
     <jqxTree #rightTreeReference (onItemClick)="nodeSelected($event, false)" [auto-create]="false"></jqxTree>
   </div>
 </div>

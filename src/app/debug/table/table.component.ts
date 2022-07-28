@@ -15,6 +15,7 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class TableComponent implements OnInit {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
+  metadataCount = 0;
   viewSettings: any = {
     defaultView: '',
     views: [],
@@ -85,6 +86,8 @@ export class TableComponent implements OnInit {
           catchError(this.httpService.handleError());
         },
       });
+
+    this.loadMetadataCount();
   }
 
   getViewNames() {
@@ -110,6 +113,12 @@ export class TableComponent implements OnInit {
     });
 
     this.loadReportInProgressSettings();
+  }
+
+  loadMetadataCount() {
+    this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: any) => {
+      this.metadataCount = count;
+    });
   }
 
   loadReportInProgressSettings() {
@@ -188,7 +197,7 @@ export class TableComponent implements OnInit {
 
   changeTableLimit(event: any): void {
     this.tableSettings.displayAmount = event.target.value === '' ? 0 : event.target.value;
-    this.loadData();
+    this.retrieveRecords();
   }
 
   refresh(): void {
@@ -196,7 +205,8 @@ export class TableComponent implements OnInit {
     this.tableSettings.reportMetadata = [];
     this.tableSettings.tableLoaded = false;
     this.tableSettings.displayAmount = 10;
-    this.loadData();
+    this.viewSettings.defaultView = this.viewSettings.currentView;
+    this.retrieveRecords();
   }
 
   openReport(storageId: string): void {

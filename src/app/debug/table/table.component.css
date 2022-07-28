@@ -1,6 +1,6 @@
 #metadataTable {
-  /*resize: vertical;*/
-  /*overflow: auto;*/
+  resize: vertical;
+  overflow: auto;
   height: 100%;
 }
 

@@ -11,6 +11,7 @@ export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   toastComponent!: ToastComponent;
   apiReport: string = 'api/report/'; // Keep this since sonar is crying about it, TODO: revert this
+  apiMetadata: string = 'api/metadata/';
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
 
@@ -40,13 +41,17 @@ export class HttpService {
   }
 
   getMetadataReports(limit: number, regexFilter: string, metadataNames: string[], storage: string): Observable<any> {
-    return this.http.get('api/metadata/' + storage + '/', {
+    return this.http.get(this.apiMetadata + storage + '/', {
       params: {
         limit: limit,
         filter: regexFilter,
         metadataNames: metadataNames,
       },
     });
+  }
+
+  getMetadataCount(storage: string): Observable<any> {
+    return this.http.get(this.apiMetadata + storage + '/count').pipe(catchError(this.handleError()));
   }
 
   getLatestReports(amount: number, storage: string): Observable<any> {
@@ -71,7 +76,7 @@ export class HttpService {
   }
 
   getTestReports(metadataNames: string[], storage: string): Observable<any> {
-    return this.http.get<any>('api/metadata/' + storage + '/', {
+    return this.http.get<any>(this.apiMetadata + storage + '/', {
       params: { metadataNames: metadataNames },
     });
   }

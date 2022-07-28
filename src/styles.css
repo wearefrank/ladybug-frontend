@@ -18,12 +18,6 @@ html, body {
   height: 100%;
 }
 
-/*table .form-control {*/
-/*  padding: 0;*/
-/*  border: 0;*/
-/*  height: auto;*/
-/*  font-size: 0.7rem;*/
-/*}*/
 
 .tab-content {
   height: 100% !important;
@@ -118,4 +112,8 @@ html, body {
 
 .jqx-tree-item-hover {
   background-color: #23c6c8 !important;
+}
+
+.monaco-editor {
+  position: absolute !important;
 }
