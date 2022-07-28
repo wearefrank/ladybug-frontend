@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
-import { Checkpoint } from '../interfaces/checkpoint';
 import { Report } from '../interfaces/report';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HelperService {
   THROWABLE_ENCODER = 'printStackTrace()';
-  constructor() {}
+  constructor(private cookieService: CookieService) {}
 
   getImage(type: number, encoding: string, even: boolean): string {
     let img = 'assets/tree-icons/';
@@ -99,14 +99,15 @@ export class HelperService {
     let index: number = 0;
     let parentMap: any[] = [];
 
-    let rootNode = this.createNode(report, '', index++, -1);
+    let showingId = this.getCheckpointOrStorageId(report, true);
+    let rootNode = this.createNode(report, showingId, '', index++, -1);
     this.createChildNodes(rootNode, index, parentMap);
     return rootNode;
   }
 
-  createNode(report: Report, icon: string, index: number, level: number) {
+  createNode(report: Report, showingId: string, icon: string, index: number, level: number) {
     return {
-      label: report.name,
+      label: showingId + report.name,
       icon: icon,
       value: report,
       expanded: true,
@@ -117,11 +118,22 @@ export class HelperService {
     };
   }
 
+  getCheckpointOrStorageId(checkpoint: any, root: boolean): string {
+    if (root && this.cookieService.get('showReportStorageIds')) {
+      return this.cookieService.get('showReportStorageIds') === 'true' ? '[' + checkpoint.storageId + '] ' : '';
+    } else if (this.cookieService.get('showCheckpointIds')) {
+      return this.cookieService.get('showCheckpointIds') === 'true' ? checkpoint.index + '. ' : '';
+    } else {
+      return '';
+    }
+  }
+
   createChildNodes(rootNode: any, index: number, parentMap: any[]) {
     let previousNode = rootNode;
     for (let checkpoint of rootNode.value.checkpoints) {
       const img: string = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0);
-      const currentNode: any = this.createNode(checkpoint, img, index++, checkpoint.level);
+      let showingId = this.getCheckpointOrStorageId(checkpoint, false);
+      const currentNode: any = this.createNode(checkpoint, showingId, img, index++, checkpoint.level);
       this.createHierarchy(previousNode, currentNode, parentMap);
       previousNode = currentNode;
     }
