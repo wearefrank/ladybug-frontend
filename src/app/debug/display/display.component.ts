@@ -59,21 +59,21 @@ export class DisplayComponent {
   }
 
   changeEncoding(button: any) {
-    let message: string = '';
+    let message: string;
     if (button.target.innerHTML.includes('Base64')) {
       message = this.report.message;
-      this.report.showConverted = false;
-
-      button.target.title = 'Convert to UTF-8';
-      button.target.innerHTML = 'UTF-8';
+      this.setButtonHtml(button, 'UTF-8', false);
     } else {
       message = this.convertMessage(this.report.message, 'base64', 'utf8');
-      this.report.showConverted = true;
-
-      button.target.title = 'Convert to Base64';
-      button.target.innerHTML = 'Base64';
+      this.setButtonHtml(button, 'Base64', true);
     }
     this.loadMonacoCode(message);
+  }
+
+  setButtonHtml(button: any, type: string, showConverted: boolean) {
+    this.report.showConverted = showConverted;
+    button.target.title = 'Convert to ' + type;
+    button.target.innerHTML = type;
   }
 
   copyReport(): void {
@@ -85,7 +85,7 @@ export class DisplayComponent {
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
     let queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
-    this.helperService.download(queryString + '&', this.currentView.storageName, exportBinary, exportXML);
+    this.helperService.download('id=' + queryString + '&', this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
   }
 }

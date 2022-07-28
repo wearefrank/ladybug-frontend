@@ -205,8 +205,7 @@ export class TableComponent implements OnInit {
     this.tableSettings.reportMetadata = [];
     this.tableSettings.tableLoaded = false;
     this.tableSettings.displayAmount = 10;
-    this.viewSettings.defaultView = this.viewSettings.currentView;
-    this.retrieveRecords();
+    this.loadData();
   }
 
   openReport(storageId: string): void {

@@ -9,6 +9,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
+import { HelperService } from '../shared/services/helper.service';
 
 @Component({
   selector: 'app-test',
@@ -32,14 +33,17 @@ export class TestComponent implements OnInit {
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(TestFolderTreeComponent) testFolderTreeComponent!: TestFolderTreeComponent;
 
-  constructor(private httpService: HttpService, private cookieService: CookieService) {}
+  constructor(
+    private httpService: HttpService,
+    private cookieService: CookieService,
+    private helperService: HelperService
+  ) {}
 
   openCloneModal(): void {
-    let selectedReports: any[] = this.reports.filter((report) => report.checked);
-    if (selectedReports.length !== 1) {
+    if (this.getSelectedReports().length !== 1) {
       this.toastComponent.addAlert({ type: 'warning', message: 'Make sure exactly one report is selected at a time' });
     } else {
-      this.cloneModal.open(selectedReports[0]);
+      this.cloneModal.open(this.getSelectedReports()[0]);
     }
   }
 
@@ -106,11 +110,7 @@ export class TestComponent implements OnInit {
   }
 
   runSelected(): void {
-    this.reports.forEach((report) => {
-      if (report.checked) {
-        this.run(report.storageId);
-      }
-    });
+    this.getSelectedReports().forEach((report) => this.run(report.storageId));
   }
 
   removeReranReportIfExists(id: string) {
@@ -167,19 +167,26 @@ export class TestComponent implements OnInit {
   }
 
   deleteSelected(): void {
-    this.reports
-      .filter((report) => report.checked)
-      .forEach((report) => {
-        this.httpService.deleteReport(report.storageId, this.currentView.storageName).subscribe();
-        this.reports.splice(this.reports.indexOf(report), 1);
-      });
+    this.getSelectedReports().forEach((report) => {
+      this.httpService.deleteReport(report.storageId, this.currentView.storageName).subscribe();
+      this.reports.splice(this.reports.indexOf(report), 1);
+    });
+  }
+
+  getSelectedReports() {
+    return this.reports.filter((report) => report.checked);
   }
 
   downloadSelected(): void {
-    const queryString: string = this.reports
-      .filter((report) => report.checked)
-      .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '?');
-    window.open('api/report/download/' + this.currentView.storageName + '/true/false' + queryString.slice(0, -1));
+    if (this.getSelectedReports().length > 0) {
+      const queryString: string = this.getSelectedReports().reduce(
+        (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
+        '?'
+      );
+      this.helperService.download(queryString, this.currentView.storageName, true, false);
+    } else {
+      this.toastComponent.addAlert({ type: 'warning', message: 'No Report Selected!' });
+    }
   }
 
   uploadReport(event: any): void {
@@ -230,12 +237,7 @@ export class TestComponent implements OnInit {
 
   getIdsToBeCopied(): string[] {
     let copiedIds: string[] = [];
-    this.reports.forEach((report) => {
-      if (report.checked) {
-        copiedIds.push(report.storageId);
-      }
-    });
-
+    this.getSelectedReports().forEach((report) => copiedIds.push(report.storageId));
     return copiedIds;
   }
 
@@ -253,14 +255,13 @@ export class TestComponent implements OnInit {
   }
 
   moveTestReportToFolder(): void {
-    let selectedReports = this.reports.filter((report) => report.checked);
-    if (selectedReports.length > 0) {
+    if (this.getSelectedReports().length > 0) {
       this.currentFilter = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
       if (!this.currentFilter.startsWith('/')) {
         this.currentFilter = '/' + this.currentFilter;
       }
       this.testFolderTreeComponent.addFolder(this.currentFilter);
-      this.changeMovedTestReportNames(selectedReports);
+      this.changeMovedTestReportNames(this.getSelectedReports());
     } else {
       this.toastComponent.addAlert({ type: 'warning', message: 'No Report Selected!' });
     }
