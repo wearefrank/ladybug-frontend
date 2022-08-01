@@ -13,6 +13,8 @@ export class MonacoEditorComponent {
   @ViewChild('container') editorContainer!: ElementRef;
   codeEditorInstance!: monaco.editor.IStandaloneCodeEditor;
   loading = false;
+  height = 100;
+  width = 100;
 
   constructor() {}
 
@@ -72,6 +74,11 @@ export class MonacoEditorComponent {
       wordWrap: 'wordWrapColumn',
       wordWrapColumn: 120,
     });
+
+    let element = this.codeEditorInstance.getDomNode();
+    this.width = Number.parseInt(element?.style.width!);
+    this.height = this.codeEditorInstance.getModel()?.getLineCount()! * 15;
+    this.codeEditorInstance.layout({ width: this.width, height: this.height });
   }
 
   enableEdit(): void {

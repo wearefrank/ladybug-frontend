@@ -1,16 +1,18 @@
 <!--Debug panel-->
-<div class="row" style="height: 28vh !important;">
-  <div class="w-100 h-100">
-    <app-table (openReportEvent)="addReportToTree($event)" (changeViewEvent)="changeView($event)" (openSelectedCompareReportsEvent)="openSelectedReports($event)"></app-table>
+<div class="box" style="display: flex; flex-flow: column; height: 100%; overflow: hidden">
+  <div class="row" style="resize: vertical; flex: 0 1 100px">
+    <div class="w-100 h-100">
+      <app-table (openReportEvent)="addReportToTree($event)" (changeViewEvent)="changeView($event)" (openSelectedCompareReportsEvent)="openSelectedReports($event)"></app-table>
+    </div>
   </div>
-</div>
-<div class="border-bottom"></div>
-<div class="row" style="height: 70% !important;">
-  <div class="resizable-horizontal border-right w-25 h-100">
-    <app-debug-tree (closeEntireTreeEvent)="closeEntireTree()" (selectReportEvent)="selectReport($event)" [currentView]="currentView"></app-debug-tree>
-  </div>
-  <!-- Content panel-->
-  <div class="col pr-0">
-    <app-display (closeReportEvent)="closeReport($event)" [currentView]="currentView" [id]="'debug'"></app-display>
+  <div class="border-bottom"></div>
+  <div class="row mb-0 pb-0" style="flex: 1 1 auto; overflow-x: hidden; overflow-y: auto">
+    <div class="border-right w-25">
+      <app-debug-tree (closeEntireTreeEvent)="closeEntireTree()" (selectReportEvent)="selectReport($event)" [currentView]="currentView"></app-debug-tree>
+    </div>
+    <!-- Content panel-->
+    <div class="col pr-0">
+      <app-display (closeReportEvent)="closeReport($event)" [currentView]="currentView" [id]="'debug'"></app-display>
+    </div>
   </div>
 </div>

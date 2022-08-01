@@ -1,4 +1,4 @@
 <div [hidden]="!loading">
-  <mat-spinner mode="indeterminate"></mat-spinner>
+  <mat-spinner [mode]="'indeterminate'" [diameter]="30"></mat-spinner>
 </div>
-<div #container style="height: 150px"></div>
+<div style="height: {{height}}px" #container></div>

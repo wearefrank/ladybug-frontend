@@ -16,8 +16,12 @@ html, body {
   flex-grow: 0;
   flex-flow: column;
   height: 100%;
+  overflow: hidden;
 }
 
+#testReportTable button {
+  margin-top: 0 !important;
+}
 
 .tab-content {
   height: 100% !important;
