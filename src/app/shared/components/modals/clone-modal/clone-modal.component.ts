@@ -13,6 +13,9 @@ export class CloneModalComponent {
   @ViewChild('modal') modal!: any;
   @Output() cloneReportEvent = new EventEmitter<any>();
   report: Report = {} as Report;
+  currentView = {
+    storageName: 'Test',
+  };
   variableForm = new FormGroup({
     variables: new FormControl(''),
     message: new FormControl(''),
@@ -21,8 +24,7 @@ export class CloneModalComponent {
   constructor(private modalService: NgbModal, private httpService: HttpService) {}
 
   open(selectedReport: any) {
-    this.httpService.getReport(selectedReport.storageId, 'Test').subscribe((response) => {
-      // TODO: storage is hardcoded for now
+    this.httpService.getReport(selectedReport.storageId, this.currentView.storageName).subscribe((response) => {
       this.report = response.report;
       this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
       this.modalService.open(this.modal);
