@@ -14,7 +14,6 @@ export class TableSettingsModalComponent {
   @ViewChild('modal') modal!: ElementRef;
   settingsForm = new FormGroup({
     generatorEnabled: new FormControl('Enabled'),
-    regexFilter: new FormControl('.*'), // Report filter
     transformationEnabled: new FormControl(true),
     transformation: new FormControl(''),
   });
@@ -48,11 +47,12 @@ export class TableSettingsModalComponent {
   saveSettings(): void {
     const form: any = this.settingsForm.value;
     this.cookieService.set('generatorEnabled', form.generatorEnabled);
-    this.cookieService.set('regexFilter', form.regexFilter);
     this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
     this.httpService.postTransformation(form.transformation).subscribe();
+
     let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled' };
     this.httpService.postSettings(data).subscribe();
+
     this.toastComponent.addAlert({ type: 'warning', message: 'Reopen report to see updated XML' });
     this.saving = true;
   }
@@ -90,9 +90,5 @@ export class TableSettingsModalComponent {
     this.httpService.getTransformation(false).subscribe((response) => {
       this.settingsForm.get('transformation')?.setValue(response.transformation);
     });
-  }
-
-  getRegexFilter(): string {
-    return this.settingsForm.get('regexFilter')?.value;
   }
 }

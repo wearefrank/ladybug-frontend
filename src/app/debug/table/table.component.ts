@@ -23,12 +23,12 @@ export class TableComponent implements OnInit {
   };
 
   tableSettings: TableSettings = {
-    tableId: '', // this._id might not be defined yet
     reportMetadata: [],
+    metadataHeaders: [],
     tableLoaded: false,
     displayAmount: this.DEFAULT_DISPLAY_AMOUNT,
     showFilter: false,
-    filterValue: '',
+    filterValue: '.*',
     filterHeader: '',
     reportsInProgress: 0,
     estimatedMemoryUsage: '',
@@ -40,14 +40,6 @@ export class TableComponent implements OnInit {
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
-  @Input() // Needed to make a distinction between the two halves in compare component
-  get id() {
-    return this._id;
-  }
-  set id(id: string) {
-    this._id = id;
-  }
-  private _id: string = 'debug';
 
   constructor(
     private httpService: HttpService,
@@ -61,15 +53,11 @@ export class TableComponent implements OnInit {
   }
 
   retrieveRecords() {
-    let regexFilter = '.*';
-    if (this.tableSettingsModal) {
-      regexFilter = this.tableSettingsModal.getRegexFilter();
-    }
-
     this.httpService
       .getMetadataReports(
         this.tableSettings.displayAmount,
-        regexFilter,
+        this.tableSettings.filterValue,
+        this.tableSettings.filterHeader,
         this.viewSettings.currentView.metadataNames,
         this.viewSettings.currentView.storageName
       )
@@ -88,6 +76,16 @@ export class TableComponent implements OnInit {
       });
 
     this.loadMetadataCount();
+  }
+
+  getUserHelp() {
+    this.httpService
+      .getUserHelp(this.viewSettings.currentView.storageName, this.viewSettings.currentView.metadataNames)
+      .subscribe({
+        next: (response) => {
+          this.tableSettings.metadataHeaders = response;
+        },
+      });
   }
 
   getViewNames() {
@@ -110,6 +108,7 @@ export class TableComponent implements OnInit {
       this.changeViewEvent.emit(this.viewSettings.currentView);
 
       this.retrieveRecords();
+      this.getUserHelp();
     });
 
     this.loadReportInProgressSettings();
@@ -147,6 +146,7 @@ export class TableComponent implements OnInit {
   }
 
   getStatusColor(metadata: any): string {
+    // TODO: Find a way to do this dynamically
     if (this.viewSettings.currentView.metadataNames.includes('status')) {
       return metadata.status == 'Success' ? '#c3e6cb' : '#f79c9c';
     }
@@ -191,8 +191,10 @@ export class TableComponent implements OnInit {
   }
 
   changeFilter(event: any, header: string): void {
-    this.tableSettings.filterHeader = header;
-    this.tableSettings.filterValue = event.target.value;
+    const filterValue = event.target.value.replace(/\s/g, '');
+    this.tableSettings.filterValue = filterValue === '' ? '.*' : filterValue;
+    this.tableSettings.filterHeader = filterValue === '' ? '' : header;
+    this.retrieveRecords();
   }
 
   changeTableLimit(event: any): void {
@@ -212,7 +214,6 @@ export class TableComponent implements OnInit {
     this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
-      report.id = this.id;
       this.openReportEvent.next(report);
     });
   }
@@ -224,7 +225,6 @@ export class TableComponent implements OnInit {
   openLatestReports(amount: number): void {
     this.httpService.getLatestReports(amount, this.viewSettings.currentView.storageName).subscribe((data) => {
       data.forEach((report: any) => {
-        report.id = this.id;
         this.openReportEvent.next(report);
       });
     });
@@ -232,7 +232,6 @@ export class TableComponent implements OnInit {
 
   openReportInProgress(index: number) {
     this.httpService.getReportInProgress(index).subscribe((report) => {
-      report.id = this.id;
       this.openReportEvent.next(report);
     });
   }
@@ -270,7 +269,6 @@ export class TableComponent implements OnInit {
   showUploadedReports(formData: any) {
     this.httpService.uploadReport(formData).subscribe((data) => {
       for (let report of data) {
-        report.id = this.id;
         this.openReportEvent.next(report);
       }
     });

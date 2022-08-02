@@ -12,7 +12,6 @@ import { ButtonComponent } from './shared/components/button/button.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
-import { FilterPipe } from './shared/pipes/filter.pipe';
 import { MonacoEditorComponent } from './shared/components/monaco-editor/monaco-editor.component';
 import { MatSortModule } from '@angular/material/sort';
 import { ReportComponent } from './report/report.component';
@@ -41,7 +40,6 @@ import { DebugTreeComponent } from './debug/debug-tree/debug-tree.component';
     TableComponent,
     DisplayComponent,
     ButtonComponent,
-    FilterPipe,
     MonacoEditorComponent,
     ReportComponent,
     ToastComponent,

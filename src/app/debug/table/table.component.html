@@ -71,13 +71,13 @@
           <th></th>
           <th *ngFor="let header of viewSettings.currentView.metadataNames">
             <div class="input-group">
-              <input type="text" id="filter" class="form-control" placeholder="Filter" (keydown.enter)="$event.preventDefault();" (keyup)="changeFilter($event, header)">
+              <input type="text" id="filter"  title="{{tableSettings.metadataHeaders[header]}}" class="form-control" placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header)">
             </div>
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount) | filter:tableSettings.filterValue : tableSettings.filterHeader" style="background-color: {{getStatusColor(row)}}">
+        <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount)" style="background-color: {{getStatusColor(row)}}">
           <td>
             <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)">
           </td>

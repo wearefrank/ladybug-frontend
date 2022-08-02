@@ -40,11 +40,26 @@ export class HttpService {
     return this.http.get('api/testtool/views').pipe(catchError(this.handleError()));
   }
 
-  getMetadataReports(limit: number, regexFilter: string, metadataNames: string[], storage: string): Observable<any> {
+  getMetadataReports(
+    limit: number,
+    regexFilter: string,
+    filterHeader: string,
+    metadataNames: string[],
+    storage: string
+  ): Observable<any> {
     return this.http.get(this.apiMetadata + storage + '/', {
       params: {
         limit: limit,
+        filterHeader: filterHeader,
         filter: regexFilter,
+        metadataNames: metadataNames,
+      },
+    });
+  }
+
+  getUserHelp(storage: string, metadataNames: string[]): Observable<any> {
+    return this.http.get<any>(this.apiMetadata + storage + '/userHelp', {
+      params: {
         metadataNames: metadataNames,
       },
     });

@@ -1,6 +1,6 @@
 export interface TableSettings {
-  tableId: string;
   reportMetadata: any[];
+  metadataHeaders: any[];
   displayAmount: number;
   showFilter: boolean;
   filterValue: string;
