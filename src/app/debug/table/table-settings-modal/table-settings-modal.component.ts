@@ -1,9 +1,9 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { HttpService } from '../../../services/http.service';
+import { HttpService } from '../../../shared/services/http.service';
 import { CookieService } from 'ngx-cookie-service';
-import { ToastComponent } from '../../toast/toast.component';
+import { ToastComponent } from '../../../shared/components/toast/toast.component';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -41,9 +41,6 @@ export class TableSettingsModalComponent {
     }, 500);
   }
 
-  /**
-   * Save the settings of the table
-   */
   saveSettings(): void {
     const form: any = this.settingsForm.value;
     this.cookieService.set('generatorEnabled', form.generatorEnabled);

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Report } from '../../../interfaces/report';
-import { HttpService } from '../../../services/http.service';
+import { Report } from '../../shared/interfaces/report';
+import { HttpService } from '../../shared/services/http.service';
 import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({

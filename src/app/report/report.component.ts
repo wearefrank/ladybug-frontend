@@ -20,9 +20,6 @@ export class ReportComponent implements AfterViewInit {
 
   constructor(public reportData: ReportData, private helperService: HelperService) {}
 
-  /**
-   Add a new report and notify the tree of the change
-   */
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.createTree(<Report>(<unknown>this.reportData));

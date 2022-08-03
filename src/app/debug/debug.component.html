@@ -1,4 +1,3 @@
-<!--Debug panel-->
 <div class="box" style="display: flex; flex-flow: column; height: 100%; overflow: hidden">
   <div class="row" style="resize: vertical; flex: 0 1 100px">
     <div class="w-100 h-100">
@@ -10,7 +9,6 @@
     <div class="border-right w-25">
       <app-debug-tree (closeEntireTreeEvent)="closeEntireTree()" (selectReportEvent)="selectReport($event)" [currentView]="currentView"></app-debug-tree>
     </div>
-    <!-- Content panel-->
     <div class="col pr-0">
       <app-display (closeReportEvent)="closeReport($event)" [currentView]="currentView" [id]="'debug'"></app-display>
     </div>

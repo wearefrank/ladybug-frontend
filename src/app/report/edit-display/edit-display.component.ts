@@ -6,8 +6,6 @@ import { HttpService } from '../../shared/services/http.service';
 // @ts-ignore
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
-declare var require: any;
-const { Buffer } = require('buffer');
 
 @Component({
   selector: 'app-edit-display',
@@ -37,47 +35,20 @@ export class EditDisplayComponent {
 
   showReport(report: any): void {
     this.report = report;
-    if (report.xml) {
-      this.loadMonacoCode(this.report.xml);
-    } else {
-      let message: string = this.report.message === null ? '' : this.report.message;
-      if (this.report.encoding == 'Base64') {
-        this.report.showConverted = true;
-        message = this.convertMessage(message, 'base64', 'utf8');
-      }
-      this.loadMonacoCode(message);
-    }
+    report.xml ? this.loadMonacoCode(report.xml) : this.loadMonacoCode(this.helperService.convertMessage(report));
     this.rerunResult = '';
     this.disableEditing(); // For switching from editing current report to another
   }
 
-  loadMonacoCode(message: string) {
+  loadMonacoCode(message: string): void {
     this.monacoEditorComponent?.loadMonaco(message);
   }
 
-  changeEncoding(button: any) {
-    let message: string;
-    if (button.target.innerHTML.includes('Base64')) {
-      message = this.report.message;
-      this.setButtonHtml(button, 'UTF-8', false);
-    } else {
-      message = this.convertMessage(this.report.message, 'base64', 'utf8');
-      this.setButtonHtml(button, 'Base64', true);
-    }
-    this.loadMonacoCode(message);
+  changeEncoding(button: any): void {
+    this.loadMonacoCode(this.helperService.changeEncoding(this.report, button));
   }
 
-  setButtonHtml(button: any, type: string, showConverted: boolean) {
-    this.report.showConverted = showConverted;
-    button.target.title = 'Convert to ' + type;
-    button.target.innerHTML = type;
-  }
-
-  convertMessage(message: string, from: string, to: string) {
-    return Buffer.from(message, from).toString(to);
-  }
-
-  rerunReport() {
+  rerunReport(): void {
     let reportId: string = this.report.storageId;
     this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
       let element = document.querySelector('#showRerunResult')!;
@@ -194,7 +165,7 @@ export class EditDisplayComponent {
 
   saveChanges(saveStubStrategy: boolean, stubStrategy: string) {
     let checkpointId: string = '';
-    let storageId: string = '';
+    let storageId: string;
     if (!this.report.xml) {
       storageId = this.report.uid.split('#')[0];
       checkpointId = this.report.uid.split('#')[1];

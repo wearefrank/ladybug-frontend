@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { HelperService } from '../../shared/services/helper.service';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
@@ -19,12 +19,12 @@ export class CompareTreeComponent {
     let rightReport: any;
     if (left) {
       leftReport = data.owner.selectedItem;
-      let index = this.leftTreeReference.getItems().findIndex((item: any) => item.id == leftReport.id);
+      const index = this.leftTreeReference.getItems().findIndex((item: any) => item.id == leftReport.id);
       rightReport = this.rightTreeReference.getItems()[index];
       this.rightTreeReference.selectItem(rightReport);
     } else {
       rightReport = data.owner.selectedItem;
-      let index = this.rightTreeReference.getItems().findIndex((item: any) => item.id == rightReport.id);
+      const index = this.rightTreeReference.getItems().findIndex((item: any) => item.id == rightReport.id);
       leftReport = this.leftTreeReference.getItems()[index];
       this.leftTreeReference.selectItem(leftReport);
     }
@@ -33,9 +33,9 @@ export class CompareTreeComponent {
   }
 
   createTrees(leftReport: Report, rightReport: Report) {
-    let leftTree = this.helperService.convertReportToJqxTree(leftReport);
-    let rightTree = this.helperService.convertReportToJqxTree(rightReport);
-    let both = this.iterateToMakeLabelsRed(leftTree, rightTree);
+    const leftTree = this.helperService.convertReportToJqxTree(leftReport);
+    const rightTree = this.helperService.convertReportToJqxTree(rightReport);
+    const both = this.iterateToMakeLabelsRed(leftTree, rightTree);
 
     this.leftTreeReference.createComponent({ height: '100%', source: [both.left] });
     this.rightTreeReference.createComponent({ height: '100%', source: [both.right] });
@@ -63,7 +63,7 @@ export class CompareTreeComponent {
 
   iterateToMakeLabelsRed(leftItem: any, rightItem: any) {
     let result = this.checkIfLabelsDifferent(leftItem, rightItem);
-    let shortestTreeLength = Math.min(leftItem.items.length, rightItem.items.length);
+    const shortestTreeLength = Math.min(leftItem.items.length, rightItem.items.length);
     this.makeRestOfTreesRed(shortestTreeLength, rightItem.items, leftItem.items);
 
     for (let i = 0; i < shortestTreeLength; i++) {

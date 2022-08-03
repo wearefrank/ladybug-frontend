@@ -1,8 +1,8 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { HttpService } from '../shared/services/http.service';
-import { CloneModalComponent } from '../shared/components/modals/clone-modal/clone-modal.component';
-import { TestSettingsModalComponent } from '../shared/components/modals/test-settings-modal/test-settings-modal.component';
+import { CloneModalComponent } from './clone-modal/clone-modal.component';
+import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
 import { CookieService } from 'ngx-cookie-service';
@@ -113,7 +113,7 @@ export class TestComponent implements OnInit {
     this.getSelectedReports().forEach((report) => this.run(report.storageId));
   }
 
-  removeReranReportIfExists(id: string) {
+  removeReranReportIfExists(id: string): void {
     this.reranReports = this.reranReports.filter((report) => report.id != id);
   }
 
@@ -133,7 +133,7 @@ export class TestComponent implements OnInit {
     };
   }
 
-  createResultString(resultReport: TestResult) {
+  createResultString(resultReport: TestResult): string {
     return (
       '(' +
       resultReport.previousTime +
@@ -147,7 +147,7 @@ export class TestComponent implements OnInit {
     );
   }
 
-  showResult(result: TestResult) {
+  showResult(result: TestResult): void {
     const id: string = result.originalReport.storageId.toString();
     this.removeReranReportIfExists(id);
     const reranReport: ReranReport = this.createReranReport(result, id);
@@ -173,7 +173,7 @@ export class TestComponent implements OnInit {
     });
   }
 
-  getSelectedReports() {
+  getSelectedReports(): any[] {
     return this.reports.filter((report) => report.checked);
   }
 
@@ -214,7 +214,7 @@ export class TestComponent implements OnInit {
     });
   }
 
-  copySelected() {
+  copySelected(): void {
     let copiedIds: string[] = this.getIdsToBeCopied();
     let data: any = {};
     data[this.currentView.storageName] = copiedIds;
@@ -241,7 +241,7 @@ export class TestComponent implements OnInit {
     return copiedIds;
   }
 
-  copyAndMove() {
+  copyAndMove(): void {
     let copiedIds: string[] = this.getIdsToBeCopied();
     let data: any = {};
     data[this.currentView.storageName] = copiedIds;
@@ -299,7 +299,7 @@ export class TestComponent implements OnInit {
     return name.match(this.currentFilter + '/' + '.*') != undefined;
   }
 
-  extractVariables(variables: string) {
+  extractVariables(variables: string): string {
     if (!variables || variables == 'null') {
       return '';
     }

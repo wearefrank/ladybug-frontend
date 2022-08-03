@@ -29,7 +29,7 @@ export class AppComponent implements AfterViewInit {
     this.titleService.setTitle('Ladybug - v' + this.appVersion);
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.httpService.initializeToastComponent(this.toastComponent);
   }
 
@@ -38,10 +38,6 @@ export class AppComponent implements AfterViewInit {
   previousActive = 1;
   tabs: { key: string; value: any; id: string; data: any }[] = [];
 
-  /**
-   * Open an extra tab for the test report
-   * @param data - the data in the report
-   */
   openTestReport(data: any): void {
     const tabIndex: number = this.tabs.findIndex((tab) => tab.id === data.data.storageId);
     if (tabIndex != -1) {

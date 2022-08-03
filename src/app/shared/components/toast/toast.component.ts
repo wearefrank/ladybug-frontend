@@ -31,19 +31,11 @@ export class ToastComponent implements OnInit {
     }, this.TIMEOUT);
   }
 
-  /**
-   * Closes the alert
-   * @param alert - alert that will be closed
-   */
   close(alert: Alert): void {
     this.alerts.splice(this.alerts.indexOf(alert), 1);
     this.ngOnInit();
   }
 
-  /**
-   * Adds an alert
-   * @param alert - alert that will be added
-   */
   addAlert(alert: Alert): void {
     this.alerts.push(alert);
     this.ngOnInit();

@@ -1,8 +1,8 @@
-import { Component, Output, EventEmitter, Input, ViewChild, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, ViewChild, OnInit } from '@angular/core';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
-import { TableSettingsModalComponent } from '../../shared/components/modals/table-settings-modal/table-settings-modal.component';
+import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../shared/interfaces/table-settings';
 import { catchError } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
@@ -129,12 +129,8 @@ export class TableComponent implements OnInit {
     });
   }
 
-  openModal(): void {
+  openSettingsModal(): void {
     this.tableSettingsModal.open();
-  }
-
-  getDate(seconds: string): Date {
-    return new Date(Number.parseInt(seconds));
   }
 
   toggleFilter(): void {
@@ -146,15 +142,9 @@ export class TableComponent implements OnInit {
   }
 
   getStatusColor(metadata: any): string {
-    // TODO: Find a way to do this dynamically
     if (this.viewSettings.currentView.metadataNames.includes('status')) {
       return metadata.status == 'Success' ? '#c3e6cb' : '#f79c9c';
     }
-
-    if (this.viewSettings.currentView.metadataNames.includes('STATE')) {
-      return metadata.STATE == 'Success' ? '#c3e6cb' : '#f79c9c';
-    }
-
     return 'none';
   }
 

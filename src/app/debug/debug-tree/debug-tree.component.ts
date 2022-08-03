@@ -17,14 +17,14 @@ export class DebugTreeComponent implements AfterViewInit {
 
   constructor(private helperService: HelperService) {}
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     setTimeout(() => {
       this.treeReference.createComponent({ source: [], height: '90%', width: '100%' });
       this.loaded = true;
     });
   }
 
-  addReportToTree(report: Report) {
+  addReportToTree(report: Report): void {
     let tree = this.helperService.convertReportToJqxTree(report);
     this.treeReference.addTo(tree, null);
 
@@ -34,11 +34,11 @@ export class DebugTreeComponent implements AfterViewInit {
     );
   }
 
-  selectReport(event: any) {
+  selectReport(event: any): void {
     this.selectReportEvent.emit(event);
   }
 
-  removeReport(report: any) {
+  removeReport(report: any): void {
     let parentItem: any = this.findParentNode(this.treeReference.getItems().find((item: any) => item.value == report));
     let root = parentItem.element.parentNode;
     this.treeReference.removeItem(parentItem);
@@ -58,16 +58,16 @@ export class DebugTreeComponent implements AfterViewInit {
     return item;
   }
 
-  closeEntireTree() {
+  closeEntireTree(): void {
     this.closeEntireTreeEvent.emit();
     this.treeReference.clear();
   }
 
-  expandAll() {
+  expandAll(): void {
     this.treeReference.expandAll();
   }
 
-  collapseAll() {
+  collapseAll(): void {
     this.treeReference.collapseAll();
   }
 

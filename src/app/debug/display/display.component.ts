@@ -6,8 +6,6 @@ import DiffMatchPatch from 'diff-match-patch';
 import { HttpService } from '../../shared/services/http.service';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { HelperService } from '../../shared/services/helper.service';
-declare var require: any;
-const { Buffer } = require('buffer');
 
 @Component({
   selector: 'app-display',
@@ -29,21 +27,12 @@ export class DisplayComponent {
   showReport(report: any): void {
     setTimeout(() => {
       this.report = report;
-      if (this.report.xml) {
-        this.loadMonacoCode(this.report.xml);
-      } else {
-        let message: string = this.report.message === null ? '' : this.report.message;
-        if (this.report.encoding == 'Base64') {
-          this.report.showConverted = true;
-          message = this.convertMessage(message, 'base64', 'utf8');
-        }
-        this.loadMonacoCode(message);
-      }
+      report.xml ? this.loadMonacoCode(report.xml) : this.loadMonacoCode(this.helperService.convertMessage(report));
     });
     this.displayReport = true;
   }
 
-  loadMonacoCode(message: string) {
+  loadMonacoCode(message: string): void {
     this.monacoEditorComponent?.loadMonaco(message);
   }
 
@@ -54,26 +43,8 @@ export class DisplayComponent {
     }
   }
 
-  convertMessage(message: string, from: string, to: string) {
-    return Buffer.from(message, from).toString(to);
-  }
-
-  changeEncoding(button: any) {
-    let message: string;
-    if (button.target.innerHTML.includes('Base64')) {
-      message = this.report.message;
-      this.setButtonHtml(button, 'UTF-8', false);
-    } else {
-      message = this.convertMessage(this.report.message, 'base64', 'utf8');
-      this.setButtonHtml(button, 'Base64', true);
-    }
-    this.loadMonacoCode(message);
-  }
-
-  setButtonHtml(button: any, type: string, showConverted: boolean) {
-    this.report.showConverted = showConverted;
-    button.target.title = 'Convert to ' + type;
-    button.target.innerHTML = type;
+  changeEncoding(button: any): void {
+    this.loadMonacoCode(this.helperService.changeEncoding(this.report, button));
   }
 
   copyReport(): void {

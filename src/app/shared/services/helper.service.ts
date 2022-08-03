@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { Report } from '../interfaces/report';
 import { CookieService } from 'ngx-cookie-service';
+declare var require: any;
+const { Buffer } = require('buffer');
 
 @Injectable({
   providedIn: 'root',
@@ -54,34 +56,26 @@ export class HelperService {
     return img + '-odd.gif';
   }
 
+  isNumber(value: any) {
+    return !Number.isNaN(Number.parseInt(value));
+  }
+
   sortData(sort: Sort, data: any[]): any {
     if (!sort.active || sort.direction === '') {
       return;
     }
     data.sort((a, b) => {
       const isAsc: boolean = sort.direction === 'asc';
-      switch (sort.active) {
-        case '0':
-          return this.compare(Number(a.duration), Number(b.duration), isAsc); // Duration
-        case '1':
-          return this.compare(Number(a.storageSize), Number(b.storageSize), isAsc); // StorageSize
-        case '2':
-          return this.compare(a.name, b.name, isAsc); // Name
-        case '3':
-          return this.compare(a.correlationId, b.correlationId, isAsc); // CorrelationId
-        case '4':
-          return this.compare(a.endTime, b.endTime, isAsc); // EndTime
-        case '5':
-          return this.compare(Number(a.storageId), Number(b.storageId), isAsc); // StorageId
-        case '6':
-          return this.compare(a.status, b.status, isAsc); // Status
-        case '7':
-          return this.compare(Number(a.numberOfCheckpoints), Number(b.numberOfCheckpoints), isAsc); // NumberOfCheckpoints
-        case '8':
-          return this.compare(Number(a.estimatedMemoryUsage), Number(b.estimatedMemoryUsage), isAsc); // EstimatedMemoryUsage
-        default:
-          return 0;
+      const headersA = Object.entries(a);
+      const headersB = Object.entries(b);
+      for (const [i, element] of headersA.entries()) {
+        if (Number(sort.active) === i) {
+          return this.isNumber(element[1])
+            ? this.compare(Number(element[1]), Number(headersB[i][1]), isAsc)
+            : this.compare(String(element[1]), String(headersB[i][1]), isAsc);
+        }
       }
+      return 0;
     });
   }
 
@@ -93,6 +87,39 @@ export class HelperService {
     window.open(
       'api/report/download/' + storage + '/' + exportBinary + '/' + exportXML + '?' + queryString.slice(0, -1)
     );
+  }
+
+  convertMessage(report: any): string {
+    let message: string = report.message === null ? '' : report.message;
+    if (report.encoding == 'Base64') {
+      report.showConverted = true;
+      message = this.convert(message, 'base64', 'utf8');
+    }
+
+    return message;
+  }
+
+  convert(message: string, from: string, to: string) {
+    return Buffer.from(message, from).toString(to);
+  }
+
+  changeEncoding(report: any, button: any): string {
+    let message: string;
+    if (button.target.innerHTML.includes('Base64')) {
+      message = report.message;
+      this.setButtonHtml(report, button, 'UTF-8', false);
+    } else {
+      message = this.convert(report.message, 'base64', 'utf8');
+      this.setButtonHtml(report, button, 'Base64', true);
+    }
+
+    return message;
+  }
+
+  setButtonHtml(report: any, button: any, type: string, showConverted: boolean) {
+    report.showConverted = showConverted;
+    button.target.title = 'Convert to ' + type;
+    button.target.innerHTML = type;
   }
 
   convertReportToJqxTree(report: Report) {
