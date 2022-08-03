@@ -101,9 +101,11 @@ export class TestComponent implements OnInit {
 
   run(reportId: string): void {
     if (this.generatorStatus === 'Enabled') {
-      this.httpService.runReport(reportId).subscribe((response: any) => {
-        this.showResult(response);
-      });
+      this.httpService
+        .runReport(this.currentView.storageName, this.targetStorage, reportId)
+        .subscribe((response: any) => {
+          this.showResult(response);
+        });
     } else {
       this.toastComponent.addAlert({ type: 'warning', message: 'Generator is disabled!' });
     }

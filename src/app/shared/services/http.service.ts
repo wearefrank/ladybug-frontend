@@ -180,9 +180,9 @@ export class HttpService {
     return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
 
-  runReport(reportId: string): Observable<void> {
+  runReport(storage: string, targetStorage: string, reportId: string): Observable<void> {
     return this.http
-      .post<any>('api/runner/run/' + reportId, {
+      .post<any>('api/runner/run/' + storage + '/' + targetStorage + '/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
@@ -198,9 +198,9 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  cloneReport(storageId: string, map: any) {
+  cloneReport(storage: string, storageId: string, map: any) {
     return this.http
-      .post('api/report/move/' + storageId, map)
+      .post('api/report/move/' + storage + '/' + storageId, map)
       .pipe(tap(() => this.handleSuccess('Report cloned!')))
       .pipe(catchError(this.handleError()));
   }
