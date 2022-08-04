@@ -29,7 +29,7 @@ export class ReportComponent implements AfterViewInit {
     setTimeout(() => {
       this.createTree(<Report>(<unknown>this.reportData));
       this.treeReference.selectItem(this.treeReference.getItems()[0]);
-      this.editDisplayComponent.showReport(this.reportData);
+      this.editDisplayComponent?.showReport(this.reportData);
     });
   }
 

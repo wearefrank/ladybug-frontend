@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { Report } from '../interfaces/report';
 import { CookieService } from 'ngx-cookie-service';
-import { TreeNode } from '../interfaces/tree-node';
 declare var require: any;
 const { Buffer } = require('buffer');
 
