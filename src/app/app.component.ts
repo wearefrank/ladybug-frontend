@@ -6,6 +6,7 @@ import { HttpService } from './shared/services/http.service';
 import { CompareComponent, CompareData } from './compare/compare.component';
 import { Report } from './shared/interfaces/report';
 import { TestComponent } from './test/test.component';
+import { DynamicService } from './shared/services/dynamic.service';
 declare var require: any;
 const { version: appVersion } = require('../../package.json');
 
@@ -24,13 +25,19 @@ export class AppComponent implements AfterViewInit {
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
   @ViewChild(TestComponent) testComponent!: TestComponent;
 
-  constructor(private inj: Injector, private titleService: Title, private httpService: HttpService) {
+  constructor(
+    private inj: Injector,
+    private titleService: Title,
+    private httpService: HttpService,
+    private dynamicService: DynamicService
+  ) {
     this.appVersion = appVersion;
     this.titleService.setTitle('Ladybug - v' + this.appVersion);
   }
 
   ngAfterViewInit(): void {
     this.httpService.initializeToastComponent(this.toastComponent);
+    this.observeReportSave();
   }
 
   title = 'ladybug';
@@ -52,6 +59,13 @@ export class AppComponent implements AfterViewInit {
       });
       this.active = this.FIXED_TAB_AMOUNT + this.tabs.length; // Active the tab immediately
     }
+  }
+
+  observeReportSave() {
+    this.dynamicService.getObservable().subscribe((report: Report) => {
+      const tabIndex: number = this.tabs.findIndex((tab) => Number(tab.id) == report.storageId);
+      this.tabs[tabIndex].data = report;
+    });
   }
 
   openNewCompareTab(data: any) {

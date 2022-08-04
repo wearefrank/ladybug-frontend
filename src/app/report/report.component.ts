@@ -3,6 +3,7 @@ import { Report } from '../shared/interfaces/report';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { HelperService } from '../shared/services/helper.service';
 import { EditDisplayComponent } from './edit-display/edit-display.component';
+import { DynamicService } from '../shared/services/dynamic.service';
 
 @Injectable()
 export class ReportData {
@@ -18,7 +19,11 @@ export class ReportComponent implements AfterViewInit {
   @ViewChild('treeReference') treeReference!: jqxTreeComponent;
   @ViewChild(EditDisplayComponent) editDisplayComponent!: EditDisplayComponent;
 
-  constructor(public reportData: ReportData, private helperService: HelperService) {}
+  constructor(
+    public reportData: ReportData,
+    private helperService: HelperService,
+    private dynamicService: DynamicService
+  ) {}
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -44,5 +49,6 @@ export class ReportComponent implements AfterViewInit {
     let tree = this.helperService.convertReportToJqxTree(report);
     this.treeReference.addTo(tree, null);
     this.treeReference.selectItem(this.treeReference.getItems()[selectedNodeIndex]);
+    this.dynamicService.outputFromDynamicComponent(report);
   }
 }
