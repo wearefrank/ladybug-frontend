@@ -67,7 +67,7 @@ jobs:
         working-directory: 'ladybug-frontend'
 
       - name: Install packages
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
         working-directory: ladybug-frontend
 
       - name: Set Cypress environment variables
