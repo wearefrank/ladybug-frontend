@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReportComponent, ReportData } from './report.component';
+import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 
 describe('ReportComponent', () => {
   let component: ReportComponent;
@@ -8,7 +9,7 @@ describe('ReportComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ReportComponent],
+      declarations: [ReportComponent, jqxTreeComponent],
       providers: [ReportData],
     }).compileComponents();
   });

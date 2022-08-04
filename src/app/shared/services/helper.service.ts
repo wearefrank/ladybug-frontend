@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { Report } from '../interfaces/report';
 import { CookieService } from 'ngx-cookie-service';
+import { TreeNode } from '../interfaces/tree-node';
 declare var require: any;
 const { Buffer } = require('buffer');
 
@@ -157,12 +158,16 @@ export class HelperService {
 
   createChildNodes(rootNode: any, index: number, parentMap: any[]) {
     let previousNode = rootNode;
-    for (let checkpoint of rootNode.value.checkpoints) {
-      const img: string = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0);
-      let showingId = this.getCheckpointOrStorageId(checkpoint, false);
-      const currentNode: any = this.createNode(checkpoint, showingId, img, index++, checkpoint.level);
-      this.createHierarchy(previousNode, currentNode, parentMap);
-      previousNode = currentNode;
+    let checkpoints: any[] = previousNode.value.checkpoints;
+
+    if (checkpoints && checkpoints.length > 0) {
+      for (let checkpoint of checkpoints) {
+        const img: string = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0);
+        let showingId = this.getCheckpointOrStorageId(checkpoint, false);
+        const currentNode: any = this.createNode(checkpoint, showingId, img, index++, checkpoint.level);
+        this.createHierarchy(previousNode, currentNode, parentMap);
+        previousNode = currentNode;
+      }
     }
   }
 

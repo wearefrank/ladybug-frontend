@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DebugTreeComponent } from './debug-tree.component';
+import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 
 describe('DebugTreeComponent', () => {
   let component: DebugTreeComponent;
@@ -8,7 +9,7 @@ describe('DebugTreeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DebugTreeComponent],
+      declarations: [DebugTreeComponent, jqxTreeComponent],
     }).compileComponents();
   });
 
