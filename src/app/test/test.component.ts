@@ -183,7 +183,7 @@ export class TestComponent implements OnInit {
     if (this.getSelectedReports().length > 0) {
       const queryString: string = this.getSelectedReports().reduce(
         (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
-        '?'
+        ''
       );
       this.helperService.download(queryString, this.currentView.storageName, true, false);
     } else {

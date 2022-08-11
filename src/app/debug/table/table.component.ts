@@ -28,7 +28,7 @@ export class TableComponent implements OnInit {
     tableLoaded: false,
     displayAmount: this.DEFAULT_DISPLAY_AMOUNT,
     showFilter: false,
-    filterValue: '.*',
+    filterValue: '(.*)',
     filterHeader: '',
     reportsInProgress: 0,
     estimatedMemoryUsage: '',
@@ -181,7 +181,7 @@ export class TableComponent implements OnInit {
   }
 
   changeFilter(event: any, header: string): void {
-    const filterValue = event.target.value.replace(/\s/g, '');
+    const filterValue = event.target.value;
     this.tableSettings.filterValue = filterValue === '' ? '.*' : filterValue;
     this.tableSettings.filterHeader = filterValue === '' ? '' : header;
     this.retrieveRecords();
@@ -242,9 +242,13 @@ export class TableComponent implements OnInit {
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
     const queryString: string = this.tableSettings.reportMetadata.reduce(
       (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
-      '?'
+      ''
     );
-    this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
+    if (queryString !== '') {
+      this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
+    } else {
+      this.toastComponent.addAlert({ type: 'warning', message: 'No reports to download' });
+    }
   }
 
   uploadReports(event: any): void {
