@@ -114,6 +114,7 @@ describe('Debug tab download', function() {
 
 function testDownloadFromNode(nodeNum) {
   const downloadsFolder = Cypress.config('downloadsFolder');
+  cy.wait(100);
   cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
   cy.get('button[id="OpenAllButton"]').click();
   cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
