@@ -168,17 +168,17 @@ jobs:
           wait-on: 'http://localhost:8090, http://localhost:4200'
           wait-on-timeout: 240
           browser: chrome
-      - name: Run cypress with firefox browser
-        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
-        uses: cypress-io/github-action@v2.9.7
-        with:
-          working-directory: ladybug-frontend
-          start: |
-            yarn run startCicd
-          wait-on: 'http://localhost:8090, http://localhost:4200'
-          wait-on-timeout: 240
-          browser: firefox
-          config: screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
+#      - name: Run cypress with firefox browser
+#        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
+#        uses: cypress-io/github-action@v2.9.7
+#        with:
+#          working-directory: ladybug-frontend
+#          start: |
+#            yarn run startCicd
+#          wait-on: 'http://localhost:8090, http://localhost:4200'
+#          wait-on-timeout: 240
+#          browser: firefox
+#          config: screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
 
       - name: Run cypress with chrome browser - real frontend
         if: ${{ github.event.inputs.useRealFrontend == 'true' }}
@@ -189,15 +189,15 @@ jobs:
           wait-on-timeout: 240
           browser: chrome
           config: baseUrl=http://localhost:8090/ladybug/
-      - name: Run cypress with firefox browser - real frontend
-        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
-        uses: cypress-io/github-action@v2.9.7
-        with:
-          working-directory: ladybug-frontend
-          wait-on: 'http://localhost:8090'
-          wait-on-timeout: 240
-          browser: firefox
-          config: baseUrl=http://localhost:8090/ladybug/,screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
+#      - name: Run cypress with firefox browser - real frontend
+#        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
+#        uses: cypress-io/github-action@v2.9.7
+#        with:
+#          working-directory: ladybug-frontend
+#          wait-on: 'http://localhost:8090'
+#          wait-on-timeout: 240
+#          browser: firefox
+#          config: baseUrl=http://localhost:8090/ladybug/,screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
 
       - name: Show files
         run: tree -d -L 5 .
