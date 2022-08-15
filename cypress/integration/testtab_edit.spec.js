@@ -32,7 +32,8 @@ describe('Edit tests', function() {
     cy.get('.col:not(.text-right)').contains('Hello World!');
     cy.get('.col.text-right').contains('Hello Original World!');
     cy.get('button:contains(Yes)').click();
-    cy.get('.report-tab .jqx-tree-dropdown-root > li > ul > li').click()
+    cy.wait(1000);
+    cy.get('.report-tab .jqx-tree-dropdown-root > li > ul > li > ul > li > div').click()
     cy.wait(1000);
     cy.get('#EditButton').click();
     cy.wait(1000);
