@@ -1,6 +1,6 @@
 {
   "name": "@wearefrank/ladybug",
-  "version": "0.0.29",
+  "version": "0.0.32",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config src/proxy.conf.json",
@@ -33,7 +33,6 @@
     "@angular/router": "13.1.1",
     "@ng-bootstrap/ng-bootstrap": "11.0.0",
     "bootstrap": "^4.6.0",
-    "bower": "1.8.12",
     "chai-colors": "^1.0.1",
     "diff-match-patch": "1.0.5",
     "eslint-config-prettier": "^8.3.0",
@@ -45,11 +44,9 @@
     "monaco-editor": "0.28.1",
     "ngx-cookie-service": "^13.1.2",
     "ngx-text-diff": "^0.6.0",
-    "path": "^0.12.7",
     "prettier": "2.5.1",
     "rxjs": "7.4.0",
     "tslib": "2.3.1",
-    "xml-beautifier": "0.5.0",
     "zone.js": "0.11.4"
   },
   "devDependencies": {
@@ -66,7 +63,6 @@
     "@types/node": "16.10.3",
     "@typescript-eslint/eslint-plugin": "5.30.5",
     "@typescript-eslint/parser": "5.30.5",
-    "chai-match": "^1.1.1",
     "cypress": "^8.5.0",
     "cypress-file-upload": "^5.0.8",
     "eslint": "^8.10.0",

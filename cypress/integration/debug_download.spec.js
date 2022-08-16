@@ -5,7 +5,7 @@ describe('Debug tab download', function() {
     cy.createReport();
     cy.createOtherReport();
     cy.visit('');
-    cy.wait(100);
+    cy.wait(500);
   });
 
   afterEach(() => {
