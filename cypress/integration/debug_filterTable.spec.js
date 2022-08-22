@@ -14,6 +14,7 @@ describe('Table size and toggle filter', function () {
     cy.createReport();
     cy.createOtherReport();
     cy.visit('')
+    cy.wait(500)
   })
 
   afterEach(() => {
@@ -24,18 +25,18 @@ describe('Table size and toggle filter', function () {
     // We only assume here that the default is two or more.
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
     cy.get('#displayAmount').type('{selectAll}{del}');
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 0);
+    cy.get('.table-responsive tbody').find('tr').should('not.exist');
     // From now on, we type one character at a time. Cypress can type very rapidly.
     // We do not expect our app to catch up without guards.
-    cy.get('#displayAmount').type(1);
+    cy.get('#displayAmount').type('{selectAll}1');
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
     cy.get('#displayAmount').type("{backspace}");
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 0);
-    cy.get('#displayAmount').type("2");
+    cy.get('.table-responsive tbody').find('tr').should('not.exist');
+    cy.get('#displayAmount').type("{selectAll}2");
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
     cy.get('#displayAmount').type("{backspace}");
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 0);
-    cy.get('#displayAmount').type("9")
+    cy.get('.table-responsive tbody').find('tr').should('not.exist');
+    cy.get('#displayAmount').type("{selectAll}9")
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
 
@@ -50,7 +51,7 @@ describe('Table size and toggle filter', function () {
 
   it('Type in a filter parameter', function () {
     cy.get('#FilterButton').click()
-    cy.get('#filterRow #filter').eq(3).type("Simple report{enter}")
+    cy.get('#filterRow #filter').eq(3).type("(Simple report){enter}")
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1)
     cy.get('#filterRow #filter').eq(3).clear().type("{enter}")
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2)

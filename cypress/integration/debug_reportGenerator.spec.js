@@ -9,9 +9,10 @@ describe('Report generator', function() {
 
   it('disable and enable', function() {
     cy.visit('');
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 0);
+    cy.get('.table-responsive tbody').find('tr').should('not.exist');
     cy.createReport();
     cy.get('#RefreshButton').click();
+    cy.wait(100);
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
     cy.get('#SettingsButton').click();
     cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
@@ -22,11 +23,9 @@ describe('Report generator', function() {
     // If we do not wait here, we do not test properly that no report is created.
     // Without waiting, the test could succeed because we would count the number of reports
     // before refresh.
-    cy.wait(5000);
     cy.get('#RefreshButton').click();
-    cy.wait(5000);
+    cy.wait(100);
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
-    cy.get('.alert').should('not.exist');
     cy.get('#SettingsButton').click();
     cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
     cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
@@ -34,6 +33,7 @@ describe('Report generator', function() {
     cy.contains('Settings saved', {timeout: 10000});
     cy.createOtherReport();
     cy.get('#RefreshButton').click();
+    cy.wait(100);
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
   });
 });

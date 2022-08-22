@@ -1,15 +1,16 @@
-<!--Debug panel-->
-<div class="resizable-vertical row pl-3">
-  <div class="w-100">
-    <app-table (openReportEvent)="addReportToTree($event)" (openCompareReportsEvent)="openCompareReport($event)" (changeViewEvent)="changeView($event)"></app-table>
+<div class="box">
+  <div class="row top">
+    <div class="w-100 h-100">
+      <app-table (openReportEvent)="addReportToTree($event)" (changeViewEvent)="changeView($event)" (openSelectedCompareReportsEvent)="openSelectedReports($event)"></app-table>
+    </div>
   </div>
-</div>
-<div class="row pl-3" >
-  <div class="resizable-horizontal border-right pr-3" style="min-width: 300px">
-    <app-tree (selectReportEvent)="showReportInDisplay($event)" (closeEntireTreeEvent)="closeEntireTree()" (closeDisplayReportEvent)="closeDisplayReport()" [currentView]="currentView"></app-tree>
-  </div>
-  <!-- Content panel-->
-  <div class="col pr-0 overflow-auto" style="height: 59vh">
-    <app-display (closeReportEvent)="closeReport($event)" [currentView]="currentView" [id]="'debug'"></app-display>
+  <div class="border-bottom"></div>
+  <div class="row bottom mb-0 pb-0">
+    <div class="border-right w-25">
+      <app-debug-tree (closeEntireTreeEvent)="closeEntireTree()" (selectReportEvent)="selectReport($event)" [currentView]="currentView"></app-debug-tree>
+    </div>
+    <div class="col pr-0">
+      <app-display (closeReportEvent)="closeReport($event)" [currentView]="currentView" [id]="'debug'"></app-display>
+    </div>
   </div>
 </div>

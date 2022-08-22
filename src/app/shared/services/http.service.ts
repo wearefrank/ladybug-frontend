@@ -11,6 +11,7 @@ export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   toastComponent!: ToastComponent;
   apiReport: string = 'api/report/'; // Keep this since sonar is crying about it, TODO: revert this
+  apiMetadata: string = 'api/metadata/';
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
 
@@ -39,14 +40,33 @@ export class HttpService {
     return this.http.get('api/testtool/views').pipe(catchError(this.handleError()));
   }
 
-  getReports(limit: number, regexFilter: string, metadataNames: string[], storage: string): Observable<any> {
-    return this.http.get('api/metadata/' + storage + '/', {
+  getMetadataReports(
+    limit: number,
+    regexFilter: string,
+    filterHeader: string,
+    metadataNames: string[],
+    storage: string
+  ): Observable<any> {
+    return this.http.get(this.apiMetadata + storage + '/', {
       params: {
         limit: limit,
+        filterHeader: filterHeader,
         filter: regexFilter,
         metadataNames: metadataNames,
       },
     });
+  }
+
+  getUserHelp(storage: string, metadataNames: string[]): Observable<any> {
+    return this.http.get<any>(this.apiMetadata + storage + '/userHelp', {
+      params: {
+        metadataNames: metadataNames,
+      },
+    });
+  }
+
+  getMetadataCount(storage: string): Observable<any> {
+    return this.http.get(this.apiMetadata + storage + '/count').pipe(catchError(this.handleError()));
   }
 
   getLatestReports(amount: number, storage: string): Observable<any> {
@@ -71,7 +91,7 @@ export class HttpService {
   }
 
   getTestReports(metadataNames: string[], storage: string): Observable<any> {
-    return this.http.get<any>('api/metadata/' + storage + '/', {
+    return this.http.get<any>(this.apiMetadata + storage + '/', {
       params: { metadataNames: metadataNames },
     });
   }
@@ -85,6 +105,15 @@ export class HttpService {
           reportId +
           '/?xml=true&globalTransformer=' +
           this.cookieService.get('transformationEnabled')
+      )
+      .pipe(catchError(this.handleError()));
+  }
+
+  getReports(reportIds: string[], storage: string) {
+    return this.http
+      .get<any>(
+        this.apiReport + storage + '/?xml=true&globalTransformer=' + this.cookieService.get('transformationEnabled'),
+        { params: { storageIds: reportIds } }
       )
       .pipe(catchError(this.handleError()));
   }
@@ -151,9 +180,9 @@ export class HttpService {
     return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
 
-  runReport(reportId: string): Observable<void> {
+  runReport(storage: string, targetStorage: string, reportId: string): Observable<void> {
     return this.http
-      .post<any>('api/runner/run/' + reportId, {
+      .post<any>('api/runner/run/' + storage + '/' + targetStorage + '/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
@@ -169,9 +198,9 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  cloneReport(storageId: string, map: any) {
+  cloneReport(storage: string, storageId: string, map: any) {
     return this.http
-      .post('api/report/move/' + storageId, map)
+      .post('api/report/move/' + storage + '/' + storageId, map)
       .pipe(tap(() => this.handleSuccess('Report cloned!')))
       .pipe(catchError(this.handleError()));
   }

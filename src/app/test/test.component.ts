@@ -1,22 +1,22 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { HttpService } from '../shared/services/http.service';
-import { LoaderService } from '../shared/services/loader.service';
-import { CloneModalComponent } from '../shared/components/modals/clone-modal/clone-modal.component';
-import { TestSettingsModalComponent } from '../shared/components/modals/test-settings-modal/test-settings-modal.component';
+import { CloneModalComponent } from './clone-modal/clone-modal.component';
+import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
 import { CookieService } from 'ngx-cookie-service';
-import { TestFolderTreeComponent } from '../test-folder-tree/test-folder-tree.component';
+import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
+import { HelperService } from '../shared/services/helper.service';
 
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.css'],
 })
-export class TestComponent implements OnInit, OnDestroy {
+export class TestComponent implements OnInit {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
@@ -35,16 +35,15 @@ export class TestComponent implements OnInit, OnDestroy {
 
   constructor(
     private httpService: HttpService,
-    private loaderService: LoaderService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private helperService: HelperService
   ) {}
 
   openCloneModal(): void {
-    let selectedReports: any[] = this.reports.filter((report) => report.checked);
-    if (selectedReports.length !== 1) {
+    if (this.getSelectedReports().length !== 1) {
       this.toastComponent.addAlert({ type: 'warning', message: 'Make sure exactly one report is selected at a time' });
     } else {
-      this.cloneModal.open(selectedReports[0]);
+      this.cloneModal.open(this.getSelectedReports()[0]);
     }
   }
 
@@ -57,14 +56,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (!this.loaderService.isTestLoaded()) {
-      this.loadData();
-    } else {
-      this.reports = this.loaderService.getTestReports();
-      this.reranReports = this.loaderService.getReranReports();
-      this.currentFilter = this.loaderService.getFolderFilter();
-      this.getCopiedReports();
-    }
+    this.loadData();
     this.getGeneratorStatus();
   }
 
@@ -95,10 +87,6 @@ export class TestComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    this.loaderService.saveTestSettings(this.reports, this.reranReports, this.currentFilter);
-  }
-
   loadData(): void {
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value) => (this.reports = value),
@@ -113,23 +101,21 @@ export class TestComponent implements OnInit, OnDestroy {
 
   run(reportId: string): void {
     if (this.generatorStatus === 'Enabled') {
-      this.httpService.runReport(reportId).subscribe((response: any) => {
-        this.showResult(response);
-      });
+      this.httpService
+        .runReport(this.currentView.storageName, this.targetStorage, reportId)
+        .subscribe((response: any) => {
+          this.showResult(response);
+        });
     } else {
       this.toastComponent.addAlert({ type: 'warning', message: 'Generator is disabled!' });
     }
   }
 
   runSelected(): void {
-    this.reports.forEach((report) => {
-      if (report.checked) {
-        this.run(report.storageId);
-      }
-    });
+    this.getSelectedReports().forEach((report) => this.run(report.storageId));
   }
 
-  removeReranReportIfExists(id: string) {
+  removeReranReportIfExists(id: string): void {
     this.reranReports = this.reranReports.filter((report) => report.id != id);
   }
 
@@ -149,7 +135,7 @@ export class TestComponent implements OnInit, OnDestroy {
     };
   }
 
-  createResultString(resultReport: TestResult) {
+  createResultString(resultReport: TestResult): string {
     return (
       '(' +
       resultReport.previousTime +
@@ -163,7 +149,7 @@ export class TestComponent implements OnInit, OnDestroy {
     );
   }
 
-  showResult(result: TestResult) {
+  showResult(result: TestResult): void {
     const id: string = result.originalReport.storageId.toString();
     this.removeReranReportIfExists(id);
     const reranReport: ReranReport = this.createReranReport(result, id);
@@ -183,19 +169,26 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   deleteSelected(): void {
-    this.reports
-      .filter((report) => report.checked)
-      .forEach((report) => {
-        this.httpService.deleteReport(report.storageId, this.currentView.storageName).subscribe();
-        this.reports.splice(this.reports.indexOf(report), 1);
-      });
+    this.getSelectedReports().forEach((report) => {
+      this.httpService.deleteReport(report.storageId, this.currentView.storageName).subscribe();
+      this.reports.splice(this.reports.indexOf(report), 1);
+    });
+  }
+
+  getSelectedReports(): any[] {
+    return this.reports.filter((report) => report.checked);
   }
 
   downloadSelected(): void {
-    const queryString: string = this.reports
-      .filter((report) => report.checked)
-      .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '?');
-    window.open('api/report/download/' + this.currentView.storageName + '/true/false' + queryString.slice(0, -1));
+    if (this.getSelectedReports().length > 0) {
+      const queryString: string = this.getSelectedReports().reduce(
+        (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
+        ''
+      );
+      this.helperService.download(queryString, this.currentView.storageName, true, false);
+    } else {
+      this.toastComponent.addAlert({ type: 'warning', message: 'No Report Selected!' });
+    }
   }
 
   uploadReport(event: any): void {
@@ -223,7 +216,7 @@ export class TestComponent implements OnInit, OnDestroy {
     });
   }
 
-  copySelected() {
+  copySelected(): void {
     let copiedIds: string[] = this.getIdsToBeCopied();
     let data: any = {};
     data[this.currentView.storageName] = copiedIds;
@@ -246,16 +239,11 @@ export class TestComponent implements OnInit, OnDestroy {
 
   getIdsToBeCopied(): string[] {
     let copiedIds: string[] = [];
-    this.reports.forEach((report) => {
-      if (report.checked) {
-        copiedIds.push(report.storageId);
-      }
-    });
-
+    this.getSelectedReports().forEach((report) => copiedIds.push(report.storageId));
     return copiedIds;
   }
 
-  copyAndMove() {
+  copyAndMove(): void {
     let copiedIds: string[] = this.getIdsToBeCopied();
     let data: any = {};
     data[this.currentView.storageName] = copiedIds;
@@ -269,14 +257,13 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   moveTestReportToFolder(): void {
-    let selectedReports = this.reports.filter((report) => report.checked);
-    if (selectedReports.length > 0) {
+    if (this.getSelectedReports().length > 0) {
       this.currentFilter = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
       if (!this.currentFilter.startsWith('/')) {
         this.currentFilter = '/' + this.currentFilter;
       }
       this.testFolderTreeComponent.addFolder(this.currentFilter);
-      this.changeMovedTestReportNames(selectedReports);
+      this.changeMovedTestReportNames(this.getSelectedReports());
     } else {
       this.toastComponent.addAlert({ type: 'warning', message: 'No Report Selected!' });
     }
@@ -314,7 +301,7 @@ export class TestComponent implements OnInit, OnDestroy {
     return name.match(this.currentFilter + '/' + '.*') != undefined;
   }
 
-  extractVariables(variables: string) {
+  extractVariables(variables: string): string {
     if (!variables || variables == 'null') {
       return '';
     }

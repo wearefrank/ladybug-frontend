@@ -1,27 +1,4 @@
-<div class="row resizable-vertical h-0">
-  <div class="col-6">
-    <app-tree
-      #leftTree
-      [id]="leftReport.id"
-      (selectReportEvent)="selectReportLeft($event)"
-    ></app-tree>
-  </div>
-  <div class="col-6">
-    <app-tree
-      #rightTree
-      [id]="rightReport.id"
-      (selectReportEvent)="selectReportRight($event)"></app-tree>
-  </div>
+<div class="col h-100 p-0 flex-column" id="container">
+  <app-compare-tree class="h-100" #trees (compareEvent)="showDifference($event)"></app-compare-tree>
+  <td-ngx-text-diff class="px-2 pb-2"#diffComponent></td-ngx-text-diff>
 </div>
-
-<div class="row h-100">
-  <div class="col-6" [hidden]="!leftReport.selected">
-  </div>
-
-  <div class="col-6 h-0" [hidden]="!rightReport.selected">
-  </div>
-</div>
-
-<app-monaco-editor [comparing]="true" [hidden]="!leftReport.selected || !rightReport.selected" #editor ></app-monaco-editor>
-
-<app-toast></app-toast>

@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, Injectable, ViewChild } from '@angular/core';
-import { TreeComponent } from '../shared/components/tree/tree.component';
-import { DisplayComponent } from '../shared/components/display/display.component';
-import { TreeNode } from '../shared/interfaces/tree-node';
 import { Report } from '../shared/interfaces/report';
+import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
+import { HelperService } from '../shared/services/helper.service';
+import { EditDisplayComponent } from './edit-display/edit-display.component';
+import { DynamicService } from '../shared/services/dynamic.service';
 
 @Injectable()
 export class ReportData {
@@ -15,36 +16,39 @@ export class ReportData {
   styleUrls: ['./report.component.css'],
 })
 export class ReportComponent implements AfterViewInit {
-  @ViewChild(TreeComponent) treeComponent!: TreeComponent;
-  @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
-  id: string = Math.random().toString(36).slice(7);
+  @ViewChild('treeReference') treeReference!: jqxTreeComponent;
+  @ViewChild(EditDisplayComponent) editDisplayComponent!: EditDisplayComponent;
 
-  constructor(public reportData: ReportData) {}
+  constructor(
+    public reportData: ReportData,
+    private helperService: HelperService,
+    private dynamicService: DynamicService
+  ) {}
 
-  /**
-   Add a new report and notify the tree of the change
-   */
   ngAfterViewInit(): void {
     setTimeout(() => {
-      this.treeComponent?.handleChange(<Report>(<unknown>this.reportData));
+      this.createTree(<Report>(<unknown>this.reportData));
+      this.treeReference.selectItem(this.treeReference.getItems()[0]);
+      this.editDisplayComponent?.showReport(this.reportData);
     });
   }
 
-  /**
-   * Select a report to be viewed in the display
-   * @param currentReport - the report to be viewed
-   */
-  selectReport(currentReport: TreeNode): void {
-    this.displayComponent.closeReport(false, -1);
-    setTimeout(() => {
-      this.displayComponent.showReport(currentReport);
-    }, 100);
+  createTree(report: Report) {
+    let tree = this.helperService.convertReportToJqxTree(report);
+    this.treeReference.createComponent({ height: '100%', width: '100%', source: [tree] });
   }
 
-  savingReport(something: any) {
-    let selectedNode = this.treeComponent?.treeSettings.selectedNode;
-    this.treeComponent?.closeAll();
-    this.treeComponent?.handleChange(something);
-    this.treeComponent?.selectSpecificNode(selectedNode);
+  selectReport(currentReport: any): void {
+    let report = currentReport.owner.selectedItem.value;
+    this.editDisplayComponent.showReport(report);
+  }
+
+  savingReport(report: any) {
+    let selectedNodeIndex = this.treeReference.getItems().findIndex((item) => item.selected);
+    this.treeReference.clear();
+    let tree = this.helperService.convertReportToJqxTree(report);
+    this.treeReference.addTo(tree, null);
+    this.treeReference.selectItem(this.treeReference.getItems()[selectedNodeIndex]);
+    this.dynamicService.outputFromDynamicComponent(report);
   }
 }

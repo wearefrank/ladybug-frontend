@@ -1,5 +1,5 @@
 /// <reference path="../../../../../node_modules/monaco-editor/monaco.d.ts" />
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 
 let loadedMonaco = false;
 let loadPromise: Promise<void>;
@@ -12,9 +12,9 @@ let loadPromise: Promise<void>;
 export class MonacoEditorComponent {
   @ViewChild('container') editorContainer!: ElementRef;
   codeEditorInstance!: monaco.editor.IStandaloneCodeEditor;
-  codeDiffInstance!: monaco.editor.IStandaloneDiffEditor;
-  @Input() comparing: boolean = false;
-  messageLength: number = 0;
+  loading = false;
+  height = 100;
+  width = 100;
 
   constructor() {}
 
@@ -22,16 +22,13 @@ export class MonacoEditorComponent {
     return this.codeEditorInstance.getValue();
   }
 
-  /**
-   * Load monaco editor
-   * @param message - the initial xml code to be shown
-   * @param modified - other xml in case we are comparing
-   */
-  loadMonaco(message: string, modified: string): void {
+  loadMonaco(message: string): void {
+    if (this.codeEditorInstance) this.codeEditorInstance.dispose();
+    this.loading = true;
     setTimeout(() => {
       if (loadedMonaco) {
         loadPromise.then(() => {
-          this.comparing ? this.initializeDifference(message, modified) : this.initializeEditor(message);
+          this.initializeEditor(message);
         });
       } else {
         loadedMonaco = true;
@@ -44,7 +41,7 @@ export class MonacoEditorComponent {
           const onAmdLoader: any = () => {
             (window as any).require.config({ paths: { vs: 'assets/monaco/vs' } });
             (window as any).require(['vs/editor/editor.main'], () => {
-              this.comparing ? this.initializeDifference(message, modified) : this.initializeEditor(message);
+              this.initializeEditor(message);
               resolve();
             });
           };
@@ -60,13 +57,10 @@ export class MonacoEditorComponent {
           }
         });
       }
+      this.loading = false;
     }, 500);
   }
 
-  /**
-   * Initialize editor
-   * @param message - the initial xml cod to be shown
-   */
   initializeEditor(message: string): void {
     this.codeEditorInstance = monaco.editor.create(this.editorContainer.nativeElement, {
       value: message,
@@ -80,26 +74,11 @@ export class MonacoEditorComponent {
       wordWrap: 'wordWrapColumn',
       wordWrapColumn: 120,
     });
-    this.messageLength = message.split(/\r\n|\r|\n/).length;
-  }
 
-  initializeDifference(message: string, modified: string): void {
-    this.editorContainer.nativeElement.innerHTML = '';
-    this.codeDiffInstance = monaco.editor.createDiffEditor(this.editorContainer.nativeElement, {
-      enableSplitViewResizing: false,
-      renderSideBySide: true,
-    });
-
-    this.showDifferences(message, modified);
-
-    this.messageLength = Math.max(message.split(/\r\n|\r|\n/).length, modified.split(/\r\n|\r|\n/).length);
-  }
-
-  showDifferences(message: string, modified: string) {
-    this.codeDiffInstance.setModel({
-      original: monaco.editor.createModel(message),
-      modified: monaco.editor.createModel(modified),
-    });
+    let element = this.codeEditorInstance.getDomNode();
+    this.width = Number.parseInt(element?.style.width!);
+    this.height = this.codeEditorInstance.getModel()?.getLineCount()! * 15;
+    this.codeEditorInstance.layout({ width: this.width, height: this.height });
   }
 
   enableEdit(): void {

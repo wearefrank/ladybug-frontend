@@ -20,7 +20,7 @@ describe('Debug file upload', function() {
           fileName: 'testRerun.ttr',
         });
       });
-    
-    cy.get('div.treeview > ul > li').should('have.length', 3);
+
+    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1);
   })
 });

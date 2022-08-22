@@ -1,3 +1,10 @@
 #detailedErrorMessage {
   overflow-wrap: break-word;
 }
+
+.toast-body {
+  bottom: 0;
+  left: 5px;
+  position: fixed;
+  z-index: 999;
+}

@@ -3,5 +3,9 @@
 }
 
 #testContent {
-  height: 94vh;
+  height: 100% !important;
+}
+
+#testReports > tr > td {
+  line-height: 20px;
 }

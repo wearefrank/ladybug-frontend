@@ -52,6 +52,7 @@
           "printWidth": 120
         }],
         "unicorn/no-array-for-each": "off",
+        "unicorn/no-null": "off",
         "unicorn/prevent-abbreviations": "off",
         "sonarjs/cognitive-complexity": ["error", 18]
       }

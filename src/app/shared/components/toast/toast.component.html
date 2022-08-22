@@ -1,4 +1,4 @@
-<div style="bottom: 0; left: 5px; position: fixed">
+<div class="toast-body">
   <p *ngFor="let alert of alerts">
     <span *ngIf="alert.type === 'success'">
       <ngb-alert #staticAlert [type]="alert.type" (click)="close(alert)" class="fade animate-show animate-hide">

@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CompareComponent } from './compare.component';
+import { CompareComponent, CompareData } from './compare.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 
 describe('CompareComponent', () => {
   let component: CompareComponent;
@@ -9,7 +10,8 @@ describe('CompareComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CompareComponent],
+      declarations: [CompareComponent, jqxTreeComponent],
+      providers: [CompareData],
       imports: [HttpClientTestingModule],
     }).compileComponents();
   });

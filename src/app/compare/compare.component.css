@@ -1,3 +1,4 @@
-.row {
-  height: 47vh;
+#container {
+  display: flex;
+  background-color: white;
 }

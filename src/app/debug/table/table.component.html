@@ -1,0 +1,92 @@
+<div class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
+  <div class="row">
+    <app-button [icon]="'fa fa-undo'" [title]="'Refresh'" (click)="refresh()"></app-button>
+    <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
+
+    <button type="button" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
+            title="Upload" (click)="uploadFileTable.click()">
+      <i class="fa fa-upload"></i>
+      <input #uploadFileTable (change)="uploadReports($event)" type="file" id="uploadFileTable">
+    </button>
+
+    <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
+
+    <div ngbDropdown title="Download">
+      <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
+        <i class="fa fa-download px-2"></i><span class="caret"></span>
+      </button>
+      <div ngbDropdownMenu aria-labelledby="dropdownDownloadTable">
+        <button ngbDropdownItem (click)="downloadReports(true, true)">XML & Binary</button>
+        <button ngbDropdownItem (click)="downloadReports(false, true)">XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
+        <button ngbDropdownItem (click)="downloadReports(true, false)">Binary</button>
+      </div>
+    </div>
+
+    <app-button [title]="'Open All'" [text]="'Open All'" (click)="openAllReports()"></app-button>
+
+    <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();" (keyup)="changeTableLimit($event)">
+      <div class="input-group-append">
+          <input type="number" id="displayAmount" class="form-control px-1" value="{{tableSettings.displayAmount}}">
+        <div class="input-group-text">/{{metadataCount}}</div>
+      </div>
+    </form>
+
+    <div class="col-2 my-2 mx-1 px-2">
+      <select class="form-control" (change)="changeView($event)">
+        <option *ngFor="let view of getViewNames()" [selected]="viewSettings.defaultView === view" value="{{view}}">{{view}}</option>
+      </select>
+    </div>
+
+    <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.reportsInProgress }}</div>
+    <span class="row" *ngIf="tableSettings.reportsInProgress > 0">
+      <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
+
+        <div class="col input-group my-2 mx-1 px-2">
+          <input #openIndex type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')" class="form-control" id="openInProgressNo"/>
+          <div class="input-group-append">
+            <button class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
+          </div>
+        </div>
+
+          <div class="col input-group my-2 mx-1 px-2">
+            <input #deleteIndex type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#deleteReportInProgressButton')" class="form-control" id="deleteInProgressNo"/>
+            <div class="input-group-append">
+              <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
+            </div>
+          </div>
+
+    </span>
+
+    <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
+
+  </div>
+  <div class="table-responsive" id="metadataTable">
+    <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)">
+      <thead id="table-header">
+        <tr>
+          <th>Select</th>
+          <th *ngFor="let header of viewSettings.currentView.metadataNames; let i = index" mat-sort-header="{{i}}">{{header}}</th>
+        </tr>
+        <tr id="filterRow" *ngIf="tableSettings.showFilter">
+          <th></th>
+          <th *ngFor="let header of viewSettings.currentView.metadataNames">
+            <div class="input-group">
+              <input type="text" id="filter"  title="{{tableSettings.metadataHeaders[header]}}" class="form-control" placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header)">
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount)" style="background-color: {{getStatusColor(row)}}">
+          <td>
+            <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)">
+          </td>
+          <td *ngFor="let metadataValue of row | enumToArray" (click)="openReport(row.storageId)">{{metadataValue}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<app-table-settings-modal (openLatestReportsEvent)="openLatestReports($event)"></app-table-settings-modal>
+<app-toast></app-toast>

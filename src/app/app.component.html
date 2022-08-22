@@ -1,32 +1,29 @@
-<div class="p-3">
-  <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-    <li [ngbNavItem]="1" id="debugTab">
+<div class="p-3" id="ladybug-tabs">
+  <ul ngbNav #nav="ngbNav" [(activeId)]="active" (navChange)="detectTabChange($event)" class="nav-tabs">
+    <li [ngbNavItem]="1" id="debugTab" [destroyOnHide]="false">
       <a ngbNavLink>Debug</a>
       <ng-template ngbNavContent>
-        <app-debug #debug (openCompareReportsEvent)="openCompareReport($event)"></app-debug>
+        <app-debug (openSelectedCompareReportsEvent)="openNewCompareTab($event)"></app-debug>
       </ng-template>
     </li>
-    <li [ngbNavItem]="2" id="testTab">
+    <li [ngbNavItem]="2" id="testTab" [destroyOnHide]="false">
       <a ngbNavLink>Test</a>
       <ng-template ngbNavContent>
-        <app-test (openTestReportEvent)="openTestReport($event)" (openCompareReportsEvent)="openCompareReport($event)"></app-test>
+        <app-test (openTestReportEvent)="openTestReport($event)" (openCompareReportsEvent)="openNewCompareTab($event)"></app-test>
       </ng-template>
     </li>
-    <li [ngbNavItem]="3" id="compareTab">
-      <a ngbNavLink>Compare</a>
-      <ng-template ngbNavContent>
-        <app-compare [diffReports]="diffReports"></app-compare>
-      </ng-template>
-    </li>
-    <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 4" id="{{tab.key}}">
+    <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 3" id="{{tab.key}}">
       <a ngbNavLink>{{tab.key}}
-        <span (click)="closeTestReport($event, i)">×</span>
+        <span (click)="closeTab($event, i)">×</span>
       </a>
-      <ng-template ngbNavContent>
-        <ng-container *ngComponentOutlet="tab.value; injector: injector"></ng-container>
+      <ng-template ngbNavContent *ngIf="tab.key === 'Compare'">
+        <ng-container *ngComponentOutlet="tab.value; injector: compareInjector"></ng-container>
+      </ng-template>
+      <ng-template ngbNavContent *ngIf="tab.key !== 'Compare'">
+        <ng-container *ngComponentOutlet="tab.value; injector: reportInjector"></ng-container>
       </ng-template>
     </li>
-    <li ngbNavItem [disabled]="true" class="ml-auto">
+    <li ngbNavItem [disabled]="true" class="ml-auto" id="version">
       <a ngbNavLink>v{{appVersion}}</a>
       <ng-template ngbNavContent></ng-template>
     </li>

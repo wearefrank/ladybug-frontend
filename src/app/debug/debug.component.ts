@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { TreeComponent } from '../shared/components/tree/tree.component';
-import { DisplayComponent } from '../shared/components/display/display.component';
+import { DisplayComponent } from './display/display.component';
 import { Report } from '../shared/interfaces/report';
-import { TreeNode } from '../shared/interfaces/tree-node';
+import { DebugTreeComponent } from './debug-tree/debug-tree.component';
 
 @Component({
   selector: 'app-debug',
@@ -10,38 +9,32 @@ import { TreeNode } from '../shared/interfaces/tree-node';
   styleUrls: ['./debug.component.css'],
 })
 export class DebugComponent {
-  @ViewChild(TreeComponent) treeComponent!: TreeComponent;
-  @Output() openCompareReportsEvent = new EventEmitter<any>();
+  @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
+  @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
   currentView: any = {};
 
   constructor() {}
 
-  addReportToTree(newReport: Report): void {
-    this.treeComponent.handleChange(newReport);
+  addReportToTree(report: Report): void {
+    this.debugTreeComponent.addReportToTree(report);
   }
 
-  showReportInDisplay(currentReport: TreeNode): void {
-    this.displayComponent.closeReport(false, -1);
-    setTimeout(() => {
-      this.displayComponent.showReport(currentReport);
-    }, 1000);
+  selectReport(currentReport: any): void {
+    let report = currentReport.owner.selectedItem.value;
+    this.displayComponent.showReport(report);
   }
 
   closeEntireTree(): void {
-    this.displayComponent.closeReport(false, -1);
+    this.displayComponent.closeReport(false);
   }
 
-  closeDisplayReport(): void {
-    this.displayComponent.closeReport(false, -1);
+  closeReport(currentReport: any): void {
+    this.debugTreeComponent.removeReport(currentReport);
   }
 
-  closeReport(currentReport: TreeNode): void {
-    this.treeComponent.removeNode(currentReport);
-  }
-
-  openCompareReport(reports: any) {
-    this.openCompareReportsEvent.emit(reports);
+  openSelectedReports(data: any) {
+    this.openSelectedCompareReportsEvent.emit(data);
   }
 
   changeView(view: any) {

@@ -1,9 +1,0 @@
-#metadataTable {
-  height: 30vh;
-  resize: vertical;
-  overflow: auto
-}
-
-#uploadFileTable {
-  display: none
-}

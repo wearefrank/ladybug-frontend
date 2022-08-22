@@ -4,7 +4,8 @@ describe('Debug tab download', function() {
   beforeEach(() => {
     cy.createReport();
     cy.createOtherReport();
-    cy.visit('')
+    cy.visit('');
+    cy.wait(500);
   });
 
   afterEach(() => {
@@ -24,9 +25,9 @@ describe('Debug tab download', function() {
   it('Download and upload table', function() {
     const downloadsFolder = Cypress.config('downloadsFolder');
     cy.task('downloads', downloadsFolder).then(filesBefore => {
-      cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
+      cy.get('.table-responsive table tbody').find('tr').should('have.length', 2);
       cy.get('#dropdownDownloadTable').click();
-      cy.get('button:contains("XML & Binary")[class="dropdown-item"]').click();
+      cy.get('#tableContent').find('button:contains("XML & Binary")[class="dropdown-item"]').click();
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
       cy.task('downloads', downloadsFolder).then(filesAfter => {
         const newFile = filesAfter.filter(file => !filesBefore.includes(file))[0];
@@ -38,8 +39,9 @@ describe('Debug tab download', function() {
         });
         cy.clearDebugStore();
         cy.get('#RefreshButton').click();
-        cy.get('.table-responsive tbody').find('tr').should('have.length', 0);
-        cy.get('div.treeview > ul > li').should('have.length', 0);
+        cy.wait(100);
+        cy.get('.table-responsive tbody').find('tr').should('not.exist');
+        cy.get('.jqx-tree-dropdown-root > li').should('have.length', 0);
         cy.readFile(cy.functions.downloadPath(newFile), 'binary')
         .then((rawContent) => {
           console.log(`Have content of uploaded file, length ${rawContent.length}`);
@@ -52,8 +54,8 @@ describe('Debug tab download', function() {
             fileName: newFile
           });
         });
-        cy.get('div.treeview > ul > li').should('have.length', 0);
-        cy.get('div.treeview > ul > li').should('have.length', 6);
+        cy.get('.jqx-tree-dropdown-root > li').should('have.length', 0);
+        cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
       });
     });
   });
@@ -62,9 +64,9 @@ describe('Debug tab download', function() {
     const downloadsFolder = Cypress.config('downloadsFolder');
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
     cy.get('button[id="OpenAllButton"]').click();
-    cy.get('div.treeview > ul > li').should('have.length', 6);
-    cy.get('div.treeview > ul > li:contains(Simple report)').should('have.length', 3)
-    cy.get('div.treeview > ul > li:contains(Another simple report)').should('have.length', 3);
+    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
+    cy.get('.jqx-tree-dropdown-root > li:contains(Simple report)').should('have.length', 1)
+    cy.get('.jqx-tree-dropdown-root > li:contains(Another simple report)').should('have.length', 1);
     // Debug store should not be cleared, because the report being downloaded
     // is requested here from the backend. The backend should still have the
     // report to have a valid test.
@@ -81,7 +83,7 @@ describe('Debug tab download', function() {
           cy.log(`Number of read bytes: ${buffer.length}`);
         });
         cy.get('button[id="CloseAllButton"]').click();
-        cy.get('div.treeview > ul > li').should('have.length', 0);
+        cy.get('.jqx-tree-dropdown-root > li').should('have.length', 0);
         cy.readFile(cy.functions.downloadPath(newFile), 'binary')
         .then(Cypress.Blob.binaryStringToBlob)
         .then(fileContent => {
@@ -92,9 +94,9 @@ describe('Debug tab download', function() {
         });
       });
     });
-    cy.get('div.treeview > ul > li').should('have.length', 6);
-    cy.get('div.treeview > ul > li:contains(Simple report)').should('have.length', 3)
-    cy.get('div.treeview > ul > li:contains(Another simple report)').should('have.length', 3);
+    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
+    cy.get('.jqx-tree-dropdown-root > li:contains(Simple report)').should('have.length', 1)
+    cy.get('.jqx-tree-dropdown-root > li:contains(Another simple report)').should('have.length', 1);
   });
 
   it('Download displayed report, from root node', function() {
@@ -112,19 +114,24 @@ describe('Debug tab download', function() {
 
 function testDownloadFromNode(nodeNum) {
   const downloadsFolder = Cypress.config('downloadsFolder');
+  cy.wait(100);
   cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
   cy.get('button[id="OpenAllButton"]').click();
-  cy.get('div.treeview > ul > li').should('have.length', 6);
-  cy.get('div.treeview > ul > li:contains(Simple report)').should('have.length', 3)
-  cy.get('div.treeview > ul > li:contains(Another simple report)').should('have.length', 3);
+  cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
+  cy.get('.jqx-tree-dropdown-root > li:contains(Simple report)').should('have.length', 1)
+  cy.get('.jqx-tree-dropdown-root > li:contains(Another simple report)').should('have.length', 1);
   // Debug store should not be cleared, because the report being downloaded
   // is requested here from the backend. The backend should still have the
   // report to have a valid test.
   //
   // We can not click the node to select it because it is selected already.
   // If we click, we unselect it and then no node is selected anymore.
-  cy.get(`div.treeview > ul > li:contains(Simple report):not(:contains(other)):eq(${nodeNum})`).selectIfNotSelected();
-  cy.wait(1000);
+  let string = '';
+  for (let i = 0; i < nodeNum; i++) {
+    string += '> ul > li'
+  }
+  cy.wait(100)
+  cy.get(`.jqx-tree-dropdown-root > li:contains(Simple report):not(li:contains(Another))` + string + ' > div').click();
   cy.task('downloads', downloadsFolder).should('have.length', 1).then(filesBefore => {
     cy.get('#dropdownDownloadDisplay').click();
     cy.get('#displayButtons button:contains("Binary"):not(:contains("XML"))[class="dropdown-item"]').click();
@@ -138,7 +145,7 @@ function testDownloadFromNode(nodeNum) {
         cy.log(`Number of read bytes: ${buffer.length}`);
       });
       cy.get('button[id="CloseAllButton"]').click();
-      cy.get('div.treeview > ul > li').should('have.length', 0);
+      cy.get('.jqx-tree-dropdown-root > li').should('have.length', 0);
       cy.readFile(cy.functions.downloadPath(newFile), 'binary')
       .then(Cypress.Blob.binaryStringToBlob)
       .then(fileContent => {
@@ -149,6 +156,6 @@ function testDownloadFromNode(nodeNum) {
       });
     });
   });
-  cy.get('div.treeview > ul > li', {timeout: 10000}).should('have.length', 3);
-  cy.get('div.treeview > ul > li:contains(Simple report):not(:contains(other))').should('have.length', 3)
+  cy.get('.jqx-tree-dropdown-root > li', {timeout: 10000}).should('have.length', 1);
+  cy.get('.jqx-tree-dropdown-root > li:contains(Simple report):not(:contains(other))').should('have.length', 1)
 }
