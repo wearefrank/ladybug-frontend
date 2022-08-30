@@ -77,11 +77,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount)" style="background-color: {{getStatusColor(row)}}">
+        <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index"
+            (click)="highLightRow(i);"
+            [ngClass]="{'highlight': selectedRow === i}"
+            style="background-color: {{getStatusColor(row)}}"
+        >
           <td>
             <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)">
           </td>
-          <td *ngFor="let metadataValue of row | enumToArray" (click)="openReport(row.storageId)">{{metadataValue}}</td>
+          <td *ngFor="let metadataValue of row | enumToArray" (click)="openReport(row.storageId);">{{metadataValue}}</td>
         </tr>
       </tbody>
     </table>

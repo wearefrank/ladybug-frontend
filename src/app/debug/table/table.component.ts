@@ -40,6 +40,7 @@ export class TableComponent implements OnInit {
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
+  selectedRow: number = -1;
 
   constructor(
     private httpService: HttpService,
@@ -96,6 +97,7 @@ export class TableComponent implements OnInit {
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
     this.retrieveRecords();
     this.changeViewEvent.emit(this.viewSettings.currentView);
+    this.selectedRow = -1;
   }
 
   loadData(): void {
@@ -206,6 +208,10 @@ export class TableComponent implements OnInit {
       report.xml = data.xml;
       this.openReportEvent.next(report);
     });
+  }
+
+  highLightRow(event: any) {
+    this.selectedRow = event;
   }
 
   openAllReports(): void {
