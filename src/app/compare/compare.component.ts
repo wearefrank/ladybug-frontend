@@ -48,5 +48,11 @@ export class CompareComponent implements AfterViewInit {
     this.diffComponent.left = leftSide;
     this.diffComponent.right = rightSide;
     this.diffComponent.renderDiffs();
+
+    setTimeout(() => {
+      document
+        .querySelector('.td-wrapper')
+        ?.setAttribute('style', 'background: linear-gradient(#e9ecef, #e9ecef) no-repeat center/2px 100%;');
+    });
   }
 }
