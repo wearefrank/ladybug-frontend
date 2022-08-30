@@ -1,4 +1,4 @@
 <div class="col h-100 p-0 flex-column" id="container">
   <app-compare-tree class="h-100" #trees (compareEvent)="showDifference($event)"></app-compare-tree>
-  <td-ngx-text-diff class="px-2 pb-2"#diffComponent></td-ngx-text-diff>
+    <td-ngx-text-diff class="pl-3 pb-2" style="overflow-y: scroll" #diffComponent></td-ngx-text-diff>
 </div>
