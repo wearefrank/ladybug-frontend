@@ -40,6 +40,8 @@ export class TableComponent implements OnInit {
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
+  selectedRow: number = -1;
+  @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
 
   constructor(
     private httpService: HttpService,
@@ -96,6 +98,7 @@ export class TableComponent implements OnInit {
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
     this.retrieveRecords();
     this.changeViewEvent.emit(this.viewSettings.currentView);
+    this.selectedRow = -1;
   }
 
   loadData(): void {
@@ -142,14 +145,30 @@ export class TableComponent implements OnInit {
   }
 
   getStatusColor(metadata: any): string {
-    if (this.viewSettings.currentView.metadataNames.includes('status')) {
-      return metadata.status == 'Success' ? '#c3e6cb' : '#f79c9c';
+    let statusName = this.viewSettings.currentView.metadataNames.find((name: string) => {
+      return name.toLowerCase() === 'status';
+    });
+    if (statusName && metadata[statusName]) {
+      return metadata[statusName].toLowerCase() === 'success' ? '#c3e6cb' : '#f79c9c';
     }
     return 'none';
   }
 
   showCompareButton(): boolean {
     return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 2;
+  }
+
+  showOpenInTabButton(): boolean {
+    return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 1;
+  }
+
+  openReportInTab(): void {
+    let reportTab = this.tableSettings.reportMetadata.find((report) => report.checked);
+    this.httpService.getReport(reportTab.storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
+      let report: Report = data.report;
+      report.xml = data.xml;
+      this.openReportInSeparateTabEvent.emit({ data: report, name: report.name });
+    });
   }
 
   compareTwoReports() {
@@ -206,6 +225,10 @@ export class TableComponent implements OnInit {
       report.xml = data.xml;
       this.openReportEvent.next(report);
     });
+  }
+
+  highLightRow(event: any) {
+    this.selectedRow = event;
   }
 
   openAllReports(): void {

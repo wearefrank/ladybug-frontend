@@ -118,6 +118,10 @@ html, body {
   background-color: #23c6c8 !important;
 }
 
+.jqx-tree-item {
+  padding: 0 !important;
+}
+
 .monaco-editor {
   position: absolute !important;
 }
