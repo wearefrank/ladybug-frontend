@@ -84,9 +84,6 @@ export class HelperService {
   }
 
   download(queryString: string, storage: string, exportBinary: boolean, exportXML: boolean) {
-    console.log(
-      'api/report/download/' + storage + '/' + exportBinary + '/' + exportXML + '?' + queryString.slice(0, -1)
-    );
     window.open(
       'api/report/download/' + storage + '/' + exportBinary + '/' + exportXML + '?' + queryString.slice(0, -1)
     );
@@ -136,11 +133,15 @@ export class HelperService {
   }
 
   createNode(report: Report, showingId: string, icon: string, index: number, level: number) {
+    let expanded = true;
+    if (level > 0) {
+      expanded = false;
+    }
     return {
       label: showingId + report.name,
       icon: icon,
       value: report,
-      expanded: true,
+      expanded: expanded,
       id: Math.random(),
       index: index,
       items: [],

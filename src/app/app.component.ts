@@ -45,7 +45,8 @@ export class AppComponent implements AfterViewInit {
   previousActive = 1;
   tabs: { key: string; value: any; id: string; data: any }[] = [];
 
-  openTestReport(data: any): void {
+  openReportInSeparateTab(defaultDisplay: boolean, data: any): void {
+    data.data.defaultDisplay = defaultDisplay;
     const tabIndex: number = this.tabs.findIndex((tab) => tab.id === data.data.storageId);
     if (tabIndex != -1) {
       this.active = this.FIXED_TAB_AMOUNT + tabIndex + 1;

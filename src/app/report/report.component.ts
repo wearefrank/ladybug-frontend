@@ -4,10 +4,13 @@ import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { HelperService } from '../shared/services/helper.service';
 import { EditDisplayComponent } from './edit-display/edit-display.component';
 import { DynamicService } from '../shared/services/dynamic.service';
+import { DisplayComponent } from '../debug/display/display.component';
 
 @Injectable()
 export class ReportData {
   data: {} = {};
+  defaultDisplay: any;
+  currentView: any;
 }
 
 @Component({
@@ -18,6 +21,9 @@ export class ReportData {
 export class ReportComponent implements AfterViewInit {
   @ViewChild('treeReference') treeReference!: jqxTreeComponent;
   @ViewChild(EditDisplayComponent) editDisplayComponent!: EditDisplayComponent;
+  @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
+  defaultDisplay: boolean = false;
+  currentView: any = {};
 
   constructor(
     public reportData: ReportData,
@@ -29,7 +35,12 @@ export class ReportComponent implements AfterViewInit {
     setTimeout(() => {
       this.createTree(<Report>(<unknown>this.reportData));
       this.treeReference.selectItem(this.treeReference.getItems()[0]);
-      this.editDisplayComponent?.showReport(this.reportData);
+      this.currentView = this.reportData.currentView;
+      if (this.reportData.defaultDisplay) {
+        this.displayComponent?.showReport(this.reportData);
+      } else {
+        this.editDisplayComponent?.showReport(this.reportData);
+      }
     });
   }
 
@@ -40,7 +51,11 @@ export class ReportComponent implements AfterViewInit {
 
   selectReport(currentReport: any): void {
     let report = currentReport.owner.selectedItem.value;
-    this.editDisplayComponent.showReport(report);
+    if (this.reportData.defaultDisplay) {
+      this.displayComponent.showReport(report);
+    } else {
+      this.editDisplayComponent.showReport(report);
+    }
   }
 
   savingReport(report: any) {

@@ -13,6 +13,7 @@ export class DebugTreeComponent implements AfterViewInit {
   @Output() selectReportEvent = new EventEmitter<any>();
   @Output() closeEntireTreeEvent = new EventEmitter<any>();
   loaded: boolean = false;
+  showOneAtATime: boolean = false;
   @Input() currentView: any = {};
 
   constructor(private helperService: HelperService) {}
@@ -24,10 +25,17 @@ export class DebugTreeComponent implements AfterViewInit {
     });
   }
 
+  toggleShowAmount(): void {
+    this.showOneAtATime = !this.showOneAtATime;
+  }
+
   addReportToTree(report: Report): void {
     let tree = this.helperService.convertReportToJqxTree(report);
-    this.treeReference.addTo(tree, null);
+    if (this.showOneAtATime) {
+      this.treeReference.clear();
+    }
 
+    this.treeReference.addTo(tree, null);
     this.treeReference.selectItem(
       // @ts-ignore
       this.treeReference.getItems()[this.treeReference.getItems().findIndex((item: any) => item.id == tree.items[0].id)]
