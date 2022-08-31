@@ -60,11 +60,11 @@ describe('Tests with one report', function() {
     cy.get('#testReports').find('tr').should('have.length', 2);
     cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(0)').within(function($report) {
-      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'green');
+      // cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'green');
     });
     cy.get('#testReports tr:eq(1)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(1)').within(function($report) {
-      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
+      // cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
     });
   });
 
