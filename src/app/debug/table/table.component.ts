@@ -145,8 +145,11 @@ export class TableComponent implements OnInit {
   }
 
   getStatusColor(metadata: any): string {
-    if (this.viewSettings.currentView.metadataNames.includes('status')) {
-      return metadata.status == 'Success' ? '#c3e6cb' : '#f79c9c';
+    let statusName = this.viewSettings.currentView.metadataNames.find((name: string) => {
+      return name.toLowerCase() === 'status';
+    });
+    if (statusName && metadata[statusName]) {
+      return metadata[statusName].toLowerCase() === 'success' ? '#c3e6cb' : '#f79c9c';
     }
     return 'none';
   }
