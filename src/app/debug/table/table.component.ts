@@ -41,6 +41,7 @@ export class TableComponent implements OnInit {
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
   selectedRow: number = -1;
+  @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
 
   constructor(
     private httpService: HttpService,
@@ -152,6 +153,19 @@ export class TableComponent implements OnInit {
 
   showCompareButton(): boolean {
     return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 2;
+  }
+
+  showOpenInTabButton(): boolean {
+    return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 1;
+  }
+
+  openReportInTab(): void {
+    let reportTab = this.tableSettings.reportMetadata.find((report) => report.checked);
+    this.httpService.getReport(reportTab.storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
+      let report: Report = data.report;
+      report.xml = data.xml;
+      this.openReportInSeparateTabEvent.emit({ data: report, name: reportTab.name });
+    });
   }
 
   compareTwoReports() {

@@ -58,6 +58,7 @@
     </span>
 
     <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
+    <app-button [text]="'Open In New Tab'" *ngIf="showOpenInTabButton()" (click)="openReportInTab()"></app-button>
 
   </div>
   <div class="table-responsive" id="metadataTable">

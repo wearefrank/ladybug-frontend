@@ -10,6 +10,7 @@ import { DebugTreeComponent } from './debug-tree/debug-tree.component';
 })
 export class DebugComponent {
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
+  @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
   currentView: any = {};
@@ -39,5 +40,10 @@ export class DebugComponent {
 
   changeView(view: any) {
     this.currentView = view;
+  }
+
+  openReportInSeparateTab(data: any) {
+    data.data.currentView = this.currentView;
+    this.openReportInSeparateTabEvent.emit(data);
   }
 }

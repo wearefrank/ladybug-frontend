@@ -26,7 +26,7 @@ export class TestComponent implements OnInit {
     storageName: 'Test',
   }; // Hard-coded for now
   targetStorage: string = 'Debug';
-  @Output() openTestReportEvent = new EventEmitter<any>();
+  @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
@@ -164,7 +164,7 @@ export class TestComponent implements OnInit {
     this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
-      this.openTestReportEvent.emit({ data: report, name: name });
+      this.openReportInSeparateTabEvent.emit({ data: report, name: name });
     });
   }
 

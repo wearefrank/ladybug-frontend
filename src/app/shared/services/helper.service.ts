@@ -84,9 +84,6 @@ export class HelperService {
   }
 
   download(queryString: string, storage: string, exportBinary: boolean, exportXML: boolean) {
-    console.log(
-      'api/report/download/' + storage + '/' + exportBinary + '/' + exportXML + '?' + queryString.slice(0, -1)
-    );
     window.open(
       'api/report/download/' + storage + '/' + exportBinary + '/' + exportXML + '?' + queryString.slice(0, -1)
     );
