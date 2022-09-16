@@ -1,4 +1,19 @@
 #container {
   display: flex;
   background-color: white;
+  height: 94vh;
+}
+
+.trees {
+  min-height: 18vh;
+  resize: vertical;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.text-diff-container {
+  min-height: 38vh;
+  border-top: 1px solid #dee2e6;
+  flex-grow: 3;
+  overflow-y: scroll
 }

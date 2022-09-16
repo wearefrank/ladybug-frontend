@@ -1,8 +1,16 @@
-<div class="row h-100" id="tree-container">
-  <div class="col-6 p-2 h-100">
-    <jqxTree #leftTreeReference (onItemClick)="nodeSelected($event, true)" [auto-create]="false"></jqxTree>
+<div class="row" id="tree-container">
+  <div class="compare-header row col-12 p-2">
+    <label class="p-2" title="This option toggles between synchronising the compare tree steps or selecting both of the tree steps yourself">
+      Synchronise compare trees:
+    </label>
+    <app-toggle [(state)]="syncTrees"></app-toggle>
   </div>
-  <div class="col-6 p-2 h-100">
-    <jqxTree #rightTreeReference (onItemClick)="nodeSelected($event, false)" [auto-create]="false"></jqxTree>
+  <div class="trees-container row col-12 p-2">
+    <div class="col-6 h-100">
+      <jqxTree #leftTreeReference (onItemClick)="nodeSelected($event, true)" [auto-create]="false"></jqxTree>
+    </div>
+    <div class="col-6 h-100">
+      <jqxTree #rightTreeReference (onItemClick)="nodeSelected($event, false)" [auto-create]="false"></jqxTree>
+    </div>
   </div>
 </div>
