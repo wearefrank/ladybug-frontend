@@ -20,6 +20,7 @@ export class TableComponent implements OnInit {
     defaultView: '',
     views: [],
     currentView: {},
+    currentViewName: '',
   };
 
   tableSettings: TableSettings = {
@@ -96,6 +97,7 @@ export class TableComponent implements OnInit {
 
   changeView(event: any) {
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
+    this.viewSettings.currentViewName = event.target.value;
     this.retrieveRecords();
     this.changeViewEvent.emit(this.viewSettings.currentView);
     this.selectedRow = -1;
@@ -103,12 +105,18 @@ export class TableComponent implements OnInit {
 
   loadData(): void {
     this.httpService.getViews().subscribe((views) => {
-      this.viewSettings.views = views;
-      this.viewSettings.defaultView = Object.keys(this.viewSettings.views).find(
-        (view) => this.viewSettings.views[view].defaultView
-      );
-      this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.defaultView];
-      this.changeViewEvent.emit(this.viewSettings.currentView);
+      if (Object.keys(this.viewSettings.currentView).length > 0) {
+        this.changeViewEvent.emit(this.viewSettings.currentView);
+      } else {
+        this.viewSettings.views = views;
+        this.viewSettings.currentViewName = Object.keys(this.viewSettings.views).find(
+          (view) => this.viewSettings.views[view].defaultView
+        );
+
+        this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
+
+        this.changeViewEvent.emit(this.viewSettings.currentView);
+      }
 
       this.retrieveRecords();
       this.getUserHelp();
