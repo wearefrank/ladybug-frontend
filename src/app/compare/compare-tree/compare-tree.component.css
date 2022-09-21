@@ -5,7 +5,7 @@
 .compare-header {
   display: flex;
   align-items: center;
-  height: 5vh;
+  height: 50px;
   border-bottom: 1px solid #dee2e6;
 }
 
