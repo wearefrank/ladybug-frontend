@@ -25,3 +25,8 @@
   flex-flow: column;
   height: 100%;
 }
+
+.table-row:hover {
+  cursor: pointer;
+  filter: brightness(85%);
+}
