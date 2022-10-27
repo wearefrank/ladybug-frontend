@@ -166,7 +166,7 @@ jobs:
           start: |
             yarn run startCicd
           wait-on: 'http://localhost:8090, http://localhost:4200'
-          wait-on-timeout: 7200
+          wait-on-timeout: 240
           browser: chrome
 #      - name: Run cypress with firefox browser
 #        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
@@ -186,7 +186,7 @@ jobs:
         with:
           working-directory: ladybug-frontend
           wait-on: 'http://localhost:8090'
-          wait-on-timeout: 7200
+          wait-on-timeout: 240
           browser: chrome
           config: baseUrl=http://localhost:8090/ladybug/
 #      - name: Run cypress with firefox browser - real frontend
