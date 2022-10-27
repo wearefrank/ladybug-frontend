@@ -128,21 +128,21 @@ jobs:
           path: ibis-ladybug-test-webapp
 
       - name: Cache Frank!Runner dependencies - build
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: frank-runner/build
           key: ${{ runner.os }}-frank-runner-build
           restore-keys: |
             ${{ runner.os }}-frank-runner-build
       - name: Cache Frank!Runner dependencies - download
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: frank-runner/download
           key: ${{ runner.os }}-frank-runner-download
           restore-keys: |
             ${{ runner.os }}-frank-runner-download
       - name: Cache Maven downloads
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2/repository/
           key: ${{ runner.os }}-maven
@@ -166,7 +166,7 @@ jobs:
           start: |
             yarn run startCicd
           wait-on: 'http://localhost:8090, http://localhost:4200'
-          wait-on-timeout: 240
+          wait-on-timeout: 7200
           browser: chrome
 #      - name: Run cypress with firefox browser
 #        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
@@ -186,7 +186,7 @@ jobs:
         with:
           working-directory: ladybug-frontend
           wait-on: 'http://localhost:8090'
-          wait-on-timeout: 240
+          wait-on-timeout: 7200
           browser: chrome
           config: baseUrl=http://localhost:8090/ladybug/
 #      - name: Run cypress with firefox browser - real frontend
