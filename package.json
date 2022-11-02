@@ -17,7 +17,8 @@
     "e2e-webjar": "cypress run --config baseUrl=http://localhost/ladybug/",
     "lint": "ng lint",
     "prepare": "husky install",
-    "startServer": "cd ../frank-runner/specials/ibis-ladybug && ./restart.sh > serverStartLog.log"
+    "installFrankRunnerEnv": "cd ../frank-runner && ./env.sh > installFrankRunnerEnv.log",
+    "startServer": "cd ../frank-runner/specials/ibis-ladybug && ./restart.sh -Dupdate.strategy=none > serverStartLog.log"
   },
   "dependencies": {
     "@angular/animations": "13.1.1",
