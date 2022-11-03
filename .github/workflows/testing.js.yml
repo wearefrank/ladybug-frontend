@@ -128,21 +128,21 @@ jobs:
           path: ibis-ladybug-test-webapp
 
       - name: Cache Frank!Runner dependencies - build
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: frank-runner/build
           key: ${{ runner.os }}-frank-runner-build
           restore-keys: |
             ${{ runner.os }}-frank-runner-build
       - name: Cache Frank!Runner dependencies - download
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: frank-runner/download
           key: ${{ runner.os }}-frank-runner-download
           restore-keys: |
             ${{ runner.os }}-frank-runner-download
       - name: Cache Maven downloads
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2/repository/
           key: ${{ runner.os }}-maven
@@ -154,7 +154,11 @@ jobs:
       - name: Remove old catalina.out
         run: rm -rf frank-runner/build/apache-tomcat-9.0.56/logs/catalina.out
 
-      - name: Start server using Frank!Runner
+      - name: Let Frank!Runner do its downloads
+        run: yarn run installFrankRunnerEnv
+        working-directory: ladybug-frontend
+
+      - name: Start server using Frank!Runner in background
         run: yarn run startServer &
         working-directory: ladybug-frontend
 
@@ -203,6 +207,12 @@ jobs:
         run: tree -d -L 5 .
         if: always()
 
+      - name: Store log of Frank!Runner downloads
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: installFrankRunnerEnv.log
+          path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner
         uses: actions/upload-artifact@v3
         if: always()
