@@ -13,23 +13,28 @@ export class CompareTreeComponent {
   @Output() compareEvent = new EventEmitter<any>();
   @ViewChild('leftTreeReference') leftTreeReference!: jqxTreeComponent;
   @ViewChild('rightTreeReference') rightTreeReference!: jqxTreeComponent;
+  syncTrees: boolean = true;
+  leftReport: any;
+  rightReport: any;
 
   nodeSelected(data: any, left: boolean) {
-    let leftReport: any;
-    let rightReport: any;
-    if (left) {
-      leftReport = data.owner.selectedItem;
-      const index = this.leftTreeReference.getItems().findIndex((item: any) => item.id == leftReport.id);
-      rightReport = this.rightTreeReference.getItems()[index];
-      this.rightTreeReference.selectItem(rightReport);
+    if (this.syncTrees) {
+      if (left) {
+        this.leftReport = data.owner.selectedItem;
+        const index = this.leftTreeReference.getItems().findIndex((item: any) => item.id == this.leftReport.id);
+        this.rightReport = this.rightTreeReference.getItems()[index];
+        this.rightTreeReference.selectItem(this.rightReport);
+      } else {
+        this.rightReport = data.owner.selectedItem;
+        const index = this.rightTreeReference.getItems().findIndex((item: any) => item.id == this.rightReport.id);
+        this.leftReport = this.leftTreeReference.getItems()[index];
+        this.leftTreeReference.selectItem(this.leftReport);
+      }
     } else {
-      rightReport = data.owner.selectedItem;
-      const index = this.rightTreeReference.getItems().findIndex((item: any) => item.id == rightReport.id);
-      leftReport = this.leftTreeReference.getItems()[index];
-      this.leftTreeReference.selectItem(leftReport);
+      left ? (this.leftReport = data.owner.selectedItem) : (this.rightReport = data.owner.selectedItem);
     }
 
-    this.compareEvent.emit({ leftReport: leftReport, rightReport: rightReport });
+    this.compareEvent.emit({ leftReport: this.leftReport, rightReport: this.rightReport });
   }
 
   createTrees(leftReport: Report, rightReport: Report) {
@@ -44,11 +49,13 @@ export class CompareTreeComponent {
   }
 
   selectFirstItem() {
-    this.leftTreeReference.selectItem(this.leftTreeReference.getItems()[0]);
-    this.rightTreeReference.selectItem(this.rightTreeReference.getItems()[0]);
+    this.leftReport = this.leftTreeReference.getItems()[0];
+    this.rightReport = this.rightTreeReference.getItems()[0];
+    this.leftTreeReference.selectItem(this.leftReport);
+    this.rightTreeReference.selectItem(this.rightReport);
     this.compareEvent.emit({
-      leftReport: this.leftTreeReference.getItems()[0],
-      rightReport: this.rightTreeReference.getItems()[0],
+      leftReport: this.leftReport,
+      rightReport: this.rightReport,
     });
   }
 

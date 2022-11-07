@@ -1,3 +1,18 @@
 #tree-container {
   background: linear-gradient(#e9ecef, #e9ecef) no-repeat center/2px 100%;
 }
+
+.compare-header {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.trees-container {
+  height: 46vh;
+}
+
+label {
+  margin: 0;
+}

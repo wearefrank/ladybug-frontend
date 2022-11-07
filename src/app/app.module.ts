@@ -30,6 +30,7 @@ import { CompareTreeComponent } from './compare/compare-tree/compare-tree.compon
 import { EditDisplayComponent } from './report/edit-display/edit-display.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DebugTreeComponent } from './debug/debug-tree/debug-tree.component';
+import { ToggleComponent } from './shared/components/toggle/toggle.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { DebugTreeComponent } from './debug/debug-tree/debug-tree.component';
     CompareTreeComponent,
     EditDisplayComponent,
     DebugTreeComponent,
+    ToggleComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,16 @@
 #container {
   display: flex;
+  flex-direction: column;
   background-color: white;
+  height: 94vh;
+}
+
+.trees {
+  resize: vertical;
+  overflow: auto;
+}
+
+.text-diff-container {
+  border-top: 1px solid #dee2e6;
+  overflow-y: auto;
 }

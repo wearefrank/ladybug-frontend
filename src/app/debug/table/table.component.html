@@ -33,7 +33,7 @@
 
     <div class="col-2 my-2 mx-1 px-2">
       <select class="form-control" (change)="changeView($event)">
-        <option *ngFor="let view of getViewNames()" [selected]="viewSettings.defaultView === view" value="{{view}}">{{view}}</option>
+        <option *ngFor="let view of viewSettings.views | keyvalue" selected="view.key === viewSettings.currentViewName" value="{{view.key}}">{{view.key}}</option>
       </select>
     </div>
 
@@ -78,7 +78,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index"
+        <tr class="table-row" *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index"
             (click)="highLightRow(i);"
             [ngClass]="{'highlight': selectedRow === i}"
             style="background-color: {{getStatusColor(row)}}"

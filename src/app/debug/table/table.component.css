@@ -2,6 +2,7 @@
   resize: vertical;
   overflow: auto;
   height: 100%;
+  max-height: 31vh;
 }
 
 .highlight {
@@ -23,4 +24,9 @@
   width: 100% !important;
   flex-flow: column;
   height: 100%;
+}
+
+.table-row:hover {
+  cursor: pointer;
+  filter: brightness(85%);
 }
