@@ -29,7 +29,9 @@ describe('Tests with one report', function() {
     cy.get('li#debugTab').click();
   });
 
-  it('Test copy in testtab', function() {
+  // May fail because of issue https://github.com/ibissource/ladybug-frontend/issues/250.
+  // TODO: Fix issue and re-enable test.
+  xit('Test copy in testtab', function() {
     cy.functions.testTabSelectReportNamed('Simple report');
     cy.get('#CopySelectedButton').click();
     cy.get('#testReports').find('tr').should('have.length', 2);
@@ -60,15 +62,17 @@ describe('Tests with one report', function() {
     cy.get('#testReports').find('tr').should('have.length', 2);
     cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(0)').within(function($report) {
-      // cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'green');
+      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'green');
     });
     cy.get('#testReports tr:eq(1)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(1)').within(function($report) {
-      // cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
+      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
     });
   });
 
-  it('Rerun, replace, succeed', function() {
+  // May fail because of issue https://github.com/ibissource/ladybug-frontend/issues/250.
+  // TODO: Fix issue and re-enable test.
+  xit('Rerun, replace, succeed', function() {
     cy.functions.testTabSelectReportNamed('Simple report');
     cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(0)').within(function($report) {
