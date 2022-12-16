@@ -56,7 +56,8 @@ export class TableComponent implements OnInit {
   }
 
   retrieveRecords() {
-    this.httpService
+    this.tableSettings.reportMetadata = [];
+    const httpServiceSubscription = this.httpService
       .getMetadataReports(
         this.tableSettings.displayAmount,
         this.tableSettings.filterValue,
@@ -72,6 +73,7 @@ export class TableComponent implements OnInit {
             type: 'success',
             message: 'Data loaded!',
           });
+          httpServiceSubscription.unsubscribe();
         },
         error: () => {
           catchError(this.httpService.handleError());
