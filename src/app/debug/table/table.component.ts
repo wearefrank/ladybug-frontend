@@ -42,6 +42,7 @@ export class TableComponent implements OnInit {
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
   selectedRow: number = -1;
+  doneRetrieving: boolean = false;
   @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
 
   constructor(
@@ -56,6 +57,7 @@ export class TableComponent implements OnInit {
   }
 
   retrieveRecords() {
+    this.doneRetrieving = false;
     this.tableSettings.reportMetadata = [];
     const httpServiceSubscription = this.httpService
       .getMetadataReports(
@@ -73,6 +75,7 @@ export class TableComponent implements OnInit {
             type: 'success',
             message: 'Data loaded!',
           });
+          this.doneRetrieving = true;
           httpServiceSubscription.unsubscribe();
         },
         error: () => {
