@@ -26,9 +26,9 @@
     <app-button [title]="'Select All'" [text]="'Select All'" (click)="selectAll()"></app-button>
     <app-button [title]="'Deselect All'" [text]="'Deselect All'" (click)="deselectAll()"></app-button>
 
-    <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();" (keyup)="changeTableLimit($event)">
+    <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
       <div class="input-group-append">
-          <input type="number" id="displayAmount" class="form-control px-1" value="{{tableSettings.displayAmount}}">
+          <input type="number" id="displayAmount" class="form-control px-1" value="{{tableSettings.displayAmount}}" (blur)="changeTableLimit($event)">
         <div class="input-group-text">/{{metadataCount}}</div>
       </div>
     </form>
