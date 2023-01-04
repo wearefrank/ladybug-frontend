@@ -119,7 +119,6 @@ export class TableComponent implements OnInit {
         );
 
         this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
-
         this.changeViewEvent.emit(this.viewSettings.currentView);
       }
 
@@ -184,6 +183,22 @@ export class TableComponent implements OnInit {
     });
   }
 
+  openSelected(): void {
+    this.tableSettings.reportMetadata.forEach((report) => {
+      if (report.checked) {
+        this.openReport(report.storageId);
+      }
+    });
+  }
+
+  selectAll(): void {
+    this.tableSettings.reportMetadata.forEach((report) => (report.checked = true));
+  }
+
+  deselectAll(): void {
+    this.tableSettings.reportMetadata.forEach((report) => (report.checked = false));
+  }
+
   compareTwoReports() {
     let compareReports: any = {};
 
@@ -244,10 +259,6 @@ export class TableComponent implements OnInit {
     this.selectedRow = event;
   }
 
-  openAllReports(): void {
-    this.tableSettings.reportMetadata.forEach((report: any) => this.openReport(report.storageId));
-  }
-
   openLatestReports(amount: number): void {
     this.httpService.getLatestReports(amount, this.viewSettings.currentView.storageName).subscribe((data) => {
       data.forEach((report: any) => {
@@ -276,14 +287,13 @@ export class TableComponent implements OnInit {
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
-    const queryString: string = this.tableSettings.reportMetadata.reduce(
-      (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
-      ''
-    );
+    const queryString: string = this.tableSettings.reportMetadata
+      .filter((report) => report.checked)
+      .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '');
     if (queryString !== '') {
       this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
     } else {
-      this.toastComponent.addAlert({ type: 'warning', message: 'No reports to download' });
+      this.toastComponent.addAlert({ type: 'warning', message: 'No reports selected to download' });
     }
   }
 
