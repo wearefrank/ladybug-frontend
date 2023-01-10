@@ -19,23 +19,19 @@ export class CompareTreeComponent {
 
   nodeSelected(data: any, left: boolean) {
     if (this.syncTrees) {
-      if (left) {
-        this.leftReport = data.owner.selectedItem;
-        let path = this.getFullPath(this.leftReport, [this.leftReport.value.name]);
-        this.rightReport = this.matchFullPath(this.rightTreeReference.getItems()[0], path);
-        if (this.rightReport) {
-          this.unfoldTree(this.rightTreeReference, this.rightReport, this.rightReport.parentId);
-          this.rightTreeReference.selectItem(this.rightReport);
-        }
+      let treeReference: jqxTreeComponent = left ? this.rightTreeReference : this.leftTreeReference;
+      let selectedReport = data.owner.selectedItem;
+      let path = this.getFullPath(selectedReport, [selectedReport.value.name]);
+      let otherReport = this.matchFullPath(treeReference.getItems()[0], path);
+      if (otherReport) {
+        this.unfoldTree(treeReference, otherReport, otherReport.parentId);
+        treeReference.selectItem(otherReport);
       } else {
-        this.rightReport = data.owner.selectedItem;
-        let path = this.getFullPath(this.rightReport, [this.rightReport.value.name]);
-        this.leftReport = this.matchFullPath(this.leftTreeReference.getItems()[0], path);
-        if (this.leftReport) {
-          this.unfoldTree(this.leftTreeReference, this.leftReport, this.leftReport.parentId);
-          this.leftTreeReference.selectItem(this.leftReport);
-        }
+        treeReference.selectItem(null);
       }
+
+      this.leftReport = left ? selectedReport : otherReport;
+      this.rightReport = left ? otherReport : selectedReport;
     } else {
       left ? (this.leftReport = data.owner.selectedItem) : (this.rightReport = data.owner.selectedItem);
     }
