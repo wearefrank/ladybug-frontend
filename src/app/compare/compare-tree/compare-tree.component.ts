@@ -21,20 +21,78 @@ export class CompareTreeComponent {
     if (this.syncTrees) {
       if (left) {
         this.leftReport = data.owner.selectedItem;
-        const index = this.leftTreeReference.getItems().findIndex((item: any) => item.id == this.leftReport.id);
-        this.rightReport = this.rightTreeReference.getItems()[index];
-        this.rightTreeReference.selectItem(this.rightReport);
+        let path = this.getFullPath(this.leftReport, [this.leftReport.value.name]);
+        this.rightReport = this.matchFullPath(this.rightTreeReference.getItems()[0], path);
+        if (this.rightReport) {
+          this.unfoldTree(this.rightTreeReference, this.rightReport, this.rightReport.parentId);
+          this.rightTreeReference.selectItem(this.rightReport);
+        }
       } else {
         this.rightReport = data.owner.selectedItem;
-        const index = this.rightTreeReference.getItems().findIndex((item: any) => item.id == this.rightReport.id);
-        this.leftReport = this.leftTreeReference.getItems()[index];
-        this.leftTreeReference.selectItem(this.leftReport);
+        let path = this.getFullPath(this.rightReport, [this.rightReport.value.name]);
+        this.leftReport = this.matchFullPath(this.leftTreeReference.getItems()[0], path);
+        if (this.leftReport) {
+          this.unfoldTree(this.leftTreeReference, this.leftReport, this.leftReport.parentId);
+          this.leftTreeReference.selectItem(this.leftReport);
+        }
       }
     } else {
       left ? (this.leftReport = data.owner.selectedItem) : (this.rightReport = data.owner.selectedItem);
     }
 
     this.compareEvent.emit({ leftReport: this.leftReport, rightReport: this.rightReport });
+  }
+
+  getParent(checkpoint: any, parentId: string): any {
+    let items = checkpoint.treeInstance.items;
+    return items.find((item: any) => item.id == parentId);
+  }
+
+  unfoldTree(treeReference: any, checkpoint: any, parentId: string) {
+    while (parentId.toString() !== '0') {
+      treeReference.expandItem(checkpoint);
+      parentId = checkpoint.parentId;
+      checkpoint = this.getParent(checkpoint, checkpoint.parentId);
+    }
+  }
+
+  getFullPath(checkpoint: any, pathSoFar: string[]): string[] {
+    let parent = this.getParent(checkpoint, checkpoint.parentId);
+    if (parent) {
+      pathSoFar.push(parent.value.name);
+      return this.getFullPath(parent, pathSoFar);
+    }
+
+    return pathSoFar;
+  }
+
+  matchFullPath(checkpoint: any, path: string[]): any {
+    if (path.length === 0) return checkpoint;
+
+    let toBeSelected = null;
+    let firstPart = path.shift();
+    checkpoint.treeInstance.items.every((item: any) => {
+      if (item.value.name === firstPart) {
+        let result = this.checkIfSameParents(item, item.parentId, path);
+        if (result) {
+          toBeSelected = item;
+          return false; //Breaking since we found him;
+        }
+      }
+      return true;
+    });
+
+    return toBeSelected;
+  }
+
+  checkIfSameParents(checkpoint: string, parentId: string, path: string[]): boolean {
+    if (path.length === 0) return true;
+    let parent = this.getParent(checkpoint, parentId);
+    if (parent && parent.value.name == path[0]) {
+      path.shift();
+      return this.checkIfSameParents(parent, parent.parentId, path);
+    }
+    return false;
   }
 
   createTrees(leftReport: Report, rightReport: Report) {
