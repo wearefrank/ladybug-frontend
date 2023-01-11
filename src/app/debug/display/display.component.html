@@ -1,4 +1,4 @@
-<div *ngIf="displayReport">
+<div [hidden]="!displayReport">
   <div class="row" id="displayButtons">
     <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
     <app-button *ngIf="report.encoding === 'Base64'" [text]="'Base64'" [title]="'Convert to Base64'" (click)="changeEncoding($event)"></app-button>
@@ -51,9 +51,7 @@
     </div>
   </div>
 
-  <div id="monacoEditor">
-    <app-monaco-editor></app-monaco-editor>
-  </div>
+  <app-editor></app-editor>
 
   <div class="pt-4">
     <app-display-table [report]="report"></app-display-table>

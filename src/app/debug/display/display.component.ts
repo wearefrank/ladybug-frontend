@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { MonacoEditorComponent } from '../../shared/components/monaco-editor/monaco-editor.component';
 // @ts-ignore
 import DiffMatchPatch from 'diff-match-patch';
 import { HttpService } from '../../shared/services/http.service';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { HelperService } from '../../shared/services/helper.service';
+import { EditorComponent } from '../../shared/components/editor/editor.component';
 
 @Component({
   selector: 'app-display',
@@ -17,23 +17,16 @@ export class DisplayComponent {
   report: any = {};
   @Input() currentView: any = {};
   @Output() closeReportEvent = new EventEmitter<any>();
-  @ViewChild(MonacoEditorComponent)
-  monacoEditorComponent!: MonacoEditorComponent;
+  @ViewChild(EditorComponent) editor!: EditorComponent;
   @ViewChild(DisplayTableComponent)
   displayTableComponent!: DisplayTableComponent;
 
   constructor(private modalService: NgbModal, private httpService: HttpService, private helperService: HelperService) {}
 
   showReport(report: any): void {
-    setTimeout(() => {
-      this.report = report;
-      report.xml ? this.loadMonacoCode(report.xml) : this.loadMonacoCode(this.helperService.convertMessage(report));
-    });
+    this.report = report;
+    report.xml ? this.editor.setValue(report.xml) : this.editor.setValue(this.helperService.convertMessage(report));
     this.displayReport = true;
-  }
-
-  loadMonacoCode(message: string): void {
-    this.monacoEditorComponent?.loadMonaco(message);
   }
 
   closeReport(removeReportFromTree: boolean): void {
@@ -44,7 +37,7 @@ export class DisplayComponent {
   }
 
   changeEncoding(button: any): void {
-    this.loadMonacoCode(this.helperService.changeEncoding(this.report, button));
+    this.editor.setValue(this.helperService.changeEncoding(this.report, button));
   }
 
   copyReport(): void {

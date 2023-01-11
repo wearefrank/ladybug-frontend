@@ -1,11 +1,11 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { DifferenceModal } from '../../shared/interfaces/difference-modal';
-import { MonacoEditorComponent } from '../../shared/components/monaco-editor/monaco-editor.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
 // @ts-ignore
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
+import { EditorComponent } from '../../shared/components/editor/editor.component';
 
 @Component({
   selector: 'app-edit-display',
@@ -22,7 +22,7 @@ export class EditDisplayComponent {
     storageName: 'Test',
   };
   @Output() saveReportEvent = new EventEmitter<any>();
-  @ViewChild(MonacoEditorComponent) monacoEditorComponent!: MonacoEditorComponent;
+  @ViewChild(EditorComponent) editor!: EditorComponent;
   @ViewChild('name') name!: ElementRef;
   @ViewChild('description') description!: ElementRef;
   @ViewChild('path') path!: ElementRef;
@@ -35,17 +35,13 @@ export class EditDisplayComponent {
 
   showReport(report: any): void {
     this.report = report;
-    report.xml ? this.loadMonacoCode(report.xml) : this.loadMonacoCode(this.helperService.convertMessage(report));
+    report.xml ? this.editor.setValue(report.xml) : this.editor.setValue(this.helperService.convertMessage(report));
     this.rerunResult = '';
     this.disableEditing(); // For switching from editing current report to another
   }
 
-  loadMonacoCode(message: string): void {
-    this.monacoEditorComponent?.loadMonaco(message);
-  }
-
   changeEncoding(button: any): void {
-    this.loadMonacoCode(this.helperService.changeEncoding(this.report, button));
+    this.editor.setValue(this.helperService.changeEncoding(this.report, button));
   }
 
   rerunReport(): void {
@@ -95,7 +91,7 @@ export class EditDisplayComponent {
       this.addToDifferenceModal('transformation', this.transformation.nativeElement.value);
       this.addToDifferenceModal('variables', this.variables.nativeElement.value);
     } else {
-      this.addToDifferenceModal('message', this.monacoEditorComponent?.getValue());
+      this.addToDifferenceModal('message', this.editor?.getValue());
     }
 
     modal.type = type;
@@ -120,7 +116,7 @@ export class EditDisplayComponent {
       transformation: this.transformation?.nativeElement.value ?? '',
       checkpointId: checkpointId,
       variables: this.variables?.nativeElement.value ?? '',
-      checkpointMessage: this.monacoEditorComponent?.getValue() ?? '',
+      checkpointMessage: this.editor?.getValue() ?? '',
     };
   }
 
@@ -134,14 +130,14 @@ export class EditDisplayComponent {
       this.editingRootNode = true;
     } else {
       this.editingChildNode = true;
-      this.monacoEditorComponent.enableEdit();
+      this.editor.enableEdit();
     }
   }
 
   disableEditing() {
     if (this.editingChildNode) {
       this.editingChildNode = false;
-      this.monacoEditorComponent?.disableEdit();
+      this.editor?.disableEdit();
     }
     this.editingRootNode = false;
   }
@@ -159,7 +155,7 @@ export class EditDisplayComponent {
 
   discardChanges() {
     if (!this.report.xml) {
-      this.monacoEditorComponent.loadMonaco(this.differenceModal[0].originalValue);
+      this.editor.setValue(this.differenceModal[0].originalValue);
     }
   }
 

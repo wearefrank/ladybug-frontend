@@ -12,7 +12,6 @@ import { ButtonComponent } from './shared/components/button/button.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
-import { MonacoEditorComponent } from './shared/components/monaco-editor/monaco-editor.component';
 import { MatSortModule } from '@angular/material/sort';
 import { ReportComponent } from './report/report.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
@@ -31,6 +30,7 @@ import { EditDisplayComponent } from './report/edit-display/edit-display.compone
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DebugTreeComponent } from './debug/debug-tree/debug-tree.component';
 import { ToggleComponent } from './shared/components/toggle/toggle.component';
+import { EditorComponent } from './shared/components/editor/editor.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +41,6 @@ import { ToggleComponent } from './shared/components/toggle/toggle.component';
     TableComponent,
     DisplayComponent,
     ButtonComponent,
-    MonacoEditorComponent,
     ReportComponent,
     ToastComponent,
     TestSettingsModalComponent,
@@ -54,6 +53,7 @@ import { ToggleComponent } from './shared/components/toggle/toggle.component';
     EditDisplayComponent,
     DebugTreeComponent,
     ToggleComponent,
+    EditorComponent,
   ],
   imports: [
     BrowserModule,
