@@ -13,7 +13,11 @@
 .bottom {
   flex: 1 1 auto;
   overflow-x: hidden;
-  overflow-y: auto;
+}
+
+.debug-tree {
+  flex: 0 1 auto;
+  height: 100%;
 }
 
 .debug-display {
