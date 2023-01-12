@@ -1,6 +1,6 @@
 <div class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
   <div class="row">
-    <app-button [icon]="'fa fa-undo'" [title]="'Refresh'" (click)="refresh()"></app-button>
+    <app-button [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
 
     <button type="button" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
@@ -66,7 +66,7 @@
   <div [hidden]="doneRetrieving">
     <mat-spinner [mode]="'indeterminate'" [diameter]="30"></mat-spinner>
   </div>
-  <div *ngIf="doneRetrieving" class="table-responsive" id="metadataTable">
+  <div [hidden]="!doneRetrieving" class="table-responsive" id="metadataTable">
     <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)">
       <thead id="table-header">
         <tr>
@@ -74,7 +74,9 @@
           <th *ngFor="let header of viewSettings.currentView.metadataNames; let i = index" mat-sort-header="{{i}}">{{header}}</th>
         </tr>
         <tr id="filterRow" *ngIf="tableSettings.showFilter">
-          <th></th>
+          <th>
+            <app-button [icon]="'fa fa-undo'" [title]="'Clear filters'" (click)="clearFilters()"></app-button>
+          </th>
           <th *ngFor="let header of viewSettings.currentView.metadataNames">
             <div class="input-group">
               <input type="text" id="filter"  title="{{tableSettings.metadataHeaders[header]}}" class="form-control" placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header)">

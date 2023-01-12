@@ -96,8 +96,15 @@ export class TableComponent implements OnInit {
       });
   }
 
-  getViewNames() {
-    return Object.keys(this.viewSettings.views);
+  clearFilters() {
+    let element: NodeListOf<HTMLInputElement> = document.querySelectorAll('#filter')!;
+    element.forEach((element: HTMLInputElement) => {
+      element.value = '';
+    });
+
+    this.tableSettings.filterValue = '';
+    this.tableSettings.filterHeader = '';
+    this.retrieveRecords();
   }
 
   changeView(event: any) {
