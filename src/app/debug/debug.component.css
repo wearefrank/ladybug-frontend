@@ -15,3 +15,9 @@
   overflow-x: hidden;
   overflow-y: auto;
 }
+
+.debug-display {
+  flex: 1 0 auto;
+  overflow-y: auto;
+  height: 100%;
+}

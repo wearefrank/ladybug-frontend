@@ -9,7 +9,7 @@
     <div class="border-right w-25">
       <app-debug-tree (closeEntireTreeEvent)="closeEntireTree()" (selectReportEvent)="selectReport($event)" [currentView]="currentView"></app-debug-tree>
     </div>
-    <div class="col pr-0">
+    <div class="pl-2 pr-0 debug-display">
       <app-display (closeReportEvent)="closeReport($event)" [currentView]="currentView" [id]="'debug'"></app-display>
     </div>
   </div>
