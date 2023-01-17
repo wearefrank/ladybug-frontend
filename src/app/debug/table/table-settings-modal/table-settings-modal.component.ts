@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
 import { CookieService } from 'ngx-cookie-service';
@@ -12,10 +12,10 @@ import { ToastComponent } from '../../../shared/components/toast/toast.component
 })
 export class TableSettingsModalComponent {
   @ViewChild('modal') modal!: ElementRef;
-  settingsForm = new FormGroup({
-    generatorEnabled: new FormControl('Enabled'),
-    transformationEnabled: new FormControl(true),
-    transformation: new FormControl(''),
+  settingsForm = new UntypedFormGroup({
+    generatorEnabled: new UntypedFormControl('Enabled'),
+    transformationEnabled: new UntypedFormControl(true),
+    transformation: new UntypedFormControl(''),
   });
 
   @Output() openLatestReportsEvent = new EventEmitter<any>();

@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
 @Component({
@@ -10,9 +10,9 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class TestSettingsModalComponent {
   @ViewChild('modal') modal!: any;
-  settingsForm = new FormGroup({
-    showReportStorageIds: new FormControl(false),
-    showCheckpointIds: new FormControl(false),
+  settingsForm = new UntypedFormGroup({
+    showReportStorageIds: new UntypedFormControl(false),
+    showCheckpointIds: new UntypedFormControl(false),
   });
 
   constructor(private modalService: NgbModal, private cookieService: CookieService) {}

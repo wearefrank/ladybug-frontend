@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-clone-modal',
@@ -16,9 +16,9 @@ export class CloneModalComponent {
   currentView = {
     storageName: 'Test',
   };
-  variableForm = new FormGroup({
-    variables: new FormControl(''),
-    message: new FormControl(''),
+  variableForm = new UntypedFormGroup({
+    variables: new UntypedFormControl(''),
+    message: new UntypedFormControl(''),
   });
 
   constructor(private modalService: NgbModal, private httpService: HttpService) {}
