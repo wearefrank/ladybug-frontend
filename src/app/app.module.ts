@@ -31,6 +31,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DebugTreeComponent } from './debug/debug-tree/debug-tree.component';
 import { ToggleComponent } from './shared/components/toggle/toggle.component';
 import { EditorComponent } from './shared/components/editor/editor.component';
+import { AngularSplitModule } from 'angular-split';
 
 @NgModule({
   declarations: [
@@ -68,6 +69,7 @@ import { EditorComponent } from './shared/components/editor/editor.component';
     jqxTreeModule,
     NgxTextDiffModule,
     MatProgressSpinnerModule,
+    AngularSplitModule,
   ],
   providers: [CookieService],
   bootstrap: [AppComponent],

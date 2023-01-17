@@ -123,6 +123,6 @@ html, body {
   padding: 0 !important;
 }
 
-.monaco-editor {
-  position: absolute !important;
+.as-split-gutter {
+  flex-basis: 5px !important;
 }

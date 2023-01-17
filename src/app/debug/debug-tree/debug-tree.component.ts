@@ -2,6 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from
 import { Report } from '../../shared/interfaces/report';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { HelperService } from '../../shared/services/helper.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-debug-tree',
@@ -15,6 +16,7 @@ export class DebugTreeComponent implements AfterViewInit {
   loaded: boolean = false;
   showOneAtATime: boolean = false;
   @Input() currentView: any = {};
+  @Input() adjustWidth: Observable<void> = {} as Observable<void>;
 
   constructor(private helperService: HelperService) {}
 
@@ -22,7 +24,14 @@ export class DebugTreeComponent implements AfterViewInit {
     setTimeout(() => {
       this.treeReference.createComponent({ source: [], height: '90%', width: '100%' });
       this.loaded = true;
+      this.adjustWidth.subscribe(() => {
+        this.adjustTreeWidth();
+      });
     });
+  }
+
+  adjustTreeWidth() {
+    this.treeReference.width('100%');
   }
 
   toggleShowAmount(): void {

@@ -25,3 +25,8 @@
   overflow-y: auto;
   height: 100%;
 }
+
+.as-split-gutter {
+  flex-basis: 3px !important;
+  background-color: blue !important;
+}

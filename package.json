@@ -34,6 +34,7 @@
     "@angular/router": "14.2.12",
     "@ng-bootstrap/ng-bootstrap": "11.0.0",
     "ace-builds": "^1.14.0",
+    "angular-split": "^14.1.0",
     "bootstrap": "^4.6.0",
     "bower": "1.8.12",
     "chai-colors": "^1.0.1",
