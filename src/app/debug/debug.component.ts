@@ -21,9 +21,11 @@ export class DebugComponent implements AfterViewInit {
   constructor() {}
 
   ngAfterViewInit() {
-    this.splitter.dragProgress$.subscribe(() => {
-      this.treeWidth.next();
-    });
+    if (this.splitter.dragProgress$) {
+      this.splitter.dragProgress$.subscribe(() => {
+        this.treeWidth.next();
+      });
+    }
   }
 
   addReportToTree(report: Report): void {
