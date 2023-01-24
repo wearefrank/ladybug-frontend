@@ -255,3 +255,4 @@ jobs:
         with:
           name: Firefox videos
           path: ladybug-frontend/cypress/firefox/videos/
+
