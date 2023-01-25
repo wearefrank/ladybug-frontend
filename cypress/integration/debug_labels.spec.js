@@ -1,13 +1,17 @@
 describe('Test labels', function() {
+  beforeEach(() => {
+    cy.clearDebugStore();
+  })
+
   afterEach(function() {
     cy.get('button[id="CloseAllButton"]').click();
-    cy.clearDebugStore();
   });
 
   it('Test label null', function() {
     cy.createReportWithLabelNull();
     cy.visit('');
-    cy.get('button[id="OpenAllButton"]').click();
+    cy.get('button[id="SelectAllReportsButton"]').click();
+    cy.get('button[id="OpenSelectedReportsButton"]').click();
     cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1);
     testTreeView('Message is null', 'Null String');
   });
@@ -15,7 +19,8 @@ describe('Test labels', function() {
   it('Test label empty string', function() {
     cy.createReportWithLabelEmpty();
     cy.visit('');
-    cy.get('button[id="OpenAllButton"]').click();
+    cy.get('button[id="SelectAllReportsButton"]').click();
+    cy.get('button[id="OpenSelectedReportsButton"]').click();
     cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1);
     testTreeView('Message is an empty string', 'Empty String');
   });

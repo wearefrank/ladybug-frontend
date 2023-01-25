@@ -1,12 +1,13 @@
 describe('About the Test tab', function() {
   beforeEach(() => {
+    cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
     cy.visit('');
     copyTheReportsToTestTab();
     // Give the server time to process the request.
     // TODO: Find a better way to implement this than a timeout.
-    cy.wait(5000);
+    cy.wait(1000);
   });
 
   afterEach(() => {
@@ -50,6 +51,7 @@ describe('About the Test tab', function() {
 
   it('Test deselect all', function() {
     cy.get('li#testTab').click();
+    cy.wait(100);
     cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
       cy.wrap($reports).contains('/Simple report').should('have.length', 1);
       cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
@@ -153,7 +155,8 @@ describe('About the Test tab', function() {
 });
 
 function copyTheReportsToTestTab() {
-  cy.get('button[id="OpenAllButton"]').click();
+  cy.get('button[id="SelectAllReportsButton"]').click();
+  cy.get('button[id="OpenSelectedReportsButton"]').click();
   // We test many times already that opening two reports yields six nodes.
   // Adding the test here again has another purpose. We want the DOM to
   // be stable before we go on with the test. Without this guard, the test
@@ -161,10 +164,15 @@ function copyTheReportsToTestTab() {
   // a detached DOM element.
   cy.wait(100)
   cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
+  cy.wait(100)
   cy.get('.jqx-tree-dropdown-root > li:contains(Simple report) > div').click();
+  cy.wait(100)
   cy.get('button#CopyButton').click();
+  cy.wait(100)
   cy.get('.jqx-tree-dropdown-root > li:contains(Another simple report) > div').click();
+  cy.wait(100)
   cy.get('button#CopyButton').click();
+  cy.wait(1000)
 }
 
 function checkTestTabTwoReportsSelected() {

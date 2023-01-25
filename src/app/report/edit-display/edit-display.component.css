@@ -5,3 +5,11 @@
 .variables {
   height: 100px;
 }
+
+#readyOnlyLabel {
+  height: fit-content;
+}
+
+.changeBox {
+  border: solid 1px lightgrey;
+}

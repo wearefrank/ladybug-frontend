@@ -3,9 +3,11 @@ chai.use(chaiColors)
 
 describe('Tests with one report', function() {
   beforeEach(function() {
+    cy.clearDebugStore();
     cy.createReport();
     cy.visit('');
-    cy.get('button[id="OpenAllButton"]').click();
+    cy.get('button[id="SelectAllReportsButton"]').click();
+    cy.get('button[id="OpenSelectedReportsButton"]').click();
     cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1);
     cy.get('button#CopyButton').click();
     cy.get('li#testTab').click();
@@ -45,7 +47,7 @@ describe('Tests with one report', function() {
     cy.wait(1000);
     cy.get('#EditButton').click();
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get('.report-tab #monacoEditor').click().focused().type('{ctrl}a').type('Hello Original World!');
+    cy.get('.report-tab #editor').click().focused().type('{ctrl}a').type('Hello Original World!');
     cy.get('#SaveButton').click()
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.get('.col:not(.text-right)').contains('Hello World!');
@@ -55,7 +57,7 @@ describe('Tests with one report', function() {
     cy.wait(1000);
     cy.get('#EditButton').click();
     cy.wait(1000);
-    cy.get('.report-tab #monacoEditor').click().focused().type('{ctrl}a').type('Goodbye Original World!');
+    cy.get('.report-tab #editor').click().focused().type('{ctrl}a').type('Goodbye Original World!');
     cy.get('#SaveButton').click()
     cy.get('button:contains(Yes)').click();
     cy.get('li#testTab').click();
@@ -72,7 +74,7 @@ describe('Tests with one report', function() {
 
   // May fail because of issue https://github.com/ibissource/ladybug-frontend/issues/250.
   // TODO: Fix issue and re-enable test.
-  xit('Rerun, replace, succeed', function() {
+  it('Rerun, replace, succeed', function() {
     cy.functions.testTabSelectReportNamed('Simple report');
     cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(0)').within(function($report) {

@@ -1,5 +1,5 @@
 describe('Test toast window', function() {
-  afterEach(function() {
+  beforeEach(function() {
     cy.clearDebugStore();
   });
 

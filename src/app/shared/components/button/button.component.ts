@@ -32,4 +32,10 @@ export class ButtonComponent {
     this._text = text;
   }
   private _text = '';
+
+  id: string = '';
+
+  getId() {
+    return this._title.replace(/\s/g, '');
+  }
 }

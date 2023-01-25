@@ -1,5 +1,5 @@
 describe('Refresh', function() {
-  afterEach(() => {
+  beforeEach(() => {
     cy.clearDebugStore();
   });
 

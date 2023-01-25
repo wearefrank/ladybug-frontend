@@ -2,13 +2,10 @@ const path = require('path');
 
 describe('Debug file upload', function() {
   beforeEach(() => {
+    cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
     cy.visit('')
-  });
-
-  afterEach(() => {
-    cy.clearDebugStore();
   });
 
   it('Upload a file to debug', function () {

@@ -1,6 +1,9 @@
 describe('Tests about copying', function() {
-  afterEach(() => {
+  beforeEach(() => {
     cy.clearDebugStore();
+  })
+
+  afterEach(() => {
     cy.get('li#testTab').click();
     cy.get('#SelectAllButton').click();
     cy.get('.row #DeleteSelectedButton').click();
@@ -16,7 +19,8 @@ describe('Tests about copying', function() {
     cy.get('#metadataTable tbody', {timeout: 10000}).find('tr').should('not.exist');
     cy.get('.row #RefreshButton').click();
     cy.get('#metadataTable tbody').find('tr').should('have.length', 1);
-    cy.get('button[id="OpenAllButton"]').click();
+    cy.get('button[id="SelectAllReportsButton"]').click();
+    cy.get('button[id="OpenSelectedReportsButton"]').click();
     cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1);
     cy.get('button#CopyButton').click();
     cy.get('li#testTab').click();

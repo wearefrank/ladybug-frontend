@@ -2,6 +2,10 @@ import chaiColors from 'chai-colors'
 chai.use(chaiColors)
 
 describe('Edit tests', function() {
+  beforeEach(() => {
+    cy.clearDebugStore();
+  })
+
   afterEach(function() {
     cy.clearDebugStore();
     cy.get('li#debugTab a').click();
@@ -26,7 +30,7 @@ describe('Edit tests', function() {
     cy.get('#EditButton').click();
     cy.wait(1000);
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get('.report-tab #monacoEditor').click().focused().type('{ctrl}a').type('Hello Original World!');
+    cy.get('.report-tab #editor').click().focused().type('{ctrl}a').type('Hello Original World!');
     cy.get('#SaveButton').click()
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.get('.col:not(.text-right)').contains('Hello World!');
@@ -37,7 +41,7 @@ describe('Edit tests', function() {
     cy.wait(1000);
     cy.get('#EditButton').click();
     cy.wait(1000);
-    cy.get('.report-tab #monacoEditor').click().focused().type('{ctrl}a').type('Goodbye Original World!');
+    cy.get('.report-tab #editor').click().focused().type('{ctrl}a').type('Goodbye Original World!');
     cy.get('#SaveButton').click()
     cy.get('button:contains(Yes)').click();
     cy.get('li#testTab').click();
@@ -51,8 +55,8 @@ describe('Edit tests', function() {
     cy.wait(1000);
     // Do not press Edit button
     cy.get('#SaveButton').should('have.length', 0);
-    cy.get('.report-tab #monacoEditor').click().type('x');
-    cy.contains('Cannot edit');
+    cy.get('.report-tab #editor').click().type('x');
+    cy.get('#readyOnlyLabel').contains('OFF');
     cy.get('.message').should('have.length', 0);
   });
 
@@ -61,9 +65,10 @@ describe('Edit tests', function() {
     cy.get('.report-tab .jqx-tree-dropdown-root > li > ul > li > div').click();
     cy.wait(1000);
     cy.get('#EditButton').click();
+    cy.get('#readyOnlyLabel').contains('ON');
     cy.wait(1000);
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get('.report-tab #monacoEditor').click().focused().type('{ctrl}a').type('Hello Original World!');
+    cy.get('.report-tab #editor').click().focused().type('{ctrl}a').type('Hello Original World!');
     cy.get('#SaveButton').click();
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.contains('Hello Original World!');
@@ -83,7 +88,8 @@ function prepareEdit() {
   cy.createReport();
   cy.visit('');
   cy.wait(100);
-  cy.get('button[id="OpenAllButton"]').click();
+  cy.get('button[id="SelectAllReportsButton"]').click();
+    cy.get('button[id="OpenSelectedReportsButton"]').click();
   cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1);
   cy.get('button#CopyButton').click();
   cy.get('li#testTab').click();

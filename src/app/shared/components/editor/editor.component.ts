@@ -21,6 +21,7 @@ export class EditorComponent implements AfterViewInit {
       readOnly: true,
       enableLiveAutocompletion: true,
       indentedSoftWrap: false,
+      highlightActiveLine: false,
       useWrapMode: true,
       theme: 'ace/theme/chrome',
       mode: 'ace/mode/xml',
@@ -46,10 +47,16 @@ export class EditorComponent implements AfterViewInit {
   }
 
   enableEdit(): void {
-    this.editor.setOption('readOnly', false);
+    this.editor.setOptions({
+      readOnly: false,
+      highlightActiveLine: true,
+    });
   }
 
   disableEdit(): void {
-    this.editor.setOption('readOnly', true);
+    this.editor.setOptions({
+      readOnly: true,
+      highlightActiveLine: false,
+    });
   }
 }

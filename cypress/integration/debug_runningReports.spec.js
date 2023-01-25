@@ -1,5 +1,5 @@
 describe('Test running reports', function() {
-  afterEach(function() {
+  beforeEach(function() {
     cy.clearDebugStore();
   });
 

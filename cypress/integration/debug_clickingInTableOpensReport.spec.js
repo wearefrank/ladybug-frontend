@@ -1,5 +1,6 @@
 describe('Clicking a report', function () {
   beforeEach(() => {
+    cy.clearDebugStore();
     Cypress.Screenshot.defaults({
       blackout: ['.foo'],
       capture: 'viewport',
@@ -16,10 +17,6 @@ describe('Clicking a report', function () {
     cy.visit('')
   })
 
-  afterEach(() => {
-    cy.clearDebugStore();
-  })
-
   it('Selecting report should show a tree', function() {
     // Create a screenshot, because we want to have at least one after running the tests.
     // We can then check whether the screenshots are saved as artifacts by GitHub.
@@ -31,10 +28,10 @@ describe('Clicking a report', function () {
 
   it('Selecting report should show display', function () {
     cy.screenshot();
-    cy.get('#displayButtons').should('not.exist')
-    cy.get('#monacoEditor').should('not.exist')
+    cy.get('#displayButtons').should('not.be.visible')
+    cy.get('#editor').should('not.be.visible')
     cy.get('.table-responsive tbody').find('tr').first().click()
     cy.get('#displayButtons').should('be.visible')
-    cy.get('#monacoEditor').should('be.visible')
+    cy.get('#editor').should('be.visible')
   })
 })

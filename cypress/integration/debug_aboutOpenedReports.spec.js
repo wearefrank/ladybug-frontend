@@ -1,16 +1,14 @@
 describe('About opened reports', function() {
   beforeEach(() => {
+    cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
     cy.visit('')
   });
 
-  afterEach(() => {
-    cy.clearDebugStore();
-  });
-
   it('Close one', function() {
-    cy.get('button[id="OpenAllButton"]').click();
+    cy.get('button[id="SelectAllReportsButton"]').click();
+    cy.get('button[id="OpenSelectedReportsButton"]').click();
     // Each of the two reports has three lines.
     cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
     cy.get('.jqx-tree-dropdown-root > li > div').should('contain', 'Simple report');

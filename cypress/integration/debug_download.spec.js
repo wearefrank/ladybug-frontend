@@ -2,6 +2,7 @@ const path = require('path');
 
 describe('Debug tab download', function() {
   beforeEach(() => {
+    cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
     cy.visit('');
@@ -67,7 +68,8 @@ describe('Debug tab download', function() {
   xit('Download all open reports', function() {
     const downloadsFolder = Cypress.config('downloadsFolder');
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
-    cy.get('button[id="OpenAllButton"]').click();
+    cy.get('button[id="SelectAllReportsButton"]').click();
+    cy.get('button[id="OpenSelectedReportsButton"]').click();
     cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
     cy.get('.jqx-tree-dropdown-root > li:contains(Simple report)').should('have.length', 1)
     cy.get('.jqx-tree-dropdown-root > li:contains(Another simple report)').should('have.length', 1);
@@ -126,7 +128,8 @@ function testDownloadFromNode(nodeNum) {
   const downloadsFolder = Cypress.config('downloadsFolder');
   cy.wait(100);
   cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
-  cy.get('button[id="OpenAllButton"]').click();
+  cy.get('button[id="SelectAllReportsButton"]').click();
+    cy.get('button[id="OpenSelectedReportsButton"]').click();
   cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
   cy.get('.jqx-tree-dropdown-root > li:contains(Simple report)').should('have.length', 1)
   cy.get('.jqx-tree-dropdown-root > li:contains(Another simple report)').should('have.length', 1);

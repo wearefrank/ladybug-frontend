@@ -1,4 +1,8 @@
 describe('Report transformation', function() {
+  beforeEach(() => {
+    cy.clearDebugStore();
+  })
+
   afterEach(function() {
     cy.clearDebugStore();
     cy.get('#SettingsButton').click();
@@ -25,7 +29,7 @@ describe('Report transformation', function() {
     cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1);
     // We test that the top node was not selected before.
     cy.get('.jqx-tree-dropdown-root > li > div').click();
-    cy.get('#monacoEditor').contains('Name="IGNORED"');
+    cy.get('#editor').contains('Name="IGNORED"');
     // The transformation should not affect the report table, only the XML in the Monaco editor
     cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name');
     cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should('have.text', 'Another simple report');

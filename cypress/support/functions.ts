@@ -12,7 +12,7 @@ cy.functions = {
                 cy.log('Found checkbox of report with name name, checking it');
                 cy.wrap($reportRow).find('[type=checkbox]').check();
             };
-            cy.get('#testReports tr [type=checkbox]:checked').should('have.length', 1);
+            cy.get('#testReportTable tr [type=checkbox]:checked').should('have.length', 1);
             cy.wait(1000);
         });
     }
