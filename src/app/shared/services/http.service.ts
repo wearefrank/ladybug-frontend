@@ -10,8 +10,6 @@ import { CookieService } from 'ngx-cookie-service';
 export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   toastComponent!: ToastComponent;
-  apiReport: string = 'api/report/'; // Keep this since sonar is crying about it, TODO: revert this
-  apiMetadata: string = 'api/metadata/';
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
 
@@ -47,7 +45,7 @@ export class HttpService {
     metadataNames: string[],
     storage: string
   ): Observable<any> {
-    return this.http.get(this.apiMetadata + storage + '/', {
+    return this.http.get('api/metadata/' + storage + '/', {
       params: {
         limit: limit,
         filterHeader: filterHeader,
@@ -58,7 +56,7 @@ export class HttpService {
   }
 
   getUserHelp(storage: string, metadataNames: string[]): Observable<any> {
-    return this.http.get<any>(this.apiMetadata + storage + '/userHelp', {
+    return this.http.get<any>('api/metadata/' + storage + '/userHelp', {
       params: {
         metadataNames: metadataNames,
       },
@@ -66,7 +64,7 @@ export class HttpService {
   }
 
   getMetadataCount(storage: string): Observable<any> {
-    return this.http.get(this.apiMetadata + storage + '/count').pipe(catchError(this.handleError()));
+    return this.http.get('api/metadata/' + storage + '/count').pipe(catchError(this.handleError()));
   }
 
   getLatestReports(amount: number, storage: string): Observable<any> {
@@ -91,7 +89,7 @@ export class HttpService {
   }
 
   getTestReports(metadataNames: string[], storage: string): Observable<any> {
-    return this.http.get<any>(this.apiMetadata + storage + '/', {
+    return this.http.get<any>('api/metadata/' + storage + '/', {
       params: { metadataNames: metadataNames },
     });
   }
@@ -99,7 +97,7 @@ export class HttpService {
   getReport(reportId: string, storage: string) {
     return this.http
       .get<any>(
-        this.apiReport +
+        'api/report/' +
           storage +
           '/' +
           reportId +
@@ -112,7 +110,7 @@ export class HttpService {
   getReports(reportIds: string[], storage: string) {
     return this.http
       .get<any>(
-        this.apiReport + storage + '/?xml=true&globalTransformer=' + this.cookieService.get('transformationEnabled'),
+        'api/report/' + storage + '/?xml=true&globalTransformer=' + this.cookieService.get('transformationEnabled'),
         { params: { storageIds: reportIds } }
       )
       .pipe(catchError(this.handleError()));
@@ -120,7 +118,7 @@ export class HttpService {
 
   postReport(reportId: string, report: any, storage: string): Observable<void> {
     return this.http
-      .post(this.apiReport + storage + '/' + reportId, report)
+      .post('api/report/' + storage + '/' + reportId, report)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }
@@ -206,7 +204,7 @@ export class HttpService {
   }
 
   deleteReport(reportId: string, storage: string): Observable<void> {
-    return this.http.delete(this.apiReport + storage + '/' + reportId).pipe(catchError(this.handleError()));
+    return this.http.delete('api/report/' + storage + '/' + reportId).pipe(catchError(this.handleError()));
   }
 
   replaceReport(reportId: string, storage: string): Observable<void> {
