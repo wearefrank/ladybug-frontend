@@ -6,6 +6,7 @@
     <div class="row">
       <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runSelected()"></app-button>
       <app-button [icon]="'fa fa-refresh'" [title]="'ReloadTestReports'" (click)="loadData()"></app-button>
+      <app-button [text]="'Reset'" [title]="'Reset'" (click)="resetRunner()"></app-button>
       <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="openSettingsModal()"></app-button>
       <app-button [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
       <app-button [title]="'Deselect All'" [text]="'Deselect All'" (click)="uncheckAll()"></app-button>
