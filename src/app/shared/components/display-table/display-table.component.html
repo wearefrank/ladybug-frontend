@@ -3,6 +3,10 @@
     <td>Name</td>
     <td>{{_report.name}}</td>
   </tr>
+  <tr  *ngIf="!_report.xml">
+    <td>Type</td>
+    <td>{{getCheckpointType(_report.type)}}</td>
+  </tr>
   <tr *ngIf="_report.xml">
     <td>Description</td>
     <td>{{_report.description}}</td>
@@ -26,6 +30,10 @@
   <tr *ngIf="!_report.xml">
     <td>CheckpointUID</td>
     <td>{{ _report.uid}}</td>
+  </tr>
+  <tr *ngIf="!_report.xml">
+    <td>Level</td>
+    <td>{{ _report.level}}</td>
   </tr>
   <tr *ngIf="!_report.xml">
     <td>Encoding</td>

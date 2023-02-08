@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { HelperService } from '../../services/helper.service';
 
 @Component({
   selector: 'app-display-table',
@@ -16,5 +17,9 @@ export class DisplayTableComponent {
 
   public _report: any = {};
 
-  constructor() {}
+  constructor(private helperService: HelperService) {}
+
+  getCheckpointType(type: number) {
+    return this.helperService.getCheckpointType(type);
+  }
 }
