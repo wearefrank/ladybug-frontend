@@ -83,6 +83,7 @@ export class TableComponent implements OnInit {
         },
       });
 
+    this.getUserHelp();
     this.loadMetadataCount();
   }
 
