@@ -14,6 +14,7 @@ export class TableSettingsModalComponent {
   @ViewChild('modal') modal!: ElementRef;
   settingsForm = new UntypedFormGroup({
     generatorEnabled: new UntypedFormControl('Enabled'),
+    regexFilter: new UntypedFormControl(''),
     transformationEnabled: new UntypedFormControl(true),
     transformation: new UntypedFormControl(''),
   });
@@ -47,7 +48,7 @@ export class TableSettingsModalComponent {
     this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
     this.httpService.postTransformation(form.transformation).subscribe();
 
-    let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled' };
+    let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled', regexFilter: form.regexFilter };
     this.httpService.postSettings(data).subscribe();
 
     this.toastComponent.addAlert({ type: 'warning', message: 'Reopen report to see updated XML' });
@@ -72,11 +73,8 @@ export class TableSettingsModalComponent {
       const generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
       this.cookieService.set('generatorEnabled', generatorStatus);
       this.settingsForm.get('generatorEnabled')?.setValue(generatorStatus);
+      this.settingsForm.get('regexFilter')?.setValue(response.regexFilter);
     });
-
-    if (this.cookieService.get('regexFilter')) {
-      this.settingsForm.get('regexFilter')?.setValue(this.cookieService.get('regexFilter'));
-    }
 
     if (this.cookieService.get('transformationEnabled') != undefined) {
       this.settingsForm
