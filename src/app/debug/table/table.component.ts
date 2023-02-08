@@ -111,7 +111,7 @@ export class TableComponent implements OnInit {
   changeView(event: any) {
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
     this.viewSettings.currentViewName = event.target.value;
-    this.retrieveRecords();
+    this.clearFilters();
     this.changeViewEvent.emit(this.viewSettings.currentView);
     this.selectedRow = -1;
   }
