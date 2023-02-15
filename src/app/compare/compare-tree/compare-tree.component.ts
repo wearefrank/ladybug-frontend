@@ -2,6 +2,8 @@ import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { HelperService } from '../../shared/services/helper.service';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
+import { NodeLinkStrategy } from '../../shared/enums/compare-method';
+import { HttpService } from '../../shared/services/http.service';
 
 @Component({
   selector: 'app-compare-tree',
@@ -9,36 +11,70 @@ import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
   styleUrls: ['./compare-tree.component.css'],
 })
 export class CompareTreeComponent {
-  constructor(private helperService: HelperService) {}
+  constructor(private helperService: HelperService, private httpService: HttpService) {}
   @Output() compareEvent = new EventEmitter<any>();
+  @Output() changeNodeLinkStrategyEvent = new EventEmitter<any>();
   @ViewChild('leftTreeReference') leftTreeReference!: jqxTreeComponent;
   @ViewChild('rightTreeReference') rightTreeReference!: jqxTreeComponent;
-  syncTrees: boolean = true;
+  nodeLinkStrategy: NodeLinkStrategy = NodeLinkStrategy.NONE;
+  viewName: string = '';
   leftReport: any;
   rightReport: any;
 
+  public get NodeLinkStrategy(): typeof NodeLinkStrategy {
+    return NodeLinkStrategy;
+  }
+
   nodeSelected(data: any, left: boolean) {
-    if (this.syncTrees) {
-      let treeReference: jqxTreeComponent = left ? this.rightTreeReference : this.leftTreeReference;
-      let selectedReport = data.owner.selectedItem;
-      let path = this.getFullPath(selectedReport, [selectedReport.value.name]);
-      let otherReport = this.matchFullPath(treeReference.getItems()[0], path);
-      if (otherReport) {
-        this.unfoldTree(treeReference, otherReport, otherReport.parentId);
-        treeReference.selectItem(otherReport);
-      } else {
-        treeReference.selectItem(null);
-      }
-
-      this.leftReport = left ? selectedReport : otherReport;
-      this.rightReport = left ? otherReport : selectedReport;
-    } else {
-      left ? (this.leftReport = data.owner.selectedItem) : (this.rightReport = data.owner.selectedItem);
-    }
-
+    this.selectOtherNode(data, left);
     this.compareEvent.emit({ leftReport: this.leftReport, rightReport: this.rightReport });
   }
 
+  selectOtherNode(data: any, left: boolean) {
+    if (this.nodeLinkStrategy === 'NONE') {
+      this.compareOnNothing(data, left);
+    } else {
+      this.compareOnSomething(this.nodeLinkStrategy, data, left);
+    }
+  }
+  compareOnSomething(method: string, data: any, left: boolean) {
+    let treeReference: jqxTreeComponent = left ? this.rightTreeReference : this.leftTreeReference;
+    let selectedReport = data.owner.selectedItem;
+
+    let otherReport =
+      method === 'PATH'
+        ? this.getOtherReportBasedOnPath(selectedReport, treeReference)
+        : this.getOtherReportBasedOnCheckpointNumber(selectedReport, treeReference);
+
+    if (otherReport) {
+      this.unfoldTree(treeReference, otherReport, otherReport.parentId);
+      treeReference.selectItem(otherReport);
+    } else {
+      treeReference.selectItem(null);
+    }
+
+    this.leftReport = left ? selectedReport : otherReport;
+    this.rightReport = left ? otherReport : selectedReport;
+  }
+
+  getOtherReportBasedOnCheckpointNumber(selectedReport: any, treeReference: jqxTreeComponent) {
+    let checkpointNumber = selectedReport.value.index;
+    return treeReference.getItems().find((item: any) => checkpointNumber == item.value.index);
+  }
+
+  getOtherReportBasedOnPath(selectedReport: any, treeReference: jqxTreeComponent) {
+    let path = this.getFullPath(selectedReport, [selectedReport.value.name]);
+    return this.matchFullPath(treeReference.getItems()[0], path);
+  }
+  compareOnNothing(data: any, left: boolean) {
+    left ? (this.leftReport = data.owner.selectedItem) : (this.rightReport = data.owner.selectedItem);
+  }
+
+  changeNodeLinkStrategy(event: any) {
+    this.nodeLinkStrategy = event.target.value;
+    this.changeNodeLinkStrategyEvent.next(this.nodeLinkStrategy);
+    this.httpService.changeNodeLinkStrategy(this.viewName, this.nodeLinkStrategy).subscribe();
+  }
   getParent(checkpoint: any, parentId: string): any {
     let items = checkpoint.treeInstance.items;
     return items.find((item: any) => item.id == parentId);
@@ -91,7 +127,9 @@ export class CompareTreeComponent {
     return false;
   }
 
-  createTrees(leftReport: Report, rightReport: Report) {
+  createTrees(viewName: string, nodeLinkStrategy: NodeLinkStrategy, leftReport: Report, rightReport: Report) {
+    this.viewName = viewName;
+    this.nodeLinkStrategy = nodeLinkStrategy;
     const leftTree = this.helperService.convertReportToJqxTree(leftReport);
     const rightTree = this.helperService.convertReportToJqxTree(rightReport);
     const both = this.iterateToMakeLabelsRed(leftTree, rightTree);

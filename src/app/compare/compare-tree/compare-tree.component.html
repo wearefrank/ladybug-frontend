@@ -1,9 +1,13 @@
 <div class="row" id="tree-container">
-  <div class="compare-header row col-12 p-2">
-    <label class="p-2" title="This option toggles between synchronising the compare tree steps or selecting both of the tree steps yourself">
-      Synchronise compare trees:
-    </label>
-    <app-toggle [(state)]="syncTrees"></app-toggle>
+  <div class="compare-header col-12 p-2">
+      <label class="p-2">
+        Compare method:
+      </label>
+      <select class="form-control col-md-1" (change)="changeNodeLinkStrategy($event)">
+        <option [selected]="nodeLinkStrategy === NodeLinkStrategy.PATH" value="PATH">Path</option>
+        <option [selected]="nodeLinkStrategy === NodeLinkStrategy.CHECKPOINT_NUMBER.toString()" value="CHECKPOINT_NUMBER">Checkpoint number</option>
+        <option [selected]="nodeLinkStrategy === NodeLinkStrategy.NONE.toString()" value="NONE">None</option>
+      </select>
   </div>
   <div class="trees-container row col-12 p-2">
     <div class="col-6 h-100">
