@@ -7,6 +7,7 @@ import { TableSettings } from '../../shared/interfaces/table-settings';
 import { catchError } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { CookieService } from 'ngx-cookie-service';
+import { ChangeNodeLinkStrategyService } from '../../shared/services/node-link-strategy.service';
 
 @Component({
   selector: 'app-table',
@@ -48,12 +49,14 @@ export class TableComponent implements OnInit {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService
   ) {}
 
   ngOnInit(): void {
     this.cookieService.set('transformationEnabled', 'true');
     this.loadData();
+    this.listenForViewUpdate();
   }
 
   retrieveRecords() {
@@ -114,6 +117,20 @@ export class TableComponent implements OnInit {
     this.clearFilters();
     this.changeViewEvent.emit(this.viewSettings.currentView);
     this.selectedRow = -1;
+  }
+
+  listenForViewUpdate() {
+    this.changeNodeLinkStrategyService.changeNodeLinkStrategy.subscribe(() => {
+      this.httpService.getViews().subscribe((views) => {
+        this.viewSettings.views = views;
+        let viewToUpdate = Object.keys(this.viewSettings.views).find(
+          (view) => view === this.viewSettings.currentViewName
+        );
+        if (viewToUpdate) {
+          this.viewSettings.currentView.nodeLinkStrategy = views[viewToUpdate].nodeLinkStrategy;
+        }
+      });
+    });
   }
 
   loadData(): void {
@@ -226,6 +243,8 @@ export class TableComponent implements OnInit {
         compareReports = {
           originalReport: originalReport,
           runResultReport: runResultReport,
+          viewName: this.viewSettings.currentViewName,
+          nodeLinkStrategy: this.viewSettings.currentView.nodeLinkStrategy,
         };
       },
 

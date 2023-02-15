@@ -1,5 +1,5 @@
 <div class="col p-0 flex-column" id="container">
-  <app-compare-tree #trees class="trees" (compareEvent)="showDifference($event)"></app-compare-tree>
+  <app-compare-tree #trees class="trees" (compareEvent)="showDifference($event)" (changeNodeLinkStrategyEvent)="changeNodeLinkStrategy($event)"></app-compare-tree>
   <div class="text-diff-container pl-3 pb-2 h-50 flex-grow-1">
     <td-ngx-text-diff #diffComponent></td-ngx-text-diff>
   </div>

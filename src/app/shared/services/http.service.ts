@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ToastComponent } from '../components/toast/toast.component';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
+import { ChangeNodeLinkStrategyService } from './node-link-strategy.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,11 @@ export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   toastComponent!: ToastComponent;
 
-  constructor(private http: HttpClient, private cookieService: CookieService) {}
+  constructor(
+    private http: HttpClient,
+    private cookieService: CookieService,
+    private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService
+  ) {}
 
   initializeToastComponent(toastComponent: ToastComponent) {
     this.toastComponent = toastComponent;
@@ -212,6 +217,17 @@ export class HttpService {
       .put('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
       })
+      .pipe(catchError(this.handleError()));
+  }
+
+  changeNodeLinkStrategy(viewName: string, nodeLinkStrategy: string) {
+    return this.http
+      .put('api/testtool/views/' + nodeLinkStrategy, { headers: this.headers }, { params: { viewName: viewName } })
+      .pipe(
+        tap(() => {
+          this.changeNodeLinkStrategyService.changeNodeLinkStrategy.next();
+        })
+      ) // Notify table of change in view settings
       .pipe(catchError(this.handleError()));
   }
 }
