@@ -223,7 +223,7 @@ export class HttpService {
   changeNodeLinkStrategy(viewName: string, nodeLinkStrategy: string) {
     return this.http
       .put(
-        'api/testtool/views/node-link-strategy',
+        'api/testtool/node-link-strategy',
         { headers: this.headers },
         { params: { viewName: viewName, nodeLinkStrategy: nodeLinkStrategy } }
       )
