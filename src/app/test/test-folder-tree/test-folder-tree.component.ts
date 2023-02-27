@@ -8,7 +8,7 @@ import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 })
 export class TestFolderTreeComponent implements AfterViewInit {
   @ViewChild('treeReference') treeReference!: jqxTreeComponent;
-  baseFolder: any = { label: 'Reports', filter: '', items: [], expanded: true, selected: true };
+  baseFolder: any = { label: 'Reports', value: '', filter: '', items: [], expanded: true, selected: true };
   latestAddedFolder: any = this.baseFolder;
   @Output() changeFolderEvent = new EventEmitter<any>();
 
@@ -62,8 +62,6 @@ export class TestFolderTreeComponent implements AfterViewInit {
   }
 
   selectNewFolder(addedFolderPath: string) {
-    console.log(addedFolderPath);
-    console.log(this.treeReference.getItems());
     if (addedFolderPath) {
       let item = this.treeReference.getItems().find((item: any) => addedFolderPath === item.value);
       if (item) {

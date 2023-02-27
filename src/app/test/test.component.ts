@@ -267,12 +267,6 @@ export class TestComponent implements OnInit {
     }
   }
 
-  selectNewFolder(path: string) {
-    setTimeout(() => {
-      this.testFolderTreeComponent.selectNewFolder(path);
-    }, 1000);
-  }
-
   changeFilter(filter: string): void {
     this.currentFilter = filter;
     this.reports.forEach((report) => {
@@ -282,11 +276,14 @@ export class TestComponent implements OnInit {
 
   matches(report: any): boolean {
     let name = report.path + report.name;
-    return name.match(this.currentFilter + '.*') != undefined;
+    return name.match('(/)?' + this.currentFilter + '.*') != undefined;
   }
 
   showRelativePath(path: string) {
-    return path.replace(this.currentFilter, '');
+    if (path) {
+      return path.replace(this.currentFilter, '');
+    }
+    return '/';
   }
 
   extractVariables(variables: string): string {
