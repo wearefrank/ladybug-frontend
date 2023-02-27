@@ -5,7 +5,7 @@
   <div class="col">
     <div class="row">
       <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runSelected()"></app-button>
-      <app-button [icon]="'fa fa-refresh'" [title]="'ReloadTestReports'" (click)="loadData()"></app-button>
+      <app-button [icon]="'fa fa-refresh'" [title]="'ReloadTestReports'" (click)="loadData(null)"></app-button>
       <app-button [text]="'Reset'" [title]="'Reset'" (click)="resetRunner()"></app-button>
       <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="openSettingsModal()"></app-button>
       <app-button [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
@@ -26,8 +26,8 @@
       <label for="moveToInput">Move/Copy to:</label>
       <form class="input-group">
         <input type="text" class="form-control mr-1 my-2 py-0" id="moveToInput" name="filter" value="{{currentFilter}}"/>
-        <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="moveTestReportToFolder()">Move</button>
-        <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="copyAndMove()"><i class="fa fa-copy"></i></button>
+        <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="updatePath('move')">Move</button>
+        <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="updatePath('copy')"><i class="fa fa-copy"></i></button>
       </form>
     </div>
     <div>
@@ -49,7 +49,7 @@
         </thead>
         <tbody id="testReports">
         <ng-container *ngFor="let report of reports" class="form-inline">
-          <tr *ngIf="matches('/' + report.name)">
+          <tr *ngIf="matches(report)">
               <td>
                 <input type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
               </td>
@@ -61,7 +61,7 @@
                 <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="openReport(report.storageId, report.name)"></app-button>
               </td>
               <td>
-                /{{ report.name}}
+                {{ showRelativePath(report.path) }}{{ report.name }}
               </td>
               <td>
                 <span>{{extractVariables(report.variables)}}</span>
