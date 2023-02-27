@@ -8,7 +8,7 @@ describe('Tests with one report', function() {
     cy.visit('');
     cy.get('button[id="SelectAllReportsButton"]').click();
     cy.get('button[id="OpenSelectedReportsButton"]').click();
-    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1);
     cy.get('button#CopyButton').click();
     cy.get('li#testTab').click();
     cy.get('#testReports tr').should('have.length', 1);
@@ -21,7 +21,7 @@ describe('Tests with one report', function() {
     // Wait for debug tab to be rendered
     cy.wait(1000);
     cy.get('button[id="CloseAllButton"]').click();
-    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 0);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
     cy.get('li#testTab').click();
     // Give UI time to build up the test tab.
     cy.wait(1000);

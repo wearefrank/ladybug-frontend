@@ -121,9 +121,9 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  postReport(reportId: string, report: any, storage: string): Observable<void> {
+  updateReport(reportId: string, params: any, storage: string): Observable<void> {
     return this.http
-      .post('api/report/' + storage + '/' + reportId, report)
+      .post('api/report/' + storage + '/' + reportId, params)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }
@@ -132,6 +132,12 @@ export class HttpService {
     return this.http
       .put('api/report/store/' + storage, data)
       .pipe(tap(() => this.handleSuccess('Report copied!')))
+      .pipe(catchError(this.handleError()));
+  }
+
+  updatePath(reportIds: string[], storage: string, map: any) {
+    return this.http
+      .put('api/report/move/' + storage, map, { params: { storageIds: reportIds } })
       .pipe(catchError(this.handleError()));
   }
 

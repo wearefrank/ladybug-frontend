@@ -26,9 +26,9 @@ describe('Report transformation', function() {
     cy.get('#RefreshButton').click();
     cy.wait(100)
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1).click();
-    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1);
     // We test that the top node was not selected before.
-    cy.get('.jqx-tree-dropdown-root > li > div').click();
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li > div').click();
     cy.get('#editor').contains('Name="IGNORED"');
     // The transformation should not affect the report table, only the XML in the Monaco editor
     cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name');

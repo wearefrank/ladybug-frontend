@@ -173,7 +173,7 @@ export class EditDisplayComponent {
       ? { stub: stubStrategy, checkpointId: checkpointId }
       : this.getReportValues(checkpointId);
 
-    this.httpService.postReport(storageId, params, this.currentView.storageName).subscribe((response: any) => {
+    this.httpService.updateReport(storageId, params, this.currentView.storageName).subscribe((response: any) => {
       response.report.xml = response.xml;
       this.saveReportEvent.next(response.report);
     });
