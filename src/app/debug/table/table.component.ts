@@ -217,22 +217,9 @@ export class TableComponent implements OnInit {
   }
 
   deleteSelected(): void {
-    this.tableSettings.reportMetadata.forEach((report) => {
-      if (report.checked) {
-        this.deleteReport(report.storageId);
-        this.httpService
-          .deleteReport(report.storageId, this.viewSettings.currentView.storageName)
-          .subscribe((response) => {
-            this.retrieveRecords();
-          });
-      }
-    });
-  }
-
-  deleteReport(storageId: string) {
-    this.httpService.deleteReport(storageId, this.viewSettings.currentView.storageName).subscribe((response) => {
-      console.log('Deleting');
-      console.log(response);
+    const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
+    this.httpService.deleteReport(reportIds, this.viewSettings.currentView.storageName).subscribe(() => {
+      this.retrieveRecords();
     });
   }
 

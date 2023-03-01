@@ -201,4 +201,14 @@ export class HelperService {
     parentMap.push({ id: node.id, parent: parent });
     parent.items.push(node);
   }
+
+  getSelectedIds(reports: any[]): string[] {
+    let copiedIds: string[] = [];
+    this.getSelectedReports(reports).forEach((report) => copiedIds.push(report.storageId));
+    return copiedIds;
+  }
+
+  getSelectedReports(reports: any[]): any[] {
+    return reports.filter((report) => report.checked);
+  }
 }

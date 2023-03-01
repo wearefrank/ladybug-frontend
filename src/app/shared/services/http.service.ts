@@ -218,8 +218,10 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  deleteReport(reportId: string, storage: string): Observable<void> {
-    return this.http.delete('api/report/' + storage + '/' + reportId).pipe(catchError(this.handleError()));
+  deleteReport(reportIds: string[], storage: string): Observable<void> {
+    return this.http
+      .delete('api/report/' + storage, { params: { storageIds: reportIds } })
+      .pipe(catchError(this.handleError()));
   }
 
   replaceReport(reportId: string, storage: string): Observable<void> {
