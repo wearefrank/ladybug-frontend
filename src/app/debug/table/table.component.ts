@@ -216,6 +216,26 @@ export class TableComponent implements OnInit {
     });
   }
 
+  deleteSelected(): void {
+    this.tableSettings.reportMetadata.forEach((report) => {
+      if (report.checked) {
+        this.deleteReport(report.storageId);
+        this.httpService
+          .deleteReport(report.storageId, this.viewSettings.currentView.storageName)
+          .subscribe((response) => {
+            this.retrieveRecords();
+          });
+      }
+    });
+  }
+
+  deleteReport(storageId: string) {
+    this.httpService.deleteReport(storageId, this.viewSettings.currentView.storageName).subscribe((response) => {
+      console.log('Deleting');
+      console.log(response);
+    });
+  }
+
   selectAll(): void {
     this.tableSettings.reportMetadata.forEach((report) => (report.checked = true));
   }
@@ -278,6 +298,7 @@ export class TableComponent implements OnInit {
     this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
+      console.log(report);
       this.openReportEvent.next(report);
     });
   }
