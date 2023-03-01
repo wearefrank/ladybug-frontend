@@ -185,6 +185,10 @@ export class HttpService {
     return this.http.get<any>('api/testtool').pipe(catchError(this.handleError()));
   }
 
+  resetSettings(): Observable<any> {
+    return this.http.get('api/testtool/reset').pipe(catchError(this.handleError()));
+  }
+
   reset(): Observable<void> {
     return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
