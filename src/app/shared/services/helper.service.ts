@@ -184,8 +184,11 @@ export class HelperService {
   }
 
   findParent(currentNode: any, potentialParent: any, parentMap: any[]): any {
-    // If the level difference is only 1, then the potential parent is the actual parent
-    if (currentNode.level - 1 == potentialParent.level) {
+    if (currentNode.level < 0) {
+      currentNode.value.path = '[INVALID LEVEL ' + currentNode.value.level + '] ' + currentNode.value.name;
+      currentNode.level = 0;
+    } else if (currentNode.level - 1 == potentialParent.level) {
+      // If the level difference is only 1, then the potential parent is the actual parent
       this.addChild(potentialParent, currentNode, parentMap);
       return currentNode;
     }
