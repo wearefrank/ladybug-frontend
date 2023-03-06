@@ -8,7 +8,7 @@ describe('Report transformation', function() {
     cy.get('#SettingsButton').click();
     // Factory reset in settings dialog. Resets
     // transformation to factory value.
-    cy.get('button[title ^= "Reset to factory settings"]').click();
+    cy.get('button[title ^= "Reset and save factory settings"]').click();
     cy.get('button[id=saveTableSettings]').click();
   });
 

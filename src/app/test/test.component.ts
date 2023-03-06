@@ -75,6 +75,7 @@ export class TestComponent implements OnInit {
     const amountAdded: number = metadata.length - this.reports.length;
     if (amountAdded > 0) {
       for (let index = this.reports.length; index <= metadata.length - 1; index++) {
+        if (this.matches(metadata[index])) metadata[index].checked = true;
         this.reports.push(metadata[index]);
       }
     }

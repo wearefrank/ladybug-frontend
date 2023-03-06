@@ -30,10 +30,10 @@ describe('About the Test tab', function() {
       cy.wrap($reports).contains('/Simple report').should('have.length', 1);
       cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
     });
-    cy.functions.testTabSelectReportNamed('Simple report');
+    cy.functions.testTabDeselectReportNamed('Simple report');
     cy.get('#DeleteSelectedButton').click();
     cy.get('#testReports').find('tr').should('have.length', 1).within(function($reports) {
-      cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
+      cy.wrap($reports).contains('/Simple report').should('have.length', 1);
     });
   });
 
