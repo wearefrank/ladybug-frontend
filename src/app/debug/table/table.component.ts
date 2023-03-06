@@ -216,6 +216,13 @@ export class TableComponent implements OnInit {
     });
   }
 
+  deleteSelected(): void {
+    const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
+    this.httpService.deleteReport(reportIds, this.viewSettings.currentView.storageName).subscribe(() => {
+      this.retrieveRecords();
+    });
+  }
+
   selectAll(): void {
     this.tableSettings.reportMetadata.forEach((report) => (report.checked = true));
   }
@@ -278,6 +285,7 @@ export class TableComponent implements OnInit {
     this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
+      console.log(report);
       this.openReportEvent.next(report);
     });
   }

@@ -185,6 +185,10 @@ export class HttpService {
     return this.http.get<any>('api/testtool').pipe(catchError(this.handleError()));
   }
 
+  resetSettings(): Observable<any> {
+    return this.http.get('api/testtool/reset').pipe(catchError(this.handleError()));
+  }
+
   reset(): Observable<void> {
     return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
@@ -214,8 +218,10 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  deleteReport(reportId: string, storage: string): Observable<void> {
-    return this.http.delete('api/report/' + storage + '/' + reportId).pipe(catchError(this.handleError()));
+  deleteReport(reportIds: string[], storage: string): Observable<void> {
+    return this.http
+      .delete('api/report/' + storage, { params: { storageIds: reportIds } })
+      .pipe(catchError(this.handleError()));
   }
 
   replaceReport(reportId: string, storage: string): Observable<void> {
