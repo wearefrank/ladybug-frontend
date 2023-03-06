@@ -13,39 +13,7 @@ export class HelperService {
   constructor(private cookieService: CookieService) {}
 
   getImage(type: number, encoding: string, even: boolean): string {
-    let img = 'assets/tree-icons/';
-    switch (type) {
-      case 1:
-        img += 'startpoint';
-        break;
-      case 2:
-        img += 'endpoint';
-        break;
-      case 3:
-        img += 'abortpoint';
-        break;
-      case 4:
-        img += 'inputpoint';
-        break;
-      case 5:
-        img += 'outputpoint';
-        break;
-      case 6:
-        img += 'infopoint';
-        break;
-      case 7:
-        img += 'threadStartpoint-error'; // Doesn't exist?
-        break;
-      case 8:
-        img += 'threadStartpoint';
-        break;
-      case 9:
-        img += 'threadEndpoint';
-        break;
-      default:
-        return '';
-    }
-
+    let img = 'assets/tree-icons/' + this.getCheckpointType(type);
     if (encoding === this.THROWABLE_ENCODER) {
       img += '-error';
     }
@@ -54,6 +22,31 @@ export class HelperService {
       return img + '-even.gif';
     }
     return img + '-odd.gif';
+  }
+
+  getCheckpointType(type: number): string {
+    switch (type) {
+      case 1:
+        return 'startpoint';
+      case 2:
+        return 'endpoint';
+      case 3:
+        return 'abortpoint';
+      case 4:
+        return 'inputpoint';
+      case 5:
+        return 'outputpoint';
+      case 6:
+        return 'infopoint';
+      case 7:
+        return 'threadStartpoint-error'; // Doesn't exist?
+      case 8:
+        return 'threadStartpoint';
+      case 9:
+        return 'threadEndpoint';
+      default:
+        return '';
+    }
   }
 
   isNumber(value: any) {
@@ -191,8 +184,11 @@ export class HelperService {
   }
 
   findParent(currentNode: any, potentialParent: any, parentMap: any[]): any {
-    // If the level difference is only 1, then the potential parent is the actual parent
-    if (currentNode.level - 1 == potentialParent.level) {
+    if (currentNode.level < 0) {
+      currentNode.value.path = '[INVALID LEVEL ' + currentNode.value.level + '] ' + currentNode.value.name;
+      currentNode.level = 0;
+    } else if (currentNode.level - 1 == potentialParent.level) {
+      // If the level difference is only 1, then the potential parent is the actual parent
       this.addChild(potentialParent, currentNode, parentMap);
       return currentNode;
     }
@@ -204,5 +200,15 @@ export class HelperService {
   addChild(parent: any, node: any, parentMap: any[]): void {
     parentMap.push({ id: node.id, parent: parent });
     parent.items.push(node);
+  }
+
+  getSelectedIds(reports: any[]): string[] {
+    let copiedIds: string[] = [];
+    this.getSelectedReports(reports).forEach((report) => copiedIds.push(report.storageId));
+    return copiedIds;
+  }
+
+  getSelectedReports(reports: any[]): any[] {
+    return reports.filter((report) => report.checked);
   }
 }

@@ -10,27 +10,27 @@ describe('About opened reports', function() {
     cy.get('button[id="SelectAllReportsButton"]').click();
     cy.get('button[id="OpenSelectedReportsButton"]').click();
     // Each of the two reports has three lines.
-    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
-    cy.get('.jqx-tree-dropdown-root > li > div').should('contain', 'Simple report');
-    cy.get('.jqx-tree-dropdown-root > li > div:contains(Simple report)').first().selectIfNotSelected();
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li > div').should('contain', 'Simple report');
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li > div:contains(Simple report)').first().selectIfNotSelected();
     cy.get('#CloseButton').click();
-    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1);
     // nth-child has an 1-based index
-    cy.get('.jqx-tree-dropdown-root > li > div').should('have.text', 'Another simple report').click();
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li > div').should('have.text', 'Another simple report').click();
     cy.get('#CloseButton').click();
-    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 0);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
   });
 
   it('Close all', function() {
     cy.get('.table-responsive tbody tr td:contains(Simple report)').first().click();
-    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1);
     cy.get('.table-responsive tbody tr td:contains("Another simple report")').first().click();
-    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
     // Check sequence of opened reports. We expect "Simple report" first, then "Another simple report".
-    cy.get('.jqx-tree-dropdown-root li:nth-child(1) > div').should('contain', 'Simple report');
-    cy.get('.jqx-tree-dropdown-root li:nth-child(2) > div').should('have.text', 'Another simple report');
+    cy.get('#debug-tree .jqx-tree-dropdown-root li:nth-child(1) > div').should('contain', 'Simple report');
+    cy.get('#debug-tree .jqx-tree-dropdown-root li:nth-child(2) > div').should('have.text', 'Another simple report');
     cy.get('button[id="CloseAllButton"]').click();
-    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 0);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
   })
 
   // // TODO: This can not be tested easily atm, since only the css is changed on expand and collapse
@@ -51,30 +51,30 @@ describe('About opened reports', function() {
 
   // it('Node info corresponds to selected node', function() {
   //   cy.get('button[id="OpenAllButton"]').click();
-  //   cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
+  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
   //   checkNodeInfo('Simple report');
   //   checkNodeInfo('Another simple report');
   // });
 
   // it('If there are open reports, then always one of them is selected', function() {
   //   cy.get('.table-responsive tbody tr td:contains(Simple report)').first().click();
-  //   cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1).each((node) => {
+  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1).each((node) => {
   //     cy.wrap(node).should('have.text', 'Simple report');
   //   });
-  //   cy.get('.jqx-tree-dropdown-root > li.node-selected').should('have.length', 1);
+  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li.node-selected').should('have.length', 1);
   //   // Index is zero-based. We want the first node after the root.
-  //   cy.get('.jqx-tree-dropdown-root > li:eq(1)').should('have.class', 'node-selected');
+  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li:eq(1)').should('have.class', 'node-selected');
   //   cy.get('.table-responsive tbody').find('tr').contains('Another simple report').click();
-  //   cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
+  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
   //   // When you open a new report, the new report is also selected.
-  //   cy.get('.jqx-tree-dropdown-root > li.node-selected').should('have.length', 1).should('have.text', 'Another simple report');
-  //   cy.get('.jqx-tree-dropdown-root > li:contains(Another simple report):eq(1)').should('have.class', 'node-selected');
+  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li.node-selected').should('have.length', 1).should('have.text', 'Another simple report');
+  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report):eq(1)').should('have.class', 'node-selected');
   //   cy.wait(1000)
   //   cy.get('button#CloseButton').click();
-  //   cy.get('.jqx-tree-dropdown-root > li').should('have.length', 1).each((node) => {
+  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1).each((node) => {
   //     cy.wrap(node).should('have.text', 'Simple report');
   //   });
-  //   cy.get('.jqx-tree-dropdown-root > li.node-selected').should('have.length', 1);
+  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li.node-selected').should('have.length', 1);
   // });
 });
 

@@ -14,6 +14,7 @@ export class TableSettingsModalComponent {
   @ViewChild('modal') modal!: ElementRef;
   settingsForm = new UntypedFormGroup({
     generatorEnabled: new UntypedFormControl('Enabled'),
+    regexFilter: new UntypedFormControl(''),
     transformationEnabled: new UntypedFormControl(true),
     transformation: new UntypedFormControl(''),
   });
@@ -47,7 +48,7 @@ export class TableSettingsModalComponent {
     this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
     this.httpService.postTransformation(form.transformation).subscribe();
 
-    let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled' };
+    let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled', regexFilter: form.regexFilter };
     this.httpService.postSettings(data).subscribe();
 
     this.toastComponent.addAlert({ type: 'warning', message: 'Reopen report to see updated XML' });
@@ -59,26 +60,15 @@ export class TableSettingsModalComponent {
   }
 
   factoryReset(): void {
-    this.settingsForm.get('generatorEnabled')?.setValue('Enabled');
-    this.settingsForm.get('regexFilter')?.setValue('.*');
-    this.settingsForm.get('transformationEnabled')?.setValue(false);
-    this.httpService.getTransformation(true).subscribe((response) => {
-      this.settingsForm.get('transformation')?.setValue(response.transformation);
+    this.httpService.resetSettings().subscribe((response) => this.saveResponseSetting(response));
+    this.httpService.getTransformation(true).subscribe((resp) => {
+      this.settingsForm.get('transformation')?.setValue(resp.transformation);
     });
   }
 
   loadSettings(): void {
-    this.httpService.getSettings().subscribe((response) => {
-      const generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
-      this.cookieService.set('generatorEnabled', generatorStatus);
-      this.settingsForm.get('generatorEnabled')?.setValue(generatorStatus);
-    });
-
-    if (this.cookieService.get('regexFilter')) {
-      this.settingsForm.get('regexFilter')?.setValue(this.cookieService.get('regexFilter'));
-    }
-
-    if (this.cookieService.get('transformationEnabled') != undefined) {
+    this.httpService.getSettings().subscribe((response) => this.saveResponseSetting(response));
+    if (this.cookieService.get('transformationEnabled')) {
       this.settingsForm
         .get('transformationEnabled')
         ?.setValue(this.cookieService.get('transformationEnabled') == 'true');
@@ -87,5 +77,12 @@ export class TableSettingsModalComponent {
     this.httpService.getTransformation(false).subscribe((response) => {
       this.settingsForm.get('transformation')?.setValue(response.transformation);
     });
+  }
+
+  saveResponseSetting(response: any) {
+    const generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
+    this.cookieService.set('generatorEnabled', generatorStatus);
+    this.settingsForm.get('generatorEnabled')?.setValue(generatorStatus);
+    this.settingsForm.get('regexFilter')?.setValue(response.regexFilter);
   }
 }

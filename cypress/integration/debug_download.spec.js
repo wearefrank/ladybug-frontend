@@ -44,7 +44,7 @@ describe('Debug tab download', function() {
         cy.get('#RefreshButton').click();
         cy.wait(100);
         cy.get('.table-responsive tbody').find('tr').should('not.exist');
-        cy.get('.jqx-tree-dropdown-root > li').should('have.length', 0);
+        cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
         cy.readFile(cy.functions.downloadPath(newFile), 'binary')
         .then((rawContent) => {
           console.log(`Have content of uploaded file, length ${rawContent.length}`);
@@ -57,8 +57,8 @@ describe('Debug tab download', function() {
             fileName: newFile
           });
         });
-        cy.get('.jqx-tree-dropdown-root > li').should('have.length', 0);
-        cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
+        cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
+        cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
       });
     });
   });
@@ -70,9 +70,9 @@ describe('Debug tab download', function() {
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
     cy.get('button[id="SelectAllReportsButton"]').click();
     cy.get('button[id="OpenSelectedReportsButton"]').click();
-    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
-    cy.get('.jqx-tree-dropdown-root > li:contains(Simple report)').should('have.length', 1)
-    cy.get('.jqx-tree-dropdown-root > li:contains(Another simple report)').should('have.length', 1);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report)').should('have.length', 1)
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report)').should('have.length', 1);
     // Debug store should not be cleared, because the report being downloaded
     // is requested here from the backend. The backend should still have the
     // report to have a valid test.
@@ -89,7 +89,7 @@ describe('Debug tab download', function() {
           cy.log(`Number of read bytes: ${buffer.length}`);
         });
         cy.get('button[id="CloseAllButton"]').click();
-        cy.get('.jqx-tree-dropdown-root > li').should('have.length', 0);
+        cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
         cy.readFile(cy.functions.downloadPath(newFile), 'binary')
         .then(Cypress.Blob.binaryStringToBlob)
         .then(fileContent => {
@@ -100,9 +100,9 @@ describe('Debug tab download', function() {
         });
       });
     });
-    cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
-    cy.get('.jqx-tree-dropdown-root > li:contains(Simple report)').should('have.length', 1)
-    cy.get('.jqx-tree-dropdown-root > li:contains(Another simple report)').should('have.length', 1);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report)').should('have.length', 1)
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report)').should('have.length', 1);
   });
 
   // Fails because of issue https://github.com/ibissource/ladybug-frontend/issues/249.
@@ -130,9 +130,9 @@ function testDownloadFromNode(nodeNum) {
   cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
   cy.get('button[id="SelectAllReportsButton"]').click();
     cy.get('button[id="OpenSelectedReportsButton"]').click();
-  cy.get('.jqx-tree-dropdown-root > li').should('have.length', 2);
-  cy.get('.jqx-tree-dropdown-root > li:contains(Simple report)').should('have.length', 1)
-  cy.get('.jqx-tree-dropdown-root > li:contains(Another simple report)').should('have.length', 1);
+  cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
+  cy.get('#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report)').should('have.length', 1)
+  cy.get('#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report)').should('have.length', 1);
   // Debug store should not be cleared, because the report being downloaded
   // is requested here from the backend. The backend should still have the
   // report to have a valid test.
@@ -158,7 +158,7 @@ function testDownloadFromNode(nodeNum) {
         cy.log(`Number of read bytes: ${buffer.length}`);
       });
       cy.get('button[id="CloseAllButton"]').click();
-      cy.get('.jqx-tree-dropdown-root > li').should('have.length', 0);
+      cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
       cy.readFile(cy.functions.downloadPath(newFile), 'binary')
       .then(Cypress.Blob.binaryStringToBlob)
       .then(fileContent => {
@@ -169,6 +169,6 @@ function testDownloadFromNode(nodeNum) {
       });
     });
   });
-  cy.get('.jqx-tree-dropdown-root > li', {timeout: 10000}).should('have.length', 1);
-  cy.get('.jqx-tree-dropdown-root > li:contains(Simple report):not(:contains(other))').should('have.length', 1)
+  cy.get('#debug-tree .jqx-tree-dropdown-root > li', {timeout: 10000}).should('have.length', 1);
+  cy.get('#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report):not(:contains(other))').should('have.length', 1)
 }

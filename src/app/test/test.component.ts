@@ -22,7 +22,7 @@ export class TestComponent implements OnInit {
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
   currentView: any = {
-    metadataNames: ['storageId', 'name', 'variables'],
+    metadataNames: ['storageId', 'name', 'variables', 'path'],
     storageName: 'Test',
   }; // Hard-coded for now
   targetStorage: string = 'Debug';
@@ -40,10 +40,10 @@ export class TestComponent implements OnInit {
   ) {}
 
   openCloneModal(): void {
-    if (this.getSelectedReports().length !== 1) {
+    if (this.helperService.getSelectedReports(this.reports).length !== 1) {
       this.toastComponent.addAlert({ type: 'warning', message: 'Make sure exactly one report is selected at a time' });
     } else {
-      this.cloneModal.open(this.getSelectedReports()[0]);
+      this.cloneModal.open(this.helperService.getSelectedReports(this.reports)[0]);
     }
   }
 
@@ -56,7 +56,7 @@ export class TestComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadData();
+    this.loadData(null);
     this.getGeneratorStatus();
   }
 
@@ -75,6 +75,7 @@ export class TestComponent implements OnInit {
     const amountAdded: number = metadata.length - this.reports.length;
     if (amountAdded > 0) {
       for (let index = this.reports.length; index <= metadata.length - 1; index++) {
+        if (this.matches(metadata[index])) metadata[index].checked = true;
         this.reports.push(metadata[index]);
       }
     }
@@ -87,9 +88,12 @@ export class TestComponent implements OnInit {
     });
   }
 
-  loadData(): void {
+  loadData(path: any): void {
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
-      next: (value) => (this.reports = value),
+      next: (value) => {
+        this.reports = value;
+        this.testFolderTreeComponent.updateFolderTree(this.reports, path);
+      },
       error: () => catchError(this.httpService.handleError()),
     });
   }
@@ -112,7 +116,7 @@ export class TestComponent implements OnInit {
   }
 
   runSelected(): void {
-    this.getSelectedReports().forEach((report) => this.run(report.storageId));
+    this.helperService.getSelectedReports(this.reports).forEach((report) => this.run(report.storageId));
   }
 
   removeReranReportIfExists(id: string): void {
@@ -169,19 +173,23 @@ export class TestComponent implements OnInit {
   }
 
   deleteSelected(): void {
-    this.getSelectedReports().forEach((report) => {
-      this.httpService.deleteReport(report.storageId, this.currentView.storageName).subscribe();
-      this.reports.splice(this.reports.indexOf(report), 1);
-    });
-  }
-
-  getSelectedReports(): any[] {
-    return this.reports.filter((report) => report.checked);
+    this.httpService
+      .deleteReport(this.helperService.getSelectedIds(this.reports), this.currentView.storageName)
+      .subscribe(() => {
+        //     this.reports.splice(this.reports.indexOf(report), 1);
+        this.loadData('');
+      });
+    // this.getSelectedReports().forEach((report) => {
+    //     this.reports.splice(this.reports.indexOf(report), 1);
+    //     this.loadData('');
+    //   });
+    // });
   }
 
   downloadSelected(): void {
-    if (this.getSelectedReports().length > 0) {
-      const queryString: string = this.getSelectedReports().reduce(
+    const selectedReports = this.helperService.getSelectedReports(this.reports);
+    if (selectedReports.length > 0) {
+      const queryString: string = selectedReports.reduce(
         (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
         ''
       );
@@ -196,7 +204,7 @@ export class TestComponent implements OnInit {
     if (file) {
       const formData: any = new FormData();
       formData.append('file', file);
-      this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData());
+      this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData(''));
     }
   }
 
@@ -217,11 +225,11 @@ export class TestComponent implements OnInit {
   }
 
   copySelected(): void {
-    let copiedIds: string[] = this.getIdsToBeCopied();
+    let copiedIds: string[] = this.helperService.getSelectedIds(this.reports);
     let data: any = {};
     data[this.currentView.storageName] = copiedIds;
     this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
-      this.loadData();
+      this.loadData(null);
     });
   }
 
@@ -237,68 +245,42 @@ export class TestComponent implements OnInit {
     this.reports.forEach((report) => (report.checked = false));
   }
 
-  getIdsToBeCopied(): string[] {
-    let copiedIds: string[] = [];
-    this.getSelectedReports().forEach((report) => copiedIds.push(report.storageId));
-    return copiedIds;
-  }
-
-  copyAndMove(): void {
-    let copiedIds: string[] = this.getIdsToBeCopied();
-    let data: any = {};
-    data[this.currentView.storageName] = copiedIds;
-    this.httpService.copyReport(data, this.currentView.storageName).subscribe((r: any) => {
-      this.loadData();
-      setTimeout(() => {
-        this.reports.slice(r.length * -1).forEach((report) => (report.checked = true));
-        this.moveTestReportToFolder();
-      }, 200);
-    });
-  }
-
-  moveTestReportToFolder(): void {
-    if (this.getSelectedReports().length > 0) {
-      this.currentFilter = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
-      if (!this.currentFilter.startsWith('/')) {
-        this.currentFilter = '/' + this.currentFilter;
+  updatePath(action: string) {
+    let reportIds: string[] = this.helperService.getSelectedIds(this.reports);
+    if (reportIds.length > 0) {
+      let path = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
+      if (!path.endsWith('/')) {
+        path = path + '/';
       }
-      this.testFolderTreeComponent.addFolder(this.currentFilter);
-      this.changeMovedTestReportNames(this.getSelectedReports());
+      if (!path.startsWith('/')) {
+        path = '/' + path;
+      }
+      let map = { path: path, action: action };
+      this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => {
+        this.loadData(path);
+      });
     } else {
       this.toastComponent.addAlert({ type: 'warning', message: 'No Report Selected!' });
     }
   }
 
-  changeMovedTestReportNames(selectedReports: any[]): void {
-    selectedReports.forEach((report) => {
-      if (report.name.split('/').length > 1) {
-        let name = report.name.split('/').pop();
-        report.name = (this.currentFilter + '/' + name).slice(1);
-      } else {
-        report.name = (this.currentFilter + '/' + report.name).slice(1);
-      }
-    });
-    this.testFolderTreeComponent.removeUnusedFolders(this.reports);
-    this.testFolderTreeComponent.updateTreeView();
-  }
-
   changeFilter(filter: string): void {
     this.currentFilter = filter;
-    let reportNames: string[] = [];
-
-    for (let report of this.reports) {
-      reportNames.push(report.name.split('/').reverse()[0]);
-    }
-
-    setTimeout(() => {
-      for (let i in this.reports) {
-        this.reports[i].checked = '/' + this.reports[i].name === this.currentFilter + '/' + reportNames[i];
-      }
-    }, 0);
+    this.reports.forEach((report) => {
+      report.checked = this.matches(report);
+    });
   }
 
-  matches(name: string): boolean {
-    return name.match(this.currentFilter + '/' + '.*') != undefined;
+  matches(report: any): boolean {
+    let name = report.path + report.name;
+    return name.match('(/)?' + this.currentFilter + '.*') != undefined;
+  }
+
+  showRelativePath(path: string) {
+    if (path) {
+      return path.replace(this.currentFilter, '');
+    }
+    return '/';
   }
 
   extractVariables(variables: string): string {

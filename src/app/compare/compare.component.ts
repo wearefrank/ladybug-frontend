@@ -1,12 +1,15 @@
 import { AfterViewInit, Component, Injectable, ViewChild } from '@angular/core';
 import { NgxTextDiffComponent } from 'ngx-text-diff';
 import { CompareTreeComponent } from './compare-tree/compare-tree.component';
+import { NodeLinkStrategy } from '../shared/enums/compare-method';
 
 @Injectable()
 export class CompareData {
   id!: string;
   originalReport: any;
   runResultReport: any;
+  viewName: string = '';
+  nodeLinkStrategy: NodeLinkStrategy = NodeLinkStrategy.NONE;
 }
 
 @Component({
@@ -17,8 +20,6 @@ export class CompareData {
 export class CompareComponent implements AfterViewInit {
   @ViewChild('trees') compareTreeComponent!: CompareTreeComponent;
   @ViewChild('diffComponent') diffComponent!: NgxTextDiffComponent;
-  leftId: string = this.compareData.id + '-left';
-  rightId: string = this.compareData.id + '-right';
 
   constructor(public compareData: CompareData) {}
 
@@ -30,7 +31,12 @@ export class CompareComponent implements AfterViewInit {
 
   showReports() {
     if (this.compareData.originalReport && this.compareData.runResultReport) {
-      this.compareTreeComponent?.createTrees(this.compareData.originalReport, this.compareData.runResultReport);
+      this.compareTreeComponent?.createTrees(
+        this.compareData.viewName,
+        this.compareData.nodeLinkStrategy,
+        this.compareData.originalReport,
+        this.compareData.runResultReport
+      );
     }
   }
 
@@ -38,6 +44,9 @@ export class CompareComponent implements AfterViewInit {
     let leftSide = data.leftReport ? this.extractMessage(data.leftReport) : '';
     let rightSide = data.rightReport ? this.extractMessage(data.rightReport) : '';
     this.saveDiff(leftSide, rightSide);
+  }
+  changeNodeLinkStrategy(nodeLinkStrategy: NodeLinkStrategy) {
+    this.compareData.nodeLinkStrategy = nodeLinkStrategy;
   }
 
   extractMessage(report: any): string {

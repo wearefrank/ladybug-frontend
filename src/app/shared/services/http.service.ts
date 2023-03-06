@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ToastComponent } from '../components/toast/toast.component';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
+import { ChangeNodeLinkStrategyService } from './node-link-strategy.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,10 +11,12 @@ import { CookieService } from 'ngx-cookie-service';
 export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   toastComponent!: ToastComponent;
-  apiReport: string = 'api/report/'; // Keep this since sonar is crying about it, TODO: revert this
-  apiMetadata: string = 'api/metadata/';
 
-  constructor(private http: HttpClient, private cookieService: CookieService) {}
+  constructor(
+    private http: HttpClient,
+    private cookieService: CookieService,
+    private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService
+  ) {}
 
   initializeToastComponent(toastComponent: ToastComponent) {
     this.toastComponent = toastComponent;
@@ -47,7 +50,7 @@ export class HttpService {
     metadataNames: string[],
     storage: string
   ): Observable<any> {
-    return this.http.get(this.apiMetadata + storage + '/', {
+    return this.http.get('api/metadata/' + storage + '/', {
       params: {
         limit: limit,
         filterHeader: filterHeader,
@@ -58,7 +61,7 @@ export class HttpService {
   }
 
   getUserHelp(storage: string, metadataNames: string[]): Observable<any> {
-    return this.http.get<any>(this.apiMetadata + storage + '/userHelp', {
+    return this.http.get<any>('api/metadata/' + storage + '/userHelp', {
       params: {
         metadataNames: metadataNames,
       },
@@ -66,7 +69,7 @@ export class HttpService {
   }
 
   getMetadataCount(storage: string): Observable<any> {
-    return this.http.get(this.apiMetadata + storage + '/count').pipe(catchError(this.handleError()));
+    return this.http.get('api/metadata/' + storage + '/count').pipe(catchError(this.handleError()));
   }
 
   getLatestReports(amount: number, storage: string): Observable<any> {
@@ -91,7 +94,7 @@ export class HttpService {
   }
 
   getTestReports(metadataNames: string[], storage: string): Observable<any> {
-    return this.http.get<any>(this.apiMetadata + storage + '/', {
+    return this.http.get<any>('api/metadata/' + storage + '/', {
       params: { metadataNames: metadataNames },
     });
   }
@@ -99,7 +102,7 @@ export class HttpService {
   getReport(reportId: string, storage: string) {
     return this.http
       .get<any>(
-        this.apiReport +
+        'api/report/' +
           storage +
           '/' +
           reportId +
@@ -112,15 +115,15 @@ export class HttpService {
   getReports(reportIds: string[], storage: string) {
     return this.http
       .get<any>(
-        this.apiReport + storage + '/?xml=true&globalTransformer=' + this.cookieService.get('transformationEnabled'),
+        'api/report/' + storage + '/?xml=true&globalTransformer=' + this.cookieService.get('transformationEnabled'),
         { params: { storageIds: reportIds } }
       )
       .pipe(catchError(this.handleError()));
   }
 
-  postReport(reportId: string, report: any, storage: string): Observable<void> {
+  updateReport(reportId: string, params: any, storage: string): Observable<void> {
     return this.http
-      .post(this.apiReport + storage + '/' + reportId, report)
+      .post('api/report/' + storage + '/' + reportId, params)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }
@@ -129,6 +132,12 @@ export class HttpService {
     return this.http
       .put('api/report/store/' + storage, data)
       .pipe(tap(() => this.handleSuccess('Report copied!')))
+      .pipe(catchError(this.handleError()));
+  }
+
+  updatePath(reportIds: string[], storage: string, map: any) {
+    return this.http
+      .put('api/report/move/' + storage, map, { params: { storageIds: reportIds } })
       .pipe(catchError(this.handleError()));
   }
 
@@ -176,6 +185,10 @@ export class HttpService {
     return this.http.get<any>('api/testtool').pipe(catchError(this.handleError()));
   }
 
+  resetSettings(): Observable<any> {
+    return this.http.get('api/testtool/reset').pipe(catchError(this.handleError()));
+  }
+
   reset(): Observable<void> {
     return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
@@ -205,8 +218,10 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  deleteReport(reportId: string, storage: string): Observable<void> {
-    return this.http.delete(this.apiReport + storage + '/' + reportId).pipe(catchError(this.handleError()));
+  deleteReport(reportIds: string[], storage: string): Observable<void> {
+    return this.http
+      .delete('api/report/' + storage, { params: { storageIds: reportIds } })
+      .pipe(catchError(this.handleError()));
   }
 
   replaceReport(reportId: string, storage: string): Observable<void> {
@@ -214,6 +229,21 @@ export class HttpService {
       .put('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
       })
+      .pipe(catchError(this.handleError()));
+  }
+
+  changeNodeLinkStrategy(viewName: string, nodeLinkStrategy: string) {
+    return this.http
+      .put(
+        'api/testtool/node-link-strategy',
+        { headers: this.headers },
+        { params: { viewName: viewName, nodeLinkStrategy: nodeLinkStrategy } }
+      )
+      .pipe(
+        tap(() => {
+          this.changeNodeLinkStrategyService.changeNodeLinkStrategy.next();
+        })
+      ) // Notify table of change in view settings
       .pipe(catchError(this.handleError()));
   }
 }

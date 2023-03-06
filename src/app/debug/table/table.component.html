@@ -25,6 +25,7 @@
     <app-button [title]="'Open Selected Reports'" [text]="'Open Selected'" (click)="openSelected()"></app-button>
     <app-button [title]="'Select All Reports'" [text]="'Select All'" (click)="selectAll()"></app-button>
     <app-button [title]="'Deselect All Reports'" [text]="'Deselect All'" (click)="deselectAll()"></app-button>
+    <app-button [title]="'Delete'" [icon]="'fa fa-trash'" (click)="deleteSelected()"></app-button>
 
     <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
       <div class="input-group-append">
