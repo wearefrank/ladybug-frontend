@@ -72,7 +72,7 @@
       <thead id="table-header">
         <tr>
           <th>Select</th>
-          <th *ngFor="let header of viewSettings.currentView.beautifulMetadataNames; let i = index" mat-sort-header="{{i}}">{{header}}</th>
+          <th *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index" mat-sort-header="{{i}}">{{header}}</th>
         </tr>
         <tr id="filterRow" *ngIf="tableSettings.showFilter">
           <th>
