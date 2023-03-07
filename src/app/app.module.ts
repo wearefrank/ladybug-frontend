@@ -22,7 +22,6 @@ import { DisplayTableComponent } from './shared/components/display-table/display
 import { TableSettingsModalComponent } from './debug/table/table-settings-modal/table-settings-modal.component';
 import { TestFolderTreeComponent } from './test/test-folder-tree/test-folder-tree.component';
 import { CookieService } from 'ngx-cookie-service';
-import { EnumToArrayPipe } from './shared/pipes/enum-to-array.pipe';
 import { jqxTreeModule } from 'jqwidgets-ng/jqxtree';
 import { NgxTextDiffModule } from 'ngx-text-diff';
 import { CompareTreeComponent } from './compare/compare-tree/compare-tree.component';
@@ -49,7 +48,6 @@ import { AngularSplitModule } from 'angular-split';
     DisplayTableComponent,
     TableSettingsModalComponent,
     TestFolderTreeComponent,
-    EnumToArrayPipe,
     CompareTreeComponent,
     EditDisplayComponent,
     DebugTreeComponent,
