@@ -231,19 +231,4 @@ export class HttpService {
       })
       .pipe(catchError(this.handleError()));
   }
-
-  changeNodeLinkStrategy(viewName: string, nodeLinkStrategy: string) {
-    return this.http
-      .put(
-        'api/testtool/node-link-strategy',
-        { headers: this.headers },
-        { params: { viewName: viewName, nodeLinkStrategy: nodeLinkStrategy } }
-      )
-      .pipe(
-        tap(() => {
-          this.changeNodeLinkStrategyService.changeNodeLinkStrategy.next();
-        })
-      ) // Notify table of change in view settings
-      .pipe(catchError(this.handleError()));
-  }
 }
