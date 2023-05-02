@@ -72,10 +72,8 @@ export class CompareTreeComponent {
 
   changeNodeLinkStrategy(event: any) {
     this.nodeLinkStrategy = event.target.value;
-    console.log(this.nodeLinkStrategy);
     this.changeNodeLinkStrategyEvent.next(this.nodeLinkStrategy);
     this.cookieService.set(this.viewName + '.NodeLinkStrategy', this.nodeLinkStrategy);
-    // this.httpService.changeNodeLinkStrategy(this.viewName, this.nodeLinkStrategy).subscribe();
   }
   getParent(checkpoint: any, parentId: string): any {
     let items = checkpoint.treeInstance.items;

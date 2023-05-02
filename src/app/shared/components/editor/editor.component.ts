@@ -28,6 +28,8 @@ export class EditorComponent implements AfterViewInit {
       fontSize: 13,
     });
 
+    this.editor.execCommand('find');
+
     this.editor.on('change', () => {
       this.setLineHeight();
     });

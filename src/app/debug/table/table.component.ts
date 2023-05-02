@@ -285,7 +285,6 @@ export class TableComponent implements OnInit {
     this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
-      console.log(report);
       this.openReportEvent.next(report);
     });
   }
