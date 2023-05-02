@@ -98,4 +98,18 @@ export class DebugTreeComponent implements AfterViewInit {
     }
     this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
   }
+
+  changeSearchTerm(event: any) {
+    const term: string = event.target.value;
+    this.treeReference.getItems().forEach((item: any) => {
+      if (term !== '') {
+        const matching = item.label === term || item.value.xml?.includes(term) || item.value.message?.includes(term);
+        item.element.style.color = matching ? 'blue' : 'black';
+        item.element.style.fontWeight = matching ? 'bold' : 'normal';
+      } else {
+        item.element.style.color = 'black';
+        item.element.style.fontWeight = 'normal';
+      }
+    });
+  }
 }

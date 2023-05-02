@@ -47,8 +47,8 @@ export class TableSettingsModalComponent {
     this.cookieService.set('generatorEnabled', form.generatorEnabled);
     this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
     this.httpService.postTransformation(form.transformation).subscribe();
-
-    let data: any = { generatorEnabled: form.generatorEnabled === 'Enabled', regexFilter: form.regexFilter };
+    const generatorEnabled: string = String(form.generatorEnabled === 'Enabled');
+    let data: any = { generatorEnabled: generatorEnabled, regexFilter: form.regexFilter };
     this.httpService.postSettings(data).subscribe();
 
     this.toastComponent.addAlert({ type: 'warning', message: 'Reopen report to see updated XML' });

@@ -3,7 +3,7 @@ import { Report } from '../../shared/interfaces/report';
 import { HelperService } from '../../shared/services/helper.service';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { NodeLinkStrategy } from '../../shared/enums/compare-method';
-import { HttpService } from '../../shared/services/http.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-compare-tree',
@@ -11,7 +11,7 @@ import { HttpService } from '../../shared/services/http.service';
   styleUrls: ['./compare-tree.component.css'],
 })
 export class CompareTreeComponent {
-  constructor(private helperService: HelperService, private httpService: HttpService) {}
+  constructor(private helperService: HelperService, private cookieService: CookieService) {}
   @Output() compareEvent = new EventEmitter<any>();
   @Output() changeNodeLinkStrategyEvent = new EventEmitter<any>();
   @ViewChild('leftTreeReference') leftTreeReference!: jqxTreeComponent;
@@ -73,7 +73,7 @@ export class CompareTreeComponent {
   changeNodeLinkStrategy(event: any) {
     this.nodeLinkStrategy = event.target.value;
     this.changeNodeLinkStrategyEvent.next(this.nodeLinkStrategy);
-    this.httpService.changeNodeLinkStrategy(this.viewName, this.nodeLinkStrategy).subscribe();
+    this.cookieService.set(this.viewName + '.NodeLinkStrategy', this.nodeLinkStrategy);
   }
   getParent(checkpoint: any, parentId: string): any {
     let items = checkpoint.treeInstance.items;
@@ -130,6 +130,10 @@ export class CompareTreeComponent {
   createTrees(viewName: string, nodeLinkStrategy: NodeLinkStrategy, leftReport: Report, rightReport: Report) {
     this.viewName = viewName;
     this.nodeLinkStrategy = nodeLinkStrategy;
+    let nls = this.cookieService.get(this.viewName + '.NodeLinkStrategy');
+    if (nls) {
+      this.nodeLinkStrategy = NodeLinkStrategy[nls as keyof typeof NodeLinkStrategy];
+    }
     const leftTree = this.helperService.convertReportToJqxTree(leftReport);
     const rightTree = this.helperService.convertReportToJqxTree(rightReport);
     const both = this.iterateToMakeLabelsRed(leftTree, rightTree);
