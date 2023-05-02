@@ -105,8 +105,10 @@ export class DebugTreeComponent implements AfterViewInit {
       if (term !== '') {
         const matching = item.label === term || item.value.xml?.includes(term) || item.value.message?.includes(term);
         item.element.style.color = matching ? 'blue' : 'black';
+        item.element.style.fontWeight = matching ? 'bold' : 'normal';
       } else {
         item.element.style.color = 'black';
+        item.element.style.fontWeight = 'normal';
       }
     });
   }
