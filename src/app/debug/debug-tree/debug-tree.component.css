@@ -6,28 +6,20 @@
 }
 
 input[type=text] {
-  width: 130px;
+  width: 30px;
+  height: 30px;
   box-sizing: border-box;
   border: 2px solid #ccc;
   border-radius: 4px;
   font-size: 16px;
   background-color: white;
   font-family: FontAwesome;
-  content: '\f002';
   background-position: 10px 10px;
   background-repeat: no-repeat;
   -webkit-transition: width 0.4s ease-in-out;
   transition: width 0.4s ease-in-out;
 }
 
-input[type=text]:before {
-  content: "\f002";  /* this is your text. You can also use UTF-8 character codes as I do here */
-  font-family: FontAwesome;
-  left:-5px;
-  position:absolute;
-  top:0;
-}
-/* When the input field gets focus, change its width to 100% */
 input[type=text]:focus {
-  width: 80%;
+  width: 30%;
 }

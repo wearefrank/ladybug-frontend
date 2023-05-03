@@ -19,6 +19,8 @@ export interface Report {
   stubStrategy: string;
   transformation: string;
   variableCsv: string;
+
+  storageName: string;
   variablesAsMap: any; // Map<String, String>
   xml: string; // Custom for the xml representation of the report
   id: string; // Custom

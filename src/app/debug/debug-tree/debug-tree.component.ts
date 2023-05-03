@@ -3,6 +3,7 @@ import { Report } from '../../shared/interfaces/report';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { HelperService } from '../../shared/services/helper.service';
 import { Observable } from 'rxjs';
+import { HttpService } from '../../shared/services/http.service';
 
 @Component({
   selector: 'app-debug-tree',
@@ -15,10 +16,22 @@ export class DebugTreeComponent implements AfterViewInit {
   @Output() closeEntireTreeEvent = new EventEmitter<any>();
   loaded: boolean = false;
   showOneAtATime: boolean = false;
-  @Input() currentView: any = {};
+  private _currentView: any;
+
+  @Input() set currentView(value: any) {
+    if (this.loaded && this._currentView !== value) {
+      // TODO: Check if the current reports are part of the view
+      this.hideOrShowCheckpointsBasedOnView(value);
+    }
+    this._currentView = value;
+  }
+
+  get currentView(): any {
+    return this._currentView;
+  }
   @Input() adjustWidth: Observable<void> = {} as Observable<void>;
 
-  constructor(private helperService: HelperService) {}
+  constructor(private helperService: HelperService, private httpService: HttpService) {}
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -28,6 +41,49 @@ export class DebugTreeComponent implements AfterViewInit {
         this.adjustTreeWidth();
       });
     });
+  }
+
+  hideOrShowCheckpointsBasedOnView(currentView: any) {
+    this.getTreeReports().forEach((report) => {
+      if (report.value.storageName === currentView.storageName) {
+        this.httpService
+          .getUnmatchedCheckpoints(report.value.storageName, report.value.storageId, currentView.name)
+          .subscribe((unmatched: any) => {
+            const selectedReport: any = this.treeReference.getSelectedItem();
+            this.prepareNextSelect(unmatched, selectedReport);
+
+            let children = report.element.querySelectorAll('li');
+            children.forEach((node: any) => (node.style.display = ''));
+            this.hideCheckpoints(unmatched, children);
+          });
+      }
+    });
+  }
+
+  prepareNextSelect(unmatched: string[], selectedReport: any) {
+    if (unmatched.includes(selectedReport.value.uid)) {
+      this.recursivelyFindParentThatWontBeDeleted(selectedReport, unmatched);
+    }
+  }
+
+  hideCheckpoints(unmatched: string[], children: any[]) {
+    if (unmatched.length > 0) {
+      children.forEach((node: any) => {
+        let oki: any = this.treeReference.getItem(node);
+        if (unmatched.includes(oki.value.uid)) {
+          node.style.display = 'none';
+        }
+      });
+    }
+  }
+
+  recursivelyFindParentThatWontBeDeleted(selectedReport: any, unmatched: any[]) {
+    const parent: any = this.treeReference.getItems().find((item: any) => item.id === selectedReport.parentId);
+    if (parent && !unmatched.includes(parent.value.uid)) {
+      this.treeReference.selectItem(parent);
+    } else {
+      this.recursivelyFindParentThatWontBeDeleted(parent, unmatched);
+    }
   }
 
   adjustTreeWidth() {
@@ -49,6 +105,7 @@ export class DebugTreeComponent implements AfterViewInit {
       // @ts-ignore
       this.treeReference.getItems()[this.treeReference.getItems().findIndex((item: any) => item.id == tree.items[0].id)]
     );
+    this.hideOrShowCheckpointsBasedOnView(this.currentView);
   }
 
   selectReport(event: any): void {
@@ -90,12 +147,9 @@ export class DebugTreeComponent implements AfterViewInit {
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
     let queryString = '';
-    for (let item of this.treeReference.getItems()) {
-      let report: any = item.value;
-      if (report?.storageId != undefined) {
-        queryString += 'id=' + report.storageId + '&';
-      }
-    }
+    this.getTreeReports().forEach((report) => {
+      queryString += 'id=' + report.value.storageId + '&';
+    });
     this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
   }
 
@@ -111,5 +165,16 @@ export class DebugTreeComponent implements AfterViewInit {
         item.element.style.fontWeight = 'normal';
       }
     });
+  }
+
+  getTreeReports() {
+    let reports: any[] = [];
+    this.treeReference.getItems().forEach((item: any) => {
+      if (item.value?.storageId != undefined) {
+        reports.push(item);
+      }
+    });
+
+    return reports;
   }
 }
