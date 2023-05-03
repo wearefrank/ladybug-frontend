@@ -102,6 +102,7 @@ export class HttpService {
   getReport(reportId: string, storage: string) {
     return this.http
       .get<any>(
+        // eslint-disable-next-line sonarjs/no-duplicate-string
         'api/report/' +
           storage +
           '/' +
@@ -228,6 +229,14 @@ export class HttpService {
     return this.http
       .put('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
+      })
+      .pipe(catchError(this.handleError()));
+  }
+
+  getUnmatchedCheckpoints(storageName: string, storageId: string, viewName: string): Observable<void> {
+    return this.http
+      .get('api/report/' + storageName + '/' + storageId + '/checkpoints/uids', {
+        params: { view: viewName, invert: true },
       })
       .pipe(catchError(this.handleError()));
   }

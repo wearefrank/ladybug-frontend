@@ -14,8 +14,8 @@
       </div>
     </div>
     <app-button [text]="showOneAtATime ? 'Show multiple' : 'Show one'" (click)="toggleShowAmount()"></app-button>
+    <input class="my-2 mx-1 pl-1" type="text" name="search" placeholder="&#xF002;" (keyup)="changeSearchTerm($event)"/>
   </div>
-  <input type="text" name="search" placeholder="Search.." (keyup)="changeSearchTerm($event)">
   <jqxTree id="debug-tree" #treeReference (onSelect)="selectReport($event)" [auto-create]="false"></jqxTree>
 </div>
 

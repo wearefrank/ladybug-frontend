@@ -113,7 +113,7 @@ export class TableComponent implements OnInit {
 
   changeView(event: any) {
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
-    this.viewSettings.currentViewName = event.target.value;
+    this.viewSettings.currentView.name = event.target.value;
     this.clearFilters();
     this.changeViewEvent.emit(this.viewSettings.currentView);
     this.selectedRow = -1;
@@ -124,7 +124,7 @@ export class TableComponent implements OnInit {
       this.httpService.getViews().subscribe((views) => {
         this.viewSettings.views = views;
         let viewToUpdate = Object.keys(this.viewSettings.views).find(
-          (view) => view === this.viewSettings.currentViewName
+          (view) => view === this.viewSettings.currentView.name
         );
         if (viewToUpdate) {
           this.viewSettings.currentView.nodeLinkStrategy = views[viewToUpdate].nodeLinkStrategy;
@@ -144,6 +144,7 @@ export class TableComponent implements OnInit {
         );
 
         this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
+        this.viewSettings.currentView.name = this.viewSettings.currentViewName;
         this.changeViewEvent.emit(this.viewSettings.currentView);
       }
 
@@ -250,7 +251,7 @@ export class TableComponent implements OnInit {
         compareReports = {
           originalReport: originalReport,
           runResultReport: runResultReport,
-          viewName: this.viewSettings.currentViewName,
+          viewName: this.viewSettings.currentView.name,
           nodeLinkStrategy: this.viewSettings.currentView.nodeLinkStrategy,
         };
       },
@@ -285,6 +286,7 @@ export class TableComponent implements OnInit {
     this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
+      report.storageName = this.viewSettings.currentView.storageName;
       this.openReportEvent.next(report);
     });
   }
