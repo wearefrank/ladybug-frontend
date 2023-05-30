@@ -153,11 +153,15 @@ export class DebugTreeComponent implements AfterViewInit {
     this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
   }
 
-  changeSearchTerm(event: any) {
-    const term: string = event.target.value;
-    this.treeReference.getItems().forEach((item: any) => {
-      if (term !== '') {
-        const matching = item.label === term || item.value.xml?.includes(term) || item.value.message?.includes(term);
+  changeSearchTerm(event: KeyboardEvent) {
+    const term: string = (event.target as HTMLInputElement).value.toLowerCase();
+    this.treeReference.getItems().forEach((item: jqwidgets.TreeItem) => {
+      const report = item.value as unknown as Report & { message?: string | null };
+      if (term !== '' && report) {
+        const matching =
+          item.label?.toLowerCase() === term ||
+          report.xml?.toLowerCase().includes(term) ||
+          report.message?.toLowerCase().includes(term);
         item.element.style.color = matching ? 'blue' : 'black';
         item.element.style.fontWeight = matching ? 'bold' : 'normal';
       } else {
