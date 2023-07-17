@@ -46,7 +46,7 @@ export class ReportComponent implements AfterViewInit {
 
   createTree(report: Report) {
     let tree = this.helperService.convertReportToJqxTree(report);
-    this.treeReference.createComponent({ height: '100%', width: '100%', source: [tree] });
+    this.treeReference.createComponent({ height: '100%', width: '100%', source: [tree], allowDrag: false });
   }
 
   selectReport(currentReport: any): void {
