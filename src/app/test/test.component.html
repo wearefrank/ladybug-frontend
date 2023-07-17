@@ -13,13 +13,13 @@
       <app-button [icon]="'fa fa-trash'" [title]="'Delete Selected'" (click)="deleteSelected()"></app-button>
       <app-button [text]="'Clone'" [title]="'Clone report'" (click)="openCloneModal()"></app-button>
       <app-button [icon]="'fa fa-copy'" [title]="'Copy Selected'" (click)="copySelected()"></app-button>
+      <app-button [icon]="'fa fa-download'" [title]="'Download Binary'" (click)="downloadSelected()"></app-button>
       <button type="button" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
               title="Upload" (click)="uploadFileTest.click()">
         <i class="fa fa-upload"></i>
         <input #uploadFileTest (change)="uploadReport($event)" type="file" id="uploadFileTest">
       </button>
     </div>
-    <app-button [icon]="'fa fa-download'" [title]="'Download Binary'" (click)="downloadSelected()"></app-button>
 
 
     <div class="form-group mt-2">
@@ -48,7 +48,7 @@
           </tr>
         </thead>
         <tbody id="testReports">
-        <ng-container *ngFor="let report of reports" class="form-inline">
+        <ng-container *ngFor="let report of sortByName()" class="form-inline">
           <tr *ngIf="matches(report)">
               <td>
                 <input type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
