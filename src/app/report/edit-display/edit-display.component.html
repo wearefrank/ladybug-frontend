@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <div class="form-group col-10" *ngIf="report.stub">
+    <div class="form-group col-10" *ngIf="report.stub || report.stub === 0">
       <select class="form-control" (change)="selectStubStrategy($event)">
         <option [selected]="report.stub === -1">Use report level stub strategy</option>
         <option [selected]="report.stub === 1">Always stub this checkpoint</option>
