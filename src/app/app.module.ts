@@ -31,6 +31,7 @@ import { DebugTreeComponent } from './debug/debug-tree/debug-tree.component';
 import { ToggleComponent } from './shared/components/toggle/toggle.component';
 import { EditorComponent } from './shared/components/editor/editor.component';
 import { AngularSplitModule } from 'angular-split';
+import { DeleteModalComponent } from './test/delete-modal/delete-modal.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { AngularSplitModule } from 'angular-split';
     DebugTreeComponent,
     ToggleComponent,
     EditorComponent,
+    DeleteModalComponent,
   ],
   imports: [
     BrowserModule,
