@@ -135,22 +135,8 @@ export class TestComponent implements OnInit {
       originalReport: result.originalReport,
       runResultReport: result.runResultReport,
       color: result.equal ? 'green' : 'red',
-      resultString: this.createResultString(result),
+      resultString: result.info,
     };
-  }
-
-  createResultString(resultReport: TestResult): string {
-    return (
-      '(' +
-      resultReport.previousTime +
-      'ms >> ' +
-      resultReport.currentTime +
-      'ms) (' +
-      resultReport.stubbed +
-      '/' +
-      resultReport.total +
-      ' stubbed)'
-    );
   }
 
   showResult(result: TestResult): void {
