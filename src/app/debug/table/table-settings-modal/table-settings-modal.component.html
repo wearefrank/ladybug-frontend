@@ -33,7 +33,15 @@
       <div class="form-group">
         <label for="openLatestReports">Report filter (regex)</label>
         <div class="input-group">
-          <input type="search" placeholder=".*" title="Filter out which reports should not be generated" class="form-control" formControlName="regexFilter"/>
+          <input type="search" placeholder=".*" title="Example 1 (only store report when name is Hello World):
+Hello World
+
+Example 2 (only store report when name contains Hello or World):
+.*(Hello|World).*
+
+Example 3 (only store report when name doesn't start with Hello World):
+^(?!Hello World).*"
+          class="form-control" formControlName="regexFilter"/>
         </div>
       </div>
       <div class="dropdown-divider"></div>
