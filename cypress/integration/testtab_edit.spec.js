@@ -19,6 +19,7 @@ describe('Edit tests', function() {
     cy.wait(1000);
     cy.get('#SelectAllButton').click();
     cy.get('#DeleteSelectedButton').click();
+    cy.get('#confirmDeletion').click();
     cy.get('#testReports tr', {timeout: 10000}).should('have.length', 0);
     cy.get('li#debugTab').click();
   });

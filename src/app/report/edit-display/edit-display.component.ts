@@ -67,14 +67,14 @@ export class EditDisplayComponent {
   selectStubStrategy(event: any) {
     let stubStrategy: string;
     switch (event.target.value) {
-      case 'Follow report strategy':
+      case 'Use report level stub strategy':
         stubStrategy = '-1';
         break;
-      case 'No':
-        stubStrategy = '0';
-        break;
-      case 'Yes':
+      case 'Always stub this checkpoint':
         stubStrategy = '1';
+        break;
+      case 'Never stub this checkpoint':
+        stubStrategy = '0';
         break;
       default:
         stubStrategy = this.report.stub;

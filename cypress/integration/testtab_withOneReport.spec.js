@@ -27,6 +27,7 @@ describe('Tests with one report', function() {
     cy.wait(1000);
     cy.get('#SelectAllButton').click();
     cy.get('#DeleteSelectedButton').click();
+    cy.get('#confirmDeletion').click();
     cy.get('#testReports tr', {timeout: 10000}).should('have.length', 0);
     cy.get('li#debugTab').click();
   });
@@ -64,11 +65,11 @@ describe('Tests with one report', function() {
     cy.get('#testReports').find('tr').should('have.length', 2);
     cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(0)').within(function($report) {
-      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'green');
+      cy.wrap($report).find('span:contains(stubbed)').should('have.css', 'color').and('be.colored', 'green');
     });
     cy.get('#testReports tr:eq(1)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(1)').within(function($report) {
-      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
+      cy.wrap($report).find('span:contains(stubbed)').should('have.css', 'color').and('be.colored', 'red');
     });
   });
 
@@ -78,12 +79,12 @@ describe('Tests with one report', function() {
     // cy.functions.testTabSelectReportNamed('Simple report');
     cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(0)').within(function($report) {
-      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
+      cy.wrap($report).find('span:contains(stubbed)').should('have.css', 'color').and('be.colored', 'red');
     });
     cy.get('#testReports tr:eq(0)').find('#ReplacereportButton').click();
     cy.get('#testReports tr:eq(0)').find('#RunreportButton').click();
     cy.get('#testReports').find('tr:eq(0)').within(function($report) {
-      cy.wrap($report).find('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'green');
+      cy.wrap($report).find('span:contains(stubbed)').should('have.css', 'color').and('be.colored', 'green');
     });
   });
 })

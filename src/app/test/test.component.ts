@@ -10,6 +10,7 @@ import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.com
 import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
+import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 
 @Component({
   selector: 'app-test',
@@ -32,6 +33,7 @@ export class TestComponent implements OnInit {
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(TestFolderTreeComponent) testFolderTreeComponent!: TestFolderTreeComponent;
+  @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
 
   constructor(
     private httpService: HttpService,
@@ -135,22 +137,8 @@ export class TestComponent implements OnInit {
       originalReport: result.originalReport,
       runResultReport: result.runResultReport,
       color: result.equal ? 'green' : 'red',
-      resultString: this.createResultString(result),
+      resultString: result.info,
     };
-  }
-
-  createResultString(resultReport: TestResult): string {
-    return (
-      '(' +
-      resultReport.previousTime +
-      'ms >> ' +
-      resultReport.currentTime +
-      'ms) (' +
-      resultReport.stubbed +
-      '/' +
-      resultReport.total +
-      ' stubbed)'
-    );
   }
 
   showResult(result: TestResult): void {
@@ -172,18 +160,19 @@ export class TestComponent implements OnInit {
     });
   }
 
+  openDeleteModal() {
+    let reportsToBeDeleted = this.helperService.getSelectedReports(this.reports);
+    if (reportsToBeDeleted.length > 0) {
+      this.deleteModal.open(reportsToBeDeleted);
+    }
+  }
+
   deleteSelected(): void {
     this.httpService
       .deleteReport(this.helperService.getSelectedIds(this.reports), this.currentView.storageName)
       .subscribe(() => {
-        //     this.reports.splice(this.reports.indexOf(report), 1);
         this.loadData('');
       });
-    // this.getSelectedReports().forEach((report) => {
-    //     this.reports.splice(this.reports.indexOf(report), 1);
-    //     this.loadData('');
-    //   });
-    // });
   }
 
   downloadSelected(): void {
@@ -295,5 +284,9 @@ export class TestComponent implements OnInit {
       resultString += keys[i] + '=' + values[i] + ', ';
     }
     return resultString.slice(0, -2);
+  }
+
+  sortByName() {
+    return this.reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
   }
 }

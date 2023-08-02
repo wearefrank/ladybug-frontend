@@ -7,6 +7,7 @@ describe('Tests about copying', function() {
     cy.get('li#testTab').click();
     cy.get('#SelectAllButton').click();
     cy.get('.row #DeleteSelectedButton').click();
+    cy.get('#confirmDeletion').click();
     cy.get('#debugTab').click();
   });
 

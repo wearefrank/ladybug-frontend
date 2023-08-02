@@ -15,7 +15,7 @@ export class TestFolderTreeComponent implements AfterViewInit {
   constructor() {}
 
   ngAfterViewInit(): void {
-    this.treeReference.createComponent({ source: [this.baseFolder], height: '90%', width: '100%' });
+    this.treeReference.createComponent({ source: [this.baseFolder], height: '90%', width: '100%', allowDrag: false });
   }
 
   updateFolderTree(reports: any, addedFolderPath: any) {

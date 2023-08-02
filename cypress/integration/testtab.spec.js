@@ -16,8 +16,6 @@ describe('About the Test tab', function() {
     cy.get('button[id="CloseAllButton"]').click();
     cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
     cy.get('li#testTab').click();
-    cy.get('#SelectAllButton').click();
-    cy.get('#DeleteSelectedButton').click();
     cy.get('#testReports tr', {timeout: 10000}).should('have.length', 0);
     cy.get('li#debugTab').click();
     const downloadsFolder = Cypress.config('downloadsFolder');
@@ -30,11 +28,15 @@ describe('About the Test tab', function() {
       cy.wrap($reports).contains('/Simple report').should('have.length', 1);
       cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
     });
-    cy.functions.testTabDeselectReportNamed('Simple report');
+    cy.functions.testTabDeselectReportNamed('/Another simple report');
     cy.get('#DeleteSelectedButton').click();
+    cy.get('#confirmDeletion').click();
     cy.get('#testReports').find('tr').should('have.length', 1).within(function($reports) {
-      cy.wrap($reports).contains('/Simple report').should('have.length', 1);
+      cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
     });
+    cy.get('#SelectAllButton').click();
+    cy.get('#DeleteSelectedButton').click();
+    cy.get('#confirmDeletion').click();
   });
 
   it('Test select all by deleting', function() {
@@ -46,6 +48,7 @@ describe('About the Test tab', function() {
     cy.get('#SelectAllButton').click();
     checkTestTabTwoReportsSelected();
     cy.get('#DeleteSelectedButton').click();
+    cy.get('#confirmDeletion').click();
     cy.get('#testReports').find('tr').should('have.length', 0);
   });
 
@@ -65,6 +68,9 @@ describe('About the Test tab', function() {
       cy.wrap($reports).contains('/Simple report').should('have.length', 1);
       cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
     });
+    cy.get('#SelectAllButton').click();
+    cy.get('#DeleteSelectedButton').click();
+    cy.get('#confirmDeletion').click();
   });
 
   // Fails because of https://github.com/ibissource/ladybug-frontend/issues/249.
