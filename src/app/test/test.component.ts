@@ -162,7 +162,9 @@ export class TestComponent implements OnInit {
 
   openDeleteModal() {
     let reportsToBeDeleted = this.helperService.getSelectedReports(this.reports);
-    this.deleteModal.open(reportsToBeDeleted);
+    if (reportsToBeDeleted.length > 0) {
+      this.deleteModal.open(reportsToBeDeleted);
+    }
   }
 
   deleteSelected(): void {
