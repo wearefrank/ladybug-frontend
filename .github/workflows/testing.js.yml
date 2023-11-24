@@ -98,6 +98,8 @@ jobs:
         run: echo "maven.skip.javadoc=true" >> frank-runner/specials/ibis-ladybug/build.properties
       - name: Set property to skip checking licenses
         run: echo "maven.skip.copyright=true" >> frank-runner/specials/ibis-ladybug/build.properties
+      - name: Set property to skip replace check
+        run: echo "skip.replace.check=true" >> frank-runner/specials/ibis-ladybug/build.properties
       - name: Set port where ibis-ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
 
