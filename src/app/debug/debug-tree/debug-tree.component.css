@@ -23,3 +23,20 @@ input[type=text] {
 input[type=text]:focus {
   width: 30%;
 }
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  margin: 0 1rem 0 auto;
+  font-size: 10pt;
+  cursor: default !important;
+  height: fit-content;
+
+  > input {
+    margin-left: 0.25rem;
+  }
+
+  > label {
+    margin-bottom: 0;
+  }
+}

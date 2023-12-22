@@ -15,8 +15,10 @@ export class DebugTreeComponent implements AfterViewInit {
   @Output() selectReportEvent = new EventEmitter<any>();
   @Output() closeEntireTreeEvent = new EventEmitter<any>();
   loaded: boolean = false;
-  showOneAtATime: boolean = false;
+  showMultipleAtATime: boolean = false;
   private _currentView: any;
+
+  private lastReport?: Report;
 
   @Input() set currentView(value: any) {
     if (this.loaded && this._currentView !== value) {
@@ -43,7 +45,7 @@ export class DebugTreeComponent implements AfterViewInit {
     });
   }
 
-  hideOrShowCheckpointsBasedOnView(currentView: any) {
+  hideOrShowCheckpointsBasedOnView(currentView: any): void {
     this.getTreeReports().forEach((report) => {
       if (report.value.storageName === currentView.storageName) {
         this.httpService
@@ -60,13 +62,13 @@ export class DebugTreeComponent implements AfterViewInit {
     });
   }
 
-  prepareNextSelect(unmatched: string[], selectedReport: any) {
+  prepareNextSelect(unmatched: string[], selectedReport: any): void {
     if (unmatched.includes(selectedReport.value.uid)) {
       this.recursivelyFindParentThatWontBeDeleted(selectedReport, unmatched);
     }
   }
 
-  hideCheckpoints(unmatched: string[], children: any[]) {
+  hideCheckpoints(unmatched: string[], children: any[]): void {
     if (unmatched.length > 0) {
       children.forEach((node: any) => {
         let oki: any = this.treeReference.getItem(node);
@@ -86,17 +88,27 @@ export class DebugTreeComponent implements AfterViewInit {
     }
   }
 
-  adjustTreeWidth() {
+  adjustTreeWidth(): void {
     this.treeReference.width('100%');
   }
 
   toggleShowAmount(): void {
-    this.showOneAtATime = !this.showOneAtATime;
+    this.showMultipleAtATime = !this.showMultipleAtATime;
+    if (!this.showMultipleAtATime) {
+      this.removeAllReportsButOne();
+    }
+  }
+
+  removeAllReportsButOne(): void {
+    if (this.lastReport) {
+      this.addReportToTree(this.lastReport);
+    }
   }
 
   addReportToTree(report: Report): void {
+    this.lastReport = report;
     let tree = this.helperService.convertReportToJqxTree(report);
-    if (this.showOneAtATime) {
+    if (!this.showMultipleAtATime) {
       this.treeReference.clear();
     }
 
@@ -153,7 +165,7 @@ export class DebugTreeComponent implements AfterViewInit {
     this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
   }
 
-  changeSearchTerm(event: KeyboardEvent) {
+  changeSearchTerm(event: KeyboardEvent): void {
     const term: string = (event.target as HTMLInputElement).value.toLowerCase();
     this.treeReference.getItems().forEach((item: jqwidgets.TreeItem) => {
       const report = item.value as unknown as Report & { message?: string | null };
@@ -171,7 +183,7 @@ export class DebugTreeComponent implements AfterViewInit {
     });
   }
 
-  getTreeReports() {
+  getTreeReports(): any[] {
     let reports: any[] = [];
     this.treeReference.getItems().forEach((item: any) => {
       if (item.value?.storageId != undefined) {
