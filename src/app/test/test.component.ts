@@ -23,7 +23,7 @@ export class TestComponent implements OnInit {
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
   currentView: any = {
-    metadataNames: ['storageId', 'name', 'variables', 'path'],
+    metadataNames: ['storageId', 'name', 'path'],
     storageName: 'Test',
   }; // Hard-coded for now
   targetStorage: string = 'Debug';
