@@ -45,7 +45,7 @@
     "font-awesome": "4.7.0",
     "jquery": "^3.6.0",
     "jqwidgets-ng": "^14.1.17",
-    "ngx-cookie-service": "^13.1.2",
+    "ngx-cookie-service": "^15.0.0",
     "path": "^0.12.7",
     "prettier": "2.5.1",
     "rxjs": "7.4.0",

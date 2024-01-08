@@ -4110,7 +4110,7 @@ __metadata:
     karma-coverage: 2.0.3
     karma-jasmine: 4.0.1
     karma-jasmine-html-reporter: 1.7.0
-    ngx-cookie-service: ^13.1.2
+    ngx-cookie-service: ^15.0.0
     path: ^0.12.7
     prettier: 2.5.1
     rxjs: 7.4.0
@@ -9303,15 +9303,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ngx-cookie-service@npm:^13.1.2":
-  version: 13.2.1
-  resolution: "ngx-cookie-service@npm:13.2.1"
+"ngx-cookie-service@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "ngx-cookie-service@npm:15.0.0"
   dependencies:
     tslib: ^2.0.0
   peerDependencies:
-    "@angular/common": ^13.0.0
-    "@angular/core": ^13.0.0
-  checksum: f11b232688fc93a3be0456a5367b5fca2cdcfedc86c7d474b413255ceb366a7fd3e533f69adabde8d9202bed9f7c9bb1aa08301956dc3a3fc8b2b273cbe45ecc
+    "@angular/common": ^15.0.0
+    "@angular/core": ^15.0.0
+  checksum: 5d4ff91b6d2b52a96c2d70ca1da4fba84a06d90505e6d9d6898c730f7f365acd5915275fadb01529df77068d950849af0cfba673f3843702042189d3ff4d6632
   languageName: node
   linkType: hard
 
