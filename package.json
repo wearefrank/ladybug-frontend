@@ -18,7 +18,7 @@
     "lint": "ng lint",
     "prepare": "husky install",
     "installFrankRunnerEnv": "cd ../frank-runner && ./env.sh > installFrankRunnerEnv.log",
-    "startServer": "cd ../frank-runner/specials/ibis-ladybug && ./restart.sh -Dupdate.strategy=none > serverStartLog.log"
+    "startServer": "cd ../frank-runner/specials/ladybug && ./restart.sh -Dupdate.strategy=none > serverStartLog.log"
   },
   "dependencies": {
     "@angular/animations": "14.2.12",
