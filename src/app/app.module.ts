@@ -23,7 +23,6 @@ import { TableSettingsModalComponent } from './debug/table/table-settings-modal/
 import { TestFolderTreeComponent } from './test/test-folder-tree/test-folder-tree.component';
 import { CookieService } from 'ngx-cookie-service';
 import { jqxTreeModule } from 'jqwidgets-ng/jqxtree';
-import { NgxTextDiffModule } from 'ngx-text-diff';
 import { CompareTreeComponent } from './compare/compare-tree/compare-tree.component';
 import { EditDisplayComponent } from './report/edit-display/edit-display.component';
 import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from '@angular/material/legacy-progress-spinner';
@@ -67,7 +66,6 @@ import { DeleteModalComponent } from './test/delete-modal/delete-modal.component
     ReactiveFormsModule,
     FormsModule,
     jqxTreeModule,
-    NgxTextDiffModule,
     MatProgressSpinnerModule,
     AngularSplitModule,
   ],
