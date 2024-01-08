@@ -32,6 +32,7 @@ import { ToggleComponent } from './shared/components/toggle/toggle.component';
 import { EditorComponent } from './shared/components/editor/editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { DeleteModalComponent } from './test/delete-modal/delete-modal.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { DeleteModalComponent } from './test/delete-modal/delete-modal.component
     NgxTextDiffModule,
     MatProgressSpinnerModule,
     AngularSplitModule,
+    MatAutocompleteModule,
   ],
   providers: [CookieService],
   bootstrap: [AppComponent],

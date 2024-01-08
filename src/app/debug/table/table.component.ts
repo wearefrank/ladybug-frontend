@@ -1,4 +1,10 @@
-import { Component, Output, EventEmitter, ViewChild, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
@@ -34,6 +40,7 @@ export class TableComponent implements OnInit {
     filterHeader: '',
     reportsInProgress: 0,
     estimatedMemoryUsage: '',
+    uniqueValues: {},
   };
   @Output() openReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
@@ -45,6 +52,7 @@ export class TableComponent implements OnInit {
   selectedRow: number = -1;
   doneRetrieving: boolean = false;
   @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
+  currentFilters: Map<String, String> = new Map<String, String>();
 
   constructor(
     private httpService: HttpService,
@@ -72,6 +80,7 @@ export class TableComponent implements OnInit {
       )
       .subscribe({
         next: (value) => {
+          this.setUniqueOptions(value);
           this.tableSettings.reportMetadata = value;
           this.tableSettings.tableLoaded = true;
           this.toastComponent.addAlert({
@@ -92,7 +101,10 @@ export class TableComponent implements OnInit {
 
   getUserHelp() {
     this.httpService
-      .getUserHelp(this.viewSettings.currentView.storageName, this.viewSettings.currentView.metadataNames)
+      .getUserHelp(
+        this.viewSettings.currentView.storageName,
+        this.viewSettings.currentView.metadataNames
+      )
       .subscribe({
         next: (response) => {
           this.tableSettings.metadataHeaders = response;
@@ -101,7 +113,8 @@ export class TableComponent implements OnInit {
   }
 
   clearFilters() {
-    let element: NodeListOf<HTMLInputElement> = document.querySelectorAll('#filter')!;
+    let element: NodeListOf<HTMLInputElement> =
+      document.querySelectorAll('#filter')!;
     element.forEach((element: HTMLInputElement) => {
       element.value = '';
     });
@@ -113,7 +126,7 @@ export class TableComponent implements OnInit {
 
   changeView(event: any) {
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
-    this.viewSettings.currentView.name = event.target.value;
+    this.viewSettings.currentViewName = event.target.value;
     this.clearFilters();
     this.changeViewEvent.emit(this.viewSettings.currentView);
     this.selectedRow = -1;
@@ -127,7 +140,8 @@ export class TableComponent implements OnInit {
           (view) => view === this.viewSettings.currentView.name
         );
         if (viewToUpdate) {
-          this.viewSettings.currentView.nodeLinkStrategy = views[viewToUpdate].nodeLinkStrategy;
+          this.viewSettings.currentView.nodeLinkStrategy =
+            views[viewToUpdate].nodeLinkStrategy;
         }
       });
     });
@@ -139,11 +153,12 @@ export class TableComponent implements OnInit {
         this.changeViewEvent.emit(this.viewSettings.currentView);
       } else {
         this.viewSettings.views = views;
-        this.viewSettings.currentViewName = Object.keys(this.viewSettings.views).find(
-          (view) => this.viewSettings.views[view].defaultView
-        );
+        this.viewSettings.currentViewName = Object.keys(
+          this.viewSettings.views
+        ).find((view) => this.viewSettings.views[view].defaultView);
 
-        this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
+        this.viewSettings.currentView =
+          this.viewSettings.views[this.viewSettings.currentViewName];
         this.viewSettings.currentView.name = this.viewSettings.currentViewName;
         this.changeViewEvent.emit(this.viewSettings.currentView);
       }
@@ -156,9 +171,11 @@ export class TableComponent implements OnInit {
   }
 
   loadMetadataCount() {
-    this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: any) => {
-      this.metadataCount = count;
-    });
+    this.httpService
+      .getMetadataCount(this.viewSettings.currentView.storageName)
+      .subscribe((count: any) => {
+        this.metadataCount = count;
+      });
   }
 
   loadReportInProgressSettings() {
@@ -183,30 +200,47 @@ export class TableComponent implements OnInit {
   }
 
   getStatusColor(metadata: any): string {
-    let statusName = this.viewSettings.currentView.metadataNames.find((name: string) => {
-      return name.toLowerCase() === 'status';
-    });
+    let statusName = this.viewSettings.currentView.metadataNames.find(
+      (name: string) => {
+        return name.toLowerCase() === 'status';
+      }
+    );
     if (statusName && metadata[statusName]) {
-      return metadata[statusName].toLowerCase() === 'success' ? '#c3e6cb' : '#f79c9c';
+      return metadata[statusName].toLowerCase() === 'success'
+        ? '#c3e6cb'
+        : '#f79c9c';
     }
     return 'none';
   }
 
   showCompareButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 2;
+    return (
+      this.tableSettings.reportMetadata.filter((report) => report.checked)
+        .length == 2
+    );
   }
 
   showOpenInTabButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 1;
+    return (
+      this.tableSettings.reportMetadata.filter((report) => report.checked)
+        .length == 1
+    );
   }
 
   openReportInTab(): void {
-    let reportTab = this.tableSettings.reportMetadata.find((report) => report.checked);
-    this.httpService.getReport(reportTab.storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
-      let report: Report = data.report;
-      report.xml = data.xml;
-      this.openReportInSeparateTabEvent.emit({ data: report, name: report.name });
-    });
+    let reportTab = this.tableSettings.reportMetadata.find(
+      (report) => report.checked
+    );
+    this.httpService
+      .getReport(reportTab.storageId, this.viewSettings.currentView.storageName)
+      .subscribe((data) => {
+        let report: Report = data.report;
+        report.xml = data.xml;
+        this.openReportInSeparateTabEvent.emit({
+          data: report,
+          name: report.name,
+        });
+      });
   }
 
   openSelected(): void {
@@ -218,18 +252,26 @@ export class TableComponent implements OnInit {
   }
 
   deleteSelected(): void {
-    const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
-    this.httpService.deleteReport(reportIds, this.viewSettings.currentView.storageName).subscribe(() => {
-      this.retrieveRecords();
-    });
+    const reportIds = this.helperService.getSelectedIds(
+      this.tableSettings.reportMetadata
+    );
+    this.httpService
+      .deleteReport(reportIds, this.viewSettings.currentView.storageName)
+      .subscribe(() => {
+        this.retrieveRecords();
+      });
   }
 
   selectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report) => (report.checked = true));
+    this.tableSettings.reportMetadata.forEach(
+      (report) => (report.checked = true)
+    );
   }
 
   deselectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report) => (report.checked = false));
+    this.tableSettings.reportMetadata.forEach(
+      (report) => (report.checked = false)
+    );
   }
 
   compareTwoReports() {
@@ -238,39 +280,50 @@ export class TableComponent implements OnInit {
     let selectedReports: string[] = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .map((report) => report.storageId);
-    this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
-      next: (data) => {
-        let leftObject = data[selectedReports[0]];
-        let originalReport = leftObject.report;
-        originalReport.xml = leftObject.xml;
+    this.httpService
+      .getReports(selectedReports, this.viewSettings.currentView.storageName)
+      .subscribe({
+        next: (data) => {
+          let leftObject = data[selectedReports[0]];
+          let originalReport = leftObject.report;
+          originalReport.xml = leftObject.xml;
 
-        let rightObject = data[selectedReports[1]];
-        let runResultReport = rightObject.report;
-        runResultReport.xml = rightObject.xml;
+          let rightObject = data[selectedReports[1]];
+          let runResultReport = rightObject.report;
+          runResultReport.xml = rightObject.xml;
 
-        compareReports = {
-          originalReport: originalReport,
-          runResultReport: runResultReport,
-          viewName: this.viewSettings.currentView.name,
-          nodeLinkStrategy: this.viewSettings.currentView.nodeLinkStrategy,
-        };
-      },
+          compareReports = {
+            originalReport: originalReport,
+            runResultReport: runResultReport,
+            viewName: this.viewSettings.currentView.name,
+            nodeLinkStrategy: this.viewSettings.currentView.nodeLinkStrategy,
+          };
+        },
 
-      complete: () => {
-        this.openSelectedCompareReportsEvent.emit(compareReports);
-      },
-    });
+        complete: () => {
+          this.openSelectedCompareReportsEvent.emit(compareReports);
+        },
+      });
   }
 
-  changeFilter(event: any, header: string): void {
-    const filterValue = event.target.value;
-    this.tableSettings.filterValue = filterValue === '' ? '.*' : filterValue;
-    this.tableSettings.filterHeader = filterValue === '' ? '' : header;
-    this.retrieveRecords();
+  changeFilter(event: any, header: string, value: string | undefined): void {
+    const filterValue: string = value ?? event.target.value;
+
+    if (filterValue === '') {
+      this.currentFilters.delete(header);
+    }
+
+    if (this.currentFilters.get(header) !== filterValue) {
+      this.tableSettings.filterValue = filterValue === '' ? '.*' : filterValue;
+      this.tableSettings.filterHeader = filterValue === '' ? '' : header;
+      this.retrieveRecords();
+      this.currentFilters.set(header, filterValue);
+    }
   }
 
   changeTableLimit(event: any): void {
-    this.tableSettings.displayAmount = event.target.value === '' ? 0 : event.target.value;
+    this.tableSettings.displayAmount =
+      event.target.value === '' ? 0 : event.target.value;
     this.retrieveRecords();
   }
 
@@ -283,12 +336,14 @@ export class TableComponent implements OnInit {
   }
 
   openReport(storageId: string): void {
-    this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
-      let report: Report = data.report;
-      report.xml = data.xml;
-      report.storageName = this.viewSettings.currentView.storageName;
-      this.openReportEvent.next(report);
-    });
+    this.httpService
+      .getReport(storageId, this.viewSettings.currentView.storageName)
+      .subscribe((data) => {
+        let report: Report = data.report;
+        report.xml = data.xml;
+        report.storageName = this.viewSettings.currentView.storageName;
+        this.openReportEvent.next(report);
+      });
   }
 
   highLightRow(event: any) {
@@ -296,11 +351,13 @@ export class TableComponent implements OnInit {
   }
 
   openLatestReports(amount: number): void {
-    this.httpService.getLatestReports(amount, this.viewSettings.currentView.storageName).subscribe((data) => {
-      data.forEach((report: any) => {
-        this.openReportEvent.next(report);
+    this.httpService
+      .getLatestReports(amount, this.viewSettings.currentView.storageName)
+      .subscribe((data) => {
+        data.forEach((report: any) => {
+          this.openReportEvent.next(report);
+        });
       });
-    });
   }
 
   openReportInProgress(index: number) {
@@ -319,17 +376,30 @@ export class TableComponent implements OnInit {
 
   disableReportInProgressButton(index: number, selector: string) {
     let element: HTMLButtonElement = document.querySelector(selector)!;
-    element.disabled = index == 0 || index > this.tableSettings.reportsInProgress;
+    element.disabled =
+      index == 0 || index > this.tableSettings.reportsInProgress;
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
     const queryString: string = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
-      .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '');
+      .reduce(
+        (totalQuery: string, selectedReport: any) =>
+          totalQuery + 'id=' + selectedReport.storageId + '&',
+        ''
+      );
     if (queryString !== '') {
-      this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
+      this.helperService.download(
+        queryString,
+        this.viewSettings.currentView.storageName,
+        exportBinary,
+        exportXML
+      );
     } else {
-      this.toastComponent.addAlert({ type: 'warning', message: 'No reports selected to download' });
+      this.toastComponent.addAlert({
+        type: 'warning',
+        message: 'No reports selected to download',
+      });
     }
   }
 
@@ -348,5 +418,28 @@ export class TableComponent implements OnInit {
         this.openReportEvent.next(report);
       }
     });
+  }
+
+  setUniqueOptions(data: any): void {
+    //TODO: Fix uppercase attribute names and ID attribute for proof of migration
+    this.tableSettings.uniqueValues = {};
+    for (const headerName of this.viewSettings.currentView.metadataLabels) {
+      const lowerHeaderName = (headerName as string).toLowerCase();
+      const upperHeaderName = (headerName as string).toUpperCase();
+      let uniqueValues: string[] = [];
+      for (let element of data) {
+        if (!uniqueValues.includes(element[lowerHeaderName])) {
+          uniqueValues.push(element[lowerHeaderName]);
+        } else if (!uniqueValues.includes(element[upperHeaderName])) {
+          uniqueValues.push(element[upperHeaderName]);
+        }
+      }
+      if (uniqueValues.length < 15) {
+        uniqueValues.sort();
+        this.tableSettings.uniqueValues[lowerHeaderName] = uniqueValues;
+      } else {
+        this.tableSettings.uniqueValues[lowerHeaderName] = [];
+      }
+    }
   }
 }

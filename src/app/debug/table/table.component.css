@@ -29,3 +29,11 @@
   cursor: pointer;
   filter: brightness(85%);
 }
+
+.filter-option {
+  height: fit-content;
+
+  > span {
+    font-size: 9pt;
+  }
+}
