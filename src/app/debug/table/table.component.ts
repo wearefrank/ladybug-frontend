@@ -200,17 +200,20 @@ export class TableComponent implements OnInit {
   }
 
   getStatusColor(metadata: any): string {
+    let style = 'background-color: ';
     let statusName = this.viewSettings.currentView.metadataNames.find(
       (name: string) => {
         return name.toLowerCase() === 'status';
       }
     );
     if (statusName && metadata[statusName]) {
-      return metadata[statusName].toLowerCase() === 'success'
-        ? '#c3e6cb'
-        : '#f79c9c';
+      style +=
+        metadata[statusName].toLowerCase() === 'success'
+          ? '#c3e6cb'
+          : '#f79c9c';
+      return style;
     }
-    return 'none';
+    return '';
   }
 
   showCompareButton(): boolean {

@@ -110,11 +110,11 @@
       </tr>
       </thead>
       <tbody>
-      <tr class="table-row"
+      <tr (click)="highLightRow(i);"
           *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index"
-          (click)="highLightRow(i);"
           [ngClass]="{'highlight': selectedRow === i}"
-          style="background-color:{{getStatusColor(row)}}"
+          class="table-row"
+          style="{{getStatusColor(row)}}"
       >
         <td>
           <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)">
