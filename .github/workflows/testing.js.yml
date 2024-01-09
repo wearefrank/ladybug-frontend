@@ -54,7 +54,9 @@ jobs:
           package: 'ladybug-frontend'
 
       - name: Update yarn
-        run: corepack enable && yarn set version berry
+        run: |
+          corepack enable
+          yarn set version berry
         working-directory: 'ladybug-frontend'
       - name: Show npm version
         run: npm -v
