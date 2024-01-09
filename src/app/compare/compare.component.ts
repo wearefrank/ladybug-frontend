@@ -1,16 +1,8 @@
-import { AfterViewInit, Component, Injectable, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 import { NodeLinkStrategy } from '../shared/enums/compare-method';
 import { TextCompareComponent } from '../text-compare/text-compare.component';
-
-@Injectable()
-export class CompareData {
-  id!: string;
-  originalReport: any;
-  runResultReport: any;
-  viewName: string = '';
-  nodeLinkStrategy: NodeLinkStrategy = NodeLinkStrategy.NONE;
-}
+import { CompareData } from './compare-data';
 
 @Component({
   selector: 'app-compare',
@@ -43,7 +35,9 @@ export class CompareComponent implements AfterViewInit {
 
   showDifference(data: any) {
     let leftSide = data.leftReport ? this.extractMessage(data.leftReport) : '';
-    let rightSide = data.rightReport ? this.extractMessage(data.rightReport) : '';
+    let rightSide = data.rightReport
+      ? this.extractMessage(data.rightReport)
+      : '';
     this.saveDiff(leftSide, rightSide);
   }
   changeNodeLinkStrategy(nodeLinkStrategy: NodeLinkStrategy) {
@@ -51,7 +45,9 @@ export class CompareComponent implements AfterViewInit {
   }
 
   extractMessage(report: any): string {
-    return report.parentElement ? report.value.message ?? '' : report.value.xml ?? '';
+    return report.parentElement
+      ? report.value.message ?? ''
+      : report.value.xml ?? '';
   }
 
   saveDiff(leftSide: string, rightSide: string) {

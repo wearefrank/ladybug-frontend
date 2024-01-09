@@ -3,10 +3,11 @@ import { ReportComponent, ReportData } from './report/report.component';
 import { Title } from '@angular/platform-browser';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { HttpService } from './shared/services/http.service';
-import { CompareComponent, CompareData } from './compare/compare.component';
+import { CompareComponent } from './compare/compare.component';
 import { Report } from './shared/interfaces/report';
 import { TestComponent } from './test/test.component';
 import { DynamicService } from './shared/services/dynamic.service';
+import { CompareData } from './compare/compare-data';
 
 declare var require: any;
 const { version: appVersion } = require('../../package.json');
@@ -48,7 +49,9 @@ export class AppComponent implements AfterViewInit {
 
   openReportInSeparateTab(defaultDisplay: boolean, data: any): void {
     data.data.defaultDisplay = defaultDisplay;
-    const tabIndex: number = this.tabs.findIndex((tab) => tab.id === data.data.storageId);
+    const tabIndex: number = this.tabs.findIndex(
+      (tab) => tab.id === data.data.storageId
+    );
     if (tabIndex == -1) {
       this.changingTabs(data.data, 'Report');
       this.tabs.push({
@@ -65,13 +68,16 @@ export class AppComponent implements AfterViewInit {
 
   observeReportSave() {
     this.dynamicService.getObservable().subscribe((report: Report) => {
-      const tabIndex: number = this.tabs.findIndex((tab) => Number(tab.id) == report.storageId);
+      const tabIndex: number = this.tabs.findIndex(
+        (tab) => Number(tab.id) == report.storageId
+      );
       this.tabs[tabIndex].data = report;
     });
   }
 
   openNewCompareTab(data: any) {
-    const tabId = data.originalReport.storageId + '-' + data.runResultReport.storageId;
+    const tabId =
+      data.originalReport.storageId + '-' + data.runResultReport.storageId;
     const tabIndex: number = this.tabs.findIndex((tab) => tab.id == tabId);
 
     if (tabIndex == -1) {
