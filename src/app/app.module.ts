@@ -31,6 +31,8 @@ import { ToggleComponent } from './shared/components/toggle/toggle.component';
 import { EditorComponent } from './shared/components/editor/editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { DeleteModalComponent } from './test/delete-modal/delete-modal.component';
+import { TextCompareComponent } from './text-compare/text-compare.component';
+import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 
 @NgModule({
   declarations: [
@@ -48,12 +50,14 @@ import { DeleteModalComponent } from './test/delete-modal/delete-modal.component
     DisplayTableComponent,
     TableSettingsModalComponent,
     TestFolderTreeComponent,
+
     CompareTreeComponent,
     EditDisplayComponent,
     DebugTreeComponent,
     ToggleComponent,
     EditorComponent,
     DeleteModalComponent,
+    TextCompareComponent,
   ],
   imports: [
     BrowserModule,
@@ -68,6 +72,7 @@ import { DeleteModalComponent } from './test/delete-modal/delete-modal.component
     jqxTreeModule,
     MatProgressSpinnerModule,
     AngularSplitModule,
+    MonacoEditorModule.forRoot(),
   ],
   providers: [CookieService],
   bootstrap: [AppComponent],
