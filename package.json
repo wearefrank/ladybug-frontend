@@ -42,7 +42,7 @@
     "diff-match-patch": "1.0.5",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-unicorn": "^39.0.0",
+    "eslint-plugin-unicorn": "^50.0.1",
     "font-awesome": "4.7.0",
     "jquery": "^3.6.0",
     "jqwidgets-ng": "^14.1.17",
