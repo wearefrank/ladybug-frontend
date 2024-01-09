@@ -1,10 +1,4 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  Output,
-  ViewEncapsulation,
-} from '@angular/core';
+import { Component, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { DiffEditorModel } from 'ngx-monaco-editor-v2';
 import { CompareData } from '../compare/compare.component';
 

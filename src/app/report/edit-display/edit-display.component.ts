@@ -1,11 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { DifferenceModal } from '../../shared/interfaces/difference-modal';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
@@ -38,53 +31,36 @@ export class EditDisplayComponent {
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
 
-  constructor(
-    private modalService: NgbModal,
-    private httpService: HttpService,
-    private helperService: HelperService
-  ) {}
+  constructor(private modalService: NgbModal, private httpService: HttpService, private helperService: HelperService) {}
 
   showReport(report: any): void {
     this.report = report;
-    report.xml
-      ? this.editor.setValue(report.xml)
-      : this.editor.setValue(this.helperService.convertMessage(report));
+    report.xml ? this.editor.setValue(report.xml) : this.editor.setValue(this.helperService.convertMessage(report));
     this.rerunResult = '';
     this.disableEditing(); // For switching from editing current report to another
   }
 
   changeEncoding(button: any): void {
-    this.editor.setValue(
-      this.helperService.changeEncoding(this.report, button)
-    );
+    this.editor.setValue(this.helperService.changeEncoding(this.report, button));
   }
 
   rerunReport(): void {
     let reportId: string = this.report.storageId;
-    this.httpService
-      .runDisplayReport(reportId, this.currentView.storageName)
-      .subscribe((response) => {
-        let element = document.querySelector('#showRerunResult')!;
-        if (this.report == response) {
-          element.setAttribute('style', 'background-color: green');
-          this.rerunResult = '[Rerun succeeded]';
-        } else {
-          element.setAttribute('style', 'background-color: red');
-          this.rerunResult = '[Rerun failed]';
-        }
-      });
+    this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
+      let element = document.querySelector('#showRerunResult')!;
+      if (this.report == response) {
+        element.setAttribute('style', 'background-color: green');
+        this.rerunResult = '[Rerun succeeded]';
+      } else {
+        element.setAttribute('style', 'background-color: red');
+        this.rerunResult = '[Rerun failed]';
+      }
+    });
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    let queryString: string = this.report.xml
-      ? this.report.storageId.toString()
-      : this.report.uid.split('#')[0];
-    this.helperService.download(
-      queryString + '&',
-      this.currentView.storageName,
-      exportBinary,
-      exportXML
-    );
+    let queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
+    this.helperService.download(queryString + '&', this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
   }
 
@@ -114,19 +90,10 @@ export class EditDisplayComponent {
     this.differenceModal = [];
     if (this.report.xml) {
       this.addToDifferenceModal('name', this.name.nativeElement.value);
-      this.addToDifferenceModal(
-        'description',
-        this.description.nativeElement.value
-      );
+      this.addToDifferenceModal('description', this.description.nativeElement.value);
       this.addToDifferenceModal('path', this.path.nativeElement.value);
-      this.addToDifferenceModal(
-        'transformation',
-        this.transformation.nativeElement.value
-      );
-      this.addToDifferenceModal(
-        'variables',
-        this.variables.nativeElement.value
-      );
+      this.addToDifferenceModal('transformation', this.transformation.nativeElement.value);
+      this.addToDifferenceModal('variables', this.variables.nativeElement.value);
     } else {
       this.addToDifferenceModal('message', this.editor?.getValue());
     }
@@ -137,10 +104,7 @@ export class EditDisplayComponent {
   }
 
   addToDifferenceModal(keyword: string, elementValue: string) {
-    const difference = new DiffMatchPatch().diff_main(
-      this.report[keyword] ?? '',
-      elementValue ?? ''
-    );
+    const difference = new DiffMatchPatch().diff_main(this.report[keyword] ?? '', elementValue ?? '');
     this.differenceModal.push({
       name: keyword,
       originalValue: this.report[keyword],
@@ -213,11 +177,9 @@ export class EditDisplayComponent {
       ? { stub: stubStrategy, checkpointId: checkpointId }
       : this.getReportValues(checkpointId);
 
-    this.httpService
-      .updateReport(storageId, params, this.currentView.storageName)
-      .subscribe((response: any) => {
-        response.report.xml = response.xml;
-        this.saveReportEvent.next(response.report);
-      });
+    this.httpService.updateReport(storageId, params, this.currentView.storageName).subscribe((response: any) => {
+      response.report.xml = response.xml;
+      this.saveReportEvent.next(response.report);
+    });
   }
 }

@@ -43,9 +43,7 @@ export class CompareComponent implements AfterViewInit {
 
   showDifference(data: any) {
     let leftSide = data.leftReport ? this.extractMessage(data.leftReport) : '';
-    let rightSide = data.rightReport
-      ? this.extractMessage(data.rightReport)
-      : '';
+    let rightSide = data.rightReport ? this.extractMessage(data.rightReport) : '';
     this.saveDiff(leftSide, rightSide);
   }
   changeNodeLinkStrategy(nodeLinkStrategy: NodeLinkStrategy) {
@@ -53,9 +51,7 @@ export class CompareComponent implements AfterViewInit {
   }
 
   extractMessage(report: any): string {
-    return report.parentElement
-      ? report.value.message ?? ''
-      : report.value.xml ?? '';
+    return report.parentElement ? report.value.message ?? '' : report.value.xml ?? '';
   }
 
   saveDiff(leftSide: string, rightSide: string) {
