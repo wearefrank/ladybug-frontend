@@ -4166,6 +4166,7 @@ __metadata:
     "@types/node": "npm:16.10.3"
     "@typescript-eslint/eslint-plugin": "npm:^5.59.2"
     "@typescript-eslint/parser": "npm:^5.59.2"
+    Buffer: "npm:^0.0.0"
     ace-builds: "npm:^1.14.0"
     angular-split: "npm:^14.1.0"
     bootstrap: "npm:^4.6.0"
@@ -4408,6 +4409,13 @@ __metadata:
   bin:
     js-yaml: bin/js-yaml.js
   checksum: 5ce27ae75fb1db9657d4065bf6b380b4c0f756feb1bdf42bfde40551a74bcc0ec918f748cbdbd5d95b7107d00bc2f731ee731b5cfe93acb6f7da5639b16aa1f8
+  languageName: node
+  linkType: hard
+
+"Buffer@npm:^0.0.0":
+  version: 0.0.0
+  resolution: "Buffer@npm:0.0.0"
+  checksum: 5c108d6f3cb13e13043c3ad839ac76d6c432231e74836fe68b58e701b4c9460ea5366e9f3a8c52b9ecc21cbdeb71d9ed978dcf46053222e828f12c80dbfc05ef
   languageName: node
   linkType: hard
 
