@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { Report } from '../interfaces/report';
 import { CookieService } from 'ngx-cookie-service';
-import { Buffer } from 'Buffer';
 
 @Injectable({
   providedIn: 'root',
@@ -107,14 +106,10 @@ export class HelperService {
     let message: string = report.message === null ? '' : report.message;
     if (report.encoding == 'Base64') {
       report.showConverted = true;
-      message = this.convert(message, 'base64', 'utf8');
+      message = btoa(message);
     }
 
     return message;
-  }
-
-  convert(message: string, from: string, to: string) {
-    return Buffer.from(message, from).toString(to);
   }
 
   changeEncoding(report: any, button: any): string {
@@ -123,7 +118,7 @@ export class HelperService {
       message = report.message;
       this.setButtonHtml(report, button, 'utf8', false);
     } else {
-      message = this.convert(report.message, 'base64', 'utf8');
+      message = btoa(report.message);
       this.setButtonHtml(report, button, 'Base64', true);
     }
 
