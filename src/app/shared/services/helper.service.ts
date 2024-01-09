@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { Report } from '../interfaces/report';
 import { CookieService } from 'ngx-cookie-service';
-
-declare var require: any;
-const { Buffer } = require('node:buffer');
+import { Buffer } from 'Buffer';
 
 @Injectable({
   providedIn: 'root',
