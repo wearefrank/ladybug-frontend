@@ -3273,19 +3273,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ng-bootstrap/ng-bootstrap@npm:15.1.2":
-  version: 15.1.2
-  resolution: "@ng-bootstrap/ng-bootstrap@npm:15.1.2"
+"@ng-bootstrap/ng-bootstrap@npm:16.0.0":
+  version: 16.0.0
+  resolution: "@ng-bootstrap/ng-bootstrap@npm:16.0.0"
   dependencies:
     tslib: "npm:^2.3.0"
   peerDependencies:
-    "@angular/common": ^16.0.0
-    "@angular/core": ^16.0.0
-    "@angular/forms": ^16.0.0
-    "@angular/localize": ^16.0.0
-    "@popperjs/core": ^2.11.6
+    "@angular/common": ^17.0.0
+    "@angular/core": ^17.0.0
+    "@angular/forms": ^17.0.0
+    "@angular/localize": ^17.0.0
+    "@popperjs/core": ^2.11.8
     rxjs: ^6.5.3 || ^7.4.0
-  checksum: 977dd48176e7c124619992717a0ed504fdddf501526d75a61971487bbc81bfb5eeda6b1836dd0dbc23c7516fb6102ad8322717140d2645fd098221acff01523c
+  checksum: 4030d7a70f8174ff22ae888cb922700c4b4df5ef811151faafe792fd86a4137915cb363a80693e7a44993bcee2121807dad8f8bf4889947c220027de1c789e4c
   languageName: node
   linkType: hard
 
@@ -4088,7 +4088,7 @@ __metadata:
     "@angular/platform-browser": "npm:17.0.8"
     "@angular/platform-browser-dynamic": "npm:17.0.8"
     "@angular/router": "npm:17.0.8"
-    "@ng-bootstrap/ng-bootstrap": "npm:15.1.2"
+    "@ng-bootstrap/ng-bootstrap": "npm:16.0.0"
     "@popperjs/core": "npm:^2.11.8"
     "@types/diff-match-patch": "npm:1.0.32"
     "@types/jasmine": "npm:3.9.1"
