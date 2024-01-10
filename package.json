@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config src/proxy.conf.json",
-    "startCicd": "ng serve --proxy-config src/proxy.cicd.conf.json",
+    "startCicd": "ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
