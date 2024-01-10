@@ -25,7 +25,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { jqxTreeModule } from 'jqwidgets-ng/jqxtree';
 import { CompareTreeComponent } from './compare/compare-tree/compare-tree.component';
 import { EditDisplayComponent } from './report/edit-display/edit-display.component';
-import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from '@angular/material/legacy-progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DebugTreeComponent } from './debug/debug-tree/debug-tree.component';
 import { ToggleComponent } from './shared/components/toggle/toggle.component';
 import { EditorComponent } from './shared/components/editor/editor.component';

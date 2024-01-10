@@ -28,7 +28,7 @@
     "@angular/core": "17.0.8",
     "@angular/forms": "17.0.8",
     "@angular/localize": "17.0.8",
-    "@angular/material": "16.2.0",
+    "@angular/material": "17.0.4",
     "@angular/platform-browser": "17.0.8",
     "@angular/platform-browser-dynamic": "17.0.8",
     "@angular/router": "17.0.8",
@@ -84,7 +84,6 @@
     "karma-jasmine-html-reporter": "1.7.0",
     "start-server-and-test": "^1.14.0",
     "typescript": "5.2.2"
-
   },
   "publishConfig": {
     "access": "public"
