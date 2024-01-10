@@ -171,7 +171,7 @@ jobs:
           working-directory: ladybug-frontend
           start: |
             yarn run startCicd
-          wait-on: 'http://localhost:8090, http://localhost:4200'
+          wait-on: 'http://0.0.0.0:8090, http://0.0.0.0:4200'
           wait-on-timeout: 240
           browser: chrome
 #      - name: Run cypress with firefox browser
