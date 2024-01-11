@@ -126,3 +126,11 @@ html, body {
 .as-split-gutter {
   flex-basis: 5px !important;
 }
+
+.modal-window {
+  z-index: 99999;
+}
+
+.modal-backdrop {
+  z-index: 1 !important;
+}
