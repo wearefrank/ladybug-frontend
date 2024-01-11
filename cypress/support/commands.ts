@@ -96,39 +96,53 @@ Cypress.Commands.add(
   removeReportInProgress
 );
 
-// function waitForNumFiles(thePath: any, fileCount: number, timeLeft: number) {
-//   return cy.task('downloads', thePath).then((actualFiles: any) => {
-//     if (actualFiles.length >= fileCount) {
-//       return true;
-//     } else {
-//       cy.wait(1000);
-//       let nextTimeLeft = timeLeft - 1000;
-//       return nextTimeLeft <= 0 ? false : waitForNumFiles(thePath, fileCount, nextTimeLeft);
-//     }
-//   });
-// }
+function waitForNumFiles(thePath: any, fileCount: number, timeLeft: number) {
+  return cy.task('downloads', thePath).then((actualFiles: any) => {
+    if (actualFiles.length >= fileCount) {
+      return true;
+    } else {
+      cy.wait(1000);
+      let nextTimeLeft = timeLeft - 1000;
+      return nextTimeLeft <= 0
+        ? false
+        : waitForNumFiles(thePath, fileCount, nextTimeLeft);
+    }
+  });
+}
 
-// Cypress.Commands.add('waitForNumFiles' as keyof Chainable, (thePath: any, expectedNumFiles: number) => {
-//   waitForNumFiles(thePath, expectedNumFiles, 10_000);
-// });
+Cypress.Commands.add(
+  'waitForNumFiles' as keyof Chainable,
+  (thePath: any, expectedNumFiles: number) => {
+    waitForNumFiles(thePath, expectedNumFiles, 10_000);
+  }
+);
 
-// function getShownMonacoModelElement() {
-//   cy.get('#editor [data-keybinding-context]').within((monacoEditor: JQuery<HTMLElement>) => {
-//     const keybindingNumber = Number.parseInt(monacoEditor.attr('data-keybinding-context'));
-//     // Show the number
-//     cy.wrap(keybindingNumber);
-//     return cy.get(`[data-uri $= ${keybindingNumber}]`);
-//   });
-// }
+function getShownMonacoModelElement() {
+  cy.get('#editor [data-keybinding-context]').within(
+    (monacoEditor: JQuery<HTMLElement>) => {
+      const keybindingNumber = Number.parseInt(
+        monacoEditor.attr('data-keybinding-context')
+      );
+      // Show the number
+      cy.wrap(keybindingNumber);
+      return cy.get(`[data-uri $= ${keybindingNumber}]`);
+    }
+  );
+}
 
-// Cypress.Commands.add('getShownMonacoModelElement' as keyof Chainable, getShownMonacoModelElement);
+Cypress.Commands.add(
+  'getShownMonacoModelElement' as keyof Chainable,
+  getShownMonacoModelElement
+);
 
-// function selectIfNotSelected(node: unknown) {
-//   if (!node.hasClass('node-selected')) {
-//     cy.wrap(node).click();
-//   }
-// }
+function selectIfNotSelected(node: unknown) {
+  if (!node.hasClass('node-selected')) {
+    cy.wrap(node).click();
+  }
+}
 
-// Cypress.Commands.add('selectIfNotSelected' as keyof Chainable, { prevSubject: 'element' }, (node) =>
-//   selectIfNotSelected(node)
-// );
+Cypress.Commands.add(
+  'selectIfNotSelected' as keyof Chainable,
+  { prevSubject: 'element' },
+  (node) => selectIfNotSelected(node)
+);
