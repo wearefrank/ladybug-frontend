@@ -1,5 +1,5 @@
 <div class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
-  <div class="row">
+  <div class="row d-flex align-items-center">
     <app-button [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
     <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
@@ -27,7 +27,7 @@
     <app-button [title]="'Deselect All Reports'" [text]="'Deselect All'" (click)="deselectAll()"></app-button>
     <app-button [title]="'Delete'" [icon]="'fa fa-trash'" (click)="deleteSelected()"></app-button>
 
-    <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();"
+    <form class="form-horizontal" (keydown.enter)="$event.preventDefault();"
           (keyup.enter)="changeTableLimit($event)">
       <div class="input-group-append">
         <input type="number" id="displayAmount" class="form-control px-1" value="{{tableSettings.displayAmount}}"
@@ -44,40 +44,42 @@
     </div>
 
     <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.reportsInProgress }}</div>
-    <span class="row" *ngIf="tableSettings.reportsInProgress > 0">
+    <div class="row" *ngIf="tableSettings.reportsInProgress > 0">
       <div
-        class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }}
+        class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in
+        progress: {{ tableSettings.estimatedMemoryUsage }}
         Bytes
       </div>
 
-        <div class="col input-group my-2 mx-1 px-2">
-          <input #openIndex type="number" min="0" value="{{tableSettings.reportsInProgress}}"
-                 max="{{tableSettings.reportsInProgress}}"
-                 (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')"
-                 class="form-control" id="openInProgressNo"/>
-          <div class="input-group-append">
-            <button class="btn btn-info" type="button" id="openReportInProgressButton"
-                    (click)="openReportInProgress(+openIndex.value)">Open</button>
-          </div>
+      <div class="col input-group my-2 mx-1 px-2">
+        <input #openIndex type="number" min="0" value="{{tableSettings.reportsInProgress}}"
+               max="{{tableSettings.reportsInProgress}}"
+               (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')"
+               class="form-control" id="openInProgressNo"/>
+        <div class="input-group-append">
+          <button class="btn btn-info" type="button" id="openReportInProgressButton"
+                  (click)="openReportInProgress(+openIndex.value)">Open
+          </button>
         </div>
+      </div>
 
-          <div class="col input-group my-2 mx-1 px-2">
-            <input #deleteIndex type="number" min="0" value="{{tableSettings.reportsInProgress}}"
-                   max="{{tableSettings.reportsInProgress}}"
-                   (change)="disableReportInProgressButton(+openIndex.value, '#deleteReportInProgressButton')"
-                   class="form-control" id="deleteInProgressNo"/>
-            <div class="input-group-append">
-              <button class="btn btn-info" type="button" id="deleteReportInProgressButton"
-                      (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
-            </div>
-          </div>
+      <div class="col input-group my-2 mx-1 px-2">
+        <input #deleteIndex type="number" min="0" value="{{tableSettings.reportsInProgress}}"
+               max="{{tableSettings.reportsInProgress}}"
+               (change)="disableReportInProgressButton(+openIndex.value, '#deleteReportInProgressButton')"
+               class="form-control" id="deleteInProgressNo"/>
+        <div class="input-group-append">
+          <button class="btn btn-info" type="button" id="deleteReportInProgressButton"
+                  (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
+        </div>
+      </div>
 
-    </span>
+    </div>
 
     <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()"
                 (click)="compareTwoReports()"></app-button>
     <app-button [text]="'Open In New Tab'" *ngIf="showOpenInTabButton()" (click)="openReportInTab()"></app-button>
-
+    <app-active-filters class="ml-2" [activeFilters]="currentFilters" (click)="toggleFilter()"></app-active-filters>
   </div>
   <div [hidden]="doneRetrieving">
     <mat-spinner [mode]="'indeterminate'" [diameter]="30"></mat-spinner>
@@ -97,13 +99,18 @@
         <th *ngFor="let header of viewSettings.currentView.metadataNames">
           <div class="input-group">
             <div>
-              <input [matAutocomplete]="auto" type="text" id="filter"
-                     title="{{tableSettings.metadataHeaders[header]}}" class="form-control"
-                     placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header, undefined)">
+              <input
+                [matAutocomplete]="auto"
+                type="text"
+                title="{{tableSettings.metadataHeaders[header]}}"
+                class="form-control"
+                placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header.toLowerCase())">
             </div>
             <mat-autocomplete #auto=matAutocomplete>
-              <mat-option *ngFor="let option of tableSettings.uniqueValues[header.toLowerCase()]" [value]="option"
-                          class="filter-option" (click)="changeFilter($event, header, option)">{{option}}</mat-option>
+              <mat-option
+                *ngFor="let option of tableSettings.uniqueValues[header.toLowerCase()]"
+                [value]="option" class="filter-option"
+                (click)="changeFilter($event, header.toLowerCase(), option)">{{option}}</mat-option>
             </mat-autocomplete>
           </div>
         </th>

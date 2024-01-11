@@ -33,6 +33,9 @@ import { EditorComponent } from './shared/components/editor/editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { DeleteModalComponent } from './test/delete-modal/delete-modal.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { ActiveFiltersComponent } from './debug/active-filters/active-filters.component';
+import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
+import { CapitalizePipe } from './shared/pipes/capitalize.pipe';
 
 @NgModule({
   declarations: [
@@ -56,6 +59,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     ToggleComponent,
     EditorComponent,
     DeleteModalComponent,
+    ActiveFiltersComponent,
+    DictionaryPipe,
+    CapitalizePipe,
   ],
   imports: [
     BrowserModule,
