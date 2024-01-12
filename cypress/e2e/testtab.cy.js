@@ -167,9 +167,7 @@ describe("About the Test tab", function () {
 });
 
 function copyTheReportsToTestTab() {
-  cy.get('[data-cy-record-table-index="0"]').click();
-  cy.get("input[data-cy-toggle-show-amount]").click();
-  cy.get("button#CloseAllButton").click();
+  cy.enableShowMultipleInDebugTree();
   cy.get('button[id="SelectAllReportsButton"]').click();
   cy.get('button[id="OpenSelectedReportsButton"]').click();
   // We test many times already that opening two reports yields six nodes.

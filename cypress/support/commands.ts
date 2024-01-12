@@ -146,3 +146,14 @@ Cypress.Commands.add(
   { prevSubject: 'element' },
   (node) => selectIfNotSelected(node)
 );
+
+function enableShowMultiple() {
+  cy.get('[data-cy-record-table-index="0"]').click();
+  cy.get('input[data-cy-toggle-show-amount]').click();
+  cy.get('button#CloseAllButton').click();
+}
+
+Cypress.Commands.add(
+  'enableShowMultipleInDebugTree' as keyof Chainable,
+  enableShowMultiple
+);
