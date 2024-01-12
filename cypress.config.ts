@@ -12,6 +12,8 @@ export default defineConfig({
       '**/cypress/e2e/1-getting-started/**',
       '**/cypress/e2e/2-advanced-examples/**',
     ],
+    viewportWidth: 1920,
+    viewportHeight: 1080,
     experimentalRunAllSpecs: true,
   },
 });

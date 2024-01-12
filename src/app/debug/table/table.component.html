@@ -87,6 +87,7 @@
             (click)="highLightRow(i);"
             [ngClass]="{'highlight': selectedRow === i}"
             style="background-color: {{getStatusColor(row)}}"
+            [attr.data-cy-record-table-index]=i
         >
           <td>
             <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)">

@@ -31,13 +31,19 @@ export class DebugTreeComponent implements AfterViewInit {
   get currentView(): any {
     return this._currentView;
   }
+
   @Input() adjustWidth: Observable<void> = {} as Observable<void>;
 
   constructor(private helperService: HelperService, private httpService: HttpService) {}
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-      this.treeReference.createComponent({ source: [], height: '90%', width: '100%', allowDrag: false });
+      this.treeReference.createComponent({
+        source: [],
+        height: '90%',
+        width: '100%',
+        allowDrag: false,
+      });
       this.loaded = true;
       this.adjustWidth.subscribe(() => {
         this.adjustTreeWidth();
@@ -168,7 +174,9 @@ export class DebugTreeComponent implements AfterViewInit {
   changeSearchTerm(event: KeyboardEvent): void {
     const term: string = (event.target as HTMLInputElement).value.toLowerCase();
     this.treeReference.getItems().forEach((item: jqwidgets.TreeItem) => {
-      const report = item.value as unknown as Report & { message?: string | null };
+      const report = item.value as unknown as Report & {
+        message?: string | null;
+      };
       if (term !== '' && report) {
         const matching =
           item.label?.toLowerCase() === term ||
