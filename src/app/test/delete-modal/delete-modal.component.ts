@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-delete-modal',
@@ -7,14 +7,18 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./delete-modal.component.css'],
 })
 export class DeleteModalComponent {
-  @ViewChild('modal') modal!: any;
+  @ViewChild('modal') modal!: NgbModal;
   @Output() confirmDeleteEvent = new EventEmitter<any>();
   reports: any[] = [];
   constructor(private modalService: NgbModal) {}
 
   open(reportsToBeDeleted: any[]): void {
     this.reports = reportsToBeDeleted;
-    this.modalService.open(this.modal);
+    const options: NgbModalOptions = {
+      modalDialogClass: 'modal-window',
+      backdropClass: 'modal-backdrop',
+    };
+    this.modalService.open(this.modal, options);
   }
 
   deleteReports() {

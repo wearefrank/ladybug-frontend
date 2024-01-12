@@ -36,6 +36,6 @@ export class ButtonComponent {
   id: string = '';
 
   getId() {
-    return this._title.replace(/\s/g, '');
+    return this._title.replaceAll(/\s/g, '');
   }
 }

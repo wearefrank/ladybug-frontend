@@ -23,15 +23,16 @@ import { TableSettingsModalComponent } from './debug/table/table-settings-modal/
 import { TestFolderTreeComponent } from './test/test-folder-tree/test-folder-tree.component';
 import { CookieService } from 'ngx-cookie-service';
 import { jqxTreeModule } from 'jqwidgets-ng/jqxtree';
-import { NgxTextDiffModule } from 'ngx-text-diff';
 import { CompareTreeComponent } from './compare/compare-tree/compare-tree.component';
 import { EditDisplayComponent } from './report/edit-display/edit-display.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressSpinner, MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DebugTreeComponent } from './debug/debug-tree/debug-tree.component';
 import { ToggleComponent } from './shared/components/toggle/toggle.component';
 import { EditorComponent } from './shared/components/editor/editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { DeleteModalComponent } from './test/delete-modal/delete-modal.component';
+import { TextCompareComponent } from './text-compare/text-compare.component';
+import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { DeleteModalComponent } from './test/delete-modal/delete-modal.component
     ToggleComponent,
     EditorComponent,
     DeleteModalComponent,
+    TextCompareComponent,
   ],
   imports: [
     BrowserModule,
@@ -67,9 +69,9 @@ import { DeleteModalComponent } from './test/delete-modal/delete-modal.component
     ReactiveFormsModule,
     FormsModule,
     jqxTreeModule,
-    NgxTextDiffModule,
     MatProgressSpinnerModule,
     AngularSplitModule,
+    MonacoEditorModule.forRoot(),
   ],
   providers: [CookieService],
   bootstrap: [AppComponent],

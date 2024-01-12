@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { Report } from '../interfaces/report';
 import { CookieService } from 'ngx-cookie-service';
-declare var require: any;
-const { Buffer } = require('buffer');
 
 @Injectable({
   providedIn: 'root',
@@ -26,26 +24,36 @@ export class HelperService {
 
   getCheckpointType(type: number): string {
     switch (type) {
-      case 1:
+      case 1: {
         return 'startpoint';
-      case 2:
+      }
+      case 2: {
         return 'endpoint';
-      case 3:
+      }
+      case 3: {
         return 'abortpoint';
-      case 4:
+      }
+      case 4: {
         return 'inputpoint';
-      case 5:
+      }
+      case 5: {
         return 'outputpoint';
-      case 6:
+      }
+      case 6: {
         return 'infopoint';
-      case 7:
-        return 'threadStartpoint-error'; // Doesn't exist?
-      case 8:
+      }
+      case 7: {
+        return 'threadStartpoint-error';
+      } // Doesn't exist?
+      case 8: {
         return 'threadStartpoint';
-      case 9:
+      }
+      case 9: {
         return 'threadEndpoint';
-      default:
+      }
+      default: {
         return '';
+      }
     }
   }
 
@@ -86,23 +94,19 @@ export class HelperService {
     let message: string = report.message === null ? '' : report.message;
     if (report.encoding == 'Base64') {
       report.showConverted = true;
-      message = this.convert(message, 'base64', 'utf8');
+      message = btoa(message);
     }
 
     return message;
-  }
-
-  convert(message: string, from: string, to: string) {
-    return Buffer.from(message, from).toString(to);
   }
 
   changeEncoding(report: any, button: any): string {
     let message: string;
     if (button.target.innerHTML.includes('Base64')) {
       message = report.message;
-      this.setButtonHtml(report, button, 'UTF-8', false);
+      this.setButtonHtml(report, button, 'utf8', false);
     } else {
-      message = this.convert(report.message, 'base64', 'utf8');
+      message = btoa(report.message);
       this.setButtonHtml(report, button, 'Base64', true);
     }
 

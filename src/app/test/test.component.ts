@@ -31,8 +31,10 @@ export class TestComponent implements OnInit {
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
-  @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
-  @ViewChild(TestFolderTreeComponent) testFolderTreeComponent!: TestFolderTreeComponent;
+  @ViewChild(TestSettingsModalComponent)
+  testSettingsModal!: TestSettingsModalComponent;
+  @ViewChild(TestFolderTreeComponent)
+  testFolderTreeComponent!: TestFolderTreeComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
 
   constructor(
@@ -42,10 +44,13 @@ export class TestComponent implements OnInit {
   ) {}
 
   openCloneModal(): void {
-    if (this.helperService.getSelectedReports(this.reports).length !== 1) {
-      this.toastComponent.addAlert({ type: 'warning', message: 'Make sure exactly one report is selected at a time' });
-    } else {
+    if (this.helperService.getSelectedReports(this.reports).length === 1) {
       this.cloneModal.open(this.helperService.getSelectedReports(this.reports)[0]);
+    } else {
+      this.toastComponent.addAlert({
+        type: 'warning',
+        message: 'Make sure exactly one report is selected at a time',
+      });
     }
   }
 
@@ -113,7 +118,10 @@ export class TestComponent implements OnInit {
           this.showResult(response);
         });
     } else {
-      this.toastComponent.addAlert({ type: 'warning', message: 'Generator is disabled!' });
+      this.toastComponent.addAlert({
+        type: 'warning',
+        message: 'Generator is disabled!',
+      });
     }
   }
 
@@ -184,7 +192,10 @@ export class TestComponent implements OnInit {
       );
       this.helperService.download(queryString, this.currentView.storageName, true, false);
     } else {
-      this.toastComponent.addAlert({ type: 'warning', message: 'No Report Selected!' });
+      this.toastComponent.addAlert({
+        type: 'warning',
+        message: 'No Report Selected!',
+      });
     }
   }
 
@@ -249,7 +260,10 @@ export class TestComponent implements OnInit {
         this.loadData(path);
       });
     } else {
-      this.toastComponent.addAlert({ type: 'warning', message: 'No Report Selected!' });
+      this.toastComponent.addAlert({
+        type: 'warning',
+        message: 'No Report Selected!',
+      });
     }
   }
 
