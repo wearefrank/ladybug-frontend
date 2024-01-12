@@ -340,13 +340,13 @@ export class TableComponent implements OnInit {
     const queryString: string = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '');
-    if (queryString !== '') {
-      this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
-    } else {
+    if (queryString === '') {
       this.toastComponent.addAlert({
         type: 'warning',
         message: 'No reports selected to download',
       });
+    } else {
+      this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
     }
   }
 

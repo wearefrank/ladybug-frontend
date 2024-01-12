@@ -1,5 +1,6 @@
-import chaiColors from 'chai-colors'
-chai.use(chaiColors)
+import chaiColors from "chai-colors";
+
+chai.use(chaiColors);
 
 describe('Edit tests', function() {
   beforeEach(() => {
