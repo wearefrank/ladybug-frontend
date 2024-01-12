@@ -1,4 +1,11 @@
-import { Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnDestroy,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
@@ -14,18 +21,18 @@ import { Subscription } from 'rxjs';
 })
 export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;
+  showMultipleAtATime!: boolean;
+  showMultipleAtATimeSubscription!: Subscription;
   settingsForm = new UntypedFormGroup({
+    showMultipleFilesAtATime: new UntypedFormControl(false),
     generatorEnabled: new UntypedFormControl('Enabled'),
     regexFilter: new UntypedFormControl(''),
     transformationEnabled: new UntypedFormControl(true),
     transformation: new UntypedFormControl(''),
   });
-
   @Output() openLatestReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   saving: boolean = false;
-  showMultipleAtATime!: boolean;
-  showMultipleAtATimeSubscription!: Subscription;
 
   constructor(
     private modalService: NgbModal,
@@ -40,12 +47,16 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.showMultipleAtATimeSubscription.unsubscribe();
   }
 
-  subscribeToSettingsServiceObservables() {
-    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
-      (value: boolean) => {
-        this.showMultipleAtATime = value;
-      }
-    );
+  subscribeToSettingsServiceObservables(): void {
+    this.showMultipleAtATimeSubscription =
+      this.settingsService.showMultipleAtATimeObservable.subscribe(
+        (value: boolean) => {
+          this.showMultipleAtATime = value;
+          this.settingsForm
+            .get('showMultipleFilesAtATime')
+            ?.setValue(this.showMultipleAtATime);
+        }
+      );
   }
 
   setShowMultipleAtATime() {
@@ -72,9 +83,14 @@ export class TableSettingsModalComponent implements OnDestroy {
   saveSettings(): void {
     const form: any = this.settingsForm.value;
     this.cookieService.set('generatorEnabled', form.generatorEnabled);
-    this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
+    this.cookieService.set(
+      'transformationEnabled',
+      form.transformationEnabled.toString()
+    );
     this.httpService.postTransformation(form.transformation).subscribe();
-    const generatorEnabled: string = String(form.generatorEnabled === 'Enabled');
+    const generatorEnabled: string = String(
+      form.generatorEnabled === 'Enabled'
+    );
     let data: any = {
       generatorEnabled: generatorEnabled,
       regexFilter: form.regexFilter,
@@ -93,14 +109,20 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   factoryReset(): void {
-    this.httpService.resetSettings().subscribe((response) => this.saveResponseSetting(response));
+    this.settingsForm.reset();
+    this.settingsService.setShowMultipleAtATime();
+    this.httpService
+      .resetSettings()
+      .subscribe((response) => this.saveResponseSetting(response));
     this.httpService.getTransformation(true).subscribe((resp) => {
       this.settingsForm.get('transformation')?.setValue(resp.transformation);
     });
   }
 
   loadSettings(): void {
-    this.httpService.getSettings().subscribe((response) => this.saveResponseSetting(response));
+    this.httpService
+      .getSettings()
+      .subscribe((response) => this.saveResponseSetting(response));
     if (this.cookieService.get('transformationEnabled')) {
       this.settingsForm
         .get('transformationEnabled')
@@ -108,7 +130,9 @@ export class TableSettingsModalComponent implements OnDestroy {
     }
 
     this.httpService.getTransformation(false).subscribe((response) => {
-      this.settingsForm.get('transformation')?.setValue(response.transformation);
+      this.settingsForm
+        .get('transformation')
+        ?.setValue(response.transformation);
     });
   }
 

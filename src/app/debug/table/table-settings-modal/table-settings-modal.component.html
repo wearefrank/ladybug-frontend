@@ -15,6 +15,8 @@
           <label for="show-multiple">Show multiple files in debug file-tree</label>
           <input class="btn btn-info my-2 p-1 w-fit" data-cy-toggle-show-amount id="show-multiple"
                  [checked]="showMultipleAtATime" type="checkbox"
+                 formControlName="showMultipleFilesAtATime"
+                 [value]="showMultipleAtATime"
                  (change)="setShowMultipleAtATime()">
         </div>
       </div>
