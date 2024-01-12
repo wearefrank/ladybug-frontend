@@ -1,16 +1,18 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
 import { CookieService } from 'ngx-cookie-service';
 import { ToastComponent } from '../../../shared/components/toast/toast.component';
+import { SettingsService } from '../../../shared/services/settings.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-table-settings-modal',
   templateUrl: './table-settings-modal.component.html',
   styleUrls: ['./table-settings-modal.component.css'],
 })
-export class TableSettingsModalComponent {
+export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;
   settingsForm = new UntypedFormGroup({
     generatorEnabled: new UntypedFormControl('Enabled'),
@@ -22,8 +24,33 @@ export class TableSettingsModalComponent {
   @Output() openLatestReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   saving: boolean = false;
+  showMultipleAtATime!: boolean;
+  showMultipleAtATimeSubscription!: Subscription;
 
-  constructor(private modalService: NgbModal, private httpService: HttpService, private cookieService: CookieService) {}
+  constructor(
+    private modalService: NgbModal,
+    private httpService: HttpService,
+    private cookieService: CookieService,
+    private settingsService: SettingsService
+  ) {
+    this.subscribeToSettingsServiceObservables();
+  }
+
+  ngOnDestroy() {
+    this.showMultipleAtATimeSubscription.unsubscribe();
+  }
+
+  subscribeToSettingsServiceObservables() {
+    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
+      (value: boolean) => {
+        this.showMultipleAtATime = value;
+      }
+    );
+  }
+
+  setShowMultipleAtATime() {
+    this.settingsService.setShowMultipleAtATime(!this.showMultipleAtATime);
+  }
 
   open(): void {
     this.loadSettings();

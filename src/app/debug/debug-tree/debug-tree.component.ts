@@ -1,21 +1,23 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { HelperService } from '../../shared/services/helper.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
+import { SettingsService } from '../../shared/services/settings.service';
 
 @Component({
   selector: 'app-debug-tree',
   templateUrl: './debug-tree.component.html',
   styleUrls: ['./debug-tree.component.css'],
 })
-export class DebugTreeComponent implements AfterViewInit {
+export class DebugTreeComponent implements AfterViewInit, OnDestroy {
   @ViewChild('treeReference') treeReference!: jqxTreeComponent;
   @Output() selectReportEvent = new EventEmitter<any>();
   @Output() closeEntireTreeEvent = new EventEmitter<any>();
   loaded: boolean = false;
-  showMultipleAtATime: boolean = false;
+  showMultipleAtATime!: boolean;
+  showMultipleAtATimeSubscription!: Subscription;
   private _currentView: any;
 
   private lastReport?: Report;
@@ -34,7 +36,25 @@ export class DebugTreeComponent implements AfterViewInit {
 
   @Input() adjustWidth: Observable<void> = {} as Observable<void>;
 
-  constructor(private helperService: HelperService, private httpService: HttpService) {}
+  constructor(
+    private helperService: HelperService,
+    private httpService: HttpService,
+    private settingsService: SettingsService
+  ) {
+    this.subscribeToSettingsServiceObservables();
+  }
+
+  ngOnDestroy() {
+    this.showMultipleAtATimeSubscription.unsubscribe();
+  }
+
+  subscribeToSettingsServiceObservables(): void {
+    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
+      (value: boolean) => {
+        this.showMultipleAtATime = value;
+      }
+    );
+  }
 
   ngAfterViewInit(): void {
     setTimeout(() => {

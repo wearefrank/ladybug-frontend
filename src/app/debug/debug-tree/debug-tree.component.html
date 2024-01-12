@@ -14,10 +14,6 @@
       </div>
     </div>
     <input class="my-2 mx-1 pl-1" type="text" name="search" placeholder="&#xF002;" (keyup)="changeSearchTerm($event)"/>
-    <div class="checkbox btn btn-info my-2" title="When checked, file tree shows multiple files">
-      <label for="show-multiple">Show multiple</label>
-      <input data-cy-toggle-show-amount id="show-multiple" [checked]="showMultipleAtATime" type="checkbox" (change)="toggleShowAmount()">
-    </div>
   </div>
   <jqxTree id="debug-tree" #treeReference (onSelect)="selectReport($event)" [auto-create]="false"></jqxTree>
 </div>

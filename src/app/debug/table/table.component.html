@@ -1,7 +1,7 @@
 <div class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
   <div class="row">
     <app-button [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
-    <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
+    <app-button data-cy-open-settings-modal [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
     <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
       <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
