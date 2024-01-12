@@ -8,8 +8,7 @@
   },
   "root": true,
   "ignorePatterns": [
-    "projects/**/*",
-    "main.ts"
+    "projects/**/*"
   ],
   "overrides": [
     {
