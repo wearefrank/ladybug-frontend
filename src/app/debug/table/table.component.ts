@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, ViewChild, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
@@ -205,7 +205,10 @@ export class TableComponent implements OnInit {
     this.httpService.getReport(reportTab.storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
-      this.openReportInSeparateTabEvent.emit({ data: report, name: report.name });
+      this.openReportInSeparateTabEvent.emit({
+        data: report,
+        name: report.name,
+      });
     });
   }
 
@@ -326,10 +329,13 @@ export class TableComponent implements OnInit {
     const queryString: string = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '');
-    if (queryString !== '') {
-      this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
+    if (queryString === '') {
+      this.toastComponent.addAlert({
+        type: 'warning',
+        message: 'No reports selected to download',
+      });
     } else {
-      this.toastComponent.addAlert({ type: 'warning', message: 'No reports selected to download' });
+      this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
     }
   }
 

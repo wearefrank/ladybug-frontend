@@ -12,5 +12,5 @@
 
 .text-diff-container {
   border-top: 1px solid #dee2e6;
-  overflow-y: auto;
+  padding-top: 1.25rem;
 }

@@ -33,11 +33,11 @@ export class TableSettingsModalComponent {
 
   detectClosingModal() {
     setTimeout(() => {
-      if (!this.modalService.hasOpenModals()) {
+      if (this.modalService.hasOpenModals()) {
+        this.detectClosingModal();
+      } else {
         if (!this.saving) this.loadSettings();
         this.saving = false;
-      } else {
-        this.detectClosingModal();
       }
     }, 500);
   }
@@ -48,10 +48,16 @@ export class TableSettingsModalComponent {
     this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
     this.httpService.postTransformation(form.transformation).subscribe();
     const generatorEnabled: string = String(form.generatorEnabled === 'Enabled');
-    let data: any = { generatorEnabled: generatorEnabled, regexFilter: form.regexFilter };
+    let data: any = {
+      generatorEnabled: generatorEnabled,
+      regexFilter: form.regexFilter,
+    };
     this.httpService.postSettings(data).subscribe();
 
-    this.toastComponent.addAlert({ type: 'warning', message: 'Reopen report to see updated XML' });
+    this.toastComponent.addAlert({
+      type: 'warning',
+      message: 'Reopen report to see updated XML',
+    });
     this.saving = true;
   }
 

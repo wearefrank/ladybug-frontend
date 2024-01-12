@@ -67,17 +67,21 @@ export class EditDisplayComponent {
   selectStubStrategy(event: any) {
     let stubStrategy: string;
     switch (event.target.value) {
-      case 'Use report level stub strategy':
+      case 'Use report level stub strategy': {
         stubStrategy = '-1';
         break;
-      case 'Always stub this checkpoint':
+      }
+      case 'Always stub this checkpoint': {
         stubStrategy = '1';
         break;
-      case 'Never stub this checkpoint':
+      }
+      case 'Never stub this checkpoint': {
         stubStrategy = '0';
         break;
-      default:
+      }
+      default: {
         stubStrategy = this.report.stub;
+      }
     }
     this.saveChanges(true, stubStrategy);
   }
@@ -162,11 +166,11 @@ export class EditDisplayComponent {
   saveChanges(saveStubStrategy: boolean, stubStrategy: string) {
     let checkpointId: string = '';
     let storageId: string;
-    if (!this.report.xml) {
+    if (this.report.xml) {
+      storageId = this.report.storageId;
+    } else {
       storageId = this.report.uid.split('#')[0];
       checkpointId = this.report.uid.split('#')[1];
-    } else {
-      storageId = this.report.storageId;
     }
 
     const params = saveStubStrategy

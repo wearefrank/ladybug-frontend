@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       useRealFrontend:
-        description: If true, visit the front-end that is available in ibis-ladybug
+        description: If true, visit the front-end that is available in ladybug
         type: boolean
         default: false
         required: true
@@ -34,37 +34,37 @@ jobs:
         with:
           path: ladybug-frontend
       - name: Fetch all tags
-        if:  ${{ github.event.inputs.frontendCommitToCheckout }}
+        if: ${{ github.event.inputs.frontendCommitToCheckout }}
         run: git fetch --all --tags
-        working-directory: 'ladybug-frontend'
+        working-directory: "ladybug-frontend"
       - name: Checkout required version
         if: ${{ github.event.inputs.frontendCommitToCheckout }}
         run: git checkout ${{ github.event.inputs.frontendCommitToCheckout }}
-        working-directory: 'ladybug-frontend'
-      - name: Use Node.js 16.x
+        working-directory: "ladybug-frontend"
+      - name: Use Node.js 20.x
         uses: actions/setup-node@v2
         with:
-          node-version: 16.x
-          cache: 'yarn'
-          cache-dependency-path: '**/yarn.lock'
-      - name: 'change version'
+          node-version: 20.x
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
+      - name: "change version"
         uses: reedyuk/npm-version@1.1.1
         with:
-          version: '8.1.2'
-          package: 'ladybug-frontend'
+          version: "8.1.2"
+          package: "ladybug-frontend"
 
       - name: Update yarn
         run: corepack enable
-        working-directory: 'ladybug-frontend'
+        working-directory: "ladybug-frontend"
       - name: Show npm version
         run: npm -v
-        working-directory: 'ladybug-frontend'
+        working-directory: "ladybug-frontend"
       - name: Show node version
         run: node -v
-        working-directory: 'ladybug-frontend'
+        working-directory: "ladybug-frontend"
       - name: Show yarn version
         run: yarn -v
-        working-directory: 'ladybug-frontend'
+        working-directory: "ladybug-frontend"
 
       - name: Install packages
         run: yarn install --immutable
@@ -90,44 +90,44 @@ jobs:
       - name: Checkout frank-runner
         uses: actions/checkout@v2
         with:
-          repository: ibissource/frank-runner
+          repository: wearefrank/frank-runner
           path: frank-runner
       - name: Set property to skip backend unit tests
-        run: echo "maven.skip.tests=true" > frank-runner/specials/ibis-ladybug/build.properties
+        run: echo "maven.skip.tests=true" > frank-runner/specials/ladybug/build.properties
       - name: Set properties to skip backend Javadoc
-        run: echo "maven.skip.javadoc=true" >> frank-runner/specials/ibis-ladybug/build.properties
+        run: echo "maven.skip.javadoc=true" >> frank-runner/specials/ladybug/build.properties
       - name: Set property to skip checking licenses
-        run: echo "maven.skip.copyright=true" >> frank-runner/specials/ibis-ladybug/build.properties
+        run: echo "maven.skip.copyright=true" >> frank-runner/specials/ladybug/build.properties
       - name: Set property to skip replace check
-        run: echo "skip.replace.check=true" >> frank-runner/specials/ibis-ladybug/build.properties
-      - name: Set port where ibis-ladybug-test-webapp is served
+        run: echo "skip.replace.check=true" >> frank-runner/specials/ladybug/build.properties
+      - name: Set port where ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
 
       - name: Make script executable that starts backend
-        run: chmod a+x frank-runner/specials/ibis-ladybug/restart.sh
+        run: chmod a+x frank-runner/specials/ladybug/restart.sh
 
-      - name: Checkout ibis-ladybug
+      - name: Checkout ladybug
         uses: actions/checkout@v2
         with:
-          repository: ibissource/ibis-ladybug
-          path: ibis-ladybug
-      - name: Fetch all tags of ibis-ladybug
-        if:  ${{ github.event.inputs.backendCommitToCheckout }}
+          repository: wearefrank/ladybug
+          path: ladybug
+      - name: Fetch all tags of ladybug
+        if: ${{ github.event.inputs.backendCommitToCheckout }}
         run: git fetch --all --tags
-        working-directory: 'ibis-ladybug'
-      - name: Checkout required version of ibis-ladybug
+        working-directory: "ladybug"
+      - name: Checkout required version of ladybug
         if: ${{ github.event.inputs.backendCommitToCheckout }}
         run: git checkout ${{ github.event.inputs.backendCommitToCheckout }}
-        working-directory: 'ibis-ladybug'
+        working-directory: "ladybug"
       - name: Merge backend with its master
         if: ${{ github.event.inputs.mergeMasterToBranch == 'true' }}
         run: git merge master
-        working-directory: 'ibis-ladybug'
-      - name: Checkout ibis-ladybug-test-webapp
+        working-directory: "ladybug"
+      - name: Checkout ladybug-test-webapp
         uses: actions/checkout@v2
         with:
-          repository: ibissource/ibis-ladybug-test-webapp
-          path: ibis-ladybug-test-webapp
+          repository: wearefrank/ladybug-test-webapp
+          path: ladybug-test-webapp
 
       - name: Cache Frank!Runner dependencies - build
         uses: actions/cache@v3
@@ -166,44 +166,44 @@ jobs:
 
       - name: Run cypress with chrome browser
         if: ${{ github.event.inputs.useRealFrontend != 'true' }}
-        uses: cypress-io/github-action@v2.9.7
+        uses: cypress-io/github-action@v6.6.0
         with:
           working-directory: ladybug-frontend
           start: |
             yarn run startCicd
-          wait-on: 'http://localhost:8090, http://localhost:4200'
+          wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 240
           browser: chrome
-#      - name: Run cypress with firefox browser
-#        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
-#        uses: cypress-io/github-action@v2.9.7
-#        with:
-#          working-directory: ladybug-frontend
-#          start: |
-#            yarn run startCicd
-#          wait-on: 'http://localhost:8090, http://localhost:4200'
-#          wait-on-timeout: 240
-#          browser: firefox
-#          config: screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
+      #      - name: Run cypress with firefox browser
+      #        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
+      #        uses: cypress-io/github-action@v2.9.7
+      #        with:
+      #          working-directory: ladybug-frontend
+      #          start: |
+      #            yarn run startCicd
+      #          wait-on: 'http://localhost:8090, http://localhost:4200'
+      #          wait-on-timeout: 240
+      #          browser: firefox
+      #          config: screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
 
       - name: Run cypress with chrome browser - real frontend
         if: ${{ github.event.inputs.useRealFrontend == 'true' }}
         uses: cypress-io/github-action@v2.9.7
         with:
           working-directory: ladybug-frontend
-          wait-on: 'http://localhost:8090'
+          wait-on: "http://localhost:8090"
           wait-on-timeout: 240
           browser: chrome
           config: baseUrl=http://localhost:8090/ladybug/
-#      - name: Run cypress with firefox browser - real frontend
-#        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
-#        uses: cypress-io/github-action@v2.9.7
-#        with:
-#          working-directory: ladybug-frontend
-#          wait-on: 'http://localhost:8090'
-#          wait-on-timeout: 240
-#          browser: firefox
-#          config: baseUrl=http://localhost:8090/ladybug/,screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
+      #      - name: Run cypress with firefox browser - real frontend
+      #        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
+      #        uses: cypress-io/github-action@v2.9.7
+      #        with:
+      #          working-directory: ladybug-frontend
+      #          wait-on: 'http://localhost:8090'
+      #          wait-on-timeout: 240
+      #          browser: firefox
+      #          config: baseUrl=http://localhost:8090/ladybug/,screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
 
       - name: Show files
         run: tree -d -L 5 .
@@ -220,13 +220,13 @@ jobs:
         if: always()
         with:
           name: serverStartLog.log
-          path: frank-runner/specials/ibis-ladybug/serverStartLog.log
+          path: frank-runner/specials/ladybug/serverStartLog.log
       - name: Store build.properties
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: specials_build.properties
-          path: frank-runner/specials/ibis-ladybug/build.properties
+          path: frank-runner/specials/ladybug/build.properties
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v3
         if: always()
