@@ -1,11 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { HelperService } from '../../shared/services/helper.service';
@@ -38,10 +31,7 @@ export class DebugTreeComponent implements AfterViewInit {
   }
   @Input() adjustWidth: Observable<void> = {} as Observable<void>;
 
-  constructor(
-    private helperService: HelperService,
-    private httpService: HttpService
-  ) {}
+  constructor(private helperService: HelperService, private httpService: HttpService) {}
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -62,11 +52,7 @@ export class DebugTreeComponent implements AfterViewInit {
     this.getTreeReports().forEach((report) => {
       if (report.value.storageName === currentView.storageName) {
         this.httpService
-          .getUnmatchedCheckpoints(
-            report.value.storageName,
-            report.value.storageId,
-            currentView.name
-          )
+          .getUnmatchedCheckpoints(report.value.storageName, report.value.storageId, currentView.name)
           .subscribe((unmatched: any) => {
             const selectedReport: any = this.treeReference.getSelectedItem();
             this.prepareNextSelect(unmatched, selectedReport);
@@ -96,13 +82,8 @@ export class DebugTreeComponent implements AfterViewInit {
     }
   }
 
-  recursivelyFindParentThatWontBeDeleted(
-    selectedReport: any,
-    unmatched: any[]
-  ) {
-    const parent: any = this.treeReference
-      .getItems()
-      .find((item: any) => item.id === selectedReport.parentId);
+  recursivelyFindParentThatWontBeDeleted(selectedReport: any, unmatched: any[]) {
+    const parent: any = this.treeReference.getItems().find((item: any) => item.id === selectedReport.parentId);
     if (parent && !unmatched.includes(parent.value.uid)) {
       this.treeReference.selectItem(parent);
     } else {
@@ -127,11 +108,7 @@ export class DebugTreeComponent implements AfterViewInit {
     this.treeReference.addTo(tree, null);
     this.treeReference.selectItem(
       // @ts-ignore
-      this.treeReference.getItems()[
-        this.treeReference
-          .getItems()
-          .findIndex((item: any) => item.id == tree.items[0].id)
-      ]
+      this.treeReference.getItems()[this.treeReference.getItems().findIndex((item: any) => item.id == tree.items[0].id)]
     );
     this.hideOrShowCheckpointsBasedOnView(this.currentView);
   }
@@ -141,18 +118,14 @@ export class DebugTreeComponent implements AfterViewInit {
   }
 
   removeReport(report: any): void {
-    let parentItem: any = this.findParentNode(
-      this.treeReference.getItems().find((item: any) => item.value == report)
-    );
+    let parentItem: any = this.findParentNode(this.treeReference.getItems().find((item: any) => item.value == report));
     let root = parentItem.element.parentNode;
     this.treeReference.removeItem(parentItem);
     parentItem.element.remove();
 
     let latestAddedReport = root.lastChild;
     if (latestAddedReport) {
-      this.treeReference.selectItem(
-        latestAddedReport.querySelectorAll('li')[0]
-      );
+      this.treeReference.selectItem(latestAddedReport.querySelectorAll('li')[0]);
     }
   }
 
@@ -182,12 +155,7 @@ export class DebugTreeComponent implements AfterViewInit {
     this.getTreeReports().forEach((report) => {
       queryString += 'id=' + report.value.storageId + '&';
     });
-    this.helperService.download(
-      queryString,
-      this.currentView.storageName,
-      exportBinary,
-      exportXML
-    );
+    this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
   }
 
   changeSearchTerm(event: KeyboardEvent) {

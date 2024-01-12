@@ -4,7 +4,7 @@ import { Report } from '../interfaces/report';
 import { CookieService } from 'ngx-cookie-service';
 
 declare var require: any;
-const { Buffer } = require('buffer');
+const { Buffer } = require('node:buffer');
 
 @Injectable({
   providedIn: 'root',
@@ -28,26 +28,36 @@ export class HelperService {
 
   getCheckpointType(type: number): string {
     switch (type) {
-      case 1:
+      case 1: {
         return 'startpoint';
-      case 2:
+      }
+      case 2: {
         return 'endpoint';
-      case 3:
+      }
+      case 3: {
         return 'abortpoint';
-      case 4:
+      }
+      case 4: {
         return 'inputpoint';
-      case 5:
+      }
+      case 5: {
         return 'outputpoint';
-      case 6:
+      }
+      case 6: {
         return 'infopoint';
-      case 7:
-        return 'threadStartpoint-error'; // Doesn't exist?
-      case 8:
+      }
+      case 7: {
+        return 'threadStartpoint-error';
+      } // Doesn't exist?
+      case 8: {
         return 'threadStartpoint';
-      case 9:
+      }
+      case 9: {
         return 'threadEndpoint';
-      default:
+      }
+      default: {
         return '';
+      }
     }
   }
 
@@ -78,21 +88,9 @@ export class HelperService {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  download(
-    queryString: string,
-    storage: string,
-    exportBinary: boolean,
-    exportXML: boolean
-  ) {
+  download(queryString: string, storage: string, exportBinary: boolean, exportXML: boolean) {
     window.open(
-      'api/report/download/' +
-        storage +
-        '/' +
-        exportBinary +
-        '/' +
-        exportXML +
-        '?' +
-        queryString.slice(0, -1)
+      'api/report/download/' + storage + '/' + exportBinary + '/' + exportXML + '?' + queryString.slice(0, -1)
     );
   }
 
@@ -114,7 +112,7 @@ export class HelperService {
     let message: string;
     if (button.target.innerHTML.includes('Base64')) {
       message = report.message;
-      this.setButtonHtml(report, button, 'UTF-8', false);
+      this.setButtonHtml(report, button, 'utf8', false);
     } else {
       message = this.convert(report.message, 'base64', 'utf8');
       this.setButtonHtml(report, button, 'Base64', true);
@@ -123,12 +121,7 @@ export class HelperService {
     return message;
   }
 
-  setButtonHtml(
-    report: any,
-    button: any,
-    type: string,
-    showConverted: boolean
-  ) {
+  setButtonHtml(report: any, button: any, type: string, showConverted: boolean) {
     report.showConverted = showConverted;
     button.target.title = 'Convert to ' + type;
     button.target.innerHTML = type;
@@ -178,13 +171,9 @@ export class HelperService {
 
   getCheckpointOrStorageId(checkpoint: any, root: boolean): string {
     if (root && this.cookieService.get('showReportStorageIds')) {
-      return this.cookieService.get('showReportStorageIds') === 'true'
-        ? '[' + checkpoint.storageId + '] '
-        : '';
+      return this.cookieService.get('showReportStorageIds') === 'true' ? '[' + checkpoint.storageId + '] ' : '';
     } else if (this.cookieService.get('showCheckpointIds')) {
-      return this.cookieService.get('showCheckpointIds') === 'true'
-        ? checkpoint.index + '. '
-        : '';
+      return this.cookieService.get('showCheckpointIds') === 'true' ? checkpoint.index + '. ' : '';
     } else {
       return '';
     }
@@ -196,19 +185,9 @@ export class HelperService {
 
     if (checkpoints && checkpoints.length > 0) {
       for (let checkpoint of checkpoints) {
-        const img: string = this.getImage(
-          checkpoint.type,
-          checkpoint.encoding,
-          checkpoint.level % 2 == 0
-        );
+        const img: string = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0);
         let showingId = this.getCheckpointOrStorageId(checkpoint, false);
-        const currentNode: any = this.createNode(
-          checkpoint,
-          showingId,
-          img,
-          index++,
-          checkpoint.level
-        );
+        const currentNode: any = this.createNode(checkpoint, showingId, img, index++, checkpoint.level);
         this.createHierarchy(previousNode, currentNode, parentMap);
         previousNode = currentNode;
       }
@@ -226,20 +205,14 @@ export class HelperService {
 
       // Else the level is equal, meaning the previous node is its sibling
     } else {
-      const newParent: any = parentMap.find(
-        (x) => x.id == previousNode.id
-      ).parent;
+      const newParent: any = parentMap.find((x) => x.id == previousNode.id).parent;
       this.addChild(newParent, node, parentMap);
     }
   }
 
   findParent(currentNode: any, potentialParent: any, parentMap: any[]): any {
     if (currentNode.level < 0) {
-      currentNode.value.path =
-        '[INVALID LEVEL ' +
-        currentNode.value.level +
-        '] ' +
-        currentNode.value.name;
+      currentNode.value.path = '[INVALID LEVEL ' + currentNode.value.level + '] ' + currentNode.value.name;
       currentNode.level = 0;
     } else if (currentNode.level - 1 == potentialParent.level) {
       // If the level difference is only 1, then the potential parent is the actual parent
@@ -247,9 +220,7 @@ export class HelperService {
       return currentNode;
     }
 
-    const newPotentialParent: any = parentMap.find(
-      (node) => node.id == potentialParent.id
-    ).parent;
+    const newPotentialParent: any = parentMap.find((node) => node.id == potentialParent.id).parent;
     return this.findParent(currentNode, newPotentialParent, parentMap);
   }
 
@@ -260,9 +231,7 @@ export class HelperService {
 
   getSelectedIds(reports: any[]): string[] {
     let copiedIds: string[] = [];
-    this.getSelectedReports(reports).forEach((report) =>
-      copiedIds.push(report.storageId)
-    );
+    this.getSelectedReports(reports).forEach((report) => copiedIds.push(report.storageId));
     return copiedIds;
   }
 
