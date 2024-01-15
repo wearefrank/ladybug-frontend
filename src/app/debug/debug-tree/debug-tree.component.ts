@@ -1,4 +1,12 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { HelperService } from '../../shared/services/helper.service';
@@ -49,11 +57,15 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
   }
 
   subscribeToSettingsServiceObservables(): void {
-    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
-      (value: boolean) => {
-        this.showMultipleAtATime = value;
-      }
-    );
+    this.showMultipleAtATimeSubscription =
+      this.settingsService.showMultipleAtATimeObservable.subscribe(
+        (value: boolean) => {
+          this.showMultipleAtATime = value;
+          if (!this.showMultipleAtATime) {
+            this.removeAllReportsButOne();
+          }
+        }
+      );
   }
 
   ngAfterViewInit(): void {
@@ -75,7 +87,11 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
     this.getTreeReports().forEach((report) => {
       if (report.value.storageName === currentView.storageName) {
         this.httpService
-          .getUnmatchedCheckpoints(report.value.storageName, report.value.storageId, currentView.name)
+          .getUnmatchedCheckpoints(
+            report.value.storageName,
+            report.value.storageId,
+            currentView.name
+          )
           .subscribe((unmatched: any) => {
             const selectedReport: any = this.treeReference.getSelectedItem();
             this.prepareNextSelect(unmatched, selectedReport);
@@ -105,8 +121,13 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  recursivelyFindParentThatWontBeDeleted(selectedReport: any, unmatched: any[]) {
-    const parent: any = this.treeReference.getItems().find((item: any) => item.id === selectedReport.parentId);
+  recursivelyFindParentThatWontBeDeleted(
+    selectedReport: any,
+    unmatched: any[]
+  ) {
+    const parent: any = this.treeReference
+      .getItems()
+      .find((item: any) => item.id === selectedReport.parentId);
     if (parent && !unmatched.includes(parent.value.uid)) {
       this.treeReference.selectItem(parent);
     } else {
@@ -116,13 +137,6 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
 
   adjustTreeWidth(): void {
     this.treeReference.width('100%');
-  }
-
-  toggleShowAmount(): void {
-    this.showMultipleAtATime = !this.showMultipleAtATime;
-    if (!this.showMultipleAtATime) {
-      this.removeAllReportsButOne();
-    }
   }
 
   removeAllReportsButOne(): void {
@@ -141,7 +155,11 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
     this.treeReference.addTo(tree, null);
     this.treeReference.selectItem(
       // @ts-ignore
-      this.treeReference.getItems()[this.treeReference.getItems().findIndex((item: any) => item.id == tree.items[0].id)]
+      this.treeReference.getItems()[
+        this.treeReference
+          .getItems()
+          .findIndex((item: any) => item.id == tree.items[0].id)
+      ]
     );
     this.hideOrShowCheckpointsBasedOnView(this.currentView);
   }
@@ -151,14 +169,18 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
   }
 
   removeReport(report: any): void {
-    let parentItem: any = this.findParentNode(this.treeReference.getItems().find((item: any) => item.value == report));
+    let parentItem: any = this.findParentNode(
+      this.treeReference.getItems().find((item: any) => item.value == report)
+    );
     let root = parentItem.element.parentNode;
     this.treeReference.removeItem(parentItem);
     parentItem.element.remove();
 
     let latestAddedReport = root.lastChild;
     if (latestAddedReport) {
-      this.treeReference.selectItem(latestAddedReport.querySelectorAll('li')[0]);
+      this.treeReference.selectItem(
+        latestAddedReport.querySelectorAll('li')[0]
+      );
     }
   }
 
@@ -188,7 +210,12 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
     this.getTreeReports().forEach((report) => {
       queryString += 'id=' + report.value.storageId + '&';
     });
-    this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
+    this.helperService.download(
+      queryString,
+      this.currentView.storageName,
+      exportBinary,
+      exportXML
+    );
   }
 
   changeSearchTerm(event: KeyboardEvent): void {
