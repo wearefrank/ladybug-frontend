@@ -9,13 +9,11 @@ export class TableCellShortenerPipe implements PipeTransform {
     if (value == undefined) {
       return value;
     }
-    if (
-      value.match('\\b\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\b')
-    ) {
-      return value.substring(0, value.indexOf('.'));
+    if (value.match('\\b\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\b')) {
+      return value.slice(0, Math.max(0, value.indexOf('.')));
     }
     if (value.length > 32) {
-      return value.substring(0, 32) + '...';
+      return value.slice(0, 32) + '...';
     }
     return value;
   }

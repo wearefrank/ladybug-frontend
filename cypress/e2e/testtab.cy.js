@@ -167,7 +167,7 @@ describe("About the Test tab", function () {
 });
 
 function copyTheReportsToTestTab() {
-  cy.get('button[id="SelectAllReportsButton"]').click();
+  cy.get("[data-cy-select-all-reports]").click();
   cy.get('button[id="OpenSelectedReportsButton"]').click();
   // We test many times already that opening two reports yields six nodes.
   // Adding the test here again has another purpose. We want the DOM to
