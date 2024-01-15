@@ -201,7 +201,21 @@ export class TableComponent implements OnInit {
   }
 
   toggleCheck(report: any): void {
+    console.log(report);
     report.checked = !report.checked;
+    if (this.allRowsSelected && !report.checked) {
+      this.allRowsSelected = false;
+    }
+    this.allRowsSelected = this.checkIfAllRowsSelected();
+  }
+
+  checkIfAllRowsSelected() {
+    for (let reportMetada of this.tableSettings.reportMetadata) {
+      if (!reportMetada.checked) {
+        return false;
+      }
+    }
+    return true;
   }
 
   selectAllRows(): void {
@@ -306,6 +320,7 @@ export class TableComponent implements OnInit {
   changeTableLimit(event: any): void {
     this.tableSettings.displayAmount = event.target.value === '' ? 0 : event.target.value;
     this.retrieveRecords();
+    this.allRowsSelected = false;
   }
 
   refresh(): void {
