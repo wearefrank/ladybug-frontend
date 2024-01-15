@@ -1,7 +1,11 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-// @ts-ignore
-import DiffMatchPatch from 'diff-match-patch';
 import { HttpService } from '../../shared/services/http.service';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { HelperService } from '../../shared/services/helper.service';
@@ -20,12 +24,19 @@ export class DisplayComponent {
   @ViewChild(EditorComponent) editor!: EditorComponent;
   @ViewChild(DisplayTableComponent)
   displayTableComponent!: DisplayTableComponent;
+  metadataTableVisible: boolean = false;
 
-  constructor(private modalService: NgbModal, private httpService: HttpService, private helperService: HelperService) {}
+  constructor(
+    private modalService: NgbModal,
+    private httpService: HttpService,
+    private helperService: HelperService
+  ) {}
 
   showReport(report: any): void {
     this.report = report;
-    report.xml ? this.editor.setValue(report.xml) : this.editor.setValue(this.helperService.convertMessage(report));
+    report.xml
+      ? this.editor.setValue(report.xml)
+      : this.editor.setValue(this.helperService.convertMessage(report));
     this.displayReport = true;
   }
 
@@ -37,19 +48,34 @@ export class DisplayComponent {
   }
 
   changeEncoding(button: any): void {
-    this.editor.setValue(this.helperService.changeEncoding(this.report, button));
+    this.editor.setValue(
+      this.helperService.changeEncoding(this.report, button)
+    );
   }
 
   copyReport(): void {
-    const storageId: number = this.report.xml ? +this.report.storageId : +this.report.uid.split('#')[0];
+    const storageId: number = this.report.xml
+      ? +this.report.storageId
+      : +this.report.uid.split('#')[0];
     const data: any = {};
     data[this.currentView.storageName] = [storageId];
     this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    let queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
-    this.helperService.download('id=' + queryString + '&', this.currentView.storageName, exportBinary, exportXML);
+    let queryString: string = this.report.xml
+      ? this.report.storageId.toString()
+      : this.report.uid.split('#')[0];
+    this.helperService.download(
+      'id=' + queryString + '&',
+      this.currentView.storageName,
+      exportBinary,
+      exportXML
+    );
     this.httpService.handleSuccess('Report Downloaded!');
+  }
+
+  toggleMetadataTable() {
+    this.metadataTableVisible = !this.metadataTableVisible;
   }
 }

@@ -25,7 +25,53 @@
   height: 100%;
 }
 
+tr {
+  padding: 0.05rem 0 0.05rem 0;
+}
+
+th {
+  padding: 0 0 0 0;
+}
+
+td {
+  padding: 0;
+}
+
 .table-row:hover {
   cursor: pointer;
   filter: brightness(85%);
+}
+
+.table-row-checkbox {
+  display: table-cell;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  vertical-align: middle;
+  padding-right: 0.25rem;
+}
+
+.header-padding {
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+  border-top: 0;
+  border-bottom-width: 1px;
+}
+
+.table-cell {
+  width: fit-content;
+  vertical-align: middle;
+}
+
+.header-cell > div {
+  margin: 0 auto auto 0;
+}
+
+.filter-header {
+  vertical-align: middle;
+  padding-right: 0.25rem;
+}
+
+.vertical-middle {
+  vertical-align: middle;
 }

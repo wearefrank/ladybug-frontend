@@ -20,11 +20,9 @@
     </button>
 
     <app-button [title]="'Open Selected Reports'" [text]="'Open Selected'" (click)="openSelected()"></app-button>
-    <app-button [title]="'Select All Reports'" [text]="'Select All'" (click)="selectAll()"></app-button>
-    <app-button [title]="'Deselect All Reports'" [text]="'Deselect All'" (click)="deselectAll()"></app-button>
     <app-button [title]="'Delete'" [icon]="'fa fa-trash'" (click)="deleteSelected()"></app-button>
 
-    <form class="form-horizontal pt-2" (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
+    <form class="pt-2" (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
       <div class="input-group-append">
           <input type="number" id="displayAmount" class="form-control px-1" value="{{tableSettings.displayAmount}}" (blur)="changeTableLimit($event)">
         <div class="input-group-text">/{{metadataCount}}</div>
@@ -38,9 +36,8 @@
     </div>
 
     <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.reportsInProgress }}</div>
-    <span class="row" *ngIf="tableSettings.reportsInProgress > 0">
+    <div class="row" *ngIf="tableSettings.reportsInProgress > 0">
       <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
-
         <div class="col input-group my-2 mx-1 px-2">
           <input #openIndex type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')" class="form-control" id="openInProgressNo"/>
           <div class="input-group-append">
@@ -55,7 +52,7 @@
             </div>
           </div>
 
-    </span>
+    </div>
 
     <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
     <app-button [text]="'Open In New Tab'" *ngIf="showOpenInTabButton()" (click)="openReportInTab()"></app-button>
@@ -68,14 +65,17 @@
     <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)">
       <thead id="table-header">
         <tr>
-          <th>Select</th>
-          <th *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index" mat-sort-header="{{i}}">{{header}}</th>
+          <th class="table-row-checkbox header-padding">
+            <input type="checkbox" class="vertical-middle" data-cy-select-all-reports [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows">
+          </th>
+          <th class="text-center header-cell header-padding" *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
+              mat-sort-header="{{i}}" [title]="header">{{getShortenedTableHeaderNames(header)}}</th>
         </tr>
         <tr id="filterRow" *ngIf="tableSettings.showFilter">
-          <th>
+          <th class="vertical-middle">
             <app-button [icon]="'fa fa-undo'" [title]="'Clear filters'" (click)="clearFilters()"></app-button>
           </th>
-          <th *ngFor="let header of viewSettings.currentView.metadataNames">
+          <th *ngFor="let header of viewSettings.currentView.metadataNames" class="filter-header">
             <div class="input-group">
               <input type="text" id="filter"  title="{{tableSettings.metadataHeaders[header]}}" class="form-control" placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header)">
             </div>
@@ -88,10 +88,10 @@
             [ngClass]="{'highlight': selectedRow === i}"
             style="background-color: {{getStatusColor(row)}}"
         >
-          <td>
+          <td class="table-row-checkbox">
             <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)">
           </td>
-          <td *ngFor="let metadataName of viewSettings.currentView.metadataNames" (click)="openReport(row.storageId);">{{row[metadataName]}}</td>
+          <td class="table-cell" *ngFor="let metadataName of viewSettings.currentView.metadataNames" (click)="openReport(row.storageId);" [title]="row[metadataName]">{{row[metadataName]|tableCellShortener}}</td>
         </tr>
       </tbody>
     </table>
