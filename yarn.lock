@@ -4211,6 +4211,7 @@ __metadata:
     monaco-editor: "npm:0.44.0"
     ngx-monaco-editor-v2: "npm:17.0.1"
     path: "npm:^0.12.7"
+    popper.js: "npm:^1.16.1"
     prettier: "npm:2.5.1"
     rxjs: "npm:7.4.0"
     start-server-and-test: "npm:^1.14.0"
@@ -10320,6 +10321,13 @@ __metadata:
   version: 8.0.0
   resolution: "pluralize@npm:8.0.0"
   checksum: 2044cfc34b2e8c88b73379ea4a36fc577db04f651c2909041b054c981cd863dd5373ebd030123ab058d194ae615d3a97cfdac653991e499d10caf592e8b3dc33
+  languageName: node
+  linkType: hard
+
+"popper.js@npm:^1.16.1":
+  version: 1.16.1
+  resolution: "popper.js@npm:1.16.1"
+  checksum: 1c1a826f757edb5b8c2049dfd7a9febf6ae1e9d0e51342fc715b49a0c1020fced250d26484619883651e097c5764bbcacd2f31496e3646027f079dd83e072681
   languageName: node
   linkType: hard
 
