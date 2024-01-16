@@ -7,6 +7,7 @@ describe("About opened reports", function () {
   });
 
   it("Close one", function () {
+    cy.enableShowMultipleInDebugTree();
     cy.get("[data-cy-select-all-reports]").click();
     cy.get('button[id="OpenSelectedReportsButton"]').click();
     // Each of the two reports has three lines.
@@ -31,6 +32,7 @@ describe("About opened reports", function () {
   });
 
   it("Close all", function () {
+    cy.enableShowMultipleInDebugTree();
     cy.get(".table-responsive tbody tr td:contains(Simple report)")
       .first()
       .click();

@@ -146,3 +146,9 @@ Cypress.Commands.add(
   { prevSubject: 'element' },
   (node) => selectIfNotSelected(node)
 );
+
+Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
+  cy.get('[data-cy-open-settings-modal]').click();
+  cy.get('input[data-cy-toggle-show-amount]').click();
+  cy.get('[data-cy-settings-modal-save-changes]').click();
+});

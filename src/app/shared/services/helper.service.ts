@@ -141,7 +141,7 @@ export class HelperService {
       expanded: expanded,
       id: Math.random(),
       index: index,
-      items: [],
+      items: [] as any[],
       level: level,
     };
   }

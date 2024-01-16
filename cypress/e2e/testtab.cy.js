@@ -25,7 +25,7 @@ describe("About the Test tab", function () {
     // });
   });
 
-  it("Test deleting a report", function () {
+  it("Test deleting a report", () => {
     cy.get("li#testTab").click();
     cy.get("#testReports").find("tr").should("have.length", 2);
     cy.functions.testTabDeselectReportNamed("/Another simple report");
@@ -167,6 +167,7 @@ describe("About the Test tab", function () {
 });
 
 function copyTheReportsToTestTab() {
+  cy.enableShowMultipleInDebugTree();
   cy.get("[data-cy-select-all-reports]").click();
   cy.get('button[id="OpenSelectedReportsButton"]').click();
   // We test many times already that opening two reports yields six nodes.
