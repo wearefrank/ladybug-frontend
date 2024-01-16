@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { Report } from '../interfaces/report';
-import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HelperService {
   THROWABLE_ENCODER = 'printStackTrace()';
-  constructor(private cookieService: CookieService) {}
+
+  constructor() {}
 
   getImage(type: number, encoding: string, even: boolean): string {
     let img = 'assets/tree-icons/' + this.getCheckpointType(type);
@@ -147,10 +147,10 @@ export class HelperService {
   }
 
   getCheckpointOrStorageId(checkpoint: any, root: boolean): string {
-    if (root && this.cookieService.get('showReportStorageIds')) {
-      return this.cookieService.get('showReportStorageIds') === 'true' ? '[' + checkpoint.storageId + '] ' : '';
-    } else if (this.cookieService.get('showCheckpointIds')) {
-      return this.cookieService.get('showCheckpointIds') === 'true' ? checkpoint.index + '. ' : '';
+    if (root && localStorage.getItem('showReportStorageIds')) {
+      return localStorage.getItem('showReportStorageIds') === 'true' ? '[' + checkpoint.storageId + '] ' : '';
+    } else if (localStorage.getItem('showCheckpointIds')) {
+      return localStorage.getItem('showCheckpointIds') === 'true' ? checkpoint.index + '. ' : '';
     } else {
       return '';
     }

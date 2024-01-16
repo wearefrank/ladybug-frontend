@@ -4208,10 +4208,10 @@ __metadata:
     karma-coverage: "npm:2.0.3"
     karma-jasmine: "npm:4.0.1"
     karma-jasmine-html-reporter: "npm:1.7.0"
-    monaco-editor: "npm:0.45.0"
-    ngx-cookie-service: "npm:^15.0.0"
-    ngx-monaco-editor-v2: "npm:16.0.1"
+    monaco-editor: "npm:0.44.0"
+    ngx-monaco-editor-v2: "npm:17.0.1"
     path: "npm:^0.12.7"
+    popper.js: "npm:^1.16.1"
     prettier: "npm:2.5.1"
     rxjs: "npm:7.4.0"
     start-server-and-test: "npm:^1.14.0"
@@ -9439,10 +9439,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.45.0":
-  version: 0.45.0
-  resolution: "monaco-editor@npm:0.45.0"
-  checksum: 77b1522dbbf06b582f143a7be22f48ad82e5cade3f22c26fc19086446e473c720b2147f8a1ac6edf2172abf5d6bc92a5e858f62fb60df8617f8532f1fa1119ab
+"monaco-editor@npm:0.44.0":
+  version: 0.44.0
+  resolution: "monaco-editor@npm:0.44.0"
+  checksum: 22676f597f702763c33dcdec8b5d6d1c3a5e1a52910074c46a6477ac9c8308cec2dede968230fb9b69fc91f4fc4687cff8bbe0f2365ece49ded9b248a7dcbc62
   languageName: node
   linkType: hard
 
@@ -9535,28 +9535,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ngx-cookie-service@npm:^15.0.0":
-  version: 15.0.0
-  resolution: "ngx-cookie-service@npm:15.0.0"
-  dependencies:
-    tslib: "npm:^2.0.0"
-  peerDependencies:
-    "@angular/common": ^15.0.0
-    "@angular/core": ^15.0.0
-  checksum: 6597ec1432a10233cc776b5b058d1fa3b3e33522e65c40e9ac7121bd84000ee741a453315397b9a3b11a51fe2d97d3d0531801e8003aed7216a68c8a57d0f5af
-  languageName: node
-  linkType: hard
-
-"ngx-monaco-editor-v2@npm:16.0.1":
-  version: 16.0.1
-  resolution: "ngx-monaco-editor-v2@npm:16.0.1"
+"ngx-monaco-editor-v2@npm:17.0.1":
+  version: 17.0.1
+  resolution: "ngx-monaco-editor-v2@npm:17.0.1"
   dependencies:
     tslib: "npm:^2.1.0"
   peerDependencies:
-    "@angular/common": ^16.0.4
-    "@angular/core": ^16.0.4
-    monaco-editor: ^0.41.0
-  checksum: 61e2b3d36ae6bad3e398ab4828f4e1433c2d13987ffec2b9ad5b82deb082e339a6210defd3aa6a4b27ba3df0767af4984e86f326922f0362bfd28cf4e0aacd07
+    "@angular/common": ^17.0.3
+    "@angular/core": ^17.0.3
+    monaco-editor: ^0.44.0
+  checksum: baaf4b16ce56789599ae40c96f7ce06f2e96a7d8f2061198ab193e6dafb9cf364dd12e81f5b80248c491436bf8bc21d1bc22bc5276ec3d55e2c228bdff490b61
   languageName: node
   linkType: hard
 
@@ -10333,6 +10321,13 @@ __metadata:
   version: 8.0.0
   resolution: "pluralize@npm:8.0.0"
   checksum: 2044cfc34b2e8c88b73379ea4a36fc577db04f651c2909041b054c981cd863dd5373ebd030123ab058d194ae615d3a97cfdac653991e499d10caf592e8b3dc33
+  languageName: node
+  linkType: hard
+
+"popper.js@npm:^1.16.1":
+  version: 1.16.1
+  resolution: "popper.js@npm:1.16.1"
+  checksum: 1c1a826f757edb5b8c2049dfd7a9febf6ae1e9d0e51342fc715b49a0c1020fced250d26484619883651e097c5764bbcacd2f31496e3646027f079dd83e072681
   languageName: node
   linkType: hard
 

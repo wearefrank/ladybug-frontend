@@ -5,7 +5,6 @@ import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { CookieService } from 'ngx-cookie-service';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
@@ -37,11 +36,7 @@ export class TestComponent implements OnInit {
   testFolderTreeComponent!: TestFolderTreeComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
 
-  constructor(
-    private httpService: HttpService,
-    private cookieService: CookieService,
-    private helperService: HelperService
-  ) {}
+  constructor(private httpService: HttpService, private helperService: HelperService) {}
 
   openCloneModal(): void {
     if (this.helperService.getSelectedReports(this.reports).length === 1) {
@@ -59,7 +54,7 @@ export class TestComponent implements OnInit {
   }
 
   showStorageIds(): boolean {
-    return this.cookieService.get('showReportStorageIds') === 'true';
+    return localStorage.getItem('showReportStorageIds') === 'true';
   }
 
   ngOnInit(): void {
@@ -68,12 +63,12 @@ export class TestComponent implements OnInit {
   }
 
   getGeneratorStatus() {
-    if (this.cookieService.get('generatorEnabled')) {
-      this.generatorStatus = this.cookieService.get('generatorEnabled');
+    if (localStorage.getItem('generatorEnabled')) {
+      this.generatorStatus = localStorage.getItem('generatorEnabled')!;
     } else {
       this.httpService.getSettings().subscribe((response) => {
         this.generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
-        this.cookieService.set('generatorEnabled', this.generatorStatus);
+        localStorage.setItem('generatorEnabled', this.generatorStatus);
       });
     }
   }

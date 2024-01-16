@@ -6,7 +6,6 @@ import { TableSettingsModalComponent } from './table-settings-modal/table-settin
 import { TableSettings } from '../../shared/interfaces/table-settings';
 import { catchError, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
-import { CookieService } from 'ngx-cookie-service';
 import { ChangeNodeLinkStrategyService } from '../../shared/services/node-link-strategy.service';
 import { SettingsService } from '../../shared/services/settings.service';
 
@@ -73,13 +72,12 @@ export class TableComponent implements OnInit, OnDestroy {
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private cookieService: CookieService,
     private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService,
     private settingsService: SettingsService
   ) {}
 
   ngOnInit(): void {
-    this.cookieService.set('transformationEnabled', 'true');
+    localStorage.setItem('transformationEnabled', 'true');
     this.loadData();
     this.listenForViewUpdate();
     this.subscribeToSettingsObservables();
@@ -216,7 +214,6 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   toggleCheck(report: any): void {
-    console.log(report);
     report.checked = !report.checked;
     if (this.allRowsSelected && !report.checked) {
       this.allRowsSelected = false;
