@@ -1,7 +1,5 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-// @ts-ignore
-import DiffMatchPatch from 'diff-match-patch';
 import { HttpService } from '../../shared/services/http.service';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { HelperService } from '../../shared/services/helper.service';
@@ -20,6 +18,7 @@ export class DisplayComponent {
   @ViewChild(EditorComponent) editor!: EditorComponent;
   @ViewChild(DisplayTableComponent)
   displayTableComponent!: DisplayTableComponent;
+  metadataTableVisible: boolean = false;
 
   constructor(private modalService: NgbModal, private httpService: HttpService, private helperService: HelperService) {}
 
@@ -51,5 +50,9 @@ export class DisplayComponent {
     let queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
     this.helperService.download('id=' + queryString + '&', this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
+  }
+
+  toggleMetadataTable() {
+    this.metadataTableVisible = !this.metadataTableVisible;
   }
 }

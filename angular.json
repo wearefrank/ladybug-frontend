@@ -77,10 +77,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "ladybug:build:production"
+              "buildTarget": "ladybug:build:production"
             },
             "development": {
-              "browserTarget": "ladybug:build:development",
+              "buildTarget": "ladybug:build:development",
               "proxyConfig": "src/proxy.conf.json"
             }
           },
@@ -92,7 +92,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ladybug:build"
+            "buildTarget": "ladybug:build"
           }
         },
         "test": {

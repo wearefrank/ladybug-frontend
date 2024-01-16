@@ -1,7 +1,7 @@
-#displayedNodeTable {
+table {
   width: auto ;
 }
 
-#displayedNodeTable > tr > td {
+table > tr > td {
   padding: 0.3rem !important;
 }

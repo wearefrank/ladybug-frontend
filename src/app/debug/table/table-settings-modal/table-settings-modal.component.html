@@ -22,6 +22,16 @@
       </div>
       <hr>
       <div class="form-group">
+        <h5>Report table</h5>
+        <div title="Configure the amount of spacing in the report table">
+          <label for="show-multiple">Spacing for report table</label>
+          <select #spacingOptionsDropdown class="form-control custom-select mr-sm-2" (click)="changeTableSpacing(spacingOptionsDropdown.value)">
+            <option [value]="option" *ngFor="let option of spacingOptions" [selected]="option === tableSpacing">{{option}}x</option>
+          </select>
+        </div>
+      </div>
+      <hr>
+      <div class="form-group">
         <label>Report generator</label>
         <select class="form-control custom-select mr-sm-2" formControlName="generatorEnabled">
           <option>Enabled</option>
