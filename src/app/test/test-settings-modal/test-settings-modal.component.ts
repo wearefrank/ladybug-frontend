@@ -22,14 +22,8 @@ export class TestSettingsModalComponent {
   }
 
   saveSettings(): void {
-    localStorage.setItem(
-      'showReportStorageIds',
-      this.settingsForm.get('showReportStorageIds')?.value.toString()
-    );
-    localStorage.setItem(
-      'showCheckpointIds',
-      this.settingsForm.get('showCheckpointIds')?.value.toString()
-    );
+    localStorage.setItem('showReportStorageIds', this.settingsForm.get('showReportStorageIds')?.value.toString());
+    localStorage.setItem('showCheckpointIds', this.settingsForm.get('showCheckpointIds')?.value.toString());
   }
 
   resetSettings(): void {
@@ -39,15 +33,11 @@ export class TestSettingsModalComponent {
 
   loadSettings(): void {
     if (localStorage.getItem('showReportStorageIds')) {
-      this.settingsForm
-        .get('showReportStorageIds')
-        ?.setValue(localStorage.getItem('showReportStorageIds') === 'true');
+      this.settingsForm.get('showReportStorageIds')?.setValue(localStorage.getItem('showReportStorageIds') === 'true');
     }
 
     if (localStorage.getItem('showCheckpointIds')) {
-      this.settingsForm
-        .get('showCheckpointIds')
-        ?.setValue(localStorage.getItem('showCheckpointIds') === 'true');
+      this.settingsForm.get('showCheckpointIds')?.setValue(localStorage.getItem('showCheckpointIds') === 'true');
     }
   }
 }

@@ -4209,7 +4209,7 @@ __metadata:
     karma-jasmine: "npm:4.0.1"
     karma-jasmine-html-reporter: "npm:1.7.0"
     monaco-editor: "npm:0.45.0"
-    ngx-monaco-editor-v2: "npm:16.0.1"
+    ngx-monaco-editor-v2: "npm:17.0.1"
     path: "npm:^0.12.7"
     prettier: "npm:2.5.1"
     rxjs: "npm:7.4.0"
@@ -9534,16 +9534,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ngx-monaco-editor-v2@npm:16.0.1":
-  version: 16.0.1
-  resolution: "ngx-monaco-editor-v2@npm:16.0.1"
+"ngx-monaco-editor-v2@npm:17.0.1":
+  version: 17.0.1
+  resolution: "ngx-monaco-editor-v2@npm:17.0.1"
   dependencies:
     tslib: "npm:^2.1.0"
   peerDependencies:
-    "@angular/common": ^16.0.4
-    "@angular/core": ^16.0.4
-    monaco-editor: ^0.41.0
-  checksum: 61e2b3d36ae6bad3e398ab4828f4e1433c2d13987ffec2b9ad5b82deb082e339a6210defd3aa6a4b27ba3df0767af4984e86f326922f0362bfd28cf4e0aacd07
+    "@angular/common": ^17.0.3
+    "@angular/core": ^17.0.3
+    monaco-editor: ^0.44.0
+  checksum: baaf4b16ce56789599ae40c96f7ce06f2e96a7d8f2061198ab193e6dafb9cf364dd12e81f5b80248c491436bf8bc21d1bc22bc5276ec3d55e2c228bdff490b61
   languageName: node
   linkType: hard
 

@@ -11,10 +11,7 @@ export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   toastComponent!: ToastComponent;
 
-  constructor(
-    private http: HttpClient,
-    private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService
-  ) {}
+  constructor(private http: HttpClient, private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService) {}
 
   initializeToastComponent(toastComponent: ToastComponent) {
     this.toastComponent = toastComponent;
@@ -46,9 +43,7 @@ export class HttpService {
   }
 
   getViews(): Observable<any> {
-    return this.http
-      .get('api/testtool/views')
-      .pipe(catchError(this.handleError()));
+    return this.http.get('api/testtool/views').pipe(catchError(this.handleError()));
   }
 
   getMetadataReports(
@@ -77,43 +72,27 @@ export class HttpService {
   }
 
   getMetadataCount(storage: string): Observable<any> {
-    return this.http
-      .get('api/metadata/' + storage + '/count')
-      .pipe(catchError(this.handleError()));
+    return this.http.get('api/metadata/' + storage + '/count').pipe(catchError(this.handleError()));
   }
 
   getLatestReports(amount: number, storage: string): Observable<any> {
     return this.http
       .get<any>('api/report/latest/' + storage + '/' + amount)
-      .pipe(
-        tap(() => this.handleSuccess('Latest' + amount + 'reports opened!'))
-      )
+      .pipe(tap(() => this.handleSuccess('Latest' + amount + 'reports opened!')))
       .pipe(catchError(this.handleError()));
   }
 
   getReportInProgress(index: number) {
     return this.http
       .get<any>('api/testtool/in-progress/' + index)
-      .pipe(
-        tap(() =>
-          this.handleSuccess(
-            'Opened report in progress with index [' + index + ']'
-          )
-        )
-      )
+      .pipe(tap(() => this.handleSuccess('Opened report in progress with index [' + index + ']')))
       .pipe(catchError(this.handleError()));
   }
 
   deleteReportInProgress(index: number): Observable<any> {
     return this.http
       .delete<any>('api/testtool/in-progress/' + index)
-      .pipe(
-        tap(() =>
-          this.handleSuccess(
-            'Deleted report in progress with index [' + index + ']'
-          )
-        )
-      )
+      .pipe(tap(() => this.handleSuccess('Deleted report in progress with index [' + index + ']')))
       .pipe(catchError(this.handleError()));
   }
 
@@ -140,20 +119,13 @@ export class HttpService {
   getReports(reportIds: string[], storage: string) {
     return this.http
       .get<any>(
-        'api/report/' +
-          storage +
-          '/?xml=true&globalTransformer=' +
-          localStorage.getItem('transformationEnabled'),
+        'api/report/' + storage + '/?xml=true&globalTransformer=' + localStorage.getItem('transformationEnabled'),
         { params: { storageIds: reportIds } }
       )
       .pipe(catchError(this.handleError()));
   }
 
-  updateReport(
-    reportId: string,
-    params: any,
-    storage: string
-  ): Observable<void> {
+  updateReport(reportId: string, params: any, storage: string): Observable<void> {
     return this.http
       .post('api/report/' + storage + '/' + reportId, params)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
@@ -216,36 +188,23 @@ export class HttpService {
   }
 
   getSettings(): Observable<any> {
-    return this.http
-      .get<any>('api/testtool')
-      .pipe(catchError(this.handleError()));
+    return this.http.get<any>('api/testtool').pipe(catchError(this.handleError()));
   }
 
   resetSettings(): Observable<any> {
-    return this.http
-      .get('api/testtool/reset')
-      .pipe(catchError(this.handleError()));
+    return this.http.get('api/testtool/reset').pipe(catchError(this.handleError()));
   }
 
   reset(): Observable<void> {
-    return this.http
-      .post<any>('api/runner/reset', {})
-      .pipe(catchError(this.handleError()));
+    return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
 
-  runReport(
-    storage: string,
-    targetStorage: string,
-    reportId: string
-  ): Observable<void> {
+  runReport(storage: string, targetStorage: string, reportId: string): Observable<void> {
     return this.http
-      .post<any>(
-        'api/runner/run/' + storage + '/' + targetStorage + '/' + reportId,
-        {
-          headers: this.headers,
-          observe: 'response',
-        }
-      )
+      .post<any>('api/runner/run/' + storage + '/' + targetStorage + '/' + reportId, {
+        headers: this.headers,
+        observe: 'response',
+      })
       .pipe(catchError(this.handleError()));
   }
 
@@ -279,18 +238,11 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  getUnmatchedCheckpoints(
-    storageName: string,
-    storageId: string,
-    viewName: string
-  ): Observable<void> {
+  getUnmatchedCheckpoints(storageName: string, storageId: string, viewName: string): Observable<void> {
     return this.http
-      .get(
-        'api/report/' + storageName + '/' + storageId + '/checkpoints/uids',
-        {
-          params: { view: viewName, invert: true },
-        }
-      )
+      .get('api/report/' + storageName + '/' + storageId + '/checkpoints/uids', {
+        params: { view: viewName, invert: true },
+      })
       .pipe(catchError(this.handleError()));
   }
 }
