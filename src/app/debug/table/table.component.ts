@@ -92,18 +92,14 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   subscribeToSettingsObservables(): void {
-    this.tableSpacingSubscription =
-      this.settingsService.tableSpacingObservable.subscribe(
-        (value: number): void => {
-          this.tableSpacing = value;
-        }
-      );
-    this.showMultipleFilesSubscription =
-      this.settingsService.showMultipleAtATimeObservable.subscribe(
-        (value: boolean) => {
-          this.showMultipleFiles = value;
-        }
-      );
+    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe((value: number): void => {
+      this.tableSpacing = value;
+    });
+    this.showMultipleFilesSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
+      (value: boolean) => {
+        this.showMultipleFiles = value;
+      }
+    );
   }
 
   retrieveRecords() {
