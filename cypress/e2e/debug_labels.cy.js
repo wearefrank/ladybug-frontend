@@ -12,6 +12,7 @@ describe("Test labels", function () {
     cy.visit("");
     cy.get("[data-cy-select-all-reports]").click();
     cy.get('button[id="OpenSelectedReportsButton"]').click();
+    cy.wait(300);
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     testTreeView("Message is null", "Null String");
   });
