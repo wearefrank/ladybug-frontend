@@ -69,6 +69,8 @@ export class TableComponent implements OnInit, OnDestroy {
   @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
   tableSpacing!: number;
   tableSpacingSubscription!: Subscription;
+  showMultipleFiles!: boolean;
+  showMultipleFilesSubscription!: Subscription;
 
   constructor(
     private httpService: HttpService,
@@ -90,9 +92,18 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   subscribeToSettingsObservables(): void {
-    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe((value: number): void => {
-      this.tableSpacing = value;
-    });
+    this.tableSpacingSubscription =
+      this.settingsService.tableSpacingObservable.subscribe(
+        (value: number): void => {
+          this.tableSpacing = value;
+        }
+      );
+    this.showMultipleFilesSubscription =
+      this.settingsService.showMultipleAtATimeObservable.subscribe(
+        (value: boolean) => {
+          this.showMultipleFiles = value;
+        }
+      );
   }
 
   retrieveRecords() {
@@ -273,11 +284,19 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openSelected(): void {
-    this.tableSettings.reportMetadata.forEach((report) => {
+    for (const report of this.tableSettings.reportMetadata) {
       if (report.checked) {
         this.openReport(report.storageId);
+        if (!this.showMultipleFiles) {
+          this.toastComponent.addAlert({
+            type: 'warning',
+            message:
+              'Please enable show multiple files in the settings dialog to open multiple files in the debug tree',
+          });
+          break;
+        }
       }
-    });
+    }
   }
 
   deleteSelected(): void {
