@@ -46,7 +46,7 @@
     "font-awesome": "4.7.0",
     "jquery": "^3.6.0",
     "jqwidgets-ng": "^14.1.17",
-    "monaco-editor": "0.45.0",
+    "monaco-editor": "0.44.0",
     "ngx-monaco-editor-v2": "17.0.1",
     "path": "^0.12.7",
     "prettier": "2.5.1",
