@@ -4209,7 +4209,6 @@ __metadata:
     karma-jasmine: "npm:4.0.1"
     karma-jasmine-html-reporter: "npm:1.7.0"
     monaco-editor: "npm:0.45.0"
-    ngx-cookie-service: "npm:^15.0.0"
     ngx-monaco-editor-v2: "npm:16.0.1"
     path: "npm:^0.12.7"
     prettier: "npm:2.5.1"
@@ -9532,18 +9531,6 @@ __metadata:
   version: 2.6.2
   resolution: "neo-async@npm:2.6.2"
   checksum: c2f5a604a54a8ec5438a342e1f356dff4bc33ccccdb6dc668d94fe8e5eccfc9d2c2eea6064b0967a767ba63b33763f51ccf2cd2441b461a7322656c1f06b3f5d
-  languageName: node
-  linkType: hard
-
-"ngx-cookie-service@npm:^15.0.0":
-  version: 15.0.0
-  resolution: "ngx-cookie-service@npm:15.0.0"
-  dependencies:
-    tslib: "npm:^2.0.0"
-  peerDependencies:
-    "@angular/common": ^15.0.0
-    "@angular/core": ^15.0.0
-  checksum: 6597ec1432a10233cc776b5b058d1fa3b3e33522e65c40e9ac7121bd84000ee741a453315397b9a3b11a51fe2d97d3d0531801e8003aed7216a68c8a57d0f5af
   languageName: node
   linkType: hard
 

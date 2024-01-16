@@ -3,7 +3,6 @@ import { Report } from '../../shared/interfaces/report';
 import { HelperService } from '../../shared/services/helper.service';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { NodeLinkStrategy } from '../../shared/enums/compare-method';
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-compare-tree',
@@ -11,7 +10,7 @@ import { CookieService } from 'ngx-cookie-service';
   styleUrls: ['./compare-tree.component.css'],
 })
 export class CompareTreeComponent {
-  constructor(private helperService: HelperService, private cookieService: CookieService) {}
+  constructor(private helperService: HelperService) {}
   @Output() compareEvent = new EventEmitter<any>();
   @Output() changeNodeLinkStrategyEvent = new EventEmitter<any>();
   @ViewChild('leftTreeReference') leftTreeReference!: jqxTreeComponent;
@@ -27,7 +26,10 @@ export class CompareTreeComponent {
 
   nodeSelected(data: any, left: boolean) {
     this.selectOtherNode(data, left);
-    this.compareEvent.emit({ leftReport: this.leftReport, rightReport: this.rightReport });
+    this.compareEvent.emit({
+      leftReport: this.leftReport,
+      rightReport: this.rightReport,
+    });
   }
 
   selectOtherNode(data: any, left: boolean) {
@@ -38,13 +40,18 @@ export class CompareTreeComponent {
     }
   }
   compareOnSomething(method: string, data: any, left: boolean) {
-    let treeReference: jqxTreeComponent = left ? this.rightTreeReference : this.leftTreeReference;
+    let treeReference: jqxTreeComponent = left
+      ? this.rightTreeReference
+      : this.leftTreeReference;
     let selectedReport = data.owner.selectedItem;
 
     let otherReport =
       method === 'PATH'
         ? this.getOtherReportBasedOnPath(selectedReport, treeReference)
-        : this.getOtherReportBasedOnCheckpointNumber(selectedReport, treeReference);
+        : this.getOtherReportBasedOnCheckpointNumber(
+            selectedReport,
+            treeReference
+          );
 
     if (otherReport) {
       this.unfoldTree(treeReference, otherReport, otherReport.parentId);
@@ -57,23 +64,36 @@ export class CompareTreeComponent {
     this.rightReport = left ? otherReport : selectedReport;
   }
 
-  getOtherReportBasedOnCheckpointNumber(selectedReport: any, treeReference: jqxTreeComponent) {
+  getOtherReportBasedOnCheckpointNumber(
+    selectedReport: any,
+    treeReference: jqxTreeComponent
+  ) {
     let checkpointNumber = selectedReport.value.index;
-    return treeReference.getItems().find((item: any) => checkpointNumber == item.value.index);
+    return treeReference
+      .getItems()
+      .find((item: any) => checkpointNumber == item.value.index);
   }
 
-  getOtherReportBasedOnPath(selectedReport: any, treeReference: jqxTreeComponent) {
+  getOtherReportBasedOnPath(
+    selectedReport: any,
+    treeReference: jqxTreeComponent
+  ) {
     let path = this.getFullPath(selectedReport, [selectedReport.value.name]);
     return this.matchFullPath(treeReference.getItems()[0], path);
   }
   compareOnNothing(data: any, left: boolean) {
-    left ? (this.leftReport = data.owner.selectedItem) : (this.rightReport = data.owner.selectedItem);
+    left
+      ? (this.leftReport = data.owner.selectedItem)
+      : (this.rightReport = data.owner.selectedItem);
   }
 
   changeNodeLinkStrategy(event: any) {
     this.nodeLinkStrategy = event.target.value;
     this.changeNodeLinkStrategyEvent.next(this.nodeLinkStrategy);
-    this.cookieService.set(this.viewName + '.NodeLinkStrategy', this.nodeLinkStrategy);
+    localStorage.setItem(
+      this.viewName + '.NodeLinkStrategy',
+      this.nodeLinkStrategy
+    );
   }
   getParent(checkpoint: any, parentId: string): any {
     let items = checkpoint.treeInstance.items;
@@ -117,7 +137,11 @@ export class CompareTreeComponent {
     return toBeSelected;
   }
 
-  checkIfSameParents(checkpoint: string, parentId: string, path: string[]): boolean {
+  checkIfSameParents(
+    checkpoint: string,
+    parentId: string,
+    path: string[]
+  ): boolean {
     if (path.length === 0) return true;
     let parent = this.getParent(checkpoint, parentId);
     if (parent && parent.value.name == path[0]) {
@@ -127,19 +151,31 @@ export class CompareTreeComponent {
     return false;
   }
 
-  createTrees(viewName: string, nodeLinkStrategy: NodeLinkStrategy, leftReport: Report, rightReport: Report) {
+  createTrees(
+    viewName: string,
+    nodeLinkStrategy: NodeLinkStrategy,
+    leftReport: Report,
+    rightReport: Report
+  ) {
     this.viewName = viewName;
     this.nodeLinkStrategy = nodeLinkStrategy;
-    let nls = this.cookieService.get(this.viewName + '.NodeLinkStrategy');
+    let nls = localStorage.getItem(this.viewName + '.NodeLinkStrategy');
     if (nls) {
-      this.nodeLinkStrategy = NodeLinkStrategy[nls as keyof typeof NodeLinkStrategy];
+      this.nodeLinkStrategy =
+        NodeLinkStrategy[nls as keyof typeof NodeLinkStrategy];
     }
     const leftTree = this.helperService.convertReportToJqxTree(leftReport);
     const rightTree = this.helperService.convertReportToJqxTree(rightReport);
     const both = this.iterateToMakeLabelsRed(leftTree, rightTree);
 
-    this.leftTreeReference.createComponent({ height: '100%', source: [both.left] });
-    this.rightTreeReference.createComponent({ height: '100%', source: [both.right] });
+    this.leftTreeReference.createComponent({
+      height: '100%',
+      source: [both.left],
+    });
+    this.rightTreeReference.createComponent({
+      height: '100%',
+      source: [both.right],
+    });
 
     this.selectFirstItem();
   }
@@ -166,11 +202,21 @@ export class CompareTreeComponent {
 
   iterateToMakeLabelsRed(leftItem: any, rightItem: any) {
     let result = this.checkIfLabelsDifferent(leftItem, rightItem);
-    const shortestTreeLength = Math.min(leftItem.items.length, rightItem.items.length);
-    this.makeRestOfTreesRed(shortestTreeLength, rightItem.items, leftItem.items);
+    const shortestTreeLength = Math.min(
+      leftItem.items.length,
+      rightItem.items.length
+    );
+    this.makeRestOfTreesRed(
+      shortestTreeLength,
+      rightItem.items,
+      leftItem.items
+    );
 
     for (let i = 0; i < shortestTreeLength; i++) {
-      let both = this.iterateToMakeLabelsRed(leftItem.items[i], rightItem.items[i]);
+      let both = this.iterateToMakeLabelsRed(
+        leftItem.items[i],
+        rightItem.items[i]
+      );
       leftItem.items[i] = both.left;
       rightItem.items[i] = both.right;
     }
@@ -188,7 +234,8 @@ export class CompareTreeComponent {
 
   checkIfLabelsDifferent(left: any, right: any): { left: any; right: any } {
     if (left.level > -1) {
-      if (left.value.message !== right.value.message) this.makeLabelsRed(left, right);
+      if (left.value.message !== right.value.message)
+        this.makeLabelsRed(left, right);
     } else {
       if (left.value.xml !== right.value.xml) this.makeLabelsRed(left, right);
     }

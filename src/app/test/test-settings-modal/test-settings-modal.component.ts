@@ -1,7 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-test-settings-modal',
@@ -15,7 +14,7 @@ export class TestSettingsModalComponent {
     showCheckpointIds: new UntypedFormControl(false),
   });
 
-  constructor(private modalService: NgbModal, private cookieService: CookieService) {}
+  constructor(private modalService: NgbModal) {}
 
   open(): void {
     this.loadSettings();
@@ -23,8 +22,14 @@ export class TestSettingsModalComponent {
   }
 
   saveSettings(): void {
-    this.cookieService.set('showReportStorageIds', this.settingsForm.get('showReportStorageIds')?.value.toString());
-    this.cookieService.set('showCheckpointIds', this.settingsForm.get('showCheckpointIds')?.value.toString());
+    localStorage.setItem(
+      'showReportStorageIds',
+      this.settingsForm.get('showReportStorageIds')?.value.toString()
+    );
+    localStorage.setItem(
+      'showCheckpointIds',
+      this.settingsForm.get('showCheckpointIds')?.value.toString()
+    );
   }
 
   resetSettings(): void {
@@ -33,14 +38,16 @@ export class TestSettingsModalComponent {
   }
 
   loadSettings(): void {
-    if (this.cookieService.get('showReportStorageIds')) {
+    if (localStorage.getItem('showReportStorageIds')) {
       this.settingsForm
         .get('showReportStorageIds')
-        ?.setValue(this.cookieService.get('showReportStorageIds') === 'true');
+        ?.setValue(localStorage.getItem('showReportStorageIds') === 'true');
     }
 
-    if (this.cookieService.get('showCheckpointIds')) {
-      this.settingsForm.get('showCheckpointIds')?.setValue(this.cookieService.get('showCheckpointIds') === 'true');
+    if (localStorage.getItem('showCheckpointIds')) {
+      this.settingsForm
+        .get('showCheckpointIds')
+        ?.setValue(localStorage.getItem('showCheckpointIds') === 'true');
     }
   }
 }

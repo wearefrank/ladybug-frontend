@@ -21,7 +21,6 @@ import { CloneModalComponent } from './test/clone-modal/clone-modal.component';
 import { DisplayTableComponent } from './shared/components/display-table/display-table.component';
 import { TableSettingsModalComponent } from './debug/table/table-settings-modal/table-settings-modal.component';
 import { TestFolderTreeComponent } from './test/test-folder-tree/test-folder-tree.component';
-import { CookieService } from 'ngx-cookie-service';
 import { jqxTreeModule } from 'jqwidgets-ng/jqxtree';
 import { CompareTreeComponent } from './compare/compare-tree/compare-tree.component';
 import { EditDisplayComponent } from './report/edit-display/edit-display.component';
@@ -73,7 +72,7 @@ import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
     AngularSplitModule,
     MonacoEditorModule.forRoot(),
   ],
-  providers: [CookieService],
+  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

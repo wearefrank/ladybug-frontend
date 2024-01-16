@@ -1,8 +1,14 @@
-import { Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnDestroy,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
-import { CookieService } from 'ngx-cookie-service';
 import { ToastComponent } from '../../../shared/components/toast/toast.component';
 import { SettingsService } from '../../../shared/services/settings.service';
 import { Subscription } from 'rxjs';
@@ -30,7 +36,6 @@ export class TableSettingsModalComponent implements OnDestroy {
   constructor(
     private modalService: NgbModal,
     private httpService: HttpService,
-    private cookieService: CookieService,
     private settingsService: SettingsService
   ) {
     this.subscribeToSettingsServiceObservables();
@@ -41,12 +46,15 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   subscribeToSettingsServiceObservables(): void {
-    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
-      (value: boolean) => {
-        this.showMultipleAtATime = value;
-        this.settingsForm.get('showMultipleFilesAtATime')?.setValue(this.showMultipleAtATime);
-      }
-    );
+    this.showMultipleAtATimeSubscription =
+      this.settingsService.showMultipleAtATimeObservable.subscribe(
+        (value: boolean) => {
+          this.showMultipleAtATime = value;
+          this.settingsForm
+            .get('showMultipleFilesAtATime')
+            ?.setValue(this.showMultipleAtATime);
+        }
+      );
   }
 
   setShowMultipleAtATime() {
@@ -72,10 +80,15 @@ export class TableSettingsModalComponent implements OnDestroy {
 
   saveSettings(): void {
     const form: any = this.settingsForm.value;
-    this.cookieService.set('generatorEnabled', form.generatorEnabled);
-    this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
+    localStorage.setItem('generatorEnabled', form.generatorEnabled);
+    localStorage.setItem(
+      'transformationEnabled',
+      form.transformationEnabled.toString()
+    );
     this.httpService.postTransformation(form.transformation).subscribe();
-    const generatorEnabled: string = String(form.generatorEnabled === 'Enabled');
+    const generatorEnabled: string = String(
+      form.generatorEnabled === 'Enabled'
+    );
     let data: any = {
       generatorEnabled: generatorEnabled,
       regexFilter: form.regexFilter,
@@ -96,28 +109,34 @@ export class TableSettingsModalComponent implements OnDestroy {
   factoryReset(): void {
     this.settingsForm.reset();
     this.settingsService.setShowMultipleAtATime();
-    this.httpService.resetSettings().subscribe((response) => this.saveResponseSetting(response));
+    this.httpService
+      .resetSettings()
+      .subscribe((response) => this.saveResponseSetting(response));
     this.httpService.getTransformation(true).subscribe((resp) => {
       this.settingsForm.get('transformation')?.setValue(resp.transformation);
     });
   }
 
   loadSettings(): void {
-    this.httpService.getSettings().subscribe((response) => this.saveResponseSetting(response));
-    if (this.cookieService.get('transformationEnabled')) {
+    this.httpService
+      .getSettings()
+      .subscribe((response) => this.saveResponseSetting(response));
+    if (localStorage.getItem('transformationEnabled')) {
       this.settingsForm
         .get('transformationEnabled')
-        ?.setValue(this.cookieService.get('transformationEnabled') == 'true');
+        ?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }
 
     this.httpService.getTransformation(false).subscribe((response) => {
-      this.settingsForm.get('transformation')?.setValue(response.transformation);
+      this.settingsForm
+        .get('transformation')
+        ?.setValue(response.transformation);
     });
   }
 
   saveResponseSetting(response: any) {
     const generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
-    this.cookieService.set('generatorEnabled', generatorStatus);
+    localStorage.setItem('generatorEnabled', generatorStatus);
     this.settingsForm.get('generatorEnabled')?.setValue(generatorStatus);
     this.settingsForm.get('regexFilter')?.setValue(response.regexFilter);
   }

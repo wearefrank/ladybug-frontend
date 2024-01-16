@@ -47,7 +47,6 @@
     "jquery": "^3.6.0",
     "jqwidgets-ng": "^14.1.17",
     "monaco-editor": "0.45.0",
-    "ngx-cookie-service": "^15.0.0",
     "ngx-monaco-editor-v2": "16.0.1",
     "path": "^0.12.7",
     "prettier": "2.5.1",

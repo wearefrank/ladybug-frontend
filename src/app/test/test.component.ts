@@ -1,11 +1,16 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { CookieService } from 'ngx-cookie-service';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
@@ -39,13 +44,14 @@ export class TestComponent implements OnInit {
 
   constructor(
     private httpService: HttpService,
-    private cookieService: CookieService,
     private helperService: HelperService
   ) {}
 
   openCloneModal(): void {
     if (this.helperService.getSelectedReports(this.reports).length === 1) {
-      this.cloneModal.open(this.helperService.getSelectedReports(this.reports)[0]);
+      this.cloneModal.open(
+        this.helperService.getSelectedReports(this.reports)[0]
+      );
     } else {
       this.toastComponent.addAlert({
         type: 'warning',
@@ -59,7 +65,7 @@ export class TestComponent implements OnInit {
   }
 
   showStorageIds(): boolean {
-    return this.cookieService.get('showReportStorageIds') === 'true';
+    return localStorage.getItem('showReportStorageIds') === 'true';
   }
 
   ngOnInit(): void {
@@ -68,12 +74,14 @@ export class TestComponent implements OnInit {
   }
 
   getGeneratorStatus() {
-    if (this.cookieService.get('generatorEnabled')) {
-      this.generatorStatus = this.cookieService.get('generatorEnabled');
+    if (localStorage.getItem('generatorEnabled')) {
+      this.generatorStatus = localStorage.getItem('generatorEnabled')!;
     } else {
       this.httpService.getSettings().subscribe((response) => {
-        this.generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
-        this.cookieService.set('generatorEnabled', this.generatorStatus);
+        this.generatorStatus = response.generatorEnabled
+          ? 'Enabled'
+          : 'Disabled';
+        localStorage.setItem('generatorEnabled', this.generatorStatus);
       });
     }
   }
@@ -81,7 +89,11 @@ export class TestComponent implements OnInit {
   addCopiedReports(metadata: any[]): void {
     const amountAdded: number = metadata.length - this.reports.length;
     if (amountAdded > 0) {
-      for (let index = this.reports.length; index <= metadata.length - 1; index++) {
+      for (
+        let index = this.reports.length;
+        index <= metadata.length - 1;
+        index++
+      ) {
         if (this.matches(metadata[index])) metadata[index].checked = true;
         this.reports.push(metadata[index]);
       }
@@ -89,20 +101,30 @@ export class TestComponent implements OnInit {
   }
 
   getCopiedReports(): void {
-    this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
-      next: (response) => this.addCopiedReports(response),
-      error: () => catchError(this.httpService.handleError()),
-    });
+    this.httpService
+      .getTestReports(
+        this.currentView.metadataNames,
+        this.currentView.storageName
+      )
+      .subscribe({
+        next: (response) => this.addCopiedReports(response),
+        error: () => catchError(this.httpService.handleError()),
+      });
   }
 
   loadData(path: any): void {
-    this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
-      next: (value) => {
-        this.reports = value;
-        this.testFolderTreeComponent.updateFolderTree(this.reports, path);
-      },
-      error: () => catchError(this.httpService.handleError()),
-    });
+    this.httpService
+      .getTestReports(
+        this.currentView.metadataNames,
+        this.currentView.storageName
+      )
+      .subscribe({
+        next: (value) => {
+          this.reports = value;
+          this.testFolderTreeComponent.updateFolderTree(this.reports, path);
+        },
+        error: () => catchError(this.httpService.handleError()),
+      });
   }
 
   resetRunner(): void {
@@ -126,7 +148,9 @@ export class TestComponent implements OnInit {
   }
 
   runSelected(): void {
-    this.helperService.getSelectedReports(this.reports).forEach((report) => this.run(report.storageId));
+    this.helperService
+      .getSelectedReports(this.reports)
+      .forEach((report) => this.run(report.storageId));
   }
 
   removeReranReportIfExists(id: string): void {
@@ -161,15 +185,19 @@ export class TestComponent implements OnInit {
   }
 
   openReport(storageId: string, name: string): void {
-    this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data) => {
-      let report: Report = data.report;
-      report.xml = data.xml;
-      this.openReportInSeparateTabEvent.emit({ data: report, name: name });
-    });
+    this.httpService
+      .getReport(storageId, this.currentView.storageName)
+      .subscribe((data) => {
+        let report: Report = data.report;
+        report.xml = data.xml;
+        this.openReportInSeparateTabEvent.emit({ data: report, name: name });
+      });
   }
 
   openDeleteModal() {
-    let reportsToBeDeleted = this.helperService.getSelectedReports(this.reports);
+    let reportsToBeDeleted = this.helperService.getSelectedReports(
+      this.reports
+    );
     if (reportsToBeDeleted.length > 0) {
       this.deleteModal.open(reportsToBeDeleted);
     }
@@ -177,7 +205,10 @@ export class TestComponent implements OnInit {
 
   deleteSelected(): void {
     this.httpService
-      .deleteReport(this.helperService.getSelectedIds(this.reports), this.currentView.storageName)
+      .deleteReport(
+        this.helperService.getSelectedIds(this.reports),
+        this.currentView.storageName
+      )
       .subscribe(() => {
         this.loadData('');
       });
@@ -187,10 +218,16 @@ export class TestComponent implements OnInit {
     const selectedReports = this.helperService.getSelectedReports(this.reports);
     if (selectedReports.length > 0) {
       const queryString: string = selectedReports.reduce(
-        (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
+        (totalQuery: string, selectedReport: any) =>
+          totalQuery + 'id=' + selectedReport.storageId + '&',
         ''
       );
-      this.helperService.download(queryString, this.currentView.storageName, true, false);
+      this.helperService.download(
+        queryString,
+        this.currentView.storageName,
+        true,
+        false
+      );
     } else {
       this.toastComponent.addAlert({
         type: 'warning',
@@ -204,12 +241,16 @@ export class TestComponent implements OnInit {
     if (file) {
       const formData: any = new FormData();
       formData.append('file', file);
-      this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData(''));
+      this.httpService
+        .uploadReportToStorage(formData, this.currentView.storageName)
+        .subscribe(() => this.loadData(''));
     }
   }
 
   compareReports(id: string): void {
-    const reranReport = this.reranReports.find((report: ReranReport) => report.id == id);
+    const reranReport = this.reranReports.find(
+      (report: ReranReport) => report.id == id
+    );
     if (reranReport) {
       this.openCompareReportsEvent.emit({
         originalReport: reranReport.originalReport,
@@ -219,18 +260,24 @@ export class TestComponent implements OnInit {
   }
 
   replaceReport(reportId: string): void {
-    this.httpService.replaceReport(reportId, this.targetStorage).subscribe(() => {
-      this.reranReports = this.reranReports.filter((report) => report.id != reportId);
-    });
+    this.httpService
+      .replaceReport(reportId, this.targetStorage)
+      .subscribe(() => {
+        this.reranReports = this.reranReports.filter(
+          (report) => report.id != reportId
+        );
+      });
   }
 
   copySelected(): void {
     let copiedIds: string[] = this.helperService.getSelectedIds(this.reports);
     let data: any = {};
     data[this.currentView.storageName] = copiedIds;
-    this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
-      this.loadData(null);
-    });
+    this.httpService
+      .copyReport(data, this.currentView.storageName)
+      .subscribe(() => {
+        this.loadData(null);
+      });
   }
 
   toggleCheck(report: any): void {
@@ -248,7 +295,8 @@ export class TestComponent implements OnInit {
   updatePath(action: string) {
     let reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
-      let path = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
+      let path = (document.querySelector('#moveToInput')! as HTMLInputElement)
+        .value;
       if (!path.endsWith('/')) {
         path = path + '/';
       }
@@ -256,9 +304,11 @@ export class TestComponent implements OnInit {
         path = '/' + path;
       }
       let map = { path: path, action: action };
-      this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => {
-        this.loadData(path);
-      });
+      this.httpService
+        .updatePath(reportIds, this.currentView.storageName, map)
+        .subscribe(() => {
+          this.loadData(path);
+        });
     } else {
       this.toastComponent.addAlert({
         type: 'warning',
@@ -301,6 +351,8 @@ export class TestComponent implements OnInit {
   }
 
   sortByName() {
-    return this.reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
+    return this.reports.sort((a, b) =>
+      a.name > b.name ? 1 : a.name === b.name ? 0 : -1
+    );
   }
 }
