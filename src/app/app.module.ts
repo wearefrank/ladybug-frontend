@@ -33,6 +33,7 @@ import { AngularSplitModule } from 'angular-split';
 import { DeleteModalComponent } from './test/delete-modal/delete-modal.component';
 import { TextCompareComponent } from './text-compare/text-compare.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
+import { TableCellShortenerPipe } from './shared/pipes/table-cell-shortener.pipe';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
     MatProgressSpinnerModule,
     AngularSplitModule,
     MonacoEditorModule.forRoot(),
+    TableCellShortenerPipe,
   ],
   providers: [CookieService],
   bootstrap: [AppComponent],
