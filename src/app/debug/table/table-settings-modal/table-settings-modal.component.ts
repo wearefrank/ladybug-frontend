@@ -1,29 +1,57 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
 import { CookieService } from 'ngx-cookie-service';
 import { ToastComponent } from '../../../shared/components/toast/toast.component';
+import { SettingsService } from '../../../shared/services/settings.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-table-settings-modal',
   templateUrl: './table-settings-modal.component.html',
   styleUrls: ['./table-settings-modal.component.css'],
 })
-export class TableSettingsModalComponent {
+export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;
+  showMultipleAtATime!: boolean;
+  showMultipleAtATimeSubscription!: Subscription;
   settingsForm = new UntypedFormGroup({
+    showMultipleFilesAtATime: new UntypedFormControl(false),
     generatorEnabled: new UntypedFormControl('Enabled'),
     regexFilter: new UntypedFormControl(''),
     transformationEnabled: new UntypedFormControl(true),
     transformation: new UntypedFormControl(''),
   });
-
   @Output() openLatestReportsEvent = new EventEmitter<any>();
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   saving: boolean = false;
 
-  constructor(private modalService: NgbModal, private httpService: HttpService, private cookieService: CookieService) {}
+  constructor(
+    private modalService: NgbModal,
+    private httpService: HttpService,
+    private cookieService: CookieService,
+    private settingsService: SettingsService
+  ) {
+    this.subscribeToSettingsServiceObservables();
+  }
+
+  ngOnDestroy() {
+    this.showMultipleAtATimeSubscription.unsubscribe();
+  }
+
+  subscribeToSettingsServiceObservables(): void {
+    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
+      (value: boolean) => {
+        this.showMultipleAtATime = value;
+        this.settingsForm.get('showMultipleFilesAtATime')?.setValue(this.showMultipleAtATime);
+      }
+    );
+  }
+
+  setShowMultipleAtATime() {
+    this.settingsService.setShowMultipleAtATime(!this.showMultipleAtATime);
+  }
 
   open(): void {
     this.loadSettings();
@@ -66,6 +94,8 @@ export class TableSettingsModalComponent {
   }
 
   factoryReset(): void {
+    this.settingsForm.reset();
+    this.settingsService.setShowMultipleAtATime();
     this.httpService.resetSettings().subscribe((response) => this.saveResponseSetting(response));
     this.httpService.getTransformation(true).subscribe((resp) => {
       this.settingsForm.get('transformation')?.setValue(resp.transformation);

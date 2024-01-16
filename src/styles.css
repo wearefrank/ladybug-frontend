@@ -134,3 +134,11 @@ html, body {
 .modal-backdrop {
   z-index: 1 !important;
 }
+
+.w-fit {
+  width: fit-content;
+}
+
+.h-fit {
+  height: fit-content;
+}

@@ -8,6 +8,7 @@ import { Report } from './shared/interfaces/report';
 import { TestComponent } from './test/test.component';
 import { DynamicService } from './shared/services/dynamic.service';
 import { CompareData } from './compare/compare-data';
+import { SettingsService } from './shared/services/settings.service';
 
 declare var require: any;
 const { version: appVersion } = require('../../package.json');
@@ -31,7 +32,9 @@ export class AppComponent implements AfterViewInit {
     private inj: Injector,
     private titleService: Title,
     private httpService: HttpService,
-    private dynamicService: DynamicService
+    private dynamicService: DynamicService,
+    //make sure settings are retrieved from localstorage on startup by initializing the service on startup
+    private settingsService: SettingsService
   ) {
     this.appVersion = appVersion;
     this.titleService.setTitle('Ladybug - v' + this.appVersion);
