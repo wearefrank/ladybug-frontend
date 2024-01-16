@@ -16,8 +16,12 @@ export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;
   showMultipleAtATime!: boolean;
   showMultipleAtATimeSubscription!: Subscription;
-  settingsForm = new UntypedFormGroup({
+  tableSpacing: number = 0;
+  spacingOptions: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  tableSpacingSubscription!: Subscription;
+  settingsForm: UntypedFormGroup = new UntypedFormGroup({
     showMultipleFilesAtATime: new UntypedFormControl(false),
+    tableSpacing: new UntypedFormControl(this.tableSpacing),
     generatorEnabled: new UntypedFormControl('Enabled'),
     regexFilter: new UntypedFormControl(''),
     transformationEnabled: new UntypedFormControl(true),
@@ -38,6 +42,7 @@ export class TableSettingsModalComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.showMultipleAtATimeSubscription.unsubscribe();
+    this.tableSpacingSubscription.unsubscribe();
   }
 
   subscribeToSettingsServiceObservables(): void {
@@ -47,6 +52,10 @@ export class TableSettingsModalComponent implements OnDestroy {
         this.settingsForm.get('showMultipleFilesAtATime')?.setValue(this.showMultipleAtATime);
       }
     );
+    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe((value: number) => {
+      this.tableSpacing = value;
+      this.settingsForm.get('tableSpacing')?.setValue(this.tableSpacing);
+    });
   }
 
   setShowMultipleAtATime() {
@@ -120,5 +129,9 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.cookieService.set('generatorEnabled', generatorStatus);
     this.settingsForm.get('generatorEnabled')?.setValue(generatorStatus);
     this.settingsForm.get('regexFilter')?.setValue(response.regexFilter);
+  }
+
+  changeTableSpacing(value: any): void {
+    this.settingsService.setTableSpacing(Number(value));
   }
 }

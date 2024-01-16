@@ -62,11 +62,11 @@
     <mat-spinner [mode]="'indeterminate'" [diameter]="30"></mat-spinner>
   </div>
   <div [hidden]="!doneRetrieving" class="table-responsive" id="metadataTable">
-    <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)">
+    <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)" [style.font-size]="getFontSize()">
       <thead id="table-header">
         <tr>
           <th class="table-row-checkbox header-padding">
-            <input type="checkbox" class="vertical-middle" data-cy-select-all-reports [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows">
+            <input type="checkbox" class="vertical-middle" data-cy-select-all-reports [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
           </th>
           <th class="text-center header-cell header-padding" *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
               mat-sort-header="{{i}}" [title]="header">{{getShortenedTableHeaderNames(header)}}</th>
@@ -86,13 +86,13 @@
         <tr class="table-row" *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index"
             (click)="highLightRow(i);"
             [ngClass]="{'highlight': selectedRow === i}"
-            style="background-color: {{getStatusColor(row)}}"
+            style="background-color: {{getStatusColor(row)}};"
             [attr.data-cy-record-table-index]=i
         >
-          <td class="table-row-checkbox">
-            <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)">
+          <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
+            <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
           </td>
-          <td class="table-cell" *ngFor="let metadataName of viewSettings.currentView.metadataNames" (click)="openReport(row.storageId);" [title]="row[metadataName]">{{row[metadataName]|tableCellShortener}}</td>
+          <td [style.padding]="getTableSpacing()" class="table-cell" *ngFor="let metadataName of viewSettings.currentView.metadataNames" (click)="openReport(row.storageId);" [title]="row[metadataName]">{{row[metadataName]|tableCellShortener}}</td>
         </tr>
       </tbody>
     </table>

@@ -1,20 +1,21 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../shared/interfaces/table-settings';
-import { catchError } from 'rxjs';
+import { catchError, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { CookieService } from 'ngx-cookie-service';
 import { ChangeNodeLinkStrategyService } from '../../shared/services/node-link-strategy.service';
+import { SettingsService } from '../../shared/services/settings.service';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css'],
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
   metadataCount = 0;
   viewSettings: any = {
@@ -66,18 +67,32 @@ export class TableComponent implements OnInit {
   selectedRow: number = -1;
   doneRetrieving: boolean = false;
   @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
+  tableSpacing!: number;
+  tableSpacingSubscription!: Subscription;
 
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
     private cookieService: CookieService,
-    private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService
+    private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService,
+    private settingsService: SettingsService
   ) {}
 
   ngOnInit(): void {
     this.cookieService.set('transformationEnabled', 'true');
     this.loadData();
     this.listenForViewUpdate();
+    this.subscribeToSettingsObservables();
+  }
+
+  ngOnDestroy(): void {
+    this.tableSpacingSubscription.unsubscribe();
+  }
+
+  subscribeToSettingsObservables(): void {
+    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe((value: number): void => {
+      this.tableSpacing = value;
+    });
   }
 
   retrieveRecords() {
@@ -408,5 +423,17 @@ export class TableComponent implements OnInit {
       return this.shortenedTableHeaders.get(fullName) as string;
     }
     return fullName;
+  }
+
+  getTableSpacing() {
+    return `${this.tableSpacing * 0.25}em 0 ${this.tableSpacing * 0.25}em 0`;
+  }
+
+  getFontSize() {
+    return `${8 + this.tableSpacing * 1.2}pt`;
+  }
+
+  getCheckBoxSize() {
+    return `${13 + this.tableSpacing}px`;
   }
 }

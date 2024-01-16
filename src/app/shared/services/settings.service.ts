@@ -9,6 +9,11 @@ export class SettingsService {
     this.loadSettingsFromLocalStorage();
   }
 
+  private loadSettingsFromLocalStorage(): void {
+    this.setShowMultipleAtATime(localStorage.getItem(this.showMultipleAtATimeKey) === 'true');
+    this.setTableSpacing(Number(localStorage.getItem(this.tableSpacingKey)));
+  }
+
   //Show multiple files in debug tree
   private showMultipleAtATimeKey: string = 'showMultipleFilesAtATime';
   private showMultipleAtATime: boolean = false;
@@ -21,7 +26,15 @@ export class SettingsService {
     localStorage.setItem(this.showMultipleAtATimeKey, String(this.showMultipleAtATime));
   }
 
-  private loadSettingsFromLocalStorage(): void {
-    this.setShowMultipleAtATime(localStorage.getItem(this.showMultipleAtATimeKey) === 'true');
+  //Table spacing settings
+  private tableSpacingKey: string = 'tableSpacing';
+  private tableSpacing: number = 0;
+  private tableSpacingSubject: Subject<number> = new ReplaySubject(1);
+  public tableSpacingObservable: Observable<number> = this.tableSpacingSubject.asObservable();
+
+  public setTableSpacing(value: number = 0): void {
+    this.tableSpacing = value;
+    this.tableSpacingSubject.next(value);
+    localStorage.setItem(this.tableSpacingKey, String(value));
   }
 }
