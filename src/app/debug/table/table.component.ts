@@ -249,7 +249,7 @@ export class TableComponent implements OnInit, OnDestroy {
     if (statusName && metadata[statusName]) {
       if (metadata[statusName].toLowerCase() === 'success') {
         return '#c3e6cb';
-      } else if (metadata[statusName].toLowerCase() === 'error') {
+      } else if (metadata[statusName].toLowerCase() === 'null') {
         return '#A9A9A9FF';
       } else {
         return '#f79c9c';
