@@ -16,7 +16,7 @@ export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;
   showMultipleAtATime!: boolean;
   showMultipleAtATimeSubscription!: Subscription;
-  tableSpacing: number = 0;
+  tableSpacing: number = 1;
   spacingOptions: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   tableSpacingSubscription!: Subscription;
   settingsForm: UntypedFormGroup = new UntypedFormGroup({
