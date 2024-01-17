@@ -1,45 +1,31 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ToastComponent } from '../components/toast/toast.component';
 import { catchError, Observable, of, tap } from 'rxjs';
-import { ChangeNodeLinkStrategyService } from './node-link-strategy.service';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
-  toastComponent!: ToastComponent;
 
-  constructor(private http: HttpClient, private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService) {}
-
-  initializeToastComponent(toastComponent: ToastComponent) {
-    this.toastComponent = toastComponent;
-  }
+  constructor(private http: HttpClient, private toastService: ToastService) {}
 
   handleError() {
     return (error: any): Observable<any> => {
       const message = error.error;
       if (message.includes('- detailed error message -')) {
         const errorMessageParts = message.split('- detailed error message -');
-        this.toastComponent.addAlert({
-          type: 'danger',
-          message: errorMessageParts[0],
-          detailed: errorMessageParts[1],
-        });
+        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
       } else {
-        this.toastComponent.addAlert({
-          type: 'danger',
-          message: message,
-          detailed: '',
-        });
+        this.toastService.showDanger(message, '');
       }
       return of(error);
     };
   }
 
-  handleSuccess(message: string) {
-    this.toastComponent.addAlert({ type: 'success', message: message });
+  handleSuccess(message: string): void {
+    this.toastService.showSuccess(message);
   }
 
   getViews(): Observable<any> {

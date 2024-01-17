@@ -2,9 +2,9 @@ import { Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } fro
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
-import { ToastComponent } from '../../../shared/components/toast/toast.component';
 import { SettingsService } from '../../../shared/services/settings.service';
 import { Subscription } from 'rxjs';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -27,13 +27,13 @@ export class TableSettingsModalComponent implements OnDestroy {
     transformation: new UntypedFormControl(''),
   });
   @Output() openLatestReportsEvent = new EventEmitter<any>();
-  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   saving: boolean = false;
 
   constructor(
     private modalService: NgbModal,
     private httpService: HttpService,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private toastService: ToastService
   ) {
     this.subscribeToSettingsServiceObservables();
   }
@@ -89,10 +89,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     };
     this.httpService.postSettings(data).subscribe();
 
-    this.toastComponent.addAlert({
-      type: 'warning',
-      message: 'Reopen report to see updated XML',
-    });
+    this.toastService.showWarning('Reopen report to see updated XML');
     this.saving = true;
   }
 
