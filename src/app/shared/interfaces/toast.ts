@@ -1,4 +1,4 @@
-export interface Alert {
+export interface Toast {
   type: string;
   message: string;
   detailed?: string;

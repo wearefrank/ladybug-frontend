@@ -1,5 +1,4 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { ToastComponent } from '../shared/components/toast/toast.component';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
@@ -10,6 +9,7 @@ import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
+import { ToastService } from '../shared/services/toast.service';
 
 @Component({
   selector: 'app-test',
@@ -28,7 +28,6 @@ export class TestComponent implements OnInit {
   targetStorage: string = 'Debug';
   @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
-  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent)
   testSettingsModal!: TestSettingsModalComponent;
@@ -36,16 +35,17 @@ export class TestComponent implements OnInit {
   testFolderTreeComponent!: TestFolderTreeComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
 
-  constructor(private httpService: HttpService, private helperService: HelperService) {}
+  constructor(
+    private httpService: HttpService,
+    private helperService: HelperService,
+    private toastService: ToastService
+  ) {}
 
   openCloneModal(): void {
     if (this.helperService.getSelectedReports(this.reports).length === 1) {
       this.cloneModal.open(this.helperService.getSelectedReports(this.reports)[0]);
     } else {
-      this.toastComponent.addAlert({
-        type: 'warning',
-        message: 'Make sure exactly one report is selected at a time',
-      });
+      this.toastService.showWarning('Make sure exactly one report is selected at a time');
     }
   }
 
@@ -113,10 +113,7 @@ export class TestComponent implements OnInit {
           this.showResult(response);
         });
     } else {
-      this.toastComponent.addAlert({
-        type: 'warning',
-        message: 'Generator is disabled!',
-      });
+      this.toastService.showWarning('Generator is disabled!');
     }
   }
 
@@ -187,10 +184,7 @@ export class TestComponent implements OnInit {
       );
       this.helperService.download(queryString, this.currentView.storageName, true, false);
     } else {
-      this.toastComponent.addAlert({
-        type: 'warning',
-        message: 'No Report Selected!',
-      });
+      this.toastService.showWarning('No Report Selected!');
     }
   }
 
@@ -255,10 +249,7 @@ export class TestComponent implements OnInit {
         this.loadData(path);
       });
     } else {
-      this.toastComponent.addAlert({
-        type: 'warning',
-        message: 'No Report Selected!',
-      });
+      this.toastService.showWarning('No Report Selected!');
     }
   }
 

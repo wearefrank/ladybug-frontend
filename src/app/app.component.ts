@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, Injector, ViewChild } from '@angular/core';
 import { ReportComponent, ReportData } from './report/report.component';
 import { Title } from '@angular/platform-browser';
-import { ToastComponent } from './shared/components/toast/toast.component';
 import { HttpService } from './shared/services/http.service';
 import { CompareComponent } from './compare/compare.component';
 import { Report } from './shared/interfaces/report';
@@ -24,7 +23,6 @@ export class AppComponent implements AfterViewInit {
   compareInjector!: Injector;
   appVersion: string;
   FIXED_TAB_AMOUNT = 2;
-  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
   @ViewChild(TestComponent) testComponent!: TestComponent;
 
@@ -41,7 +39,6 @@ export class AppComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.httpService.initializeToastComponent(this.toastComponent);
     this.observeReportSave();
   }
 

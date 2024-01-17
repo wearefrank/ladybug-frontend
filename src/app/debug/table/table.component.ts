@@ -1,5 +1,4 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
@@ -8,6 +7,7 @@ import { catchError, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { ChangeNodeLinkStrategyService } from '../../shared/services/node-link-strategy.service';
 import { SettingsService } from '../../shared/services/settings.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-table',
@@ -60,7 +60,6 @@ export class TableComponent implements OnInit, OnDestroy {
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @Output() changeViewEvent = new EventEmitter<any>();
-  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
   selectedRow: number = -1;
@@ -73,7 +72,8 @@ export class TableComponent implements OnInit, OnDestroy {
     private httpService: HttpService,
     public helperService: HelperService,
     private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -108,10 +108,7 @@ export class TableComponent implements OnInit, OnDestroy {
         next: (value) => {
           this.tableSettings.reportMetadata = value;
           this.tableSettings.tableLoaded = true;
-          this.toastComponent.addAlert({
-            type: 'success',
-            message: 'Data loaded!',
-          });
+          this.toastService.showSuccess('Data loaded!');
           this.doneRetrieving = true;
           httpServiceSubscription.unsubscribe();
         },
@@ -394,10 +391,7 @@ export class TableComponent implements OnInit, OnDestroy {
       .filter((report) => report.checked)
       .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '');
     if (queryString === '') {
-      this.toastComponent.addAlert({
-        type: 'warning',
-        message: 'No reports selected to download',
-      });
+      this.toastService.showWarning('No reports selected to download');
     } else {
       this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
     }

@@ -4198,7 +4198,7 @@ __metadata:
     eslint-plugin-prettier: "npm:^4.0.0"
     eslint-plugin-sonarjs: "npm:^0.11.0"
     eslint-plugin-unicorn: "npm:^50.0.1"
-    font-awesome: "npm:4.7.0"
+    font-awesome: "npm:^4.7.0"
     husky: "npm:^7.0.4"
     jasmine-core: "npm:3.9.0"
     jquery: "npm:^3.6.0"
@@ -7267,7 +7267,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"font-awesome@npm:4.7.0":
+"font-awesome@npm:^4.7.0":
   version: 4.7.0
   resolution: "font-awesome@npm:4.7.0"
   checksum: 1c456e2939c55192eed67db9c0efb8db3e92fd357ca189ca00030eb44acffa1e9f835288d2204c14b9a9c490a7b14b7090dfaff80ded6b2473f50a923dfb41e7
