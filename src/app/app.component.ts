@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Injector, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Injector, OnInit, ViewChild } from '@angular/core';
 import { ReportComponent, ReportData } from './report/report.component';
 import { Title } from '@angular/platform-browser';
 import { ToastComponent } from './shared/components/toast/toast.component';
@@ -18,7 +18,7 @@ const { version: appVersion } = require('../../package.json');
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit, AfterViewInit {
   injector!: Injector;
   reportInjector!: Injector;
   compareInjector!: Injector;
@@ -27,6 +27,7 @@ export class AppComponent implements AfterViewInit {
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
   @ViewChild(TestComponent) testComponent!: TestComponent;
+  static baseUrl: string = '';
 
   constructor(
     private inj: Injector,
@@ -38,6 +39,14 @@ export class AppComponent implements AfterViewInit {
   ) {
     this.appVersion = appVersion;
     this.titleService.setTitle('Ladybug - v' + this.appVersion);
+  }
+
+  ngOnInit(): void {
+    const url: string = window.location.href;
+    const ladybugName: string = 'ladybug';
+    if (url.includes(ladybugName)) {
+      AppComponent.baseUrl = url.slice(Math.max(0, url.indexOf(ladybugName) + ladybugName.length));
+    }
   }
 
   ngAfterViewInit(): void {

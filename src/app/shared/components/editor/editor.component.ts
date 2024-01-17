@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import * as ace from 'ace-builds';
+import { AppComponent } from '../../../app.component';
 
 @Component({
   selector: 'app-editor',
@@ -14,7 +15,7 @@ export class EditorComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.editor = ace.edit(this.editorElement.nativeElement);
-    ace.config.set('basePath', '../../../assets/editor-min');
+    ace.config.set('basePath', AppComponent.baseUrl + '/assets/editor-min');
     this.editor.setOptions({
       wrap: 'free',
       showPrintMargin: false,
