@@ -284,11 +284,9 @@ export class TableComponent implements OnInit, OnDestroy {
       if (report.checked) {
         this.openReport(report.storageId);
         if (!this.showMultipleFiles) {
-          this.toastComponent.addAlert({
-            type: 'warning',
-            message:
-              'Please enable show multiple files in the settings dialog to open multiple files in the debug tree',
-          });
+          this.toastService.showWarning(
+            'Please enable show multiple files in settings to open multiple files in the debug tree'
+          );
           break;
         }
       }
