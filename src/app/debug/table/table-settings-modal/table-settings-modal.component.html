@@ -29,8 +29,7 @@
           <select #spacingOptionsDropdown data-cy-spacing-dropdown-input class="form-control custom-select mr-sm-2"
                   (change)="changeTableSpacing(spacingOptionsDropdown.value)">
             <option [value]="option" *ngFor="let option of spacingOptions"
-                    [selected]="option === tableSpacing">{{option}}x
-            </option>
+                    [selected]="option === tableSpacing"><span>{{option}}x</span></option>
           </select>
         </div>
       </div>

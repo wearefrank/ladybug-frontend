@@ -1,7 +1,12 @@
 describe('Tests for settings component', () => {
   beforeEach(() => {
     cy.visit('');
-    cy.createReport();
+    const desiredView: string = 'File storage';
+    cy.get('[data-cy-change-view-dropdown]').select(desiredView);
+    cy.get('[data-cy-change-view-dropdown] option:selected').should(
+      'have.text',
+      desiredView
+    );
   });
 
   it('should alter spacing when spacing setting is altered', () => {
@@ -9,7 +14,7 @@ describe('Tests for settings component', () => {
     cy.get('[data-cy-spacing-dropdown-input]').select('1x');
     cy.get('[data-cy-spacing-dropdown-input] option:selected').should(
       'have.text',
-      '1x '
+      '1x'
     );
     cy.get('[data-cy-settings-modal-save-changes]').as('saveButton').click();
     cy.get('[data-cy-record-table-index="0"]')
@@ -21,14 +26,13 @@ describe('Tests for settings component', () => {
     cy.get('[data-cy-spacing-dropdown-input]').select('0x');
     cy.get('[data-cy-spacing-dropdown-input] option:selected').should(
       'have.text',
-      '0x '
+      '0x'
     );
     cy.get('@saveButton').click();
     cy.get('@tableCell').should('have.attr', 'style', 'padding: 0em 0px;');
   });
 
   it('should allow multiple files to be opened in debug tree when setting is enabled and close all but one report when setting is disabled', () => {
-    cy.createReport();
     cy.get('[data-cy-open-settings-modal]').as('openSettingsModal').click();
     cy.get('[data-cy-toggle-show-amount]').should(
       'have.attr',

@@ -30,7 +30,7 @@
     </form>
 
     <div class="col-2 my-2 mx-1 px-2">
-      <select class="form-control" (change)="changeView($event)">
+      <select data-cy-change-view-dropdown class="form-control" (change)="changeView($event)">
         <option *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView.name" value="{{view.key}}">{{view.key}}</option>
       </select>
     </div>
