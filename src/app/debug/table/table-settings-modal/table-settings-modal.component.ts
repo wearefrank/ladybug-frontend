@@ -13,13 +13,16 @@ import { Subscription } from 'rxjs';
 })
 export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;
-  showMultipleAtATime!: boolean;
+  showMultipleAtATime: boolean = false;
   showMultipleAtATimeSubscription!: Subscription;
   tableSpacing: number = 1;
   spacingOptions: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   tableSpacingSubscription!: Subscription;
+  showSearchWindowOnLoad: boolean = true;
+  showSearchWindowOnLoadSubscription!: Subscription;
   settingsForm: UntypedFormGroup = new UntypedFormGroup({
-    showMultipleFilesAtATime: new UntypedFormControl(false),
+    showMultipleFilesAtATime: new UntypedFormControl(this.showMultipleAtATime),
+    showSearchWindowOnLoad: new UntypedFormControl(this.showSearchWindowOnLoad),
     tableSpacing: new UntypedFormControl(this.tableSpacing),
     generatorEnabled: new UntypedFormControl('Enabled'),
     regexFilter: new UntypedFormControl(''),
@@ -41,23 +44,34 @@ export class TableSettingsModalComponent implements OnDestroy {
   ngOnDestroy() {
     this.showMultipleAtATimeSubscription.unsubscribe();
     this.tableSpacingSubscription.unsubscribe();
+    this.showSearchWindowOnLoadSubscription.unsubscribe();
   }
 
   subscribeToSettingsServiceObservables(): void {
     this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
-      (value: boolean) => {
+      (value: boolean): void => {
         this.showMultipleAtATime = value;
         this.settingsForm.get('showMultipleFilesAtATime')?.setValue(this.showMultipleAtATime);
       }
     );
-    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe((value: number) => {
+    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe((value: number): void => {
       this.tableSpacing = value;
       this.settingsForm.get('tableSpacing')?.setValue(this.tableSpacing);
     });
+    this.showSearchWindowOnLoadSubscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe(
+      (value: boolean): void => {
+        this.showSearchWindowOnLoad = value;
+        this.settingsForm.get('showSearchWindowOnLoad')?.setValue(this.showSearchWindowOnLoad);
+      }
+    );
   }
 
-  setShowMultipleAtATime() {
+  setShowMultipleAtATime(): void {
     this.settingsService.setShowMultipleAtATime(!this.showMultipleAtATime);
+  }
+
+  setShowSearchWindowOnload(): void {
+    this.settingsService.setShowSearchWindowOnLoad(!this.showSearchWindowOnLoad);
   }
 
   open(): void {
