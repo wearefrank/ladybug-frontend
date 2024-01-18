@@ -1,7 +1,8 @@
 <ng-template #modal let-modal>
   <div class="modal-header">
     <h5 class="modal-title" id="settingsModal">Options</h5>
-    <button id="debugSettingsModalClose" type="button" class="close" (click)="modal.dismiss()">
+    <button id="debugSettingsModalClose" data-cy-close-settings-modal type="button" class="close"
+            (click)="modal.dismiss()">
       <span>&times;</span>
     </button>
   </div>
