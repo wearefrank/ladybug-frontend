@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Injector, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Injector, OnInit, ViewChild } from '@angular/core';
 import { ReportComponent, ReportData } from './report/report.component';
 import { Title } from '@angular/platform-browser';
 import { HttpService } from './shared/services/http.service';

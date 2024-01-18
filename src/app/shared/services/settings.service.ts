@@ -16,6 +16,7 @@ export class SettingsService {
     this.setTableSpacing(
       tempTableSpacing == undefined ? 1 : Number(tempTableSpacing) <= 8 ? Number(tempTableSpacing) : 8
     );
+    this.setShowSearchWindowOnLoad(localStorage.getItem(this.showSearchWindowOnLoadKey) === 'true');
   }
 
   //Show multiple files in debug tree
@@ -40,5 +41,17 @@ export class SettingsService {
     this.tableSpacing = value;
     this.tableSpacingSubject.next(value);
     localStorage.setItem(this.tableSpacingKey, String(value));
+  }
+
+  //Editor settings
+  private showSearchWindowOnLoadKey: string = 'showSearchWindowOnLoad';
+  private showSearchWindowOnLoad: boolean = true;
+  private showSearchWindowOnLoadSubject: Subject<boolean> = new ReplaySubject(1);
+  public showSearchWindowOnLoadObservable: Observable<boolean> = this.showSearchWindowOnLoadSubject.asObservable();
+
+  public setShowSearchWindowOnLoad(value: boolean): void {
+    this.showSearchWindowOnLoad = value;
+    this.showSearchWindowOnLoadSubject.next(this.showSearchWindowOnLoad);
+    localStorage.setItem(this.showSearchWindowOnLoadKey, String(this.showSearchWindowOnLoad));
   }
 }
