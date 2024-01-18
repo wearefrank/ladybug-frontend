@@ -1,7 +1,8 @@
 <ng-template #modal let-modal>
   <div class="modal-header">
     <h5 class="modal-title" id="settingsModal">Options</h5>
-    <button id="debugSettingsModalClose" type="button" class="close" (click)="modal.dismiss()">
+    <button id="debugSettingsModalClose" data-cy-close-settings-modal type="button" class="close"
+            (click)="modal.dismiss()">
       <span>&times;</span>
     </button>
   </div>
@@ -36,12 +37,11 @@
       <div class="form-group">
         <h5>Report table</h5>
         <div title="Configure the amount of spacing in the report table">
-          <label>Spacing for report table</label>
-          <select #spacingOptionsDropdown class="form-control custom-select mr-sm-2"
-                  (click)="changeTableSpacing(spacingOptionsDropdown.value)">
+          <label for="show-multiple">Spacing for report table</label>
+          <select #spacingOptionsDropdown data-cy-spacing-dropdown-input class="form-control custom-select mr-sm-2"
+                  (change)="changeTableSpacing(spacingOptionsDropdown.value)">
             <option [value]="option" *ngFor="let option of spacingOptions"
-                    [selected]="option === tableSpacing">{{option}}x
-            </option>
+                    [selected]="option === tableSpacing"><span>{{option}}x</span></option>
           </select>
         </div>
       </div>
