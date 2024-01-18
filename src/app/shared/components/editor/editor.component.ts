@@ -23,9 +23,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.editor = ace.edit(this.editorElement.nativeElement);
-    console.log(ace.config.get('basePath'));
     ace.config.set('basePath', 'assets/editor-min');
-    console.log(ace.config.get('basePath'));
     this.editor.setOptions({
       wrap: 'free',
       showPrintMargin: false,
