@@ -75,7 +75,7 @@ export class TableComponent implements OnInit, OnDestroy {
     public helperService: HelperService,
     private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService,
     private settingsService: SettingsService,
-    private toastService: ToastService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -96,7 +96,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.showMultipleFilesSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
       (value: boolean) => {
         this.showMultipleFiles = value;
-      },
+      }
     );
   }
 
@@ -109,7 +109,7 @@ export class TableComponent implements OnInit, OnDestroy {
         this.tableSettings.filterValue,
         this.tableSettings.filterHeader,
         this.viewSettings.currentView.metadataNames,
-        this.viewSettings.currentView.storageName,
+        this.viewSettings.currentView.storageName
       )
       .subscribe({
         next: (value) => {
@@ -163,7 +163,7 @@ export class TableComponent implements OnInit, OnDestroy {
       this.httpService.getViews().subscribe((views) => {
         this.viewSettings.views = views;
         let viewToUpdate = Object.keys(this.viewSettings.views).find(
-          (view) => view === this.viewSettings.currentView.name,
+          (view) => view === this.viewSettings.currentView.name
         );
         if (viewToUpdate) {
           this.viewSettings.currentView.nodeLinkStrategy = views[viewToUpdate].nodeLinkStrategy;
@@ -179,7 +179,7 @@ export class TableComponent implements OnInit, OnDestroy {
       } else {
         this.viewSettings.views = views;
         this.viewSettings.currentViewName = Object.keys(this.viewSettings.views).find(
-          (view) => this.viewSettings.views[view].defaultView,
+          (view) => this.viewSettings.views[view].defaultView
         );
 
         this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
@@ -285,7 +285,7 @@ export class TableComponent implements OnInit, OnDestroy {
         this.openReport(report.storageId);
         if (!this.showMultipleFiles) {
           this.toastService.showWarning(
-            'Please enable show multiple files in settings to open multiple files in the debug tree',
+            'Please enable show multiple files in settings to open multiple files in the debug tree'
           );
           break;
         }

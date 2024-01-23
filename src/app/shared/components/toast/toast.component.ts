@@ -15,10 +15,7 @@ export class ToastComponent implements OnInit, OnDestroy {
   @ViewChild('modal') modal!: TemplateRef<Element>;
   toasts: Toast[] = [];
 
-  constructor(
-    private modalService: NgbModal,
-    private toastService: ToastService,
-  ) {}
+  constructor(private modalService: NgbModal, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.toastSubscription = this.toastService.toastObservable.subscribe((toast: Toast): void => {

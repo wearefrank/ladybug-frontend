@@ -14,7 +14,7 @@ export class SettingsService {
     const tempTableSpacing = localStorage.getItem(this.tableSpacingKey);
     //check if value is not greater than max allowed value to be set from dropdown
     this.setTableSpacing(
-      tempTableSpacing == undefined ? 1 : Number(tempTableSpacing) <= 8 ? Number(tempTableSpacing) : 8,
+      tempTableSpacing == undefined ? 1 : Number(tempTableSpacing) <= 8 ? Number(tempTableSpacing) : 8
     );
     this.setShowSearchWindowOnLoad(localStorage.getItem(this.showSearchWindowOnLoadKey) === 'true');
   }

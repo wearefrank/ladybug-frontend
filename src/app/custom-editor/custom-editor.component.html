@@ -43,6 +43,7 @@
     </div>
   </div>
   <ngx-monaco-editor
+          data-cy-element-name="editor"
           (onInit)="initEditor($event)"
           [options]="options"
           [(ngModel)]="editorContent"

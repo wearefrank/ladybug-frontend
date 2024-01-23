@@ -5,7 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 
 export const editorViewsConst = ['raw', 'xml'] as const;
-export type EditorView = (typeof editorViewsConst)[number];
+export type EditorView = typeof editorViewsConst[number];
 
 @Component({
   selector: 'app-custom-editor',

@@ -38,7 +38,7 @@ export class TestComponent implements OnInit {
   constructor(
     private httpService: HttpService,
     private helperService: HelperService,
-    private toastService: ToastService,
+    private toastService: ToastService
   ) {}
 
   openCloneModal(): void {
@@ -180,7 +180,7 @@ export class TestComponent implements OnInit {
     if (selectedReports.length > 0) {
       const queryString: string = selectedReports.reduce(
         (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
-        '',
+        ''
       );
       this.helperService.download(queryString, this.currentView.storageName, true, false);
     } else {

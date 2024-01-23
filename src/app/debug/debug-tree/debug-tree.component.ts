@@ -39,7 +39,7 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
   constructor(
     private helperService: HelperService,
     private httpService: HttpService,
-    private settingsService: SettingsService,
+    private settingsService: SettingsService
   ) {
     this.subscribeToSettingsServiceObservables();
   }
@@ -55,7 +55,7 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
         if (!this.showMultipleAtATime) {
           this.removeAllReportsButOne();
         }
-      },
+      }
     );
   }
 
@@ -137,9 +137,7 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
     this.treeReference.addTo(tree, null);
     this.treeReference.selectItem(
       // @ts-ignore
-      this.treeReference.getItems()[
-        this.treeReference.getItems().findIndex((item: any) => item.id == tree.items[0].id)
-      ],
+      this.treeReference.getItems()[this.treeReference.getItems().findIndex((item: any) => item.id == tree.items[0].id)]
     );
     this.hideOrShowCheckpointsBasedOnView(this.currentView);
   }

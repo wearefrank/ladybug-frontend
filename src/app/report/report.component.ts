@@ -28,7 +28,7 @@ export class ReportComponent implements AfterViewInit {
   constructor(
     public reportData: ReportData,
     private helperService: HelperService,
-    private dynamicService: DynamicService,
+    private dynamicService: DynamicService
   ) {}
 
   ngAfterViewInit(): void {

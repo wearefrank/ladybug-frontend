@@ -36,7 +36,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     private modalService: NgbModal,
     private httpService: HttpService,
     private settingsService: SettingsService,
-    private toastService: ToastService,
+    private toastService: ToastService
   ) {
     this.subscribeToSettingsServiceObservables();
   }
@@ -52,7 +52,7 @@ export class TableSettingsModalComponent implements OnDestroy {
       (value: boolean): void => {
         this.showMultipleAtATime = value;
         this.settingsForm.get('showMultipleFilesAtATime')?.setValue(this.showMultipleAtATime);
-      },
+      }
     );
     this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe((value: number): void => {
       this.tableSpacing = value;
@@ -62,7 +62,7 @@ export class TableSettingsModalComponent implements OnDestroy {
       (value: boolean): void => {
         this.showSearchWindowOnLoad = value;
         this.settingsForm.get('showSearchWindowOnLoad')?.setValue(this.showSearchWindowOnLoad);
-      },
+      }
     );
   }
 

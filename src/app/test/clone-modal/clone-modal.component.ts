@@ -21,10 +21,7 @@ export class CloneModalComponent {
     message: new UntypedFormControl(''),
   });
 
-  constructor(
-    private modalService: NgbModal,
-    private httpService: HttpService,
-  ) {}
+  constructor(private modalService: NgbModal, private httpService: HttpService) {}
 
   open(selectedReport: any) {
     this.httpService.getReport(selectedReport.storageId, this.currentView.storageName).subscribe((response) => {
