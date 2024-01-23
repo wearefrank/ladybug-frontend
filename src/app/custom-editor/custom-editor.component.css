@@ -1,0 +1,9 @@
+.dropdown {
+  width: 5rem;
+}
+
+.save-icon-badge {
+  position: absolute;
+  bottom: -0.7em;
+  right: -0.7em;
+}

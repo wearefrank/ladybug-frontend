@@ -7,11 +7,11 @@
         <td><strong>Type</strong></td>
         <td>{{getCheckpointType(_report.type)}}</td>
       </tr>
-      <tr *ngIf="_report.xml && _report.description">
+      <tr *ngIf="_report.xml">
         <td><strong>Description</strong></td>
         <td>{{_report.description}}</td>
       </tr>
-      <tr *ngIf="!_report.xml && _report.threadName">
+      <tr *ngIf="!_report.xml">
         <td><strong>Thread name</strong></td>
         <td>{{ _report.threadName}}</td>
       </tr>

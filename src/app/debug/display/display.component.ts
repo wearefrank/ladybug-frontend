@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { HelperService } from '../../shared/services/helper.service';
-import { EditorComponent } from '../../shared/components/editor/editor.component';
+import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 
 @Component({
   selector: 'app-display',
@@ -15,17 +15,22 @@ export class DisplayComponent {
   report: any = {};
   @Input() currentView: any = {};
   @Output() closeReportEvent = new EventEmitter<any>();
-  @ViewChild(EditorComponent) editor!: EditorComponent;
+  @ViewChild('editorComponent') editorComponent!: CustomEditorComponent;
   @ViewChild(DisplayTableComponent)
   displayTableComponent!: DisplayTableComponent;
   metadataTableVisible: boolean = false;
 
-  constructor(private modalService: NgbModal, private httpService: HttpService, private helperService: HelperService) {}
+  constructor(
+    private httpService: HttpService,
+    private helperService: HelperService,
+  ) {}
 
   showReport(report: any): void {
     this.report = report;
-    report.xml ? this.editor.setValue(report.xml) : this.editor.setValue(this.helperService.convertMessage(report));
     this.displayReport = true;
+    report.xml
+      ? this.editorComponent.setNewReport(report.xml)
+      : this.editorComponent.setNewReport(this.helperService.convertMessage(report));
   }
 
   closeReport(removeReportFromTree: boolean): void {
@@ -33,10 +38,11 @@ export class DisplayComponent {
     if (removeReportFromTree) {
       this.closeReportEvent.emit(this.report);
     }
+    this.editorComponent.setNewReport('');
   }
 
   changeEncoding(button: any): void {
-    this.editor.setValue(this.helperService.changeEncoding(this.report, button));
+    this.editorComponent.setNewReport(this.helperService.changeEncoding(this.report, button));
   }
 
   copyReport(): void {
@@ -55,4 +61,7 @@ export class DisplayComponent {
   toggleMetadataTable() {
     this.metadataTableVisible = !this.metadataTableVisible;
   }
+
+  //TODO: implement when setting stub strategy is added
+  onSave(event: any) {}
 }
