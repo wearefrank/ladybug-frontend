@@ -9,20 +9,20 @@ describe("Edit tests", function () {
 
   afterEach(function () {
     cy.clearDebugStore();
-    cy.get("li#debugTab a").click();
-    cy.get("li#debugTab a:eq(0)").should("have.class", "active");
+    cy.get(".data-cy-debugTab a").click();
+    cy.get(".data-cy-debugTab a:eq(0)").should("have.class", "active");
     // Wait for debug tab to be rendered
     cy.wait(1000);
     cy.get('button[id="CloseAllButton"]').click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
-    cy.get("li#testTab").click();
+    cy.get(".data-cy-testTab").click();
     // Give UI time to build up the test tab.
     cy.wait(1000);
     cy.get("#SelectAllButton").click();
     cy.get("#DeleteSelectedButton").click();
     cy.get("#confirmDeletion").click();
     cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 0);
-    cy.get("li#debugTab").click();
+    cy.get(".data-cy-debugTab").click();
   });
 
   it("Edit report in test tab", function () {
@@ -56,7 +56,7 @@ describe("Edit tests", function () {
       .type("Goodbye Original World!");
     cy.get("#SaveButton").click();
     cy.get("button:contains(Yes)").click();
-    cy.get("li#testTab").click();
+    cy.get(".data-cy-testTab").click();
     cy.get("#RunreportButton").click();
     // cy.get('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'green');
   });
@@ -94,7 +94,7 @@ describe("Edit tests", function () {
     cy.get(".modal-title").should("have.length", 0);
     cy.get("#SaveButton").should("have.length", 1);
     cy.contains("Hello Original World!");
-    cy.get("li#testTab").click();
+    cy.get(".data-cy-testTab").click();
     cy.get("#RunreportButton").click();
     // cy.get('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
   });
@@ -108,7 +108,7 @@ function prepareEdit() {
   cy.get('button[id="OpenSelectedReportsButton"]').click();
   cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
   cy.get("button#CopyButton").click();
-  cy.get("li#testTab").click();
+  cy.get(".data-cy-testTab").click();
   cy.get("#testReports tr").should("have.length", 1);
   cy.get("#OpenreportButton").click();
   // Martijn hopes this fixes an issue in Firefox. The test
