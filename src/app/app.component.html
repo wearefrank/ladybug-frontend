@@ -12,7 +12,7 @@
         <app-test (openReportInSeparateTabEvent)="openReportInSeparateTab(false, $event)" (openCompareReportsEvent)="openNewCompareTab($event)"></app-test>
       </ng-template>
     </li>
-    <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 3" attr.data-cy-main-tab="{{tab.key}}">
+    <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 3" attr.data-cy-nav-tab="{{tab.key}}">
       <a ngbNavLink>{{tab.key}}
         <span (click)="closeTab($event, i)">×</span>
       </a>

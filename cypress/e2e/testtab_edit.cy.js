@@ -113,7 +113,7 @@ function prepareEdit() {
   cy.get("#OpenreportButton").click();
   // Martijn hopes this fixes an issue in Firefox.
   cy.wait(1000);
-  cy.get("[data-cy-main-tab='Simple report']")
+  cy.get("[data-cy-nav-tab='Simple report']")
     .find("a.active")
     .should("include.text", "Simple report");
   // Wait until the tab has been rendered
