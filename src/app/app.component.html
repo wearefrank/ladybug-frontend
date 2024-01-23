@@ -1,12 +1,12 @@
 <div class="px-2 pt-1 pb-2" id="ladybug-tabs">
   <ul ngbNav #nav="ngbNav" [(activeId)]="active" (navChange)="detectTabChange($event)" class="nav-tabs">
-    <li data-cy-debug-tab [ngbNavItem]="1" [destroyOnHide]="false">
+    <li data-cy-nav-tab='debugTab' [ngbNavItem]="1" [destroyOnHide]="false">
       <a ngbNavLink>Debug</a>
       <ng-template ngbNavContent>
         <app-debug (openReportInSeparateTabEvent)="openReportInSeparateTab(true, $event)" (openSelectedCompareReportsEvent)="openNewCompareTab($event)"></app-debug>
       </ng-template>
     </li>
-    <li data-cy-test-tab [ngbNavItem]="2" [destroyOnHide]="false">
+    <li data-cy-nav-tab="testTab" [ngbNavItem]="2" [destroyOnHide]="false">
       <a ngbNavLink>Test</a>
       <ng-template ngbNavContent>
         <app-test (openReportInSeparateTabEvent)="openReportInSeparateTab(false, $event)" (openCompareReportsEvent)="openNewCompareTab($event)"></app-test>
