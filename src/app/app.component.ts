@@ -32,7 +32,7 @@ export class AppComponent implements AfterViewInit {
     private httpService: HttpService,
     private dynamicService: DynamicService,
     //make sure settings are retrieved from localstorage on startup by initializing the service on startup
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
   ) {
     this.appVersion = appVersion;
     this.titleService.setTitle('Ladybug - v' + this.appVersion);

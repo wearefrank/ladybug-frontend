@@ -20,7 +20,10 @@ export class DisplayComponent {
   displayTableComponent!: DisplayTableComponent;
   metadataTableVisible: boolean = false;
 
-  constructor(private httpService: HttpService, private helperService: HelperService) {}
+  constructor(
+    private httpService: HttpService,
+    private helperService: HelperService,
+  ) {}
 
   showReport(report: any): void {
     this.report = report;
