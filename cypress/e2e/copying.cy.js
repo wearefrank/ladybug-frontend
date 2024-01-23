@@ -4,21 +4,21 @@ describe("Tests about copying", function () {
   });
 
   afterEach(() => {
-    cy.get(".data-cy-testTab").click();
+    cy.get("[data-cy-test-tab]").click();
     cy.get("#SelectAllButton").click();
     cy.get(".row #DeleteSelectedButton").click();
     cy.get("#confirmDeletion").click();
-    cy.get(".data-cy-debugTab").click();
+    cy.get("[data-cy-debug-tab]").click();
   });
 
   it("Copy report to test tab", () => {
     cy.visit("");
-    cy.get(".data-cy-testTab").click();
+    cy.get("[data-cy-test-tab]").click();
     cy.get("#metadataTable tbody", { timeout: 10000 })
       .find("tr")
       .should("not.exist");
     cy.createReport();
-    cy.get(".data-cy-debugTab").click();
+    cy.get("[data-cy-debug-tab]").click();
     cy.get("#metadataTable tbody", { timeout: 10000 })
       .find("tr")
       .should("not.exist");
@@ -28,19 +28,19 @@ describe("Tests about copying", function () {
     cy.get('button[id="OpenSelectedReportsButton"]').click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     cy.get("button#CopyButton").click();
-    cy.get(".data-cy-testTab").click();
+    cy.get("[data-cy-test-tab]").click();
     // We test that the user does not have to refresh here.
     cy.get("tbody#testReports").find("tr").should("have.length", 1);
     cy.get("tbody#testReports")
       .find("tr")
       .contains("/Simple report")
       .should("have.length", 1);
-    cy.get(".data-cy-debugTab").click();
+    cy.get("[data-cy-debug-tab]").click();
     cy.get("#metadataTable tbody", { timeout: 10000 })
       .find("tr")
       .should("have.length", 1);
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
-    cy.get(".data-cy-testTab").click();
+    cy.get("[data-cy-test-tab]").click();
     // Do not refresh. The test tab should have saved its state.
     cy.get("tbody#testReports").find("tr").should("have.length", 1);
     cy.get("tbody#testReports")

@@ -12,12 +12,12 @@ describe("About the Test tab", function () {
 
   afterEach(() => {
     cy.clearDebugStore();
-    cy.get(".data-cy-debugTab").click();
+    cy.get("[data-cy-debug-tab]").click();
     cy.get('button[id="CloseAllButton"]').click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
-    cy.get(".data-cy-testTab").click();
+    cy.get("[data-cy-test-tab]").click();
     cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 0);
-    cy.get(".data-cy-debugTab").click();
+    cy.get("[data-cy-debug-tab]").click();
     const downloadsFolder = Cypress.config("downloadsFolder");
     // cy.task("deleteDownloads", {
     //   downloadsPath: downloadsFolder,
@@ -26,7 +26,7 @@ describe("About the Test tab", function () {
   });
 
   it("Test deleting a report", () => {
-    cy.get(".data-cy-testTab").click();
+    cy.get("[data-cy-test-tab]").click();
     cy.get("#testReports").find("tr").should("have.length", 2);
     cy.functions.testTabDeselectReportNamed("/Another simple report");
     cy.get("#DeleteSelectedButton").click();
@@ -43,7 +43,7 @@ describe("About the Test tab", function () {
   });
 
   it("Test select all by deleting", function () {
-    cy.get(".data-cy-testTab").click();
+    cy.get("[data-cy-test-tab]").click();
     cy.get("#testReports").find("tr").should("have.length", 2);
 
     cy.get("#SelectAllButton").click();
@@ -54,7 +54,7 @@ describe("About the Test tab", function () {
   });
 
   it("Test deselect all", function () {
-    cy.get(".data-cy-testTab").click();
+    cy.get("[data-cy-test-tab]").click();
     cy.wait(100);
     cy.get("#testReports").find("tr").should("have.length", 2);
     cy.get("#SelectAllButton").click();
@@ -73,7 +73,7 @@ describe("About the Test tab", function () {
   // preparation two reports are expected in the test tab, but there is only one.
   xit("Download and upload", function () {
     const downloadsFolder = Cypress.config("downloadsFolder");
-    cy.get(".data-cy-testTab").click();
+    cy.get("[data-cy-test-tab]").click();
     cy.get("#testReports").find("tr").should("have.length", 2);
     cy.get("#SelectAllButton").click();
     cy.task("downloads", downloadsFolder).then((filesBefore) => {
