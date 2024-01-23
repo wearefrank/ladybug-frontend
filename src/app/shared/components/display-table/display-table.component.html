@@ -2,22 +2,23 @@
   <div class="px-1 py-2" data-cy-metadata-table-reportname><strong>Name:</strong> {{_report.name}}</div>
   <div class="d-flex flex-row">
     <table class="table" id="displayedNodeTable">
+      <!--      todo: change to dynamic size and for loop-->
       <tr *ngIf="!_report.xml">
         <td><strong>Type</strong></td>
         <td>{{getCheckpointType(_report.type)}}</td>
       </tr>
-      <tr *ngIf="_report.xml">
+      <tr *ngIf="_report.xml && _report.description">
         <td><strong>Description</strong></td>
         <td>{{_report.description}}</td>
       </tr>
-      <tr *ngIf="!_report.xml">
+      <tr *ngIf="!_report.xml && _report.threadName">
         <td><strong>Thread name</strong></td>
         <td>{{ _report.threadName}}</td>
       </tr>
       <tr *ngIf="!_report.xml">
         <td><strong>Source class name</strong></td>
         <td>{{ _report.sourceClassName}}</td>
-    </tr>
+      </tr>
       <tr *ngIf="!_report.xml">
         <td><strong>Message class name</strong></td>
         <td>{{ _report.messageClassName}}</td>
