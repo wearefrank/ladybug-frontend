@@ -74,12 +74,12 @@ jobs:
         run: cp cypress.env.json.cicd cypress.env.json
         working-directory: ladybug-frontend
 
-      - name: Build project
-        run: yarn run build
-        working-directory: ladybug-frontend
-
       - name: Run linter
         run: yarn run lint
+        working-directory: ladybug-frontend
+
+      - name: Build project
+        run: yarn run build
         working-directory: ladybug-frontend
 
       - name: Run unit tests
