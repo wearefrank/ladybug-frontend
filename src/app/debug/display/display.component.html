@@ -1,29 +1,43 @@
 <div class="h-100">
   <div *ngIf="displayReport" class="d-flex flex-column">
-    <div class="row" id="displayButtons">
-      <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
-      <app-button *ngIf="report.encoding === 'Base64'" [text]="'Base64'" [title]="'Convert to Base64'"
-                  (click)="changeEncoding($event)"></app-button>
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="row" id="displayButtons">
+        <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
+        <app-button *ngIf="report.encoding === 'Base64'"
+                    [text]="'Base64'"
+                    [title]="'Convert to Base64'"
+                    (click)="changeEncoding($event)"></app-button>
 
-      <div ngbDropdown title="Download">
-        <button class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
-          <i class="fa fa-download px-2"></i><span class="caret"></span>
-        </button>
-        <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
-          <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
-          <button ngbDropdownItem (click)="downloadReport(false, true)">
-            XML
-            <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i>
+        <div ngbDropdown title="Download">
+          <button class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
+            <i class="fa fa-download px-2"></i><span class="caret"></span>
           </button>
-          <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
+          <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
+            <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
+            <button ngbDropdownItem (click)="downloadReport(false, true)">
+              XML
+              <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i>
+            </button>
+            <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
+          </div>
         </div>
-      </div>
 
-      <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
-      <button data-cy-open-metadata-table class="btn btn-info my-2 mx-1 px-3" title="Open metadata table"
-              (click)="toggleMetadataTable()">
-        Show metadata
-      </button>
+        <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
+        <button data-cy-open-metadata-table
+                class="btn btn-info my-2 mx-1 px-3"
+                title="Open metadata table"
+                (click)="toggleMetadataTable()">
+          {{metadataTableVisible ? 'Hide' : 'Show'}} metadata
+        </button>
+      </div>
+      <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor"
+           (click)="showEditorPossibilitiesModal(possibilitiesModal)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" color="black"
+             viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+        </svg>
+      </div>
     </div>
 
     <div *ngIf="!report.xml">
@@ -53,7 +67,8 @@
         <span *ngIf="this.report.showConverted">and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
       </div>
 
-      <div *ngIf="report.preTruncatedMessageLength > 0" id="truncatedMessageLabel"
+      <div *ngIf="report.preTruncatedMessageLength > 0"
+           id="truncatedMessageLabel"
            class="btn btn-static my-2 mx-1 px-2">
         Message is truncated ( {{ report.preTruncatedMessageLength - report.message.length}} characters removed)
       </div>
@@ -69,3 +84,31 @@
   </div>
   <app-custom-editor (saveReport)="onSave($event)" #editorComponent></app-custom-editor>
 </div>
+
+<ng-template #possibilitiesModal>
+  <div class="modal-header d-flex align-items-center">
+    <div class="modal-title">Possibilities for editor</div>
+    <button type="button" class="close" (click)="closeModal()">&times;</button>
+  </div>
+  <div class="modal-content pt-3 fs-3">
+    <p class="text-center mx-4 text-danger" style="font-size: 10pt">
+      Please make sure that the editor is focused when running commands, which is shown with the bullseye
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="grey" class="bi bi-bullseye"
+           viewBox="0 0 16 16">
+        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+        <path d="M8 13A5 5 0 1 1 8 3a5 5 0 0 1 0 10m0 1A6 6 0 1 0 8 2a6 6 0 0 0 0 12"/>
+        <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/>
+        <path d="M9.5 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+      </svg>
+      icon.
+    </p>
+    <br>
+    <br>
+    <div class="mx-auto text-left">
+      <p><kbd>F1</kbd>: Show all possible commands</p>
+      <p><kbd>Ctrl + F</kbd>: Search document</p>
+      <p><kbd>Ctrl + G</kbd>: Go to line/column</p>
+      <p><kbd>Ctrl + A</kbd>: Select all</p>
+    </div>
+  </div>
+</ng-template>

@@ -2,7 +2,8 @@
   <div class="row top">
     <div class="w-100 h-100">
       <app-table (openReportInSeparateTabEvent)="openReportInSeparateTab($event)"
-                 (openReportEvent)="addReportToTree($event)" (changeViewEvent)="changeView($event)"
+                 (openReportEvent)="addReportToTree($event)"
+                 (changeViewEvent)="changeView($event)"
                  (openSelectedCompareReportsEvent)="openSelectedReports($event)"></app-table>
     </div>
   </div>
@@ -11,8 +12,10 @@
     <as-split #splitter direction="horizontal">
       <as-split-area [size]="25">
         <div class="debug-tree">
-          <app-debug-tree [adjustWidth]="treeWidth.asObservable()" (closeEntireTreeEvent)="closeEntireTree()"
-                          (selectReportEvent)="selectReport($event)" [currentView]="currentView"></app-debug-tree>
+          <app-debug-tree [adjustWidth]="treeWidth.asObservable()"
+                          (closeEntireTreeEvent)="closeEntireTree()"
+                          (selectReportEvent)="selectReport($event)"
+                          [currentView]="currentView"></app-debug-tree>
         </div>
       </as-split-area>
       <as-split-area [size]="75" style="overflow: hidden">

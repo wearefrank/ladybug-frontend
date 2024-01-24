@@ -1,7 +1,6 @@
-import { Component, HostListener, Output } from '@angular/core';
+import { Component, HostListener, Input, Output } from '@angular/core';
 import * as prettierPluginHtml from 'prettier/plugins/html';
 import * as prettier from 'prettier';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 
 export const editorViewsConst = ['raw', 'xml'] as const;
@@ -15,7 +14,7 @@ export type EditorView = (typeof editorViewsConst)[number];
 export class CustomEditorComponent {
   protected readonly editorViewsConst = editorViewsConst;
   unsavedChanges: boolean = false;
-  readOnlyMode: boolean = true;
+  readOnlyMode: boolean = true; //Set to true for now until save and rerun is implemented
   options: any = {
     theme: 'vs-light',
     language: 'xml',
@@ -34,10 +33,8 @@ export class CustomEditorComponent {
   isPrettified: boolean = false;
   currentView: EditorView = 'raw';
   editorFocused: boolean = false;
-
   @Output() saveReport: Subject<string> = new Subject<string>();
-
-  constructor(private modalService: NgbModal) {}
+  @Input() height!: number;
 
   initEditor(editor: any): void {
     if (editor) {
@@ -48,14 +45,11 @@ export class CustomEditorComponent {
       editor.onDidBlurEditorWidget(() => {
         this.editorFocused = false;
       });
-
-      setTimeout(() => {
-        this.checkIfTextIsPretty();
-      }, 100);
+      this.checkIfTextIsPretty();
     }
   }
 
-  checkIfTextIsPretty() {
+  checkIfTextIsPretty(): void {
     if (this.editorContent) {
       prettier
         .check(this.editorContent, {
@@ -96,7 +90,7 @@ export class CustomEditorComponent {
     }
   }
 
-  doPrettify() {
+  doPrettify(): void {
     if (this.editorContent) {
       prettier
         .format(this.editorContent, {
@@ -111,12 +105,8 @@ export class CustomEditorComponent {
     }
   }
 
-  showEditorPossibilitiesModal(modal: any): void {
-    this.modalService.open(modal, { backdrop: true });
-  }
-
   @HostListener('window:keydown', ['$event'])
-  onSave(event: KeyboardEvent) {
+  onSave(event: KeyboardEvent): void {
     if ((event.ctrlKey || event.metaKey) && event.key == 's') {
       event.preventDefault();
       if (this.unsavedChanges) {
@@ -125,13 +115,13 @@ export class CustomEditorComponent {
     }
   }
 
-  save() {
+  save(): void {
     if (this.editorContent) {
       this.saveReport.next(this.editorContent);
     }
   }
 
-  onChange(event: string) {
+  onChange(event: string): void {
     this.unsavedChanges = event != this.editorContentCopy;
   }
 
@@ -143,9 +133,5 @@ export class CustomEditorComponent {
 
   setValue(value: string): void {
     this.editorContent = value;
-  }
-
-  closeModal() {
-    this.modalService.dismissAll();
   }
 }
