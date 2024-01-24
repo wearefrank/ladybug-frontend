@@ -1,11 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { DisplayComponent } from './display/display.component';
 import { Report } from '../shared/interfaces/report';
 import { DebugTreeComponent } from './debug-tree/debug-tree.component';

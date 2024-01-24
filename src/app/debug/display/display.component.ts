@@ -1,12 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
@@ -41,9 +33,7 @@ export class DisplayComponent {
     this.displayReport = true;
     report.xml
       ? this.editorComponent.setNewReport(report.xml)
-      : this.editorComponent.setNewReport(
-          this.helperService.convertMessage(report),
-        );
+      : this.editorComponent.setNewReport(this.helperService.convertMessage(report));
   }
 
   closeReport(removeReportFromTree: boolean): void {
@@ -55,30 +45,19 @@ export class DisplayComponent {
   }
 
   changeEncoding(button: any): void {
-    this.editorComponent.setNewReport(
-      this.helperService.changeEncoding(this.report, button),
-    );
+    this.editorComponent.setNewReport(this.helperService.changeEncoding(this.report, button));
   }
 
   copyReport(): void {
-    const storageId: number = this.report.xml
-      ? +this.report.storageId
-      : +this.report.uid.split('#')[0];
+    const storageId: number = this.report.xml ? +this.report.storageId : +this.report.uid.split('#')[0];
     const data: any = {};
     data[this.currentView.storageName] = [storageId];
     this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    let queryString: string = this.report.xml
-      ? this.report.storageId.toString()
-      : this.report.uid.split('#')[0];
-    this.helperService.download(
-      'id=' + queryString + '&',
-      this.currentView.storageName,
-      exportBinary,
-      exportXML,
-    );
+    let queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
+    this.helperService.download('id=' + queryString + '&', this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
   }
 
