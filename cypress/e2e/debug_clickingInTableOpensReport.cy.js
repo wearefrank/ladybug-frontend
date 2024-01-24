@@ -28,8 +28,8 @@ describe("Clicking a report", function () {
 
   it("Selecting report should show display", function () {
     cy.screenshot();
-    cy.get("#displayButtons").should("not.be.visible");
-    cy.get('[data-cy-element-name="editor"]').should("not.be.visible");
+    cy.get("#displayButtons").should("not.exist");
+    cy.get('[data-cy-element-name="editor"]').should("not.exist");
     cy.get(".table-responsive tbody").find("tr").first().click();
     cy.get("#displayButtons").should("be.visible");
     cy.get('[data-cy-element-name="editor"]').should("be.visible");
