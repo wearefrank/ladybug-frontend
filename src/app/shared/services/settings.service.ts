@@ -11,11 +11,11 @@ export class SettingsService {
 
   private loadSettingsFromLocalStorage(): void {
     this.setShowMultipleAtATime(localStorage.getItem(this.showMultipleAtATimeKey) === 'true');
-    const tempTableSpacing = localStorage.getItem(this.tableSpacingKey);
-    //check if value is not greater than max allowed value to be set from dropdown
-    this.setTableSpacing(
-      tempTableSpacing == undefined ? 1 : Number(tempTableSpacing) <= 8 ? Number(tempTableSpacing) : 8,
-    );
+    const MAX_ALLOWED_DROPDOWN_VALUE = 8;
+    const tempTableSpacing = localStorage.getItem(this.tableSpacingKey) ?? 1;
+    const cappedTableSpacing =
+      Number(tempTableSpacing) < MAX_ALLOWED_DROPDOWN_VALUE ? Number(tempTableSpacing) : MAX_ALLOWED_DROPDOWN_VALUE;
+    this.setTableSpacing(cappedTableSpacing);
     this.setShowSearchWindowOnLoad(localStorage.getItem(this.showSearchWindowOnLoadKey) === 'true');
   }
 
