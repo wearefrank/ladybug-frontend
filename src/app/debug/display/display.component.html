@@ -1,4 +1,4 @@
-<div class="h-100">
+<div #container class="h-100">
   <div *ngIf="displayReport" class="d-flex flex-column">
     <div class="d-flex justify-content-between align-items-center">
       <div class="row" id="displayButtons">
@@ -82,7 +82,7 @@
       <app-display-table [report]="report"></app-display-table>
     </div>
   </div>
-  <app-custom-editor (saveReport)="onSave($event)" #editorComponent></app-custom-editor>
+  <app-custom-editor [height]="containerHeight" (saveReport)="onSave($event)" #editorComponent></app-custom-editor>
 </div>
 
 <ng-template #possibilitiesModal>

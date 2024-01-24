@@ -1,83 +1,56 @@
-<div class="px-2 mt-1 h-100" *ngIf="rawFile">
-  <div class="mb-2 d-flex flex-row align-items-center">
-    <select name="" id="" class="form-control dropdown"
-            [(ngModel)]="currentView"
-            (ngModelChange)="onViewChange($event)">
-      <option *ngFor="let view of editorViewsConst; let index = index"
-              [selected]="editorViewsConst[index] === currentView"
-              [ngValue]="editorViewsConst[index]">{{view|titlecase}}</option>
-    </select>
-    <button class="btn btn-info ml-1" title="Show possibilities with editor"
-            (click)="showEditorPossibilitiesModal(possibilitiesModal)">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" color="white"
-           viewBox="0 0 16 16">
-        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
-      </svg>
-    </button>
-
-    <!--    TODO: implement save and edit mode when stub strategy can be set-->
-    <!--    <div class="ml-2 mr-1"-->
-    <!--         title="{{unsavedChanges ? 'This file has unsaved changed, press ctrl + s to save' : 'No unsaved changes'}}">-->
-    <!--      <div class="position-relative">-->
-    <!--        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy"-->
-    <!--             viewBox="0 0 16 16">-->
-    <!--          <path d="M11 2H9v3h2z"/>-->
-    <!--          <path-->
-    <!--            d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z"/>-->
-    <!--        </svg>-->
-    <!--        <div class="badge save-icon-badge" [ngClass]="unsavedChanges ? 'badge-danger' : 'badge-success'">-->
-    <!--          <span *ngIf="unsavedChanges; else unsaved">&times;</span>-->
-    <!--          <ng-template #unsaved>&check;</ng-template>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </div>-->
-    <div *ngIf="editorFocused" class="ml-2" title="Editor is in focus">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="grey" class="bi bi-bullseye"
-           viewBox="0 0 16 16">
-        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-        <path d="M8 13A5 5 0 1 1 8 3a5 5 0 0 1 0 10m0 1A6 6 0 1 0 8 2a6 6 0 0 0 0 12"/>
-        <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/>
-        <path d="M9.5 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-      </svg>
-    </div>
-  </div>
-  <ngx-monaco-editor
+<div style="height: {{height - 30}}px; position: relative;" *ngIf="rawFile">
+    <div #container>
+      <ngx-monaco-editor
+          #editor
           data-cy-element-name="editor"
           (onInit)="initEditor($event)"
           [options]="options"
           [(ngModel)]="editorContent"
           (ngModelChange)="onChange($event)"
-          style="height: 90%"
-          class="pb-2 mb-2">
-  </ngx-monaco-editor>
+          style="height: {{height - 43}}px"
+          class="editor">
+      </ngx-monaco-editor>
+    </div>
+  <div class="status-bar">
+    <div class="left-side">
+      <div class="status"
+           title="{{unsavedChanges ? 'This file has unsaved changed, press ctrl + s to save' : 'No unsaved changes'}}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z"/>
+            <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z"/>
+          </svg>
+          <span class="status-text">{{unsavedChanges ? 'Unsaved' : 'Saved'}}</span>
+      </div>
+      <div class="status" title="Editor is in focus">
+        <div *ngIf="editorFocused; else unfocused">
+          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+          </svg>
+        </div>
+        <ng-template #unfocused>
+          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor"
+               viewBox="0 0 16 16">
+            <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
+            <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
+          </svg>
+        </ng-template>
+        <span class="status-text">{{!editorFocused ? 'Unfocused' : 'Focused'}}</span>
+      </div>
+    </div>
+    <div #buttons class="right-side">
+      <select name="" id="" class="drop-down"
+              [(ngModel)]="currentView"
+              (ngModelChange)="onViewChange($event)">
+        <option *ngFor="let view of editorViewsConst; let index = index"
+                [selected]="editorViewsConst[index] === currentView"
+                [ngValue]="editorViewsConst[index]">{{view|titlecase}}</option>
+      </select>
+
+    </div>
+
+  </div>
 </div>
 
 
-<ng-template #possibilitiesModal>
-  <div class="modal-header">
-    <div class="modal-title">Possibilities for editor</div>
-    <button type="button" class="close" (click)="closeModal()">&times;</button>
-  </div>
-  <div class="modal-content pt-3 fs-3">
-    <p class="text-center mx-4 text-danger" style="font-size: 10pt">
-      Please make sure that the editor is focused when running commands, which is shown with the bullseye
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="grey" class="bi bi-bullseye"
-           viewBox="0 0 16 16">
-        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-        <path d="M8 13A5 5 0 1 1 8 3a5 5 0 0 1 0 10m0 1A6 6 0 1 0 8 2a6 6 0 0 0 0 12"/>
-        <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/>
-        <path d="M9.5 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-      </svg>
-      icon.
-    </p>
-    <br>
-    <br>
-    <div class="mx-auto text-left">
-      <p><kbd>F1</kbd>: Show all possible commands</p>
-      <p><kbd>Ctrl + F</kbd>: Search document</p>
-      <p><kbd>Ctrl + G</kbd>: Go to line/column</p>
-      <p><kbd>Ctrl + A</kbd>: Select all</p>
-    </div>
-  </div>
-</ng-template>
+

@@ -8,7 +8,7 @@
     </div>
   </div>
   <div class="border-bottom"></div>
-  <div id="bottom-half" class="row bottom mb-0 pb-0">
+  <div id="bottom-half" #bottom class="row bottom mb-0 pb-0 w-100">
     <as-split #splitter direction="horizontal">
       <as-split-area [size]="25">
         <div class="debug-tree">
@@ -19,7 +19,8 @@
         </div>
       </as-split-area>
       <as-split-area [size]="75" style="overflow: hidden">
-        <app-display (closeReportEvent)="closeReport($event)"
+        <app-display [containerHeight]="bottomHeight"
+                     (closeReportEvent)="closeReport($event)"
                      [currentView]="currentView"
                      [id]="'debug'"></app-display>
       </as-split-area>

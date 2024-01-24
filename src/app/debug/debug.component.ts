@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { DisplayComponent } from './display/display.component';
 import { Report } from '../shared/interfaces/report';
 import { DebugTreeComponent } from './debug-tree/debug-tree.component';
@@ -18,7 +25,8 @@ export class DebugComponent implements AfterViewInit {
   currentView: any = {};
   treeWidth: Subject<void> = new Subject<void>();
 
-  constructor() {}
+  @ViewChild('bottom') bottom!: ElementRef;
+  bottomHeight: number = 0;
 
   ngAfterViewInit() {
     if (this.splitter.dragProgress$) {
@@ -26,6 +34,14 @@ export class DebugComponent implements AfterViewInit {
         this.treeWidth.next();
       });
     }
+    this.listenToHeight();
+  }
+
+  listenToHeight(): void {
+    const resizeObserver = new ResizeObserver((entries) => {
+      this.bottomHeight = entries[0].target.clientHeight;
+    });
+    resizeObserver.observe(this.bottom.nativeElement);
   }
 
   addReportToTree(report: Report): void {
