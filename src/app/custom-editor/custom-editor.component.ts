@@ -39,26 +39,19 @@ export class CustomEditorComponent {
 
   constructor(private modalService: NgbModal) {}
 
-  prettify(): void {
-    if (this.editorContent) {
-      prettier
-        .check(this.editorContent, {
-          parser: 'html',
-          plugins: [prettierPluginHtml],
-        })
-        .then((value) => {
-          if (!value && this.editorContent) {
-            prettier
-              .format(this.editorContent, {
-                parser: 'html',
-                plugins: [prettierPluginHtml],
-                bracketSameLine: true,
-              })
-              .then((result: string) => {
-                this.setValue(result);
-              });
-          }
-        });
+  initEditor(editor: any): void {
+    if (editor) {
+      editor.onDidFocusEditorWidget(() => {
+        this.editorFocused = true;
+      });
+
+      editor.onDidBlurEditorWidget(() => {
+        this.editorFocused = false;
+      });
+
+      setTimeout(() => {
+        this.checkIfTextIsPretty();
+      }, 100);
     }
   }
 
@@ -74,20 +67,52 @@ export class CustomEditorComponent {
     }
   }
 
-  initEditor(editor: any): void {
-    if (editor) {
-      editor.onDidFocusEditorWidget(() => {
-        this.editorFocused = true;
-      });
-
-      editor.onDidBlurEditorWidget(() => {
-        this.editorFocused = false;
-      });
-
-      setTimeout(() => {
-        this.checkIfTextIsPretty();
-      }, 100);
+  onViewChange(value: EditorView): void {
+    const index: number = editorViewsConst.indexOf(value);
+    if (index == -1) {
+      return;
     }
+    this.currentView = editorViewsConst[index];
+    if (this.currentView == 'raw') {
+      this.editorContent = this.rawFile;
+    }
+    if (this.currentView == 'xml') {
+      this.prettify();
+    }
+  }
+
+  prettify(): void {
+    if (this.editorContent) {
+      prettier
+        .check(this.editorContent, {
+          parser: 'html',
+          plugins: [prettierPluginHtml],
+        })
+        .then((value) => {
+          if (!value) {
+            this.doPrettify();
+          }
+        });
+    }
+  }
+
+  doPrettify() {
+    if (this.editorContent) {
+      prettier
+        .format(this.editorContent, {
+          parser: 'html',
+          plugins: [prettierPluginHtml],
+          bracketSameLine: true,
+        })
+        .then((result: string): void => {
+          this.setValue(result);
+          this.isPrettified = true;
+        });
+    }
+  }
+
+  showEditorPossibilitiesModal(modal: any): void {
+    this.modalService.open(modal, { backdrop: true });
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -118,24 +143,6 @@ export class CustomEditorComponent {
 
   setValue(value: string): void {
     this.editorContent = value;
-  }
-
-  onViewChange(value: EditorView): void {
-    const index: number = editorViewsConst.indexOf(value);
-    if (index == -1) {
-      return;
-    }
-    this.currentView = editorViewsConst[index];
-    if (this.currentView == 'raw') {
-      this.editorContent = this.rawFile;
-    }
-    if (this.currentView == 'xml') {
-      this.prettify();
-    }
-  }
-
-  showEditorPossibilitiesModal(modal: any): void {
-    this.modalService.open(modal, { backdrop: true });
   }
 
   closeModal() {
