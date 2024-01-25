@@ -1,20 +1,20 @@
 <div class="px-1 pt-1" id="ladybug-tabs">
   <ul ngbNav #nav="ngbNav" [(activeId)]="active" (navChange)="detectTabChange($event)" class="nav-tabs">
-    <li [ngbNavItem]="1" id="debugTab" [destroyOnHide]="false">
+    <li data-cy-nav-tab='debugTab' [ngbNavItem]="1" [destroyOnHide]="false">
       <a ngbNavLink>Debug</a>
       <ng-template ngbNavContent>
         <app-debug (openReportInSeparateTabEvent)="openReportInSeparateTab(true, $event)"
                    (openSelectedCompareReportsEvent)="openNewCompareTab($event)"></app-debug>
       </ng-template>
     </li>
-    <li [ngbNavItem]="2" id="testTab" [destroyOnHide]="false">
+    <li data-cy-nav-tab="testTab" [ngbNavItem]="2" [destroyOnHide]="false">
       <a ngbNavLink>Test</a>
       <ng-template ngbNavContent>
         <app-test (openReportInSeparateTabEvent)="openReportInSeparateTab(false, $event)"
                   (openCompareReportsEvent)="openNewCompareTab($event)"></app-test>
       </ng-template>
     </li>
-    <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 3" id="{{tab.key}}">
+    <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 3" attr.data-cy-nav-tab="{{tab.key}}">
       <a ngbNavLink>{{tab.key}}
         <span (click)="closeTab($event, i)">×</span>
       </a>
