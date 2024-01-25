@@ -1,5 +1,8 @@
 describe("About the Test tab", function () {
+  beforeEach(() => {});
+
   beforeEach(() => {
+    cy.deleteAllTestReports();
     cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
@@ -81,7 +84,7 @@ describe("About the Test tab", function () {
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
       cy.task("downloads", downloadsFolder).then((filesAfter) => {
         const newFile = filesAfter.filter(
-          (file) => !filesBefore.includes(file)
+          (file) => !filesBefore.includes(file),
         )[0];
         expect(newFile).to.contain("Ladybug Test");
         expect(newFile).to.contain("2 reports");
@@ -97,13 +100,13 @@ describe("About the Test tab", function () {
         cy.readFile(cy.functions.downloadPath(newFile), "binary")
           .then((rawContent) => {
             console.log(
-              `Have content of uploaded file, length ${rawContent.length}`
+              `Have content of uploaded file, length ${rawContent.length}`,
             );
             return Cypress.Blob.binaryStringToBlob(rawContent);
           })
           .then((fileContent) => {
             console.log(
-              `Have transformed content length ${fileContent.length}`
+              `Have transformed content length ${fileContent.length}`,
             );
             cy.get("input#uploadFileTest").attachFile({
               fileContent,
@@ -115,10 +118,10 @@ describe("About the Test tab", function () {
     cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 4);
     cy.get("#testReports tr td:nth-child(3):contains(/Simple report)").should(
       "have.length",
-      2
+      2,
     );
     cy.get(
-      "#testReports tr td:nth-child(3):contains(/Another simple report)"
+      "#testReports tr td:nth-child(3):contains(/Another simple report)",
     ).should("have.length", 2);
   });
 
@@ -179,13 +182,13 @@ function copyTheReportsToTestTab() {
   cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 2);
   cy.wait(100);
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report) > div"
+    "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report) > div",
   ).click();
   cy.wait(100);
   cy.get("button#CopyButton").click();
   cy.wait(100);
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report) > div"
+    "#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report) > div",
   ).click();
   cy.wait(100);
   cy.get("button#CopyButton").click();

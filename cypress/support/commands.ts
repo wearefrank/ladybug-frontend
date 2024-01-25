@@ -14,7 +14,7 @@ import Chainable = Cypress.Chainable;
 function createReport() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
-    Cypress.env('backendServer') + '/index.jsp?createReport=Simple%20report'
+    Cypress.env('backendServer') + '/index.jsp?createReport=Simple%20report',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -26,7 +26,7 @@ function createOtherReport() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Another%20simple%20report'
+      '/index.jsp?createReport=Another%20simple%20report',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -37,7 +37,7 @@ Cypress.Commands.add('createOtherReport' as keyof Chainable, createOtherReport);
 function createRunningReport() {
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Waiting%20for%20thread%20to%20start'
+      '/index.jsp?createReport=Waiting%20for%20thread%20to%20start',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -45,13 +45,14 @@ function createRunningReport() {
 
 Cypress.Commands.add(
   'createRunningReport' as keyof Chainable,
-  createRunningReport
+  createRunningReport,
 );
 
 function createReportWithLabelNull() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
-    Cypress.env('backendServer') + '/index.jsp?createReport=Message%20is%20null'
+    Cypress.env('backendServer') +
+      '/index.jsp?createReport=Message%20is%20null',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -59,14 +60,14 @@ function createReportWithLabelNull() {
 
 Cypress.Commands.add(
   'createReportWithLabelNull' as keyof Chainable,
-  createReportWithLabelNull
+  createReportWithLabelNull,
 );
 
 function createReportWithLabelEmpty() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Message%20is%20an%20empty%20string'
+      '/index.jsp?createReport=Message%20is%20an%20empty%20string',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -74,12 +75,12 @@ function createReportWithLabelEmpty() {
 
 Cypress.Commands.add(
   'createReportWithLabelEmpty' as keyof Chainable,
-  createReportWithLabelEmpty
+  createReportWithLabelEmpty,
 );
 
 function clearDebugStore() {
   cy.request(
-    Cypress.env('backendServer') + '/index.jsp?clearDebugStorage=true'
+    Cypress.env('backendServer') + '/index.jsp?clearDebugStorage=true',
   );
 }
 
@@ -87,13 +88,13 @@ Cypress.Commands.add('clearDebugStore' as keyof Chainable, clearDebugStore);
 
 function removeReportInProgress() {
   cy.request(
-    Cypress.env('backendServer') + '/index.jsp?removeReportInProgress=1'
+    Cypress.env('backendServer') + '/index.jsp?removeReportInProgress=1',
   );
 }
 
 Cypress.Commands.add(
   'removeReportInProgress' as keyof Chainable,
-  removeReportInProgress
+  removeReportInProgress,
 );
 
 function waitForNumFiles(thePath: any, fileCount: number, timeLeft: number) {
@@ -114,25 +115,25 @@ Cypress.Commands.add(
   'waitForNumFiles' as keyof Chainable,
   (thePath: any, expectedNumFiles: number) => {
     waitForNumFiles(thePath, expectedNumFiles, 10_000);
-  }
+  },
 );
 
 function getShownMonacoModelElement() {
   cy.get('#editor [data-keybinding-context]').within(
     (monacoEditor: JQuery<HTMLElement>) => {
       const keybindingNumber = Number.parseInt(
-        monacoEditor.attr('data-keybinding-context')
+        monacoEditor.attr('data-keybinding-context'),
       );
       // Show the number
       cy.wrap(keybindingNumber);
       return cy.get(`[data-uri $= ${keybindingNumber}]`);
-    }
+    },
   );
 }
 
 Cypress.Commands.add(
   'getShownMonacoModelElement' as keyof Chainable,
-  getShownMonacoModelElement
+  getShownMonacoModelElement,
 );
 
 function selectIfNotSelected(node: unknown) {
@@ -144,11 +145,25 @@ function selectIfNotSelected(node: unknown) {
 Cypress.Commands.add(
   'selectIfNotSelected' as keyof Chainable,
   { prevSubject: 'element' },
-  (node) => selectIfNotSelected(node)
+  (node) => selectIfNotSelected(node),
 );
 
 Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
   cy.get('[data-cy-open-settings-modal]').click();
   cy.get('input[data-cy-toggle-show-amount]').click();
   cy.get('[data-cy-settings-modal-save-changes]').click();
+});
+
+//Clear reports in test tab if any present
+Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
+  cy.visit('');
+  cy.get('[data-cy-nav-tab="testTab"]').click();
+  cy.wait(2000);
+  cy.get('#SelectAllButton').click();
+  cy.get('#DeleteSelectedButton').click();
+  console.log(Cypress.$('#confirmDeletion'));
+  if (Cypress.$('#confirmDeletion').length > 0) {
+    cy.get('#confirmDeletion').should('exist');
+  }
+  cy.visit('');
 });
