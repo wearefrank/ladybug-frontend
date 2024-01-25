@@ -5,9 +5,9 @@ describe("Tests about copying", function () {
 
   afterEach(() => {
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#SelectAllButton").click();
-    cy.get(".row #DeleteSelectedButton").click();
-    cy.get("#confirmDeletion").click();
+    cy.get("[data-cy-test-function='selectAll']").click();
+    cy.get("[data-cy-test-function='deleteSelected']").click();
+    cy.get("[data-cy-delete-modal-function='confirmDeletion']").click();
     cy.get("[data-cy-nav-tab='debugTab']").click();
   });
 
