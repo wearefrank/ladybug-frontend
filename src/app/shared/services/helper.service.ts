@@ -22,7 +22,6 @@ export class HelperService {
     return img + '-odd.gif';
   }
 
-  //TODO: refactor to pipe
   getCheckpointType(type: number): string {
     switch (type) {
       case 1: {

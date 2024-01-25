@@ -2,7 +2,6 @@
   <div class="px-1 py-2" data-cy-metadata-table-reportname><strong>Name:</strong> {{_report.name}}</div>
   <div class="d-flex flex-row">
     <table class="table" id="displayedNodeTable">
-      <!--      todo: change to dynamic size and for loop-->
       <tr *ngIf="!_report.xml">
         <td><strong>Type</strong></td>
         <td>{{getCheckpointType(_report.type)}}</td>
