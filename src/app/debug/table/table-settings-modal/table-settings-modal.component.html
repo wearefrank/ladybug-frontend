@@ -32,6 +32,16 @@
                  [value]="showSearchWindowOnLoad"
                  (change)="setShowSearchWindowOnload()">
         </div>
+        <br>
+        <div class="checkbox" title="When checked, files are shown prettified in editor by default">
+          <label for="prettify-on-load">Prettify files in editor on load</label>
+          <input type="checkbox"
+                 id="prettify-on-load"
+                 data-cy-prettify-on-load
+                 [value]="prettifyOnLoad"
+                 [checked]="prettifyOnLoad"
+                 (change)="setPrettifyOnLoad()">
+        </div>
       </div>
       <hr>
       <div class="form-group">

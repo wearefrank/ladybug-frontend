@@ -12,11 +12,12 @@ export class SettingsService {
   private loadSettingsFromLocalStorage(): void {
     this.setShowMultipleAtATime(localStorage.getItem(this.showMultipleAtATimeKey) === 'true');
     const MAX_ALLOWED_DROPDOWN_VALUE = 8;
-    const tempTableSpacing = localStorage.getItem(this.tableSpacingKey) ?? 1;
+    const tempTableSpacing = (localStorage.getItem(this.tableSpacingKey) ?? 1) as Number;
     const cappedTableSpacing =
       Number(tempTableSpacing) < MAX_ALLOWED_DROPDOWN_VALUE ? Number(tempTableSpacing) : MAX_ALLOWED_DROPDOWN_VALUE;
     this.setTableSpacing(cappedTableSpacing);
     this.setShowSearchWindowOnLoad(localStorage.getItem(this.showSearchWindowOnLoadKey) === 'true');
+    this.setPrettifyOnLoad(localStorage.getItem(this.prettifyOnLoadKey) === 'true');
   }
 
   //Show multiple files in debug tree
@@ -53,5 +54,16 @@ export class SettingsService {
     this.showSearchWindowOnLoad = value;
     this.showSearchWindowOnLoadSubject.next(this.showSearchWindowOnLoad);
     localStorage.setItem(this.showSearchWindowOnLoadKey, String(this.showSearchWindowOnLoad));
+  }
+
+  private prettifyOnLoadKey: string = 'prettifyOnLoad';
+  private prettifyOnLoad: boolean = true;
+  private prettifyOnLoadSubject: Subject<boolean> = new ReplaySubject(1);
+  public prettifyOnLoadObservable: Observable<boolean> = this.prettifyOnLoadSubject.asObservable();
+
+  public setPrettifyOnLoad(value: boolean): void {
+    this.prettifyOnLoad = value;
+    this.prettifyOnLoadSubject.next(value);
+    localStorage.setItem(this.prettifyOnLoadKey, String(this.prettifyOnLoad));
   }
 }

@@ -20,9 +20,12 @@ export class TableSettingsModalComponent implements OnDestroy {
   tableSpacingSubscription!: Subscription;
   showSearchWindowOnLoad: boolean = true;
   showSearchWindowOnLoadSubscription!: Subscription;
+  prettifyOnLoad: boolean = true;
+  prettifyOnLoadSubscription!: Subscription;
   settingsForm: UntypedFormGroup = new UntypedFormGroup({
     showMultipleFilesAtATime: new UntypedFormControl(this.showMultipleAtATime),
     showSearchWindowOnLoad: new UntypedFormControl(this.showSearchWindowOnLoad),
+    prettifyOnLoad: new UntypedFormControl(this.prettifyOnLoad),
     tableSpacing: new UntypedFormControl(this.tableSpacing),
     generatorEnabled: new UntypedFormControl('Enabled'),
     regexFilter: new UntypedFormControl(''),
@@ -64,6 +67,11 @@ export class TableSettingsModalComponent implements OnDestroy {
         this.settingsForm.get('showSearchWindowOnLoad')?.setValue(this.showSearchWindowOnLoad);
       },
     );
+
+    this.prettifyOnLoadSubscription = this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
+      this.prettifyOnLoad = value;
+      this.settingsForm.get('prettifyOnLoad')?.setValue(this.prettifyOnLoad);
+    });
   }
 
   setShowMultipleAtATime(): void {
@@ -140,5 +148,9 @@ export class TableSettingsModalComponent implements OnDestroy {
 
   changeTableSpacing(value: any): void {
     this.settingsService.setTableSpacing(Number(value));
+  }
+
+  setPrettifyOnLoad() {
+    this.settingsService.setPrettifyOnLoad(!this.prettifyOnLoad);
   }
 }

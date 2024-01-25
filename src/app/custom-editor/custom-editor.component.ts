@@ -1,7 +1,8 @@
-import { Component, HostListener, Input, Output } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import * as prettierPluginHtml from 'prettier/plugins/html';
 import * as prettier from 'prettier';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { SettingsService } from '../shared/services/settings.service';
 
 export const editorViewsConst = ['raw', 'xml'] as const;
 export type EditorView = (typeof editorViewsConst)[number];
@@ -11,7 +12,7 @@ export type EditorView = (typeof editorViewsConst)[number];
   templateUrl: './custom-editor.component.html',
   styleUrl: './custom-editor.component.css',
 })
-export class CustomEditorComponent {
+export class CustomEditorComponent implements OnInit, OnDestroy {
   protected readonly editorViewsConst = editorViewsConst;
   unsavedChanges: boolean = false;
   readOnlyMode: boolean = true; //Set to true for now until save and rerun is implemented
@@ -24,7 +25,6 @@ export class CustomEditorComponent {
     padding: { bottom: 200 },
     selectOnLineNumbers: true,
     renderFinalNewline: false,
-    statusBar: true,
     scrollBeyondLastLine: false,
   };
   rawFile!: string;
@@ -35,6 +35,20 @@ export class CustomEditorComponent {
   editorFocused: boolean = false;
   @Output() saveReport: Subject<string> = new Subject<string>();
   @Input() height!: number;
+  showPrettifyOnLoad: boolean = true;
+  showPrettifyOnLoadSubscription!: Subscription;
+
+  constructor(private settingsService: SettingsService) {}
+
+  ngOnInit(): void {
+    this.showPrettifyOnLoadSubscription = this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
+      this.showPrettifyOnLoad = value;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.showPrettifyOnLoadSubscription.unsubscribe();
+  }
 
   initEditor(editor: any): void {
     if (editor) {
@@ -46,10 +60,13 @@ export class CustomEditorComponent {
         this.editorFocused = false;
       });
       this.checkIfTextIsPretty();
+      if (this.showPrettifyOnLoad) {
+        this.onViewChange(editorViewsConst[1]);
+      }
     }
   }
 
-  checkIfTextIsPretty(): void {
+  checkIfTextIsPretty(): boolean {
     if (this.editorContent) {
       prettier
         .check(this.editorContent, {
@@ -59,6 +76,7 @@ export class CustomEditorComponent {
         })
         .then((value: boolean) => (this.isPrettified = value));
     }
+    return this.isPrettified;
   }
 
   onViewChange(value: EditorView): void {
@@ -76,21 +94,6 @@ export class CustomEditorComponent {
   }
 
   prettify(): void {
-    if (this.editorContent) {
-      prettier
-        .check(this.editorContent, {
-          parser: 'html',
-          plugins: [prettierPluginHtml],
-        })
-        .then((value) => {
-          if (!value) {
-            this.doPrettify();
-          }
-        });
-    }
-  }
-
-  doPrettify(): void {
     if (this.editorContent) {
       prettier
         .format(this.editorContent, {
@@ -129,6 +132,10 @@ export class CustomEditorComponent {
     this.setValue(value);
     this.editorContentCopy = value;
     this.rawFile = value;
+    this.checkIfTextIsPretty();
+    if (this.showPrettifyOnLoad) {
+      this.onViewChange(editorViewsConst[1]);
+    }
   }
 
   setValue(value: string): void {
