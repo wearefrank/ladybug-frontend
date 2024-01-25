@@ -112,7 +112,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
   }
 
   prettify(): void {
-    if (this.editorContent) {
+    if (this.editorContent && !this.isPrettified) {
       prettier
         .format(this.editorContent, {
           parser: 'html',
