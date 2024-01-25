@@ -49,7 +49,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
     this.showSearchWindowOnLoadSubscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe(
       (value: boolean) => {
         this.showSearchWindowOnLoad = value;
-      }
+      },
     );
   }
 

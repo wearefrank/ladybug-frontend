@@ -33,6 +33,7 @@ import { DeleteModalComponent } from './test/delete-modal/delete-modal.component
 import { TextCompareComponent } from './text-compare/text-compare.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TableCellShortenerPipe } from './shared/pipes/table-cell-shortener.pipe';
+import { CustomEditorComponent } from './custom-editor/custom-editor.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { TableCellShortenerPipe } from './shared/pipes/table-cell-shortener.pipe
     EditorComponent,
     DeleteModalComponent,
     TextCompareComponent,
+    CustomEditorComponent,
   ],
   imports: [
     BrowserModule,

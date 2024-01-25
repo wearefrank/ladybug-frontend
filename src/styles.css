@@ -1,144 +1,144 @@
 body {
-  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-  font-size: 0.7rem !important;
-  line-height: 1 !important;
-  background-color: #f3f3f4 !important;
-  position: relative;
+    font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-size: 0.7rem !important;
+    line-height: 1 !important;
+    background-color: #f3f3f4 !important;
+    position: relative;
 }
 
 html, body {
-  height: 100%;
-  margin: 0;
+    height: 100%;
+    margin: 0;
 }
 
 #ladybug-tabs {
-  display: flex;
-  flex-grow: 0;
-  flex-flow: column;
-  height: 100%;
-  overflow: hidden;
+    display: flex;
+    flex-grow: 0;
+    flex-flow: column;
+    height: 100%;
+    overflow: hidden;
 }
 
 #testReportTable button {
-  margin-top: 0 !important;
+    margin-top: 0 !important;
 }
 
 .tab-content {
-  height: 100% !important;
-  min-height: 0 !important;
+    height: 100% !important;
+    min-height: 0 !important;
 }
 
-.tab-content>.active {
-  height: 100% !important;
+.tab-content > .active {
+    height: 100% !important;
 }
 
 .btn {
-  font-size: 0.7rem !important;
+    font-size: 0.7rem !important;
 }
 
 .form-control {
-  font-size: 0.7rem !important;
+    font-size: 0.7rem !important;
 }
 
 .input-group-text {
-  font-size: 0.7rem !important;
+    font-size: 0.7rem !important;
 }
 
 .transform-label {
-  font-size: 0.8rem;
+    font-size: 0.8rem;
 }
 
 .btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active, .open .dropdown-toggle.btn-info, .btn-info:active:focus, .btn-info:active:hover, .btn-info.active:hover, .btn-info.active:focus {
-  background-color: #21b9bb;
-  border-color: #21b9bb;
-  outline: none !important;
+    background-color: #21b9bb;
+    border-color: #21b9bb;
+    outline: none !important;
 }
 
 .close {
-  outline: none !important;
+    outline: none !important;
 }
 
 .row {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  background-color: white;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    background-color: white;
 }
 
 .nav-item:hover {
-  color: #676a6c;
-  background-color: #e6e6e6;
-  border: transparent;
+    color: #676a6c;
+    background-color: #e6e6e6;
+    border: transparent;
 }
 
 .btn-info {
-  border: 1px;
-  background-color: #1ab394 !important;
-  border-color: #1ab394 !important;
+    border: 1px;
+    background-color: #1ab394 !important;
+    border-color: #1ab394 !important;
 }
 
 .btn-info:focus {
-  outline: none !important;
-  box-shadow: none !important;
-  background-color: #23c6c8 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: #23c6c8 !important;
 }
 
 .btn-info:hover {
-  background-color: #23c6c8 !important;
-  border-color: #23c6c8 !important;
+    background-color: #23c6c8 !important;
+    border-color: #23c6c8 !important;
 }
 
 .btn-static {
-  background-color: white;
-  border: 1px solid lightgrey;
-  cursor: default !important;
+    background-color: white;
+    border: 1px solid lightgrey;
+    cursor: default !important;
 }
 
 .btn-static:active .btn-static:focus, .btn-static:visited {
-  outline: none !important;
+    outline: none !important;
 }
 
 .nav-tabs .nav-item .nav-link {
-  color: #a7b1c2;
+    color: #a7b1c2;
 }
 
 .nav-tabs .nav-item .nav-link.active {
-  color: #555;
-  border-left: transparent;
+    color: #555;
+    border-left: transparent;
 }
 
 .jqx-widget {
-  border: none !important;
+    border: none !important;
 }
 
 .jqx-tree-item-selected {
-  border-color: #17a2b8 !important;
-  background-color: #1ab394 !important;
+    border-color: #17a2b8 !important;
+    background-color: #1ab394 !important;
 }
 
 .jqx-tree-item-hover {
-  background-color: #23c6c8 !important;
+    background-color: #23c6c8 !important;
 }
 
 .jqx-tree-item {
-  padding: 0 !important;
+    padding: 0 !important;
 }
 
 .as-split-gutter {
-  flex-basis: 5px !important;
+    flex-basis: 5px !important;
 }
 
 .modal-window {
-  z-index: 99999;
+    z-index: 1000 !important;
 }
 
 .modal-backdrop {
-  z-index: 1 !important;
+    z-index: 999 !important;
 }
 
 .w-fit {
-  width: fit-content;
+    width: fit-content;
 }
 
 .h-fit {
-  height: fit-content;
+    height: fit-content;
 }

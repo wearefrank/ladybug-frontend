@@ -9,7 +9,10 @@ import { ToastService } from './toast.service';
 export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
-  constructor(private http: HttpClient, private toastService: ToastService) {}
+  constructor(
+    private http: HttpClient,
+    private toastService: ToastService,
+  ) {}
 
   handleError() {
     return (error: any): Observable<any> => {
@@ -37,7 +40,7 @@ export class HttpService {
     regexFilter: string,
     filterHeader: string,
     metadataNames: string[],
-    storage: string
+    storage: string,
   ): Observable<any> {
     return this.http.get('api/metadata/' + storage + '/', {
       params: {
@@ -97,7 +100,7 @@ export class HttpService {
           '/' +
           reportId +
           '/?xml=true&globalTransformer=' +
-          localStorage.getItem('transformationEnabled')
+          localStorage.getItem('transformationEnabled'),
       )
       .pipe(catchError(this.handleError()));
   }
@@ -106,7 +109,7 @@ export class HttpService {
     return this.http
       .get<any>(
         'api/report/' + storage + '/?xml=true&globalTransformer=' + localStorage.getItem('transformationEnabled'),
-        { params: { storageIds: reportIds } }
+        { params: { storageIds: reportIds } },
       )
       .pipe(catchError(this.handleError()));
   }

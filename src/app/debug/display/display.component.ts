@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { HelperService } from '../../shared/services/helper.service';
-import { EditorComponent } from '../../shared/components/editor/editor.component';
+import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 
 @Component({
   selector: 'app-display',
@@ -15,17 +15,25 @@ export class DisplayComponent {
   report: any = {};
   @Input() currentView: any = {};
   @Output() closeReportEvent = new EventEmitter<any>();
-  @ViewChild(EditorComponent) editor!: EditorComponent;
+  @ViewChild('editorComponent') editorComponent!: CustomEditorComponent;
   @ViewChild(DisplayTableComponent)
   displayTableComponent!: DisplayTableComponent;
   metadataTableVisible: boolean = false;
+  @ViewChild('container') container!: ElementRef;
+  @Input() containerHeight!: number;
 
-  constructor(private modalService: NgbModal, private httpService: HttpService, private helperService: HelperService) {}
+  constructor(
+    private httpService: HttpService,
+    private helperService: HelperService,
+    private modalService: NgbModal,
+  ) {}
 
   showReport(report: any): void {
     this.report = report;
-    report.xml ? this.editor.setValue(report.xml) : this.editor.setValue(this.helperService.convertMessage(report));
     this.displayReport = true;
+    report.xml
+      ? this.editorComponent.setNewReport(report.xml)
+      : this.editorComponent.setNewReport(this.helperService.convertMessage(report));
   }
 
   closeReport(removeReportFromTree: boolean): void {
@@ -33,10 +41,11 @@ export class DisplayComponent {
     if (removeReportFromTree) {
       this.closeReportEvent.emit(this.report);
     }
+    this.editorComponent.setNewReport('');
   }
 
   changeEncoding(button: any): void {
-    this.editor.setValue(this.helperService.changeEncoding(this.report, button));
+    this.editorComponent.setNewReport(this.helperService.changeEncoding(this.report, button));
   }
 
   copyReport(): void {
@@ -52,7 +61,21 @@ export class DisplayComponent {
     this.httpService.handleSuccess('Report Downloaded!');
   }
 
-  toggleMetadataTable() {
+  toggleMetadataTable(): void {
     this.metadataTableVisible = !this.metadataTableVisible;
+  }
+
+  onSave(event: any): void {}
+
+  showEditorPossibilitiesModal(modal: any): void {
+    this.modalService.open(modal, {
+      backdrop: true,
+      backdropClass: 'modal-backdrop',
+      modalDialogClass: 'modal-window',
+    });
+  }
+
+  closeModal(): void {
+    this.modalService.dismissAll();
   }
 }

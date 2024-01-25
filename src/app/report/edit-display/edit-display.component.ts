@@ -31,7 +31,11 @@ export class EditDisplayComponent {
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
 
-  constructor(private modalService: NgbModal, private httpService: HttpService, private helperService: HelperService) {}
+  constructor(
+    private modalService: NgbModal,
+    private httpService: HttpService,
+    private helperService: HelperService,
+  ) {}
 
   showReport(report: any): void {
     this.report = report;

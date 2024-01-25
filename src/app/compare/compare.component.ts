@@ -28,7 +28,7 @@ export class CompareComponent implements AfterViewInit {
         this.compareData.viewName,
         this.compareData.nodeLinkStrategy,
         this.compareData.originalReport,
-        this.compareData.runResultReport
+        this.compareData.runResultReport,
       );
     }
   }
