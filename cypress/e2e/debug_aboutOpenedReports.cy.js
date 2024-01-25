@@ -8,7 +8,7 @@ describe("About opened reports", function () {
 
   it("Close one", function () {
     cy.enableShowMultipleInDebugTree();
-    cy.get("[data-cy-select-all-reports]").click();
+    cy.get("[data-cy-debug-table='selectAll']").click();
     cy.get('button[id="OpenSelectedReportsButton"]').click();
     // Each of the two reports has three lines.
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 2);

@@ -27,7 +27,7 @@ describe("Report transformation", () => {
     ).check();
     cy.get("button[id=saveTableSettings]").click();
     cy.createOtherReport();
-    cy.get("#RefreshButton").click();
+    cy.get("[data-cy-debug-table='refresh']").click();
 
     cy.wait(100);
     cy.get(".table-responsive tbody")

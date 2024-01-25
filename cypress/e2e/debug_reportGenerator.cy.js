@@ -13,7 +13,7 @@ describe('Report generator', function() {
     cy.visit('');
     cy.get('.table-responsive tbody').find('tr').should('not.exist');
     cy.createReport();
-    cy.get('#RefreshButton').click();
+    cy.get("[data-cy-debug-table='refresh']").click();
     cy.wait(100);
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
     cy.get('#SettingsButton').click();
@@ -25,7 +25,7 @@ describe('Report generator', function() {
     // If we do not wait here, we do not test properly that no report is created.
     // Without waiting, the test could succeed because we would count the number of reports
     // before refresh.
-    cy.get('#RefreshButton').click();
+    cy.get("[data-cy-debug-table='refresh']").click();
     cy.wait(100);
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
     cy.get('#SettingsButton').click();
@@ -34,7 +34,7 @@ describe('Report generator', function() {
     cy.get('button[title="Save changes"').click();
     cy.contains('Settings saved', {timeout: 10000});
     cy.createOtherReport();
-    cy.get('#RefreshButton').click();
+    cy.get("[data-cy-debug-table='refresh']").click();
     cy.wait(100);
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
   });

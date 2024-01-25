@@ -5,16 +5,16 @@
   <div class="col">
     <div class="row">
       <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runSelected()"></app-button>
-      <app-button [icon]="'fa fa-refresh'" [title]="'ReloadTestReports'" (click)="loadData(null)"></app-button>
+      <app-button data-cy-test-table="refresh" [icon]="'fa fa-refresh'" [title]="'ReloadTestReports'" (click)="loadData(null)"></app-button>
       <app-button [text]="'Reset'" [title]="'Reset'" (click)="resetRunner()"></app-button>
       <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="openSettingsModal()"></app-button>
-      <app-button data-cy-test-function="selectAll" [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
+      <app-button data-cy-test-table="selectAll" [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
       <app-button [title]="'Deselect All'" [text]="'Deselect All'" (click)="uncheckAll()"></app-button>
-      <app-button data-cy-test-function="deleteSelected" [icon]="'fa fa-trash'" [title]="'Delete Selected'" (click)="openDeleteModal()"></app-button>
+      <app-button data-cy-test-table="deleteSelected" [icon]="'fa fa-trash'" [title]="'Delete Selected'" (click)="openDeleteModal()"></app-button>
       <app-button [text]="'Clone'" [title]="'Clone report'" (click)="openCloneModal()"></app-button>
       <app-button [icon]="'fa fa-copy'" [title]="'Copy Selected'" (click)="copySelected()"></app-button>
       <app-button [icon]="'fa fa-download'" [title]="'Download Binary'" (click)="downloadSelected()"></app-button>
-      <button type="button" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
+      <button data-cy-test-table="upload" type="button" class="btn btn-info my-2 mx-1 px-3"
               title="Upload" (click)="uploadFileTest.click()">
         <i class="fa fa-upload"></i>
         <input #uploadFileTest (change)="uploadReport($event)" type="file" id="uploadFileTest">

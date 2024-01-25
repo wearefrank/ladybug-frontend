@@ -10,7 +10,7 @@ describe("Test labels", function () {
   it("Test label null", function () {
     cy.createReportWithLabelNull();
     cy.visit("");
-    cy.get("[data-cy-select-all-reports]").click();
+    cy.get("[data-cy-debug-table='selectAll']").click();
     cy.get('button[id="OpenSelectedReportsButton"]').click();
     cy.wait(300);
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
@@ -20,7 +20,7 @@ describe("Test labels", function () {
   it("Test label empty string", function () {
     cy.createReportWithLabelEmpty();
     cy.visit("");
-    cy.get("[data-cy-select-all-reports]").click();
+    cy.get("[data-cy-debug-table='selectAll']").click();
     cy.get('button[id="OpenSelectedReportsButton"]').click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     testTreeView("Message is an empty string", "Empty String");
