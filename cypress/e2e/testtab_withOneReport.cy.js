@@ -8,7 +8,7 @@ describe("Tests with one report", function () {
     cy.createReport();
     cy.visit("");
     cy.get("[data-cy-debug-table='selectAll']").click();
-    cy.get('button[id="OpenSelectedReportsButton"]').click();
+    cy.get("[data-cy-debug-table='openSelected']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     cy.get("button#CopyButton").click();
     cy.get("[data-cy-nav-tab='testTab']").click();

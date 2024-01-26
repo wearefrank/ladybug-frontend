@@ -94,7 +94,7 @@ describe("Debug tab download", function () {
     const downloadsFolder = Cypress.config("downloadsFolder");
     cy.get(".table-responsive tbody").find("tr").should("have.length", 2);
     cy.get("[data-cy-debug-table='selectAll']").click();
-    cy.get('button[id="OpenSelectedReportsButton"]').click();
+    cy.get("[data-cy-debug-table='openSelected']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 2);
     cy.get(
       "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report)"
@@ -174,7 +174,7 @@ function testDownloadFromNode(nodeNum) {
   cy.wait(100);
   cy.get(".table-responsive tbody").find("tr").should("have.length", 2);
   cy.get("[data-cy-debug-table='selectAll']").click();
-  cy.get('button[id="OpenSelectedReportsButton"]').click();
+  cy.get("[data-cy-debug-table='openSelected']").click();
   cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 2);
   cy.get(
     "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report)"

@@ -169,7 +169,7 @@ describe("About the Test tab", function () {
 function copyTheReportsToTestTab() {
   cy.enableShowMultipleInDebugTree();
   cy.get("[data-cy-debug-table='selectAll']").click();
-  cy.get('button[id="OpenSelectedReportsButton"]').click();
+  cy.get("[data-cy-debug-table='openSelected']").click();
   // We test many times already that opening two reports yields six nodes.
   // Adding the test here again has another purpose. We want the DOM to
   // be stable before we go on with the test. Without this guard, the test
