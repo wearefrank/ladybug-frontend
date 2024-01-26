@@ -38,8 +38,8 @@
         <span class="status-text">{{!editorFocused ? 'Unfocused' : 'Focused'}}</span>
       </div>
     </div>
-    <div #buttons class="right-side">
-      <select name="" id="" class="drop-down"
+    <div class="right-side">
+      <select data-cy-editor-change-view-dropdown class="drop-down"
               [(ngModel)]="currentView"
               (ngModelChange)="onViewChange($event)">
         <option *ngFor="let view of editorViewsConst; let index = index"

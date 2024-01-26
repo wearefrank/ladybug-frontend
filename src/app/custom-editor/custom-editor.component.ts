@@ -17,7 +17,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
   @Output() saveReport: Subject<string> = new Subject<string>();
   protected readonly editorViewsConst = editorViewsConst;
   unsavedChanges: boolean = false;
-  readOnlyMode: boolean = false; //Set to true for now until save and rerun is implemented
+  readOnlyMode: boolean = true; //Set to true for now until save and rerun is implemented
   options: any = {
     theme: 'vs-light',
     language: 'xml',
@@ -98,6 +98,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
   }
 
   onViewChange(value: EditorView): void {
+    this.checkIfTextIsPretty();
     const index: number = editorViewsConst.indexOf(value);
     if (index == -1) {
       return;
@@ -138,12 +139,15 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
   }
 
   setNewReport(value: string): void {
+    this.isPrettified = false;
     this.setValue(value);
     this.editorContentCopy = value;
     this.rawFile = value;
     this.checkIfTextIsPretty();
     if (this.showPrettifyOnLoad) {
       this.onViewChange('xml');
+    } else {
+      this.onViewChange('raw');
     }
   }
 

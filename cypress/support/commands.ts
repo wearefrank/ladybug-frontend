@@ -26,7 +26,7 @@ function createOtherReport() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Another%20simple%20report',
+    '/index.jsp?createReport=Another%20simple%20report',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -37,7 +37,7 @@ Cypress.Commands.add('createOtherReport' as keyof Chainable, createOtherReport);
 function createRunningReport() {
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Waiting%20for%20thread%20to%20start',
+    '/index.jsp?createReport=Waiting%20for%20thread%20to%20start',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -52,7 +52,7 @@ function createReportWithLabelNull() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Message%20is%20null',
+    '/index.jsp?createReport=Message%20is%20null',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -67,7 +67,7 @@ function createReportWithLabelEmpty() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Message%20is%20an%20empty%20string',
+    '/index.jsp?createReport=Message%20is%20an%20empty%20string',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -161,9 +161,24 @@ Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
   cy.wait(2000);
   cy.get('#SelectAllButton').click();
   cy.get('#DeleteSelectedButton').click();
-  console.log(Cypress.$('#confirmDeletion'));
   if (Cypress.$('#confirmDeletion').length > 0) {
     cy.get('#confirmDeletion').should('exist');
   }
   cy.visit('');
+});
+
+
+Cypress.Commands.add('clickFirstReportInTable' as keyof Chainable, () => {
+  cy.get('table .table-row').eq(0).click();
+});
+
+Cypress.Commands.add('clickTopLevelReportInTree' as keyof Chainable, () => {
+  cy.get('#debug-tree .jqx-tree-dropdown-root > li > div').click();
+});
+
+
+//Delete all reports in debug tab
+Cypress.Commands.add('deleteReports' as keyof Chainable, () => {
+  cy.get('[data-cy-select-all-reports]').click();
+  cy.get('#DeleteButton').click();
 });
