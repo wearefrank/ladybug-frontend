@@ -2,7 +2,7 @@
   <div class="row">
     <app-button data-cy-debug-table="refresh" [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button data-cy-debug-table="openSettings" [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
-    <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
+    <app-button data-cy-debug-table="filter" [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
       <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>

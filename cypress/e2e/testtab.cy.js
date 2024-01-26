@@ -59,7 +59,7 @@ describe("About the Test tab", function () {
     cy.get("#testReports").find("tr").should("have.length", 2);
     cy.get("[data-cy-test-table='selectAll']").click();
     checkTestTabTwoReportsSelected();
-    cy.get("#DeselectAllButton").click();
+    cy.get("[data-cy-test-table='deselectAll']").click();
     cy.get("[data-cy-test-table='deleteSelected']").click();
     cy.wait(1000);
     cy.get("#testReports").find("tr").should("have.length", 2);

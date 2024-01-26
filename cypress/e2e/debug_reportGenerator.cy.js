@@ -3,7 +3,7 @@ describe('Report generator', function() {
     cy.clearDebugStore();
   })
   afterEach(function() {
-    cy.get('#SettingsButton').should('be.visible').click();
+    cy.get("[data-cy-debug-table='openSettings']").should('be.visible').click();
     cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
     cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
     cy.get('button[title="Save changes"').click();
@@ -16,7 +16,7 @@ describe('Report generator', function() {
     cy.get("[data-cy-debug-table='refresh']").click();
     cy.wait(100);
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
-    cy.get('#SettingsButton').click();
+    cy.get("[data-cy-debug-table='openSettings']").click();
     cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
     cy.get('select[formcontrolname=generatorEnabled]').select('Disabled').should('have.value', 'Disabled');
     cy.get('button[title="Save changes"').click();
@@ -28,7 +28,7 @@ describe('Report generator', function() {
     cy.get("[data-cy-debug-table='refresh']").click();
     cy.wait(100);
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
-    cy.get('#SettingsButton').click();
+    cy.get("[data-cy-debug-table='openSettings']").click();
     cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
     cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
     cy.get('button[title="Save changes"').click();
