@@ -3,12 +3,6 @@ describe('Tests for settings component', () => {
     cy.createReport();
     cy.createOtherReport();
     cy.visit('');
-    // const desiredView = "File storage";
-    // cy.get("[data-cy-change-view-dropdown]").select(desiredView);
-    // cy.get("[data-cy-change-view-dropdown] option:selected").should(
-    //   "have.text",
-    //   desiredView
-    // );
   });
 
   it('should alter spacing when spacing setting is altered', () => {
