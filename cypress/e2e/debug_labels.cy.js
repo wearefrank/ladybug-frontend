@@ -10,8 +10,8 @@ describe("Test labels", function () {
   it("Test label null", function () {
     cy.createReportWithLabelNull();
     cy.visit("");
-    cy.get("[data-cy-debug-table='selectAll']").click();
-    cy.get("[data-cy-debug-table='openSelected']").click();
+    cy.get("[data-cy-debug='selectAll']").click();
+    cy.get("[data-cy-debug='openSelected']").click();
     cy.wait(300);
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     testTreeView("Message is null", "Null String");
@@ -20,8 +20,8 @@ describe("Test labels", function () {
   it("Test label empty string", function () {
     cy.createReportWithLabelEmpty();
     cy.visit("");
-    cy.get("[data-cy-debug-table='selectAll']").click();
-    cy.get("[data-cy-debug-table='openSelected']").click();
+    cy.get("[data-cy-debug='selectAll']").click();
+    cy.get("[data-cy-debug='openSelected']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     testTreeView("Message is an empty string", "Empty String");
   });

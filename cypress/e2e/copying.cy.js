@@ -5,8 +5,8 @@ describe("Tests about copying", function () {
 
   afterEach(() => {
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("[data-cy-test-table='selectAll']").click();
-    cy.get("[data-cy-test-table='deleteSelected']").click();
+    cy.get("[data-cy-test='selectAll']").click();
+    cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal-function='confirmDeletion']").click();
     cy.get("[data-cy-nav-tab='debugTab']").click();
   });
@@ -22,10 +22,10 @@ describe("Tests about copying", function () {
     cy.get("#metadataTable tbody", { timeout: 10000 })
       .find("tr")
       .should("not.exist");
-    cy.get("[data-cy-debug-table='refresh']").click();
+    cy.get("[data-cy-debug='refresh']").click();
     cy.get("#metadataTable tbody").find("tr").should("have.length", 1);
-    cy.get("[data-cy-debug-table='selectAll']").click();
-    cy.get("[data-cy-debug-table='openSelected']").click();
+    cy.get("[data-cy-debug='selectAll']").click();
+    cy.get("[data-cy-debug='openSelected']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     cy.get("button#CopyButton").click();
     cy.get("[data-cy-nav-tab='testTab']").click();

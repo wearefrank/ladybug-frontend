@@ -12,7 +12,7 @@ describe("Tests for settings component", () => {
   });
 
   xit("should alter spacing when spacing setting is altered", () => {
-    cy.get("[data-cy-debug-table='openSettings']").as("openSettingsModal").click();
+    cy.get("[data-cy-debug='openSettings']").as("openSettingsModal").click();
     cy.get("[data-cy-settings-modal='spacingDropdown']").select("1x");
     cy.get("[data-cy-settings-modal='spacingDropdown'] option:selected").should(
       "have.text",
@@ -35,7 +35,7 @@ describe("Tests for settings component", () => {
   });
 
   xit("should allow multiple files to be opened in debug tree when setting is enabled and close all but one report when setting is disabled", () => {
-    cy.get("[data-cy-debug-table='openSettings']").as("openSettingsModal").click();
+    cy.get("[data-cy-debug='openSettings']").as("openSettingsModal").click();
     cy.get("[data-cy-settings-modal='showAmount']").should(
       "have.attr",
       "value",
@@ -57,7 +57,7 @@ describe("Tests for settings component", () => {
       "have.length",
       "2"
     );
-    cy.get("[data-cy-debug-table='openSettings']").as("openSettingsModal").click();
+    cy.get("[data-cy-debug='openSettings']").as("openSettingsModal").click();
     cy.get("[data-cy-settings-modal='showAmount']").click();
     cy.get("[data-cy-settings-modal='close']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should(

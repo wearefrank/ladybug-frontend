@@ -1,8 +1,8 @@
 <div class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
   <div class="row">
-    <app-button data-cy-debug-table="refresh" [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
-    <app-button data-cy-debug-table="openSettings" [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
-    <app-button data-cy-debug-table="filter" [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
+    <app-button data-cy-debug="refresh" [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
+    <app-button data-cy-debug="openSettings" [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
+    <app-button data-cy-debug="filter" [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
       <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
@@ -19,8 +19,8 @@
       <input #uploadFileTable (change)="uploadReports($event)" type="file" id="uploadFileTable">
     </button>
 
-    <app-button data-cy-debug-table="openSelected" [title]="'Open Selected Reports'" [text]="'Open Selected'" (click)="openSelected()"></app-button>
-    <app-button data-cy-debug-table="delete" [title]="'Delete'" [icon]="'fa fa-trash'" (click)="deleteSelected()"></app-button>
+    <app-button data-cy-debug="openSelected" [title]="'Open Selected Reports'" [text]="'Open Selected'" (click)="openSelected()"></app-button>
+    <app-button data-cy-debug="delete" [title]="'Delete'" [icon]="'fa fa-trash'" (click)="deleteSelected()"></app-button>
 
     <form class="pt-2" (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
       <div class="input-group-append">
@@ -66,7 +66,7 @@
       <thead id="table-header">
         <tr>
           <th class="table-row-checkbox header-padding">
-            <input data-cy-debug-table="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
+            <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
           </th>
           <th class="text-center header-cell header-padding" *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
               mat-sort-header="{{i}}" [title]="header">{{getShortenedTableHeaderNames(header)}}</th>

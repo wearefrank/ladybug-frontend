@@ -7,7 +7,7 @@ describe('Refresh', function() {
     cy.visit('');
     cy.get('.table-responsive tbody').find('tr').should('not.exist');
     cy.createReport();
-    cy.get("[data-cy-debug-table='refresh']").click();
+    cy.get("[data-cy-debug='refresh']").click();
     cy.wait(100)
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
   });
