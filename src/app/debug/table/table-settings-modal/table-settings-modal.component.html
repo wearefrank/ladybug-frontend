@@ -1,7 +1,7 @@
 <ng-template #modal let-modal>
   <div class="modal-header">
     <h5 class="modal-title" id="settingsModal">Options</h5>
-    <button id="debugSettingsModalClose" data-cy-settings-modal="close" type="button" class="close"
+    <button id="debugSettingsModalClose" data-cy-settings="close" type="button" class="close"
             (click)="modal.dismiss()">
       <span>&times;</span>
     </button>
@@ -14,7 +14,7 @@
         <h5>Debug tree</h5>
         <div class="checkbox " title="When checked, file tree shows multiple files">
           <label for="show-multiple">Show multiple files in debug file-tree</label>
-          <input class="btn btn-info my-2 p-1 w-fit" data-cy-settings-modal="showAmount" id="show-multiple"
+          <input class="btn btn-info my-2 p-1 w-fit" data-cy-settings="showAmount" id="show-multiple"
                  [checked]="showMultipleAtATime" type="checkbox"
                  formControlName="showMultipleFilesAtATime"
                  [value]="showMultipleAtATime"
@@ -26,7 +26,7 @@
         <h5>Editor</h5>
         <div class="checkbox " title="When checked, search window is shown when editor is loaded">
           <label for="show-search-on-load">Show search window in editor on load</label>
-          <input class="btn btn-info my-2 p-1 w-fit" data-cy-settings-modal="showSearchOnLoad" id="show-search-on-load"
+          <input class="btn btn-info my-2 p-1 w-fit" data-cy-settings="showSearchOnLoad" id="show-search-on-load"
                  [checked]="showSearchWindowOnLoad" type="checkbox"
                  formControlName="showSearchWindowOnLoad"
                  [value]="showSearchWindowOnLoad"
@@ -38,7 +38,7 @@
         <h5>Report table</h5>
         <div title="Configure the amount of spacing in the report table">
           <label for="show-multiple">Spacing for report table</label>
-          <select #spacingOptionsDropdown data-cy-settings-modal="spacingDropdown" class="form-control custom-select mr-sm-2"
+          <select #spacingOptionsDropdown data-cy-settings="spacingDropdown" class="form-control custom-select mr-sm-2"
                   (change)="changeTableSpacing(spacingOptionsDropdown.value)">
             <option [value]="option" *ngFor="let option of spacingOptions"
                     [selected]="option === tableSpacing"><span>{{option}}x</span></option>
@@ -102,7 +102,7 @@ Example 3 (only store report when name doesn't start with Hello World):
         class="fa fa-refresh"></i></button>
       <button title="Revert changes" type="button" class="btn btn-info" (click)="loadSettings()"><i
         class="fa fa-undo"></i></button>
-      <button data-cy-settings-modal='saveChanges' title="Save changes" type="submit" id="saveTableSettings"
+      <button data-cy-settings='saveChanges' title="Save changes" type="submit" id="saveTableSettings"
               class="btn btn-info" (click)="modal.dismiss()"><i class="fa fa-save"></i></button>
     </div>
   </form>

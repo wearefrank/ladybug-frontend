@@ -7,7 +7,7 @@ describe("Tests about copying", function () {
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.get("[data-cy-test='selectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
-    cy.get("[data-cy-delete-modal-function='confirmDeletion']").click();
+    cy.get("[data-cy-delete-modal='confirm']").click();
     cy.get("[data-cy-nav-tab='debugTab']").click();
   });
 

@@ -30,7 +30,7 @@ describe("About the Test tab", function () {
     cy.get("#testReports").find("tr").should("have.length", 2);
     cy.functions.testTabDeselectReportNamed("/Another simple report");
     cy.get("[data-cy-test='deleteSelected']").click();
-    cy.get("[data-cy-delete-modal-function='confirmDeletion']").click();
+    cy.get("[data-cy-delete-modal='confirm']").click();
     cy.get("#testReports")
       .find("tr")
       .should("have.length", 1)
@@ -39,7 +39,7 @@ describe("About the Test tab", function () {
       });
     cy.get("[data-cy-test='selectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
-    cy.get("[data-cy-delete-modal-function='confirmDeletion']").click();
+    cy.get("[data-cy-delete-modal='confirm']").click();
   });
 
   it("Test select all by deleting", function () {
@@ -49,7 +49,7 @@ describe("About the Test tab", function () {
     cy.get("[data-cy-test='selectAll']").click();
     checkTestTabTwoReportsSelected();
     cy.get("[data-cy-test='deleteSelected']").click();
-    cy.get("[data-cy-delete-modal-function='confirmDeletion']").click();
+    cy.get("[data-cy-delete-modal='confirm']").click();
     cy.get("#testReports").find("tr").should("have.length", 0);
   });
 
@@ -65,7 +65,7 @@ describe("About the Test tab", function () {
     cy.get("#testReports").find("tr").should("have.length", 2);
     cy.get("[data-cy-test='selectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
-    cy.get("[data-cy-delete-modal-function='confirmDeletion']").click();
+    cy.get("[data-cy-delete-modal='confirm']").click();
   });
 
   // Fails because of https://github.com/ibissource/ladybug-frontend/issues/249.

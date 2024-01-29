@@ -28,7 +28,7 @@ describe("Tests with one report", function () {
     cy.wait(1000);
     cy.get("[data-cy-test='selectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
-    cy.get("[data-cy-delete-modal-function='confirmDeletion']").click();
+    cy.get("[data-cy-delete-modal='confirm']").click();
     cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 0);
     cy.get("[data-cy-nav-tab='debugTab']").click();
   });
