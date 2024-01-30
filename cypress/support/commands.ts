@@ -149,9 +149,9 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
-  cy.get('[data-cy-open-settings-modal]').click();
-  cy.get('input[data-cy-toggle-show-amount]').click();
-  cy.get('[data-cy-settings-modal-save-changes]').click();
+  cy.get("[data-cy-debug='openSettings']").click();
+  cy.get("[data-cy-settings='showAmount']").click();
+  cy.get("[data-cy-settings='saveChanges']").click();
 });
 
 //Clear reports in test tab if any present

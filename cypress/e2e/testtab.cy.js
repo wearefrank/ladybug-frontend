@@ -32,27 +32,27 @@ describe("About the Test tab", function () {
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.get("#testReports").find("tr").should("have.length", 2);
     cy.functions.testTabDeselectReportNamed("/Another simple report");
-    cy.get("#DeleteSelectedButton").click();
-    cy.get("#confirmDeletion").click();
+    cy.get("[data-cy-test='deleteSelected']").click();
+    cy.get("[data-cy-delete-modal='confirm']").click();
     cy.get("#testReports")
       .find("tr")
       .should("have.length", 1)
       .within(function ($reports) {
         cy.wrap($reports).contains("/Another simple report");
       });
-    cy.get("#SelectAllButton").click();
-    cy.get("#DeleteSelectedButton").click();
-    cy.get("#confirmDeletion").click();
+    cy.get("[data-cy-test='selectAll']").click();
+    cy.get("[data-cy-test='deleteSelected']").click();
+    cy.get("[data-cy-delete-modal='confirm']").click();
   });
 
   it("Test select all by deleting", function () {
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.get("#testReports").find("tr").should("have.length", 2);
 
-    cy.get("#SelectAllButton").click();
+    cy.get("[data-cy-test='selectAll']").click();
     checkTestTabTwoReportsSelected();
-    cy.get("#DeleteSelectedButton").click();
-    cy.get("#confirmDeletion").click();
+    cy.get("[data-cy-test='deleteSelected']").click();
+    cy.get("[data-cy-delete-modal='confirm']").click();
     cy.get("#testReports").find("tr").should("have.length", 0);
   });
 
@@ -60,15 +60,15 @@ describe("About the Test tab", function () {
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.wait(100);
     cy.get("#testReports").find("tr").should("have.length", 2);
-    cy.get("#SelectAllButton").click();
+    cy.get("[data-cy-test='selectAll']").click();
     checkTestTabTwoReportsSelected();
-    cy.get("#DeselectAllButton").click();
-    cy.get("#DeleteSelectedButton").click();
+    cy.get("[data-cy-test='deselectAll']").click();
+    cy.get("[data-cy-test='deleteSelected']").click();
     cy.wait(1000);
     cy.get("#testReports").find("tr").should("have.length", 2);
-    cy.get("#SelectAllButton").click();
-    cy.get("#DeleteSelectedButton").click();
-    cy.get("#confirmDeletion").click();
+    cy.get("[data-cy-test='selectAll']").click();
+    cy.get("[data-cy-test='deleteSelected']").click();
+    cy.get("[data-cy-delete-modal='confirm']").click();
   });
 
   // Fails because of https://github.com/ibissource/ladybug-frontend/issues/249.
@@ -78,7 +78,7 @@ describe("About the Test tab", function () {
     const downloadsFolder = Cypress.config("downloadsFolder");
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.get("#testReports").find("tr").should("have.length", 2);
-    cy.get("#SelectAllButton").click();
+    cy.get("[data-cy-test='selectAll']").click();
     cy.task("downloads", downloadsFolder).then((filesBefore) => {
       cy.get("#DownloadBinaryButton").click();
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
@@ -171,8 +171,8 @@ describe("About the Test tab", function () {
 
 function copyTheReportsToTestTab() {
   cy.enableShowMultipleInDebugTree();
-  cy.get("[data-cy-select-all-reports]").click();
-  cy.get('button[id="OpenSelectedReportsButton"]').click();
+  cy.get("[data-cy-debug='selectAll']").click();
+  cy.get("[data-cy-debug='openSelected']").click();
   // We test many times already that opening two reports yields six nodes.
   // Adding the test here again has another purpose. We want the DOM to
   // be stable before we go on with the test. Without this guard, the test
