@@ -22,7 +22,7 @@ describe('Test running reports', function() {
     it('Open running reports', function() {
       cy.visit('');
       cy.contains('Reports in progress: 2');
-      cy.get('.row #RefreshButton').click();
+      cy.get("[data-cy-debug='refresh']").click();
       cy.wait(100);
       cy.get('#metadataTable tbody').find('tr').should('not.exist');
       cy.get('#openInProgressNo').type('{backspace}');

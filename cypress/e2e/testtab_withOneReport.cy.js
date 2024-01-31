@@ -7,8 +7,8 @@ describe("Tests with one report", function () {
     cy.clearDebugStore();
     cy.createReport();
     cy.visit("");
-    cy.get("[data-cy-select-all-reports]").click();
-    cy.get('button[id="OpenSelectedReportsButton"]').click();
+    cy.get("[data-cy-debug='selectAll']").click();
+    cy.get("[data-cy-debug='openSelected']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     cy.get("button#CopyButton").click();
     cy.get("[data-cy-nav-tab='testTab']").click();
@@ -26,9 +26,9 @@ describe("Tests with one report", function () {
     cy.get("[data-cy-nav-tab='testTab']").click();
     // Give UI time to build up the test tab.
     cy.wait(1000);
-    cy.get("#SelectAllButton").click();
-    cy.get("#DeleteSelectedButton").click();
-    cy.get("#confirmDeletion").click();
+    cy.get("[data-cy-test='selectAll']").click();
+    cy.get("[data-cy-test='deleteSelected']").click();
+    cy.get("[data-cy-delete-modal='confirm']").click();
     cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 0);
     cy.get("[data-cy-nav-tab='debugTab']").click();
   });

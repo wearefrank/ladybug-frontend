@@ -39,15 +39,15 @@ describe('Table size and toggle filter', function () {
 
   it('After clicking filter button, the filters should appear', function () {
     cy.get('#filterRow').should('not.exist')
-    cy.get('#FilterButton').click()
+    cy.get("[data-cy-debug='filter']").click()
     cy.get('#filterRow').should('be.visible')
 
-    cy.get('#FilterButton').click()
+    cy.get("[data-cy-debug='filter']").click()
     cy.get('#filterRow').should('not.exist')
   })
 
   it('Type in a filter parameter', function () {
-    cy.get('#FilterButton').click()
+    cy.get("[data-cy-debug='filter']").click()
     cy.get('#filterRow #filter').eq(3).type("(Simple report){enter}")
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1)
     cy.get('#filterRow #filter').eq(3).clear().type("{enter}")

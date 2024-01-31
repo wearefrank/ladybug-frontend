@@ -5,7 +5,7 @@ describe("Report transformation", () => {
 
   afterEach(() => {
     cy.clearDebugStore();
-    cy.get("#SettingsButton").click();
+    cy.get("[data-cy-debug='openSettings']").click();
     // Factory reset in settings dialog. Resets
     // transformation to factory value.
     cy.get('button[title ^= "Reset and save factory settings"]').click();
@@ -14,7 +14,7 @@ describe("Report transformation", () => {
 
   it("Update transformation", function () {
     cy.visit("");
-    cy.get("#SettingsButton").click();
+    cy.get("[data-cy-debug='openSettings']").click();
     cy.get("textarea[formcontrolname=transformation]").type("{selectAll}");
     cy.get("textarea[formcontrolname=transformation]").type("{del}");
     cy.get("textarea[formcontrolname=transformation]").within((textArea) => {
@@ -27,7 +27,7 @@ describe("Report transformation", () => {
     ).check();
     cy.get("button[id=saveTableSettings]").click();
     cy.createOtherReport();
-    cy.get("#RefreshButton").click();
+    cy.get("[data-cy-debug='refresh']").click();
 
     cy.wait(100);
     cy.get(".table-responsive tbody")
