@@ -16,7 +16,7 @@ describe("About the Test tab", function () {
   afterEach(() => {
     cy.clearDebugStore();
     cy.get("[data-cy-nav-tab='debugTab']").click();
-    cy.get('button[id="CloseAllButton"]').click();
+    cy.get("[data-cy-debug-tree='closeAll']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 0);
@@ -157,7 +157,7 @@ describe("About the Test tab", function () {
   //       })
   //       .then(fileContent => {
   //         console.log(`Have transformed content length ${fileContent.length}`);
-  //         cy.get('input#uploadFileTable').attachFile({
+  //         cy.get("[data-cy-debug='upload']").attachFile({
   //           fileContent,
   //           fileName: newFile
   //         });

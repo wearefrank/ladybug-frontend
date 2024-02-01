@@ -50,7 +50,7 @@ describe("About opened reports", function () {
       "have.text",
       "Another simple report"
     );
-    cy.get('button[id="CloseAllButton"]').click();
+    cy.get("[data-cy-debug-tree='closeAll']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
   });
 

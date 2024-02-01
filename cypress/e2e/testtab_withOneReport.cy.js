@@ -21,7 +21,7 @@ describe("Tests with one report", function () {
     cy.get("[data-cy-nav-tab='debugTab'] a:eq(0)").should("have.class", "active");
     // Wait for debug tab to be rendered
     cy.wait(1000);
-    cy.get('button[id="CloseAllButton"]').click();
+    cy.get("[data-cy-debug-tree='closeAll']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
     cy.get("[data-cy-nav-tab='testTab']").click();
     // Give UI time to build up the test tab.
