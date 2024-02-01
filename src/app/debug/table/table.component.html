@@ -24,7 +24,7 @@
 
     <form class="pt-2" (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
       <div class="input-group-append">
-          <input type="number" id="displayAmount" class="form-control px-1" value="{{tableSettings.displayAmount}}" (blur)="changeTableLimit($event)">
+          <input data-cy-debug="displayAmount" type="number" class="form-control px-1" value="{{tableSettings.displayAmount}}" (blur)="changeTableLimit($event)">
         <div class="input-group-text">/{{metadataCount}}</div>
       </div>
     </form>
@@ -39,9 +39,9 @@
     <div class="row" *ngIf="tableSettings.reportsInProgress > 0">
       <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
         <div class="col input-group my-2 mx-1 px-2">
-          <input #openIndex type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')" class="form-control" id="openInProgressNo"/>
+          <input #openIndex type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')" class="form-control" data-cy-debug="openInProgressNo"/>
           <div class="input-group-append">
-            <button class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
+            <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
           </div>
         </div>
 
