@@ -40,7 +40,7 @@ describe('Test running reports', function() {
       cy.get('#debug-tree .jqx-tree-dropdown-root > li > ul > li > ul > li > div').within(function($node) {
         cy.wrap($node).find('img').invoke('attr', 'src').should('eq', 'assets/tree-icons/threadStartpoint-error-odd.gif');
       });
-      cy.get("[data-cy-debug='closeSelected']").click();
+      cy.get("[data-cy-debug-editor='close']").click();
       cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('not.exist');
       cy.get('#openInProgressNo').type('{backspace}');
       cy.get('#openInProgressNo').should('have.text', '');
@@ -49,7 +49,7 @@ describe('Test running reports', function() {
       cy.get('#openReportInProgressButton').click();
       cy.contains('Opened report in progress');
       cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1);
-      cy.get("[data-cy-debug='closeSelected']").click();
+      cy.get("[data-cy-debug-editor='close']").click();
       cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('not.exist');
       cy.get('#openInProgressNo').type('{backspace}');
       cy.get('#openInProgressNo').should('have.text', '');
