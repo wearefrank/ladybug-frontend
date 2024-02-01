@@ -21,13 +21,13 @@ describe("About opened reports", function () {
     )
       .first()
       .selectIfNotSelected();
-    cy.get("#CloseButton").click();
+    cy.get("[data-cy-debug='closeSelected']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     // nth-child has an 1-based index
     cy.get("#debug-tree .jqx-tree-dropdown-root > li > div")
       .should("have.text", "Another simple report")
       .click();
-    cy.get("#CloseButton").click();
+    cy.get("[data-cy-debug='closeSelected']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
   });
 

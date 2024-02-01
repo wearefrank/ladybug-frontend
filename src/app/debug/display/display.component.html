@@ -22,7 +22,7 @@
           </div>
         </div>
 
-        <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
+        <app-button data-cy-debug="closeSelected" [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
         <button data-cy-open-metadata-table
                 class="btn btn-info my-2 mx-1 px-3"
                 title="Open metadata table"
