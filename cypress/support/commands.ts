@@ -11,6 +11,19 @@
 
 import Chainable = Cypress.Chainable;
 
+Cypress.Commands.add('initializeApp' as keyof Chainable, () => {
+  //Wait for all get requests to backend
+  cy.intercept({
+    method: 'GET',
+    hostname: 'localhost',
+    url: /\/api\/*?/g,
+  }).as('apiCall');
+  cy.visit('');
+  cy.wait('@apiCall').then(() =>
+    cy.log('All api requests have completed'),
+  );
+});
+
 function createReport() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
@@ -26,7 +39,7 @@ function createOtherReport() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Another%20simple%20report',
+    '/index.jsp?createReport=Another%20simple%20report',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -37,7 +50,7 @@ Cypress.Commands.add('createOtherReport' as keyof Chainable, createOtherReport);
 function createRunningReport() {
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Waiting%20for%20thread%20to%20start',
+    '/index.jsp?createReport=Waiting%20for%20thread%20to%20start',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -52,7 +65,7 @@ function createReportWithLabelNull() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Message%20is%20null',
+    '/index.jsp?createReport=Message%20is%20null',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -67,7 +80,7 @@ function createReportWithLabelEmpty() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Message%20is%20an%20empty%20string',
+    '/index.jsp?createReport=Message%20is%20an%20empty%20string',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -149,9 +162,9 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
-  cy.get("[data-cy-debug='openSettings']").click();
-  cy.get("[data-cy-settings='showAmount']").click();
-  cy.get("[data-cy-settings='saveChanges']").click();
+  cy.get('[data-cy-debug=\'openSettings\']').click();
+  cy.get('[data-cy-settings=\'showAmount\']').click();
+  cy.get('[data-cy-settings=\'saveChanges\']').click();
 });
 
 //Clear reports in test tab if any present
@@ -167,3 +180,5 @@ Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
   }
   cy.visit('');
 });
+
+
