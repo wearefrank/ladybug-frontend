@@ -10,7 +10,7 @@ describe("Tests with one report", function () {
     cy.get("[data-cy-debug='selectAll']").click();
     cy.get("[data-cy-debug='openSelected']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
-    cy.get("button#CopyButton").click();
+    cy.get("[data-cy-debug-editor='copy']").click();
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.get("#testReports tr").should("have.length", 1);
   });
@@ -51,14 +51,14 @@ describe("Tests with one report", function () {
     cy.wait(1000);
     cy.get(".report-tab .jqx-tree-dropdown-root > li > ul > li > div").click();
     cy.wait(1000);
-    cy.get("#EditButton").click();
+    cy.get("[data-cy-test-editor='edit']").click();
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
     cy.get(".report-tab #editor")
       .click()
       .focused()
       .type("{ctrl}a")
       .type("Hello Original World!");
-    cy.get("#SaveButton").click();
+    cy.get("[data-cy-test-editor='save']").click();
     cy.get(".modal-title").should("include.text", "Are you sure");
     cy.get(".col:not(.text-right)").contains("Hello World!");
     cy.get(".col.text-right").contains("Hello Original World!");
@@ -67,14 +67,14 @@ describe("Tests with one report", function () {
       ".report-tab .jqx-tree-dropdown-root > li > ul > li > ul > li > div"
     ).click();
     cy.wait(1000);
-    cy.get("#EditButton").click();
+    cy.get("[data-cy-test-editor='edit']").click();
     cy.wait(1000);
     cy.get(".report-tab #editor")
       .click()
       .focused()
       .type("{ctrl}a")
       .type("Goodbye Original World!");
-    cy.get("#SaveButton").click();
+    cy.get("[data-cy-test-editor='save']").click();
     cy.get("button:contains(Yes)").click();
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.get("#testReports").find("tr").should("have.length", 2);

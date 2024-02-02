@@ -27,7 +27,7 @@ describe("Tests about copying", function () {
     cy.get("[data-cy-debug='selectAll']").click();
     cy.get("[data-cy-debug='openSelected']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
-    cy.get("button#CopyButton").click();
+    cy.get("[data-cy-debug-editor='copy']").click();
     cy.get("[data-cy-nav-tab='testTab']").click();
     // We test that the user does not have to refresh here.
     cy.get("tbody#testReports").find("tr").should("have.length", 1);

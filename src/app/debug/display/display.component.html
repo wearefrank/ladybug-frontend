@@ -2,7 +2,7 @@
   <div *ngIf="displayReport" class="d-flex flex-column">
     <div class="d-flex justify-content-between align-items-center">
       <div class="row" id="displayButtons">
-        <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
+        <app-button data-cy-debug-editor="copy" [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
         <app-button *ngIf="report.encoding === 'Base64'"
                     [text]="'Base64'"
                     [title]="'Convert to Base64'"

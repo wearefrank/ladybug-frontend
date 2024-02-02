@@ -185,13 +185,13 @@ function copyTheReportsToTestTab() {
     "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report) > div",
   ).click();
   cy.wait(100);
-  cy.get("button#CopyButton").click();
+  cy.get("[data-cy-debug-editor='copy']").click();
   cy.wait(100);
   cy.get(
     "#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report) > div",
   ).click();
   cy.wait(100);
-  cy.get("button#CopyButton").click();
+  cy.get("[data-cy-debug-editor='copy']").click();
   cy.wait(1000);
 }
 
