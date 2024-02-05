@@ -21,19 +21,19 @@ describe('Table size and toggle filter', function () {
   it('Typing in a table size and retyping it', function () {
     // We only assume here that the default is two or more.
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
-    cy.get('#displayAmount').type('{selectAll}{del}{enter}');
+    cy.get("[data-cy-debug='displayAmount']").type('{selectAll}{del}{enter}');
     cy.get('.table-responsive tbody').find('tr').should('not.exist');
     // From now on, we type one character at a time. Cypress can type very rapidly.
     // We do not expect our app to catch up without guards.
-    cy.get('#displayAmount').type('{selectAll}1{enter}');
+    cy.get("[data-cy-debug='displayAmount']").type('{selectAll}1{enter}');
     cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
-    cy.get('#displayAmount').type("{backspace}{enter}");
+    cy.get("[data-cy-debug='displayAmount']").type("{backspace}{enter}");
     cy.get('.table-responsive tbody').find('tr').should('not.exist');
-    cy.get('#displayAmount').type("{selectAll}2{enter}");
+    cy.get("[data-cy-debug='displayAmount']").type("{selectAll}2{enter}");
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
-    cy.get('#displayAmount').type("{backspace}{enter}");
+    cy.get("[data-cy-debug='displayAmount']").type("{backspace}{enter}");
     cy.get('.table-responsive tbody').find('tr').should('not.exist');
-    cy.get('#displayAmount').type("{selectAll}9{enter}")
+    cy.get("[data-cy-debug='displayAmount']").type("{selectAll}9{enter}")
     cy.get('.table-responsive tbody').find('tr').should('have.length', 2)
   })
 

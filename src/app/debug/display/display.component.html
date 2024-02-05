@@ -2,7 +2,7 @@
   <div *ngIf="displayReport" class="d-flex flex-column">
     <div class="d-flex justify-content-between align-items-center">
       <div class="row" id="displayButtons">
-        <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
+        <app-button data-cy-debug-editor="copy" [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
         <app-button *ngIf="report.encoding === 'Base64'"
                     [text]="'Base64'"
                     [title]="'Convert to Base64'"
@@ -22,7 +22,7 @@
           </div>
         </div>
 
-        <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
+        <app-button data-cy-debug-editor="close" [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
         <button data-cy-open-metadata-table
                 class="btn btn-info my-2 mx-1 px-3"
                 title="Open metadata table"

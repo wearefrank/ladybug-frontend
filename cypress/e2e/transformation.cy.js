@@ -8,8 +8,8 @@ describe("Report transformation", () => {
     cy.get("[data-cy-debug='openSettings']").click();
     // Factory reset in settings dialog. Resets
     // transformation to factory value.
-    cy.get('button[title ^= "Reset and save factory settings"]').click();
-    cy.get("button[id=saveTableSettings]").click();
+    cy.get("[data-cy-settings='factoryReset']").click();
+    cy.get("[data-cy-settings='saveChanges']").click();
   });
 
   it("Update transformation", function () {
@@ -25,7 +25,7 @@ describe("Report transformation", () => {
     cy.get(
       "input[type=checkbox][formcontrolname=transformationEnabled]"
     ).check();
-    cy.get("button[id=saveTableSettings]").click();
+    cy.get("[data-cy-settings='saveChanges']").click();
     cy.createOtherReport();
     cy.get("[data-cy-debug='refresh']").click();
 

@@ -2,7 +2,7 @@
   <div class="row" id="treeButtons" *ngIf="treeReference">
     <app-button [icon]="'fa fa-expand'" [title]="'Expand All'" (click)="expandAll()"></app-button>
     <app-button [icon]="'fa fa-compress'" [title]="'Collapse All'" (click)="collapseAll()"></app-button>
-    <app-button [icon]="'fa fa-times'" [title]="'Close All'" (click)="closeEntireTree()"></app-button>
+    <app-button data-cy-debug-tree="closeAll" [icon]="'fa fa-times'" [title]="'Close All'" (click)="closeEntireTree()"></app-button>
     <div ngbDropdown title="Download">
       <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTree" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>

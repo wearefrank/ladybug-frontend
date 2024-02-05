@@ -4,7 +4,7 @@ describe("Test labels", function () {
   });
 
   afterEach(function () {
-    cy.get('button[id="CloseAllButton"]').click();
+    cy.get("[data-cy-debug-tree='closeAll']").click();
   });
 
   it("Test label null", function () {

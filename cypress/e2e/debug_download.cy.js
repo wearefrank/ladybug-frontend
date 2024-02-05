@@ -71,7 +71,7 @@ describe("Debug tab download", function () {
             console.log(
               `Have transformed content length ${fileContent.length}`
             );
-            cy.get("input#uploadFileTable").attachFile({
+            cy.get("[data-cy-debug='upload']").attachFile({
               fileContent,
               fileName: newFile,
             });
@@ -126,7 +126,7 @@ describe("Debug tab download", function () {
             .then((buffer) => {
               cy.log(`Number of read bytes: ${buffer.length}`);
             });
-          cy.get('button[id="CloseAllButton"]').click();
+          cy.get("[data-cy-debug-tree='closeAll']").click();
           cy.get("#debug-tree .jqx-tree-dropdown-root > li").should(
             "have.length",
             0
@@ -134,7 +134,7 @@ describe("Debug tab download", function () {
           cy.readFile(cy.functions.downloadPath(newFile), "binary")
             .then(Cypress.Blob.binaryStringToBlob)
             .then((fileContent) => {
-              cy.get("input#uploadFileTable").attachFile({
+              cy.get("[data-cy-debug='upload']").attachFile({
                 fileContent,
                 fileName: newFile,
               });
@@ -219,7 +219,7 @@ function testDownloadFromNode(nodeNum) {
           .then((buffer) => {
             cy.log(`Number of read bytes: ${buffer.length}`);
           });
-        cy.get('button[id="CloseAllButton"]').click();
+        cy.get("[data-cy-debug-tree='closeAll']").click();
         cy.get("#debug-tree .jqx-tree-dropdown-root > li").should(
           "have.length",
           0
@@ -227,7 +227,7 @@ function testDownloadFromNode(nodeNum) {
         cy.readFile(cy.functions.downloadPath(newFile), "binary")
           .then(Cypress.Blob.binaryStringToBlob)
           .then((fileContent) => {
-            cy.get("input#uploadFileTable").attachFile({
+            cy.get("[data-cy-debug='upload']").attachFile({
               fileContent,
               fileName: newFile,
             });
