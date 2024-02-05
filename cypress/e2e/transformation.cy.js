@@ -8,7 +8,7 @@ describe("Report transformation", () => {
     cy.get("[data-cy-debug='openSettings']").click();
     // Factory reset in settings dialog. Resets
     // transformation to factory value.
-    cy.get("[data-cy-settings='factorySettings']").click();
+    cy.get("[data-cy-settings='factoryReset']").click();
     cy.get("[data-cy-settings='saveChanges']").click();
   });
 
