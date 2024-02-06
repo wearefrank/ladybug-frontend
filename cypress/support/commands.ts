@@ -159,11 +159,11 @@ Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
   cy.visit('');
   cy.get('[data-cy-nav-tab="testTab"]').click();
   cy.wait(2000);
-  cy.get('#SelectAllButton').click();
-  cy.get('#DeleteSelectedButton').click();
-  console.log(Cypress.$('#confirmDeletion'));
-  if (Cypress.$('#confirmDeletion').length > 0) {
-    cy.get('#confirmDeletion').should('exist');
+  cy.get("[data-cy-test='selectAll']").click();
+  cy.get("[data-cy-test='deleteSelected']").click();
+  console.log(Cypress.$("[data-cy-delete-modal='confirm']"));
+  if (Cypress.$("[data-cy-delete-modal='confirm']").length > 0) {
+    cy.get("[data-cy-delete-modal='confirm']").should('exist');
   }
   cy.visit('');
 });
