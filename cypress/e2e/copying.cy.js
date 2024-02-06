@@ -14,10 +14,10 @@ describe("Tests about copying", function () {
   it("Copy report to test tab", () => {
     cy.visit("");
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.checkTableNumRows(0);
+    cy.checkTestTableNumRows(0);
     cy.createReport();
     cy.get("[data-cy-nav-tab='debugTab']").click();
-    cy.checkTableNumRows(0);
+    cy.checkTestTableNumRows(0);
     cy.get("[data-cy-debug='refresh']").click();
     cy.checkTableNumRows(1);
     cy.get("[data-cy-debug='selectAll']").click();
@@ -26,7 +26,7 @@ describe("Tests about copying", function () {
     cy.get("[data-cy-debug-editor='copy']").click();
     cy.get("[data-cy-nav-tab='testTab']").click();
     // We test that the user does not have to refresh here.
-    cy.checkTableNumRows(1);
+    cy.checkTestTableNumRows(1);
     cy.get("tbody#testReports")
       .find("tr")
       .contains("/Simple report")
@@ -36,7 +36,7 @@ describe("Tests about copying", function () {
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     cy.get("[data-cy-nav-tab='testTab']").click();
     // Do not refresh. The test tab should have saved its state.
-    cy.checkTableNumRows(1);
+    cy.checkTestTableNumRows(1);
     cy.get("tbody#testReports")
       .find("tr")
       .contains("/Simple report")

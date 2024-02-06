@@ -12,7 +12,7 @@ describe("Tests with one report", function () {
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     cy.get("[data-cy-debug-editor='copy']").click();
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports tr").should("have.length", 1);
+    cy.checkTestTableNumRows(1);
   });
 
   afterEach(function () {
@@ -29,7 +29,7 @@ describe("Tests with one report", function () {
     cy.get("[data-cy-test='selectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal='confirm']").click();
-    cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 0);
+    cy.checkTestTableNumRows(0);
     cy.get("[data-cy-nav-tab='debugTab']").click();
   });
 
@@ -38,7 +38,7 @@ describe("Tests with one report", function () {
   xit("Test copy in testtab", function () {
     // cy.functions.testTabSelectReportNamed('Simple report');
     cy.get("#CopySelectedButton").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
     cy.get("#testReports")
       .find("tr")
       .each(function ($report) {
@@ -77,7 +77,7 @@ describe("Tests with one report", function () {
     cy.get("[data-cy-test-editor='save']").click();
     cy.get("button:contains(Yes)").click();
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
     cy.get("#testReports tr:eq(0)").find("#RunreportButton").click();
     cy.get("#testReports")
       .find("tr:eq(0)")

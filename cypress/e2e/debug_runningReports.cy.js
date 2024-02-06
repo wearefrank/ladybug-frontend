@@ -24,7 +24,7 @@ describe('Test running reports', function() {
       cy.contains('Reports in progress: 2');
       cy.get("[data-cy-debug='refresh']").click();
       cy.wait(100);
-      cy.get('#metadataTable tbody').find('tr').should('not.exist');
+      cy.checkTableNumRows(0);
       cy.get("[data-cy-debug='openInProgressNo']").type('{backspace}');
       cy.get("[data-cy-debug='openInProgressNo']").should('have.text', '');
       cy.get("[data-cy-debug='openInProgressNo']").type('1');

@@ -19,7 +19,7 @@ describe("About the Test tab", function () {
     cy.get("[data-cy-debug-tree='closeAll']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 0);
+    cy.checkTestTableNumRows(0);
     cy.get("[data-cy-nav-tab='debugTab']").click();
     const downloadsFolder = Cypress.config("downloadsFolder");
     // cy.task("deleteDownloads", {
@@ -30,7 +30,7 @@ describe("About the Test tab", function () {
 
   it("Test deleting a report", () => {
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
     cy.functions.testTabDeselectReportNamed("/Another simple report");
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal='confirm']").click();
@@ -47,25 +47,25 @@ describe("About the Test tab", function () {
 
   it("Test select all by deleting", function () {
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
 
     cy.get("[data-cy-test='selectAll']").click();
     checkTestTabTwoReportsSelected();
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal='confirm']").click();
-    cy.get("#testReports").find("tr").should("have.length", 0);
+    cy.checkTestTableNumRows(0);
   });
 
   it("Test deselect all", function () {
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.wait(100);
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
     cy.get("[data-cy-test='selectAll']").click();
     checkTestTabTwoReportsSelected();
     cy.get("[data-cy-test='deselectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.wait(1000);
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
     cy.get("[data-cy-test='selectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal='confirm']").click();
@@ -77,7 +77,7 @@ describe("About the Test tab", function () {
   xit("Download and upload", function () {
     const downloadsFolder = Cypress.config("downloadsFolder");
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
     cy.get("[data-cy-test='selectAll']").click();
     cy.task("downloads", downloadsFolder).then((filesBefore) => {
       cy.get("#DownloadBinaryButton").click();
@@ -115,7 +115,7 @@ describe("About the Test tab", function () {
           });
       });
     });
-    cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 4);
+    cy.checkTestTableNumRows(4);
     cy.get("#testReports tr td:nth-child(3):contains(/Simple report)").should(
       "have.length",
       2,
