@@ -47,7 +47,7 @@
             <th>Options</th>
           </tr>
         </thead>
-        <tbody id="testReports">
+        <tbody data-cy-test="table" id="testReports">
         <ng-container *ngFor="let report of sortByName()" class="form-inline">
           <tr *ngIf="matches(report)">
               <td>

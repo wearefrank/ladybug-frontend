@@ -34,12 +34,7 @@ describe("About the Test tab", function () {
     cy.functions.testTabDeselectReportNamed("/Another simple report");
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal='confirm']").click();
-    cy.get("#testReports")
-      .find("tr")
-      .should("have.length", 1)
-      .within(function ($reports) {
-        cy.wrap($reports).contains("/Another simple report");
-      });
+    cy.checkTestTableReportsAre(["Another simple report"]);
     cy.get("[data-cy-test='selectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal='confirm']").click();
@@ -116,12 +111,12 @@ describe("About the Test tab", function () {
       });
     });
     cy.checkTestTableNumRows(4);
-    cy.get("#testReports tr td:nth-child(3):contains(/Simple report)").should(
+    cy.get("[data-cy-test='table'] tr td:nth-child(3):contains(/Simple report)").should(
       "have.length",
       2,
     );
     cy.get(
-      "#testReports tr td:nth-child(3):contains(/Another simple report)",
+      "[data-cy-test='table'] tr td:nth-child(3):contains(/Another simple report)",
     ).should("have.length", 2);
   });
 
@@ -129,7 +124,7 @@ describe("About the Test tab", function () {
   // it('Download from tab test, upload to tab debug', function() {
   //   const downloadsFolder = Cypress.config('downloadsFolder');
   //   cy.get('li#testTab').click();
-  //   cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
+  //   cy.get('[data-cy-test='table']').find('tr').should('have.length', 2).within(function($reports) {
   //     cy.wrap($reports).contains('/Simple report').should('have.length', 1);
   //     cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
   //   });
@@ -196,7 +191,7 @@ function copyTheReportsToTestTab() {
 }
 
 function checkTestTabTwoReportsSelected() {
-  cy.get("#testReports tr [type=checkbox]")
+  cy.get("[data-cy-test='table'] tr [type=checkbox]")
     .should("have.length", 2)
     .each(($checkbox) => {
       cy.wrap($checkbox).should("be.checked");

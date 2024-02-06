@@ -181,5 +181,15 @@ Cypress.Commands.add('checkTableNumRows', n => {
 })
 
 Cypress.Commands.add('checkTestTableNumRows', n => {
-  cy.get("#testReports tr", { timeout: 10000 }).should("have.length", n);
+  cy.get("[data-cy-test='table'] tr", { timeout: 10000 }).should("have.length", n);
+})
+
+Cypress.Commands.add('checkTestTableReportsAre', reportNames => {
+  cy.checkTestTableNumRows(reportNames.length);
+  reportNames.forEach(reportName => {
+    cy.get("[data-cy-test='table']")
+    .find("tr")
+    .contains("/" + reportName)
+    .should("have.length", 1);
+  })
 })
