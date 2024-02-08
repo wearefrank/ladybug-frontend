@@ -61,7 +61,7 @@
   <div [hidden]="doneRetrieving">
     <mat-spinner [mode]="'indeterminate'" [diameter]="30"></mat-spinner>
   </div>
-  <div [hidden]="!doneRetrieving" class="table-responsive" id="metadataTable">
+  <div data-cy-debug="table" [hidden]="!doneRetrieving" class="table-responsive" id="metadataTable">
     <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)" [style.font-size]="getFontSize()">
       <thead id="table-header">
         <tr>
@@ -82,7 +82,7 @@
           </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody data-cy-debug="tableBody">
         <tr class="table-row" *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index"
             (click)="highLightRow(i);"
             [ngClass]="{'highlight': selectedRow === i}"

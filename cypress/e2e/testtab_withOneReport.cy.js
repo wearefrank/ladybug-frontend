@@ -9,7 +9,7 @@ describe("Tests with one report", function () {
     cy.visit("");
     cy.get("[data-cy-debug='selectAll']").click();
     cy.get("[data-cy-debug='openSelected']").click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 1);
     cy.get("[data-cy-debug-editor='copy']").click();
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.checkTestTableNumRows(1);
@@ -22,7 +22,7 @@ describe("Tests with one report", function () {
     // Wait for debug tab to be rendered
     cy.wait(1000);
     cy.get("[data-cy-debug-tree='closeAll']").click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 0);
     cy.get("[data-cy-nav-tab='testTab']").click();
     // Give UI time to build up the test tab.
     cy.wait(1000);

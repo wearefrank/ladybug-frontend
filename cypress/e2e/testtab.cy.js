@@ -17,7 +17,7 @@ describe("About the Test tab", function () {
     cy.clearDebugStore();
     cy.get("[data-cy-nav-tab='debugTab']").click();
     cy.get("[data-cy-debug-tree='closeAll']").click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 0);
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.checkTestTableNumRows(0);
     cy.get("[data-cy-nav-tab='debugTab']").click();
@@ -144,7 +144,7 @@ describe("About the Test tab", function () {
   //       });
   //       cy.get('li#debugTab').click();
   //       // Wait for the front-end to complete showing the page
-  //       cy.get('#debug-tree .jqx-tree-dropdown-root li').should('have.length', 2);
+  //       cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li').should('have.length', 2);
   //       cy.readFile(cy.functions.downloadPath(newFile), 'binary')
   //       .then((rawContent) => {
   //         console.log(`Have content of uploaded file, length ${rawContent.length}`);
@@ -157,8 +157,8 @@ describe("About the Test tab", function () {
   //           fileName: newFile
   //         });
   //       });
-  //       cy.get('#debug-tree .jqx-tree-dropdown-root li').should('have.length', 3);
-  //       cy.get('#debug-tree .jqx-tree-dropdown-root li:contains(Simple report)').should('have.length', 2);
+  //       cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li').should('have.length', 3);
+  //       cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li:contains(Simple report)').should('have.length', 2);
   //     });
   //   });
   // });
@@ -174,16 +174,16 @@ function copyTheReportsToTestTab() {
   // was flaky because the selectIfNotSelected() custom command accessed
   // a detached DOM element.
   cy.wait(100);
-  cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 2);
+  cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 2);
   cy.wait(100);
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report) > div",
+    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Simple report) > div",
   ).click();
   cy.wait(100);
   cy.get("[data-cy-debug-editor='copy']").click();
   cy.wait(100);
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report) > div",
+    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Another simple report) > div",
   ).click();
   cy.wait(100);
   cy.get("[data-cy-debug-editor='copy']").click();

@@ -170,11 +170,11 @@ Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
 
 Cypress.Commands.add('checkTableNumRows', n => {
   if(n === 0) {
-    cy.get("#metadataTable tbody")
+    cy.get("[data-cy-debug='tableBody']")
       .find("tr", { timeout: 10000 })
       .should("not.exist");
   } else {
-    cy.get("#metadataTable tbody", { timeout: 10000 })
+    cy.get("[data-cy-debug='tableBody']", { timeout: 10000 })
       .find("tr", { timeout: 10000 })
       .should("have.length", n);
   }

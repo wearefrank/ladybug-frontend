@@ -31,7 +31,7 @@ describe("Debug tab download", function () {
   xit("Download and upload table", function () {
     const downloadsFolder = Cypress.config("downloadsFolder");
     cy.task("downloads", downloadsFolder).then((filesBefore) => {
-      cy.get(".table-responsive table tbody")
+      cy.get("[data-cy-debug='tableBody']")
         .find("tr")
         .should("have.length", 2);
       cy.get("#dropdownDownloadTable").click();
@@ -55,8 +55,8 @@ describe("Debug tab download", function () {
         cy.clearDebugStore();
         cy.get("[data-cy-debug='refresh']").click();
         cy.wait(100);
-        cy.get(".table-responsive tbody").find("tr").should("not.exist");
-        cy.get("#debug-tree .jqx-tree-dropdown-root > li").should(
+        cy.get("[data-cy-debug='tableBody']").find("tr").should("not.exist");
+        cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
           "have.length",
           0
         );
@@ -76,11 +76,11 @@ describe("Debug tab download", function () {
               fileName: newFile,
             });
           });
-        cy.get("#debug-tree .jqx-tree-dropdown-root > li").should(
+        cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
           "have.length",
           0
         );
-        cy.get("#debug-tree .jqx-tree-dropdown-root > li").should(
+        cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
           "have.length",
           2
         );
@@ -92,15 +92,15 @@ describe("Debug tab download", function () {
   // TODO: Fix issue and re-enable test.
   xit("Download all open reports", function () {
     const downloadsFolder = Cypress.config("downloadsFolder");
-    cy.get(".table-responsive tbody").find("tr").should("have.length", 2);
+    cy.get("[data-cy-debug='tableBody']").find("tr").should("have.length", 2);
     cy.get("[data-cy-debug='selectAll']").click();
     cy.get("[data-cy-debug='openSelected']").click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 2);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 2);
     cy.get(
-      "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report)"
+      "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Simple report)"
     ).should("have.length", 1);
     cy.get(
-      "#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report)"
+      "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Another simple report)"
     ).should("have.length", 1);
     // Debug store should not be cleared, because the report being downloaded
     // is requested here from the backend. The backend should still have the
@@ -127,7 +127,7 @@ describe("Debug tab download", function () {
               cy.log(`Number of read bytes: ${buffer.length}`);
             });
           cy.get("[data-cy-debug-tree='closeAll']").click();
-          cy.get("#debug-tree .jqx-tree-dropdown-root > li").should(
+          cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
             "have.length",
             0
           );
@@ -141,12 +141,12 @@ describe("Debug tab download", function () {
             });
         });
       });
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 2);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 2);
     cy.get(
-      "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report)"
+      "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Simple report)"
     ).should("have.length", 1);
     cy.get(
-      "#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report)"
+      "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Another simple report)"
     ).should("have.length", 1);
   });
 
@@ -172,15 +172,15 @@ describe("Debug tab download", function () {
 function testDownloadFromNode(nodeNum) {
   const downloadsFolder = Cypress.config("downloadsFolder");
   cy.wait(100);
-  cy.get(".table-responsive tbody").find("tr").should("have.length", 2);
+  cy.get("[data-cy-debug='tableBody']").find("tr").should("have.length", 2);
   cy.get("[data-cy-debug='selectAll']").click();
   cy.get("[data-cy-debug='openSelected']").click();
-  cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 2);
+  cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 2);
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report)"
+    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Simple report)"
   ).should("have.length", 1);
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report)"
+    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Another simple report)"
   ).should("have.length", 1);
   // Debug store should not be cleared, because the report being downloaded
   // is requested here from the backend. The backend should still have the
@@ -188,7 +188,7 @@ function testDownloadFromNode(nodeNum) {
   //
   // We can not click the node to select it because it is selected already.
   // If we click, we unselect it and then no node is selected anymore.
-  let string = "";
+  let string = ""
   for (let i = 0; i < nodeNum; i++) {
     string += "> ul > li";
   }
@@ -220,7 +220,7 @@ function testDownloadFromNode(nodeNum) {
             cy.log(`Number of read bytes: ${buffer.length}`);
           });
         cy.get("[data-cy-debug-tree='closeAll']").click();
-        cy.get("#debug-tree .jqx-tree-dropdown-root > li").should(
+        cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
           "have.length",
           0
         );
@@ -234,11 +234,11 @@ function testDownloadFromNode(nodeNum) {
           });
       });
     });
-  cy.get("#debug-tree .jqx-tree-dropdown-root > li", { timeout: 10000 }).should(
+  cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li", { timeout: 10000 }).should(
     "have.length",
     1
   );
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report):not(:contains(other))"
+    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Simple report):not(:contains(other))"
   ).should("have.length", 1);
 }

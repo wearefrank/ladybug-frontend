@@ -22,7 +22,7 @@ describe("Clicking a report", function () {
     // We can then check whether the screenshots are saved as artifacts by GitHub.
     cy.screenshot();
     // cy.get('#treeButtons').should('not.be.visible')
-    cy.get(".table-responsive tbody").find("tr").first().click();
+    cy.get("[data-cy-debug='tableBody']").find("tr").first().click();
     cy.get("#treeButtons").should("be.visible");
   });
 
@@ -30,7 +30,7 @@ describe("Clicking a report", function () {
     cy.screenshot();
     cy.get("#displayButtons").should("not.exist");
     cy.get('[data-cy-element-name="editor"]').should("not.exist");
-    cy.get(".table-responsive tbody").find("tr").first().click();
+    cy.get("[data-cy-debug='tableBody']").find("tr").first().click();
     cy.get("#displayButtons").should("be.visible");
     cy.get('[data-cy-element-name="editor"]').should("be.visible");
   });

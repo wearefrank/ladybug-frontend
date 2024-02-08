@@ -11,11 +11,11 @@ describe('Report generator', function() {
 
   it('disable and enable', function() {
     cy.visit('');
-    cy.get('.table-responsive tbody').find('tr').should('not.exist');
+    cy.get("[data-cy-debug='tableBody']").find('tr').should('not.exist');
     cy.createReport();
     cy.get("[data-cy-debug='refresh']").click();
     cy.wait(100);
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
+    cy.get("[data-cy-debug='tableBody']").find('tr').should('have.length', 1);
     cy.get("[data-cy-debug='openSettings']").click();
     cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
     cy.get('select[formcontrolname=generatorEnabled]').select('Disabled').should('have.value', 'Disabled');
@@ -27,7 +27,7 @@ describe('Report generator', function() {
     // before refresh.
     cy.get("[data-cy-debug='refresh']").click();
     cy.wait(100);
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 1);
+    cy.get("[data-cy-debug='tableBody']").find('tr').should('have.length', 1);
     cy.get("[data-cy-debug='openSettings']").click();
     cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
     cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
@@ -36,6 +36,6 @@ describe('Report generator', function() {
     cy.createOtherReport();
     cy.get("[data-cy-debug='refresh']").click();
     cy.wait(100);
-    cy.get('.table-responsive tbody').find('tr').should('have.length', 2);
+    cy.get("[data-cy-debug='tableBody']").find('tr').should('have.length', 2);
   });
 });
