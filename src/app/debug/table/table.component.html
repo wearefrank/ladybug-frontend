@@ -1,10 +1,10 @@
-<div class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
+<div data-cy-debug="root" class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
   <div class="row">
     <app-button data-cy-debug="refresh" [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button data-cy-debug="openSettings" [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
     <app-button data-cy-debug="filter" [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
-      <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
+      <button data-cy-debug="download" class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
       </button>
       <div ngbDropdownMenu aria-labelledby="dropdownDownloadTable">
@@ -71,13 +71,13 @@
           <th class="text-center header-cell header-padding" *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
               mat-sort-header="{{i}}" [title]="header">{{getShortenedTableHeaderNames(header)}}</th>
         </tr>
-        <tr id="filterRow" *ngIf="tableSettings.showFilter">
+        <tr data-cy-debug="tableFilterRow" id="filterRow" *ngIf="tableSettings.showFilter">
           <th class="vertical-middle">
             <app-button [icon]="'fa fa-undo'" [title]="'Clear filters'" (click)="clearFilters()"></app-button>
           </th>
           <th *ngFor="let header of viewSettings.currentView.metadataNames" class="filter-header">
             <div class="input-group">
-              <input type="text" id="filter"  title="{{tableSettings.metadataHeaders[header]}}" class="form-control" placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header)">
+              <input data-cy-debug="tableFilter" type="text" id="filter"  title="{{tableSettings.metadataHeaders[header]}}" class="form-control" placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header)">
             </div>
           </th>
         </tr>

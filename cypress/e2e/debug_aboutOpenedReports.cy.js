@@ -179,7 +179,7 @@ function checkNodeInfo(name) {
     "CheckpointUID"
   );
   cy.get("[data-cy-metadata-table='table'] tr:eq(5) td:eq(1)").should("not.be.empty");
-  cy.get("data-cy-debug-tree='root' > ul > li:contains(${name}):eq(2)").click();
+  cy.get("[data-cy-debug-tree='root'] > ul > li:contains(${name}):eq(2)").click();
   const goodbyeWorld = "Goodbye\xa0World!";
   cy.getShownMonacoModelElement().find(`span:contains(${goodbyeWorld})`);
   cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(0)").should("have.text", "Name");

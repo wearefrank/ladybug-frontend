@@ -34,8 +34,8 @@ describe("Debug tab download", function () {
       cy.get("[data-cy-debug='tableBody']")
         .find("tr")
         .should("have.length", 2);
-      cy.get("#dropdownDownloadTable").click();
-      cy.get("#tableContent")
+      cy.get("[data-cy-debug='download']").click();
+      cy.get("[data-cy-debug='root']")
         .find('button:contains("XML & Binary")[class="dropdown-item"]')
         .click();
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
@@ -108,9 +108,9 @@ describe("Debug tab download", function () {
     cy.task("downloads", downloadsFolder)
       .should("have.length.at.least", 0)
       .then((filesBefore) => {
-        cy.get("#dropdownDownloadTree").click();
+        cy.get("[data-cy-debug-tree='download']").click();
         cy.get(
-          '#treeButtons button:contains("XML & Binary")[class="dropdown-item"]'
+          "[data-cy-debug-tree='buttons'] button:contains('XML & Binary')[class='dropdown-item']"
         ).click();
         cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
         cy.task("downloads", downloadsFolder).then((filesAfter) => {
@@ -201,7 +201,7 @@ function testDownloadFromNode(nodeNum) {
   cy.task("downloads", downloadsFolder)
     .should("have.length", 1)
     .then((filesBefore) => {
-      cy.get("#dropdownDownloadDisplay").click();
+      cy.get("[data-cy-debug-editor='download']").click();
       cy.get(
         "[data-cy-debug-editor='buttons'] button:contains('Binary'):not(:contains('XML'))[class='dropdown-item']"
       ).click();
