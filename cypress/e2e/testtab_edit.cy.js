@@ -32,7 +32,7 @@ describe("Edit tests", function () {
     cy.get("[data-cy-test-editor='edit']").click();
     cy.wait(1000);
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get(".report-tab #editor")
+    cy.get("[data-cy-test-editor='editor']")
       .click()
       .focused()
       .type("{ctrl}a")
@@ -49,7 +49,7 @@ describe("Edit tests", function () {
     cy.wait(1000);
     cy.get("[data-cy-test-editor='edit']").click();
     cy.wait(1000);
-    cy.get(".report-tab #editor")
+    cy.get("[data-cy-test-editor='editor']")
       .click()
       .focused()
       .type("{ctrl}a")
@@ -67,7 +67,7 @@ describe("Edit tests", function () {
     cy.wait(1000);
     // Do not press Edit button
     cy.get("[data-cy-test-editor='save']").should("have.length", 0);
-    cy.get(".report-tab #editor").click().type("x");
+    cy.get("[data-cy-test-editor='editor']").click().type("x");
     cy.get("#readyOnlyLabel").contains("OFF");
     cy.get(".message").should("have.length", 0);
   });
@@ -80,7 +80,7 @@ describe("Edit tests", function () {
     cy.get("#readyOnlyLabel").contains("ON");
     cy.wait(1000);
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get(".report-tab #editor")
+    cy.get("[data-cy-test-editor='editor']")
       .click()
       .focused()
       .type("{ctrl}a")

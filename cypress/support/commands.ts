@@ -119,7 +119,7 @@ Cypress.Commands.add(
 );
 
 function getShownMonacoModelElement() {
-  cy.get('#editor [data-keybinding-context]').within(
+  cy.get("[data-cy-test-editor='editor'] [data-keybinding-context]").within(
     (monacoEditor: JQuery<HTMLElement>) => {
       const keybindingNumber = Number.parseInt(
         monacoEditor.attr('data-keybinding-context'),

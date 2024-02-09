@@ -53,7 +53,7 @@ describe("Tests with one report", function () {
     cy.wait(1000);
     cy.get("[data-cy-test-editor='edit']").click();
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get(".report-tab #editor")
+    cy.get("[data-cy-test-editor='editor']")
       .click()
       .focused()
       .type("{ctrl}a")
@@ -69,7 +69,7 @@ describe("Tests with one report", function () {
     cy.wait(1000);
     cy.get("[data-cy-test-editor='edit']").click();
     cy.wait(1000);
-    cy.get(".report-tab #editor")
+    cy.get("[data-cy-test-editor='editor']")
       .click()
       .focused()
       .type("{ctrl}a")
