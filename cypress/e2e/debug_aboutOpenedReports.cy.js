@@ -21,13 +21,13 @@ describe("About opened reports", function () {
     )
       .first()
       .selectIfNotSelected();
-    cy.get("#CloseButton").click();
+    cy.get("[data-cy-debug-editor='close']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
     // nth-child has an 1-based index
     cy.get("#debug-tree .jqx-tree-dropdown-root > li > div")
       .should("have.text", "Another simple report")
       .click();
-    cy.get("#CloseButton").click();
+    cy.get("[data-cy-debug-editor='close']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
   });
 
@@ -50,7 +50,7 @@ describe("About opened reports", function () {
       "have.text",
       "Another simple report"
     );
-    cy.get('button[id="CloseAllButton"]').click();
+    cy.get("[data-cy-debug-tree='closeAll']").click();
     cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
   });
 

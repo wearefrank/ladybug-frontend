@@ -4,7 +4,7 @@
   </div>
   <div class="col">
     <div class="row">
-      <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runSelected()"></app-button>
+      <app-button data-cy-test="runAll" [icon]="'fa fa-play'" [title]="'Run All'" (click)="runSelected()"></app-button>
       <app-button data-cy-test="refresh" [icon]="'fa fa-refresh'" [title]="'ReloadTestReports'" (click)="loadData(null)"></app-button>
       <app-button [text]="'Reset'" [title]="'Reset'" (click)="resetRunner()"></app-button>
       <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="openSettingsModal()"></app-button>
