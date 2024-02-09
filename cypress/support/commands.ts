@@ -12,7 +12,7 @@
 import Chainable = Cypress.Chainable;
 
 Cypress.Commands.add('initializeApp' as keyof Chainable, () => {
-  //Wait for all get requests to backend
+  //Custom command to initialize app and wait for all api requests
   cy.intercept({
     method: 'GET',
     hostname: 'localhost',
@@ -24,16 +24,33 @@ Cypress.Commands.add('initializeApp' as keyof Chainable, () => {
   );
 });
 
-function createReport() {
+Cypress.Commands.add('navigateToTestTabAndWait' as keyof Chainable, () => {
+  navigateToTabAndWait('test');
+});
+
+Cypress.Commands.add('navigateToDebugTabAndWait' as keyof Chainable, () => {
+  navigateToTabAndWait('debug');
+});
+
+//More string values can be added for each tab that can be opened
+function navigateToTabAndWait(tab: 'debug' | 'test') {
+  const apiCallAlias = `apiCall${tab}Tab`;
+  cy.intercept({ method: 'GET', hostname: 'localhost', url: /\/api\/*?/g }).as(apiCallAlias);
+  cy.visit('');
+  cy.get(`[data-cy-nav-tab="${tab}Tab"]`).click();
+  cy.wait(`@${apiCallAlias}`).then(() => {
+    cy.log('All api requests have completed, ');
+  });
+}
+
+Cypress.Commands.add('createReport' as keyof Chainable, () => {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') + '/index.jsp?createReport=Simple%20report',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
-}
-
-Cypress.Commands.add('createReport' as keyof Chainable, createReport);
+});
 
 function createOtherReport() {
   // No cy.visit because then the API call can happen multiple times.
@@ -169,14 +186,15 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
 
 //Clear reports in test tab if any present
 Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
-  cy.visit('');
-  cy.get('[data-cy-nav-tab="testTab"]').click();
-  cy.wait(2000);
+  cy.navigateToTestTabAndWait();
   cy.get('#SelectAllButton').click();
   cy.get('#DeleteSelectedButton').click();
-  console.log(Cypress.$('#confirmDeletion'));
-  if (Cypress.$('#confirmDeletion').length > 0) {
-    cy.get('#confirmDeletion').should('exist');
+  cy.log('Checking if any reports can be deleted');
+  if (Cypress.$('#testReports tr').length > 0) {
+    cy.get('#confirmDeletion', { timeout: 3000 }).click();
+    cy.log('test reports were deleted');
+  } else {
+    cy.log('confirm deletion modal didnt appear');
   }
   cy.visit('');
 });

@@ -1,23 +1,23 @@
 const path = require('path');
 
-describe('Debug file upload', function() {
+describe('Debug file upload', () => {
   beforeEach(() => {
     cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
-    cy.visit('')
+    cy.initializeApp();
   });
 
-  it('Upload a file to debug', function () {
+  it('Upload a file to debug', () => {
     cy.fixture('testRerun.ttr', 'binary')
       .then(Cypress.Blob.binaryStringToBlob)
       .then(fileContent => {
-        cy.get("[data-cy-debug='upload']").attachFile({
+        cy.get('[data-cy-debug=\'upload\']').attachFile({
           fileContent,
           fileName: 'testRerun.ttr',
         });
       });
 
     cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1);
-  })
+  });
 });

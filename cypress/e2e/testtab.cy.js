@@ -1,12 +1,13 @@
-describe("About the Test tab", function () {
-  beforeEach(() => {});
+describe('About the Test tab', () => {
+  beforeEach(() => {
+  });
 
   beforeEach(() => {
     cy.deleteAllTestReports();
     cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
-    cy.visit("");
+    cy.initializeApp();
     copyTheReportsToTestTab();
     // Give the server time to process the request.
     // TODO: Find a better way to implement this than a timeout.
@@ -15,80 +16,80 @@ describe("About the Test tab", function () {
 
   afterEach(() => {
     cy.clearDebugStore();
-    cy.get("[data-cy-nav-tab='debugTab']").click();
-    cy.get("[data-cy-debug-tree='closeAll']").click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
-    cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 0);
-    cy.get("[data-cy-nav-tab='debugTab']").click();
-    const downloadsFolder = Cypress.config("downloadsFolder");
+    cy.get('[data-cy-nav-tab=\'debugTab\']').click();
+    cy.get('[data-cy-debug-tree=\'closeAll\']').click();
+    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
+    cy.get('[data-cy-nav-tab=\'testTab\']').click();
+    cy.get('#testReports tr', { timeout: 10000 }).should('have.length', 0);
+    cy.get('[data-cy-nav-tab=\'debugTab\']').click();
+    const downloadsFolder = Cypress.config('downloadsFolder');
     // cy.task("deleteDownloads", {
     //   downloadsPath: downloadsFolder,
     //   fileSep: Cypress.env("FILESEP"),
     // });
   });
 
-  it("Test deleting a report", () => {
-    cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
-    cy.functions.testTabDeselectReportNamed("/Another simple report");
-    cy.get("[data-cy-test='deleteSelected']").click();
-    cy.get("[data-cy-delete-modal='confirm']").click();
-    cy.get("#testReports")
-      .find("tr")
-      .should("have.length", 1)
-      .within(function ($reports) {
-        cy.wrap($reports).contains("/Another simple report");
+  it('Test deleting a report', () => {
+    cy.get('[data-cy-nav-tab=\'testTab\']').click();
+    cy.get('#testReports').find('tr').should('have.length', 2);
+    cy.functions.testTabDeselectReportNamed('/Another simple report');
+    cy.get('[data-cy-test=\'deleteSelected\']').click();
+    cy.get('[data-cy-delete-modal=\'confirm\']').click();
+    cy.get('#testReports')
+      .find('tr')
+      .should('have.length', 1)
+      .within(($reports) => {
+        cy.wrap($reports).contains('/Another simple report');
       });
-    cy.get("[data-cy-test='selectAll']").click();
-    cy.get("[data-cy-test='deleteSelected']").click();
-    cy.get("[data-cy-delete-modal='confirm']").click();
+    cy.get('[data-cy-test=\'selectAll\']').click();
+    cy.get('[data-cy-test=\'deleteSelected\']').click();
+    cy.get('[data-cy-delete-modal=\'confirm\']').click();
   });
 
-  it("Test select all by deleting", function () {
-    cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
+  it('Test select all by deleting', () => {
+    cy.get('[data-cy-nav-tab=\'testTab\']').click();
+    cy.get('#testReports').find('tr').should('have.length', 2);
 
-    cy.get("[data-cy-test='selectAll']").click();
+    cy.get('[data-cy-test=\'selectAll\']').click();
     checkTestTabTwoReportsSelected();
-    cy.get("[data-cy-test='deleteSelected']").click();
-    cy.get("[data-cy-delete-modal='confirm']").click();
-    cy.get("#testReports").find("tr").should("have.length", 0);
+    cy.get('[data-cy-test=\'deleteSelected\']').click();
+    cy.get('[data-cy-delete-modal=\'confirm\']').click();
+    cy.get('#testReports').find('tr').should('have.length', 0);
   });
 
-  it("Test deselect all", function () {
-    cy.get("[data-cy-nav-tab='testTab']").click();
+  it('Test deselect all', () => {
+    cy.get('[data-cy-nav-tab=\'testTab\']').click();
     cy.wait(100);
-    cy.get("#testReports").find("tr").should("have.length", 2);
-    cy.get("[data-cy-test='selectAll']").click();
+    cy.get('#testReports').find('tr').should('have.length', 2);
+    cy.get('[data-cy-test=\'selectAll\']').click();
     checkTestTabTwoReportsSelected();
-    cy.get("[data-cy-test='deselectAll']").click();
-    cy.get("[data-cy-test='deleteSelected']").click();
+    cy.get('[data-cy-test=\'deselectAll\']').click();
+    cy.get('[data-cy-test=\'deleteSelected\']').click();
     cy.wait(1000);
-    cy.get("#testReports").find("tr").should("have.length", 2);
-    cy.get("[data-cy-test='selectAll']").click();
-    cy.get("[data-cy-test='deleteSelected']").click();
-    cy.get("[data-cy-delete-modal='confirm']").click();
+    cy.get('#testReports').find('tr').should('have.length', 2);
+    cy.get('[data-cy-test=\'selectAll\']').click();
+    cy.get('[data-cy-test=\'deleteSelected\']').click();
+    cy.get('[data-cy-delete-modal=\'confirm\']').click();
   });
 
   // Fails because of https://github.com/ibissource/ladybug-frontend/issues/249.
   // There is also something strange with the beforeEach() here. After the
   // preparation two reports are expected in the test tab, but there is only one.
-  xit("Download and upload", function () {
-    const downloadsFolder = Cypress.config("downloadsFolder");
-    cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
-    cy.get("[data-cy-test='selectAll']").click();
-    cy.task("downloads", downloadsFolder).then((filesBefore) => {
-      cy.get("#DownloadBinaryButton").click();
+  xit('Download and upload', () => {
+    const downloadsFolder = Cypress.config('downloadsFolder');
+    cy.get('[data-cy-nav-tab=\'testTab\']').click();
+    cy.get('#testReports').find('tr').should('have.length', 2);
+    cy.get('[data-cy-test=\'selectAll\']').click();
+    cy.task('downloads', downloadsFolder).then((filesBefore) => {
+      cy.get('#DownloadBinaryButton').click();
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
-      cy.task("downloads", downloadsFolder).then((filesAfter) => {
+      cy.task('downloads', downloadsFolder).then((filesAfter) => {
         const newFile = filesAfter.filter(
           (file) => !filesBefore.includes(file),
         )[0];
-        expect(newFile).to.contain("Ladybug Test");
-        expect(newFile).to.contain("2 reports");
-        cy.readFile(cy.functions.downloadPath(newFile), "binary", {
+        expect(newFile).to.contain('Ladybug Test');
+        expect(newFile).to.contain('2 reports');
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary', {
           timeout: 15000,
         })
           .should((buffer) => expect(buffer.length).to.be.gt(10))
@@ -97,7 +98,7 @@ describe("About the Test tab", function () {
           });
         // Give the system time to finish downloading
         cy.wait(1000);
-        cy.readFile(cy.functions.downloadPath(newFile), "binary")
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary')
           .then((rawContent) => {
             console.log(
               `Have content of uploaded file, length ${rawContent.length}`,
@@ -108,25 +109,25 @@ describe("About the Test tab", function () {
             console.log(
               `Have transformed content length ${fileContent.length}`,
             );
-            cy.get("input#uploadFileTest").attachFile({
+            cy.get('input#uploadFileTest').attachFile({
               fileContent,
               fileName: newFile,
             });
           });
       });
     });
-    cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 4);
-    cy.get("#testReports tr td:nth-child(3):contains(/Simple report)").should(
-      "have.length",
+    cy.get('#testReports tr', { timeout: 10000 }).should('have.length', 4);
+    cy.get('#testReports tr td:nth-child(3):contains(/Simple report)').should(
+      'have.length',
       2,
     );
     cy.get(
-      "#testReports tr td:nth-child(3):contains(/Another simple report)",
-    ).should("have.length", 2);
+      '#testReports tr td:nth-child(3):contains(/Another simple report)',
+    ).should('have.length', 2);
   });
 
   // TODO : I have no idea what happens here
-  // it('Download from tab test, upload to tab debug', function() {
+  // it('Download from tab test, upload to tab debug', () => {
   //   const downloadsFolder = Cypress.config('downloadsFolder');
   //   cy.get('li#testTab').click();
   //   cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
@@ -171,34 +172,34 @@ describe("About the Test tab", function () {
 
 function copyTheReportsToTestTab() {
   cy.enableShowMultipleInDebugTree();
-  cy.get("[data-cy-debug='selectAll']").click();
-  cy.get("[data-cy-debug='openSelected']").click();
+  cy.get('[data-cy-debug=\'selectAll\']').click();
+  cy.get('[data-cy-debug=\'openSelected\']').click();
   // We test many times already that opening two reports yields six nodes.
   // Adding the test here again has another purpose. We want the DOM to
   // be stable before we go on with the test. Without this guard, the test
   // was flaky because the selectIfNotSelected() custom command accessed
   // a detached DOM element.
   cy.wait(100);
-  cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 2);
+  cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
   cy.wait(100);
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report) > div",
+    '#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report) > div',
   ).click();
   cy.wait(100);
-  cy.get("[data-cy-debug-editor='copy']").click();
+  cy.get('[data-cy-debug-editor=\'copy\']').click();
   cy.wait(100);
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report) > div",
+    '#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report) > div',
   ).click();
   cy.wait(100);
-  cy.get("[data-cy-debug-editor='copy']").click();
+  cy.get('[data-cy-debug-editor=\'copy\']').click();
   cy.wait(1000);
 }
 
 function checkTestTabTwoReportsSelected() {
-  cy.get("#testReports tr [type=checkbox]")
-    .should("have.length", 2)
+  cy.get('#testReports tr [type=checkbox]')
+    .should('have.length', 2)
     .each(($checkbox) => {
-      cy.wrap($checkbox).should("be.checked");
+      cy.wrap($checkbox).should('be.checked');
     });
 }
