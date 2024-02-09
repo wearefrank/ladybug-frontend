@@ -10,9 +10,9 @@ cy.functions = {
             cy.log('Name of report is: ' + reportName);
             if(reportName.includes(nameToSelect)) {
                 cy.log('Found checkbox of report with name name, checking it');
-                cy.wrap($reportRow).find('[type=checkbox]').uncheck();
+                cy.wrap($reportRow).find("[type=checkbox]").uncheck();
             };
-            cy.get('#testReportTable tr [type=checkbox]:checked').should('have.length', 1);
+            cy.get("[data-cy-test='reportChecked']:checked").should('have.length', 1);
             cy.wait(1000);
         });
     }

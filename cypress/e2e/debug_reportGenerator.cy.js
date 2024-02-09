@@ -4,8 +4,8 @@ describe('Report generator', function() {
   })
   afterEach(function() {
     cy.get("[data-cy-debug='openSettings']").should('be.visible').click();
-    cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
-    cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
+    cy.get("[role=dialog]").should("be.visible", {timeout: 10000});
+    cy.get("select[formcontrolname=generatorEnabled]").select('Enabled').should('have.value', 'Enabled');
     cy.get("[data-cy-settings='saveChanges']").click();
   });
 
@@ -17,8 +17,8 @@ describe('Report generator', function() {
     cy.wait(100);
     cy.get("[data-cy-debug='tableBody']").find('tr').should('have.length', 1);
     cy.get("[data-cy-debug='openSettings']").click();
-    cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
-    cy.get('select[formcontrolname=generatorEnabled]').select('Disabled').should('have.value', 'Disabled');
+    cy.get("[role=dialog]").should("be.visible", {timeout: 10000});
+    cy.get("select[formcontrolname=generatorEnabled]").select('Disabled').should('have.value', 'Disabled');
     cy.get("[data-cy-settings='saveChanges']").click();
     cy.contains('Settings saved', {timeout: 10000});
     cy.createOtherReport();
@@ -29,7 +29,7 @@ describe('Report generator', function() {
     cy.wait(100);
     cy.get("[data-cy-debug='tableBody']").find('tr').should('have.length', 1);
     cy.get("[data-cy-debug='openSettings']").click();
-    cy.get('[role=dialog]').should('be.visible', {timeout: 10000});
+    cy.get("[role=dialog]").should("be.visible", {timeout: 10000});
     cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
     cy.get("[data-cy-settings='saveChanges']").click();
     cy.contains('Settings saved', {timeout: 10000});

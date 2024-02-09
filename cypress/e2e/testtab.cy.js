@@ -75,7 +75,7 @@ describe("About the Test tab", function () {
     cy.checkTestTableNumRows(2);
     cy.get("[data-cy-test='selectAll']").click();
     cy.task("downloads", downloadsFolder).then((filesBefore) => {
-      cy.get("#DownloadBinaryButton").click();
+      cy.get("[data-cy-test='downloadBinary']").click();
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
       cy.task("downloads", downloadsFolder).then((filesAfter) => {
         const newFile = filesAfter.filter(
@@ -103,7 +103,7 @@ describe("About the Test tab", function () {
             console.log(
               `Have transformed content length ${fileContent.length}`,
             );
-            cy.get("input#uploadFileTest").attachFile({
+            cy.get("[data-cy-test='uploadFile']").attachFile({
               fileContent,
               fileName: newFile,
             });
@@ -123,15 +123,15 @@ describe("About the Test tab", function () {
   // TODO : I have no idea what happens here
   // it('Download from tab test, upload to tab debug', function() {
   //   const downloadsFolder = Cypress.config('downloadsFolder');
-  //   cy.get('li#testTab').click();
-  //   cy.get('[data-cy-test='table']').find('tr').should('have.length', 2).within(function($reports) {
+  //   cy.get("li#testTab").click();
+  //   cy.get("[data-cy-test='table']").find("tr").should("have.length", 2).within(function($reports) {
   //     cy.wrap($reports).contains('/Simple report').should('have.length', 1);
   //     cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
   //   });
   //   cy.functions.testTabSelectReportNamed('Simple report');
   //   cy.task('downloads', downloadsFolder).then(filesBefore => {
   //     cy.log('Before download, downloads folder contains files: ' + filesBefore.toString());
-  //     cy.get('#DownloadBinaryButton').click();
+  //     cy.get("[data-cy-test='downloadBinary']").click();
   //     cy.log('Waiting for ' + filesBefore.length)
   //     cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
   //     cy.task('downloads', downloadsFolder).then(filesAfter => {
@@ -144,7 +144,7 @@ describe("About the Test tab", function () {
   //       });
   //       cy.get('li#debugTab').click();
   //       // Wait for the front-end to complete showing the page
-  //       cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li').should('have.length', 2);
+  //       cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li").should('have.length', 2);
   //       cy.readFile(cy.functions.downloadPath(newFile), 'binary')
   //       .then((rawContent) => {
   //         console.log(`Have content of uploaded file, length ${rawContent.length}`);
@@ -157,8 +157,8 @@ describe("About the Test tab", function () {
   //           fileName: newFile
   //         });
   //       });
-  //       cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li').should('have.length', 3);
-  //       cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li:contains(Simple report)').should('have.length', 2);
+  //       cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li").should('have.length', 3);
+  //       cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li:contains(Simple report)").should('have.length', 2);
   //     });
   //   });
   // });

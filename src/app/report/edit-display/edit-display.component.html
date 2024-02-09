@@ -30,7 +30,7 @@
   </div>
 
   <div class="row">
-    <div id="readyOnlyLabel" class="col btn btn-static my-2 mx-1 px-2">
+    <div data-cy-test-editor="readonlyLabel" id="readyOnlyLabel" class="col btn btn-static my-2 mx-1 px-2">
       Editing code is:
       <span *ngIf="!editingChildNode" style="color: red">OFF</span>
       <span *ngIf="editingChildNode" style="color: green">ON</span>

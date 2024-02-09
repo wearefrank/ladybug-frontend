@@ -37,7 +37,7 @@ describe("Tests with one report", function () {
   // TODO: Fix issue and re-enable test.
   xit("Test copy in testtab", function () {
     // cy.functions.testTabSelectReportNamed('Simple report');
-    cy.get("#CopySelectedButton").click();
+    cy.get("[data-cy-test='copySelected']").click();
     cy.checkTestTableNumRows(2);
     cy.get("[data-cy-test='table']")
       .find("tr")
@@ -47,7 +47,7 @@ describe("Tests with one report", function () {
           .find("td:eq(2)")
           .should("include.text", "Simple report");
       });
-    cy.get("#OpenreportButton:eq(0)").click();
+    cy.get("[data-cy-test='openReport']:eq(0)").click();
     cy.wait(1000);
     cy.get(".report-tab .jqx-tree-dropdown-root > li > ul > li > div").click();
     cy.wait(1000);
@@ -78,7 +78,7 @@ describe("Tests with one report", function () {
     cy.get("button:contains(Yes)").click();
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.checkTestTableNumRows(2);
-    cy.get("[data-cy-test='table'] tr:eq(0)").find("#RunreportButton").click();
+    cy.get("[data-cy-test='table'] tr:eq(0)").find("[data-cy-test='runReport']").click();
     cy.get("[data-cy-test='table']")
       .find("tr:eq(0)")
       .within(function ($report) {
@@ -87,7 +87,7 @@ describe("Tests with one report", function () {
           .should("have.css", "color")
           .and("be.colored", "green");
       });
-    cy.get("[data-cy-test='table'] tr:eq(1)").find("#RunreportButton").click();
+    cy.get("[data-cy-test='table'] tr:eq(1)").find("[data-cy-test='runReport']").click();
     cy.get("[data-cy-test='table']")
       .find("tr:eq(1)")
       .within(function ($report) {
@@ -102,7 +102,7 @@ describe("Tests with one report", function () {
   // TODO: Fix issue and re-enable test.
   it("Rerun, replace, succeed", function () {
     // cy.functions.testTabSelectReportNamed('Simple report');
-    cy.get("[data-cy-test='table'] tr:eq(0)").find("#RunreportButton").click();
+    cy.get("[data-cy-test='table'] tr:eq(0)").find("[data-cy-test='runReport']").click();
     cy.get("[data-cy-test='table']")
       .find("tr:eq(0)")
       .within(function ($report) {
@@ -112,8 +112,8 @@ describe("Tests with one report", function () {
           .and("be.colored", "red");
       });
     //Repeat process but expect same results? Einstein would have something to say about this
-    // cy.get("[data-cy-test='table'] tr:eq(0)").find("#ReplacereportButton").click();
-    // cy.get("[data-cy-test='table'] tr:eq(0)").find("#RunreportButton").click();
+    // cy.get("[data-cy-test='table'] tr:eq(0)").find("[data-cy-test='replaceReport']").click();
+    // cy.get("[data-cy-test='table'] tr:eq(0)").find("[data-cy-test='runReport']").click();
     // cy.get("[data-cy-test='table']")
     //   .find("tr:eq(0)")
     //   .within(function ($report) {

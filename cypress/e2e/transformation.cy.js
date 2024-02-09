@@ -38,7 +38,7 @@ describe("Report transformation", () => {
     // We test that the top node was not selected before.
     cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li > div").click();
     cy.get("[data-cy-open-metadata-table]").click();
-    cy.get('[data-cy-element-name="editor"]').contains('Name="IGNORED"');
+    cy.get("[data-cy-element-name='editor']").contains('Name="IGNORED"');
     // The transformation should not affect the report table, only the XML in the Monaco editor
     cy.get("[data-cy-metadata-table='reportname']").should(
       "have.text",

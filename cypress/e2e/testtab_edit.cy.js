@@ -68,7 +68,7 @@ describe("Edit tests", function () {
     // Do not press Edit button
     cy.get("[data-cy-test-editor='save']").should("have.length", 0);
     cy.get("[data-cy-test-editor='editor']").click().type("x");
-    cy.get("#readyOnlyLabel").contains("OFF");
+    cy.get("[data-cy-test-editor='readonlyLabel']").contains("OFF");
     cy.get(".message").should("have.length", 0);
   });
 
@@ -77,7 +77,7 @@ describe("Edit tests", function () {
     cy.get(".report-tab .jqx-tree-dropdown-root > li > ul > li > div").click();
     cy.wait(1000);
     cy.get("[data-cy-test-editor='edit']").click();
-    cy.get("#readyOnlyLabel").contains("ON");
+    cy.get("[data-cy-test-editor='readonlyLabel']").contains("ON");
     cy.wait(1000);
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
     cy.get("[data-cy-test-editor='editor']")
@@ -110,7 +110,7 @@ function prepareEdit() {
   cy.get("[data-cy-debug-editor='copy']").click();
   cy.get("[data-cy-nav-tab='testTab']").click();
   cy.checkTestTableNumRows(1);
-  cy.get("#OpenreportButton").click();
+  cy.get("[data-cy-test='openReport']").click();
   // Martijn hopes this fixes an issue in Firefox.
   cy.wait(1000);
   cy.get("[data-cy-nav-tab='Simple report']")

@@ -29,9 +29,9 @@ describe("Clicking a report", function () {
   it("Selecting report should show display", function () {
     cy.screenshot();
     cy.get("[data-cy-debug-editor='buttons']").should("not.exist");
-    cy.get('[data-cy-element-name="editor"]').should("not.exist");
+    cy.get("[data-cy-element-name='editor']").should("not.exist");
     cy.get("[data-cy-debug='tableBody']").find("tr").first().click();
     cy.get("[data-cy-debug-editor='buttons']").should("be.visible");
-    cy.get('[data-cy-element-name="editor"]').should("be.visible");
+    cy.get("[data-cy-element-name='editor']").should("be.visible");
   });
 });

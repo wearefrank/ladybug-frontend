@@ -72,30 +72,30 @@ describe("About opened reports", function () {
 
   // it('Node info corresponds to selected node', function() {
   //   cy.get('button[id="OpenAllButton"]').click();
-  //   cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li').should('have.length', 2);
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should('have.length', 2);
   //   checkNodeInfo('Simple report');
   //   checkNodeInfo('Another simple report');
   // });
 
   // it('If there are open reports, then always one of them is selected', function() {
   //   cy.get('data-cy-debug='tableBody' tr td:contains(Simple report)').first().click();
-  //   cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li').should('have.length', 1).each((node) => {
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should('have.length', 1).each((node) => {
   //     cy.wrap(node).should('have.text', 'Simple report');
   //   });
-  //   cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li.node-selected').should('have.length', 1);
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li.node-selected").should('have.length', 1);
   //   // Index is zero-based. We want the first node after the root.
-  //   cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:eq(1)').should('have.class', 'node-selected');
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:eq(1)").should('have.class', 'node-selected');
   //   cy.get('data-cy-debug='tableBody'').find('tr').contains('Another simple report').click();
-  //   cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li').should('have.length', 2);
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should('have.length', 2);
   //   // When you open a new report, the new report is also selected.
-  //   cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li.node-selected').should('have.length', 1).should('have.text', 'Another simple report');
-  //   cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Another simple report):eq(1)').should('have.class', 'node-selected');
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li.node-selected").should('have.length', 1).should('have.text', 'Another simple report');
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Another simple report):eq(1)").should('have.class', 'node-selected');
   //   cy.wait(1000)
   //   cy.get('button#CloseButton').click();
-  //   cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li').should('have.length', 1).each((node) => {
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should('have.length', 1).each((node) => {
   //     cy.wrap(node).should('have.text', 'Simple report');
   //   });
-  //   cy.get('[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li.node-selected').should('have.length', 1);
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li.node-selected").should('have.length', 1);
   // });
 });
 
