@@ -188,7 +188,7 @@ function testDownloadFromNode(nodeNum) {
   //
   // We can not click the node to select it because it is selected already.
   // If we click, we unselect it and then no node is selected anymore.
-  let string = ""
+  let string = "";
   for (let i = 0; i < nodeNum; i++) {
     string += "> ul > li";
   }
