@@ -203,7 +203,7 @@ function testDownloadFromNode(nodeNum) {
     .then((filesBefore) => {
       cy.get("#dropdownDownloadDisplay").click();
       cy.get(
-        '#displayButtons button:contains("Binary"):not(:contains("XML"))[class="dropdown-item"]'
+        "[data-cy-debug-editor='buttons'] button:contains('Binary'):not(:contains('XML'))[class='dropdown-item']"
       ).click();
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
       cy.task("downloads", downloadsFolder).then((filesAfter) => {

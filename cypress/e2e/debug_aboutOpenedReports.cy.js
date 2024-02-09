@@ -156,40 +156,40 @@ function checkNodeInfo(name) {
       cy.wrap(shownMonacoElement).find(`span:contains(${word})`);
     });
   });
-  cy.get("#displayedNodeTable tr:eq(0) td:eq(0)").should("have.text", "Name");
-  cy.get("#displayedNodeTable tr:eq(0) td:eq(1)").should(
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(0)").should("have.text", "Name");
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(1)").should(
     "have.text",
     `${name}`
   );
-  cy.get("#displayedNodeTable tr:eq(4) td:eq(0)").should(
+  cy.get("[data-cy-metadata-table='table'] tr:eq(4) td:eq(0)").should(
     "have.text",
     "StorageId"
   );
-  cy.get("#displayedNodeTable tr:eq(4) td:eq(1)").should("not.be.empty");
+  cy.get("[data-cy-metadata-table='table'] tr:eq(4) td:eq(1)").should("not.be.empty");
   cy.get(`div.treeview > ul > li:contains(${name}):eq(1)`).click();
   const helloWorld = "Hello\xa0World!";
   cy.getShownMonacoModelElement().find(`span:contains(${helloWorld})`);
-  cy.get("#displayedNodeTable tr:eq(0) td:eq(0)").should("have.text", "Name");
-  cy.get("#displayedNodeTable tr:eq(0) td:eq(1)").should(
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(0)").should("have.text", "Name");
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(1)").should(
     "have.text",
     `${name}`
   );
-  cy.get("#displayedNodeTable tr:eq(5) td:eq(0)").should(
+  cy.get("[data-cy-metadata-table='table'] tr:eq(5) td:eq(0)").should(
     "have.text",
     "CheckpointUID"
   );
-  cy.get("#displayedNodeTable tr:eq(5) td:eq(1)").should("not.be.empty");
-  cy.get(`div.treeview > ul > li:contains(${name}):eq(2)`).click();
+  cy.get("[data-cy-metadata-table='table'] tr:eq(5) td:eq(1)").should("not.be.empty");
+  cy.get("data-cy-debug-tree='root' > ul > li:contains(${name}):eq(2)").click();
   const goodbyeWorld = "Goodbye\xa0World!";
   cy.getShownMonacoModelElement().find(`span:contains(${goodbyeWorld})`);
-  cy.get("#displayedNodeTable tr:eq(0) td:eq(0)").should("have.text", "Name");
-  cy.get("#displayedNodeTable tr:eq(0) td:eq(1)").should(
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(0)").should("have.text", "Name");
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(1)").should(
     "have.text",
     `${name}`
   );
-  cy.get("#displayedNodeTable tr:eq(5) td:eq(0)").should(
+  cy.get("[data-cy-metadata-table='table'] tr:eq(5) td:eq(0)").should(
     "have.text",
     "CheckpointUID"
   );
-  cy.get("#displayedNodeTable tr:eq(5) td:eq(1)").should("not.be.empty");
+  cy.get("[data-cy-metadata-table='table'] tr:eq(5) td:eq(1)").should("not.be.empty");
 }
