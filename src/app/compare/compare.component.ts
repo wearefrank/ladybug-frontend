@@ -1,20 +1,32 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 import { NodeLinkStrategy } from '../shared/enums/compare-method';
-import { TextCompareComponent } from '../text-compare/text-compare.component';
 import { CompareData } from './compare-data';
+import { DiffEditorModel } from 'ngx-monaco-editor-v2';
 
 @Component({
   selector: 'app-compare',
   templateUrl: './compare.component.html',
   styleUrls: ['./compare.component.css'],
 })
-export class CompareComponent implements AfterViewInit {
+export class CompareComponent implements OnInit, AfterViewInit {
   @ViewChild('trees') compareTreeComponent!: CompareTreeComponent;
+  diffOptions = { theme: 'vs', language: 'xml', readOnly: true, renderSideBySide: true, automaticLayout: true };
+  originalModel: DiffEditorModel = {
+    code: '',
+    language: 'xml',
+  };
 
-  @ViewChild('diffComponent') diffComponent!: TextCompareComponent;
+  modifiedModel: DiffEditorModel = {
+    code: '',
+    language: 'xml',
+  };
 
   constructor(public compareData: CompareData) {}
+
+  ngOnInit(): void {
+    this.renderDiffs(this.compareData.originalReport.xml, this.compareData.runResultReport.xml);
+  }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -22,7 +34,7 @@ export class CompareComponent implements AfterViewInit {
     }, 100);
   }
 
-  showReports() {
+  showReports(): void {
     if (this.compareData.originalReport && this.compareData.runResultReport) {
       this.compareTreeComponent?.createTrees(
         this.compareData.viewName,
@@ -33,12 +45,13 @@ export class CompareComponent implements AfterViewInit {
     }
   }
 
-  showDifference(data: any) {
-    let leftSide = data.leftReport ? this.extractMessage(data.leftReport) : '';
-    let rightSide = data.rightReport ? this.extractMessage(data.rightReport) : '';
-    this.saveDiff(leftSide, rightSide);
+  showDifference(data: any): void {
+    const leftSide = data.leftReport ? this.extractMessage(data.leftReport) : '';
+    const rightSide = data.rightReport ? this.extractMessage(data.rightReport) : '';
+    this.renderDiffs(leftSide, rightSide);
   }
-  changeNodeLinkStrategy(nodeLinkStrategy: NodeLinkStrategy) {
+
+  changeNodeLinkStrategy(nodeLinkStrategy: NodeLinkStrategy): void {
     this.compareData.nodeLinkStrategy = nodeLinkStrategy;
   }
 
@@ -46,9 +59,14 @@ export class CompareComponent implements AfterViewInit {
     return report.parentElement ? report.value.message ?? '' : report.value.xml ?? '';
   }
 
-  saveDiff(leftSide: string, rightSide: string) {
-    // this.diffComponent.left = leftSide;
-    // this.diffComponent.right = rightSide;
-    // this.diffComponent.renderDiffs();
+  renderDiffs(leftSide: string, rightSide: string): void {
+    this.compareData.originalReport.xml = leftSide;
+    this.compareData.runResultReport.xml = rightSide;
+    this.originalModel = Object.assign({}, this.originalModel, {
+      code: leftSide,
+    });
+    this.modifiedModel = Object.assign({}, this.originalModel, {
+      code: rightSide,
+    });
   }
 }
