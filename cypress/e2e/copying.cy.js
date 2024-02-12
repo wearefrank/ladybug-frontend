@@ -17,7 +17,6 @@ describe('Tests about copying', () => {
     cy.get('#metadataTable tbody', { timeout: 10000 })
       .find('tr')
       .should('not.exist');
-    cy.log('Test1234');
     cy.createReport();
     //Possibly bad test, it navigates to tab, asserts that the table is empty and then refreshes and asserts that the table is filled.
     cy.get('[data-cy-nav-tab=\'debugTab\']').click();
