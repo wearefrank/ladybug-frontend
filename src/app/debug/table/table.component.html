@@ -68,8 +68,12 @@
           <th class="table-row-checkbox header-padding">
             <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
           </th>
-          <th class="text-center header-cell header-padding" *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
-              mat-sort-header="{{i}}" [title]="header">{{getShortenedTableHeaderNames(header)}}</th>
+          <th class="text-center table-id-cell header-cell header-padding"
+              *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
+              mat-sort-header="{{i}}"
+              [title]="header">
+            {{getShortenedTableHeaderNames(header)}}
+          </th>
         </tr>
         <tr id="filterRow" *ngIf="tableSettings.showFilter">
           <th class="vertical-middle">
@@ -77,7 +81,7 @@
           </th>
           <th *ngFor="let header of viewSettings.currentView.metadataNames" class="filter-header">
             <div class="input-group">
-              <input type="text" id="filter"  title="{{tableSettings.metadataHeaders[header]}}" class="form-control" placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header)">
+              <input type="text" id="filter" title="{{tableSettings.metadataHeaders[header]}}" class="form-control" placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header)">
             </div>
           </th>
         </tr>
@@ -86,13 +90,19 @@
         <tr class="table-row" *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index"
             (click)="highLightRow(i);"
             [ngClass]="{'highlight': selectedRow === i}"
-            style="background-color: {{getStatusColor(row)}};"
+            [style.background-color]="getStatusColor(row)"
             [attr.data-cy-record-table-index]=i
         >
           <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
             <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
           </td>
-          <td [style.padding]="getTableSpacing()" class="table-cell" *ngFor="let metadataName of viewSettings.currentView.metadataNames" (click)="openReport(row.storageId);" [title]="row[metadataName]">{{row[metadataName]|tableCellShortener}}</td>
+          <td
+            *ngFor="let metadataName of viewSettings.currentView.metadataNames"
+            [style.padding]="getTableSpacing()"
+            class="table-cell"
+            (click)="openReport(row.storageId)"
+            [title]="row[metadataName]">
+            {{row[metadataName]|tableCellShortener}}</td>
         </tr>
       </tbody>
     </table>
