@@ -1,66 +1,69 @@
-<table class="table border" id="displayedNodeTable">
-  <tr>
-    <td>Name</td>
-    <td>{{_report.name}}</td>
-  </tr>
-  <tr  *ngIf="!_report.xml">
-    <td>Type</td>
-    <td>{{getCheckpointType(_report.type)}}</td>
-  </tr>
-  <tr *ngIf="_report.xml">
-    <td>Description</td>
-    <td>{{_report.description}}</td>
-  </tr>
-  <tr *ngIf="!_report.xml">
-    <td>Thread name</td>
-    <td>{{ _report.threadName}}</td>
-  </tr>
-  <tr *ngIf="!_report.xml">
-    <td>Source class name</td>
-    <td>{{ _report.sourceClassName}}</td>
-  </tr>
-  <tr *ngIf="!_report.xml">
-    <td>Message class name</td>
-    <td>{{ _report.messageClassName}}</td>
-  </tr>
-  <tr>
-    <td>Path</td>
-    <td>{{ _report.path}}</td>
-  </tr>
-  <tr *ngIf="!_report.xml">
-    <td>CheckpointUID</td>
-    <td>{{ _report.uid}}</td>
-  </tr>
-  <tr *ngIf="!_report.xml">
-    <td>Level</td>
-    <td>{{ _report.level}}</td>
-  </tr>
-  <tr *ngIf="!_report.xml">
-    <td>Encoding</td>
-    <td>{{ _report.encoding}}</td>
-  </tr>
-  <tr *ngIf="!_report.xml && _report.message">
-    <td>Number of characters</td>
-    <td>{{ _report.message.length}}</td>
-  </tr>
-  <tr *ngIf="_report.xml">
-    <td>Transformation</td>
-    <td>{{ _report.transformation}}</td>
-  </tr>
-  <tr *ngIf="_report.xml">
-    <td>StorageId</td>
-    <td>{{ _report.storageId}}</td>
-  </tr>
-  <tr *ngIf="_report.xml">
-    <td>Storage</td>
-    <td>{{ _report.storage}}</td>
-  </tr>
-  <tr>
-    <td>Estimated memory usage</td>
-    <td>{{ _report.estimatedMemoryUsage}}</td>
-  </tr>
-  <tr *ngIf="_report.xml">
-    <td>CorrelationId</td>
-    <td>{{ _report.correlationId}}</td>
-  </tr>
-</table>
+<div class="d-flex flex-column">
+  <div class="px-1 py-2" data-cy-metadata-table="reportname"><strong>Name:</strong> {{_report.name}}</div>
+  <div class="d-flex flex-row">
+    <table data-cy-metadata-table="table" class="table" id="displayedNodeTable">
+      <tr *ngIf="!_report.xml">
+        <td><strong>Type</strong></td>
+        <td>{{getCheckpointType(_report.type)}}</td>
+      </tr>
+      <tr *ngIf="_report.xml">
+        <td><strong>Description</strong></td>
+        <td>{{_report.description}}</td>
+      </tr>
+      <tr *ngIf="!_report.xml">
+        <td><strong>Thread name</strong></td>
+        <td>{{ _report.threadName}}</td>
+      </tr>
+      <tr *ngIf="!_report.xml">
+        <td><strong>Source class name</strong></td>
+        <td>{{ _report.sourceClassName}}</td>
+      </tr>
+      <tr *ngIf="!_report.xml">
+        <td><strong>Message class name</strong></td>
+        <td>{{ _report.messageClassName}}</td>
+      </tr>
+      <tr>
+        <td><strong>Path</strong></td>
+        <td>{{ _report.path}}</td>
+      </tr>
+    </table>
+    <table class="table">
+      <tr *ngIf="!_report.xml">
+        <td><strong>CheckpointUID</strong></td>
+        <td>{{ _report.uid}}</td>
+      </tr>
+      <tr *ngIf="!_report.xml">
+        <td><strong>Level</strong></td>
+        <td>{{ _report.level}}</td>
+      </tr>
+      <tr *ngIf="!_report.xml">
+        <td><strong>Encoding</strong></td>
+        <td>{{ _report.encoding}}</td>
+      </tr>
+      <tr *ngIf="!_report.xml && _report.message">
+        <td><strong>Number of characters</strong></td>
+        <td>{{ _report.message.length}}</td>
+      </tr>
+      <tr *ngIf="_report.xml">
+        <td><strong>Transformation</strong></td>
+        <td>{{ _report.transformation}}</td>
+      </tr>
+      <tr *ngIf="_report.xml">
+        <td><strong>StorageId</strong></td>
+        <td>{{ _report.storageId}}</td>
+      </tr>
+      <tr *ngIf="_report.xml">
+        <td><strong>Storage</strong></td>
+        <td>{{ _report.storage}}</td>
+      </tr>
+      <tr>
+        <td><strong>Estimated memory usage</strong></td>
+        <td>{{ _report.estimatedMemoryUsage}}</td>
+      </tr>
+      <tr *ngIf="_report.xml">
+        <td><strong>CorrelationId</strong></td>
+        <td>{{ _report.correlationId}}</td>
+      </tr>
+    </table>
+  </div>
+</div>

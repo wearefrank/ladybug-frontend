@@ -1,16 +1,16 @@
-<div class="row" id="displayButtons">
+<div data-cy-test-editor="root" class="row" id="displayButtons">
   <app-button *ngIf="report.xml" [icon]="'fa fa-repeat'" [title]="'Rerun'" (click)="rerunReport()"></app-button>
-  <app-button [icon]="'fa fa-edit'" [title]="'Edit'" *ngIf="!editingChildNode && !editingRootNode"
+  <app-button data-cy-test-editor="edit" [icon]="'fa fa-edit'" [title]="'Edit'" *ngIf="!editingChildNode && !editingRootNode"
               (click)="editReport()"></app-button>
   <app-button [icon]="'fa fa-trash'" [title]="'Discard Changes'" *ngIf="editingChildNode || editingRootNode"
               (click)="openDifferenceModal(saveOrDiscardChanges, 'discard')"></app-button>
-  <app-button [icon]="'fa fa-save'" [title]="'Save'" *ngIf="editingChildNode || editingRootNode"
+  <app-button data-cy-test-editor="save" [icon]="'fa fa-save'" [title]="'Save'" *ngIf="editingChildNode || editingRootNode"
               (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
   <app-button *ngIf="report.encoding === 'Base64'" [text]="'Base64'" [title]="'Convert to Base64'" (click)="changeEncoding($event)"></app-button>
 
   <div class="row my-2">
     <div class="col-2 pl-1" ngbDropdown title="Download">
-      <button class="btn btn-info" id="dropdownDownloadDisplay" ngbDropdownToggle>
+      <button data-cy-test-editor="download" class="btn btn-info" id="dropdownDownloadDisplay" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
       </button>
       <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
@@ -30,7 +30,7 @@
   </div>
 
   <div class="row">
-    <div id="readyOnlyLabel" class="col btn btn-static my-2 mx-1 px-2">
+    <div data-cy-test-editor="readonlyLabel" id="readyOnlyLabel" class="col btn btn-static my-2 mx-1 px-2">
       Editing code is:
       <span *ngIf="!editingChildNode" style="color: red">OFF</span>
       <span *ngIf="editingChildNode" style="color: green">ON</span>
@@ -77,7 +77,7 @@
   </div>
 </div>
 
-<app-editor id="editor"></app-editor>
+<app-editor data-cy-test-editor="editor" id="editor"></app-editor>
 
 <div *ngIf="!editingRootNode" class="pt-4">
   <app-display-table [report]="report"></app-display-table>

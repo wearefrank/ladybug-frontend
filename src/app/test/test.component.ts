@@ -1,16 +1,15 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { ToastComponent } from '../shared/components/toast/toast.component';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { CookieService } from 'ngx-cookie-service';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
+import { ToastService } from '../shared/services/toast.service';
 
 @Component({
   selector: 'app-test',
@@ -29,7 +28,6 @@ export class TestComponent implements OnInit {
   targetStorage: string = 'Debug';
   @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
-  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent)
   testSettingsModal!: TestSettingsModalComponent;
@@ -39,18 +37,15 @@ export class TestComponent implements OnInit {
 
   constructor(
     private httpService: HttpService,
-    private cookieService: CookieService,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private toastService: ToastService,
   ) {}
 
   openCloneModal(): void {
     if (this.helperService.getSelectedReports(this.reports).length === 1) {
       this.cloneModal.open(this.helperService.getSelectedReports(this.reports)[0]);
     } else {
-      this.toastComponent.addAlert({
-        type: 'warning',
-        message: 'Make sure exactly one report is selected at a time',
-      });
+      this.toastService.showWarning('Make sure exactly one report is selected at a time');
     }
   }
 
@@ -59,7 +54,7 @@ export class TestComponent implements OnInit {
   }
 
   showStorageIds(): boolean {
-    return this.cookieService.get('showReportStorageIds') === 'true';
+    return localStorage.getItem('showReportStorageIds') === 'true';
   }
 
   ngOnInit(): void {
@@ -68,12 +63,12 @@ export class TestComponent implements OnInit {
   }
 
   getGeneratorStatus() {
-    if (this.cookieService.get('generatorEnabled')) {
-      this.generatorStatus = this.cookieService.get('generatorEnabled');
+    if (localStorage.getItem('generatorEnabled')) {
+      this.generatorStatus = localStorage.getItem('generatorEnabled')!;
     } else {
       this.httpService.getSettings().subscribe((response) => {
         this.generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
-        this.cookieService.set('generatorEnabled', this.generatorStatus);
+        localStorage.setItem('generatorEnabled', this.generatorStatus);
       });
     }
   }
@@ -118,10 +113,7 @@ export class TestComponent implements OnInit {
           this.showResult(response);
         });
     } else {
-      this.toastComponent.addAlert({
-        type: 'warning',
-        message: 'Generator is disabled!',
-      });
+      this.toastService.showWarning('Generator is disabled!');
     }
   }
 
@@ -188,14 +180,11 @@ export class TestComponent implements OnInit {
     if (selectedReports.length > 0) {
       const queryString: string = selectedReports.reduce(
         (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
-        ''
+        '',
       );
       this.helperService.download(queryString, this.currentView.storageName, true, false);
     } else {
-      this.toastComponent.addAlert({
-        type: 'warning',
-        message: 'No Report Selected!',
-      });
+      this.toastService.showWarning('No Report Selected!');
     }
   }
 
@@ -260,10 +249,7 @@ export class TestComponent implements OnInit {
         this.loadData(path);
       });
     } else {
-      this.toastComponent.addAlert({
-        type: 'warning',
-        message: 'No Report Selected!',
-      });
+      this.toastService.showWarning('No Report Selected!');
     }
   }
 

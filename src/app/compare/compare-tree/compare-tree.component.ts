@@ -3,7 +3,6 @@ import { Report } from '../../shared/interfaces/report';
 import { HelperService } from '../../shared/services/helper.service';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { NodeLinkStrategy } from '../../shared/enums/compare-method';
-import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-compare-tree',
@@ -11,7 +10,7 @@ import { CookieService } from 'ngx-cookie-service';
   styleUrls: ['./compare-tree.component.css'],
 })
 export class CompareTreeComponent {
-  constructor(private helperService: HelperService, private cookieService: CookieService) {}
+  constructor(private helperService: HelperService) {}
   @Output() compareEvent = new EventEmitter<any>();
   @Output() changeNodeLinkStrategyEvent = new EventEmitter<any>();
   @ViewChild('leftTreeReference') leftTreeReference!: jqxTreeComponent;
@@ -27,7 +26,10 @@ export class CompareTreeComponent {
 
   nodeSelected(data: any, left: boolean) {
     this.selectOtherNode(data, left);
-    this.compareEvent.emit({ leftReport: this.leftReport, rightReport: this.rightReport });
+    this.compareEvent.emit({
+      leftReport: this.leftReport,
+      rightReport: this.rightReport,
+    });
   }
 
   selectOtherNode(data: any, left: boolean) {
@@ -73,7 +75,7 @@ export class CompareTreeComponent {
   changeNodeLinkStrategy(event: any) {
     this.nodeLinkStrategy = event.target.value;
     this.changeNodeLinkStrategyEvent.next(this.nodeLinkStrategy);
-    this.cookieService.set(this.viewName + '.NodeLinkStrategy', this.nodeLinkStrategy);
+    localStorage.setItem(this.viewName + '.NodeLinkStrategy', this.nodeLinkStrategy);
   }
   getParent(checkpoint: any, parentId: string): any {
     let items = checkpoint.treeInstance.items;
@@ -130,7 +132,7 @@ export class CompareTreeComponent {
   createTrees(viewName: string, nodeLinkStrategy: NodeLinkStrategy, leftReport: Report, rightReport: Report) {
     this.viewName = viewName;
     this.nodeLinkStrategy = nodeLinkStrategy;
-    let nls = this.cookieService.get(this.viewName + '.NodeLinkStrategy');
+    let nls = localStorage.getItem(this.viewName + '.NodeLinkStrategy');
     if (nls) {
       this.nodeLinkStrategy = NodeLinkStrategy[nls as keyof typeof NodeLinkStrategy];
     }
@@ -138,8 +140,14 @@ export class CompareTreeComponent {
     const rightTree = this.helperService.convertReportToJqxTree(rightReport);
     const both = this.iterateToMakeLabelsRed(leftTree, rightTree);
 
-    this.leftTreeReference.createComponent({ height: '100%', source: [both.left] });
-    this.rightTreeReference.createComponent({ height: '100%', source: [both.right] });
+    this.leftTreeReference.createComponent({
+      height: '100%',
+      source: [both.left],
+    });
+    this.rightTreeReference.createComponent({
+      height: '100%',
+      source: [both.right],
+    });
 
     this.selectFirstItem();
   }

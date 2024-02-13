@@ -1,42 +1,34 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ToastComponent } from '../components/toast/toast.component';
 import { catchError, Observable, of, tap } from 'rxjs';
-import { CookieService } from 'ngx-cookie-service';
-import { ChangeNodeLinkStrategyService } from './node-link-strategy.service';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
-  toastComponent!: ToastComponent;
 
   constructor(
     private http: HttpClient,
-    private cookieService: CookieService,
-    private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService
+    private toastService: ToastService,
   ) {}
-
-  initializeToastComponent(toastComponent: ToastComponent) {
-    this.toastComponent = toastComponent;
-  }
 
   handleError() {
     return (error: any): Observable<any> => {
       const message = error.error;
       if (message.includes('- detailed error message -')) {
         const errorMessageParts = message.split('- detailed error message -');
-        this.toastComponent.addAlert({ type: 'danger', message: errorMessageParts[0], detailed: errorMessageParts[1] });
+        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
       } else {
-        this.toastComponent.addAlert({ type: 'danger', message: message, detailed: '' });
+        this.toastService.showDanger(message, '');
       }
       return of(error);
     };
   }
 
-  handleSuccess(message: string) {
-    this.toastComponent.addAlert({ type: 'success', message: message });
+  handleSuccess(message: string): void {
+    this.toastService.showSuccess(message);
   }
 
   getViews(): Observable<any> {
@@ -48,7 +40,7 @@ export class HttpService {
     regexFilter: string,
     filterHeader: string,
     metadataNames: string[],
-    storage: string
+    storage: string,
   ): Observable<any> {
     return this.http.get('api/metadata/' + storage + '/', {
       params: {
@@ -108,7 +100,7 @@ export class HttpService {
           '/' +
           reportId +
           '/?xml=true&globalTransformer=' +
-          this.cookieService.get('transformationEnabled')
+          localStorage.getItem('transformationEnabled'),
       )
       .pipe(catchError(this.handleError()));
   }
@@ -116,8 +108,8 @@ export class HttpService {
   getReports(reportIds: string[], storage: string) {
     return this.http
       .get<any>(
-        'api/report/' + storage + '/?xml=true&globalTransformer=' + this.cookieService.get('transformationEnabled'),
-        { params: { storageIds: reportIds } }
+        'api/report/' + storage + '/?xml=true&globalTransformer=' + localStorage.getItem('transformationEnabled'),
+        { params: { storageIds: reportIds } },
       )
       .pipe(catchError(this.handleError()));
   }
@@ -138,7 +130,9 @@ export class HttpService {
 
   updatePath(reportIds: string[], storage: string, map: any) {
     return this.http
-      .put('api/report/move/' + storage, map, { params: { storageIds: reportIds } })
+      .put('api/report/move/' + storage, map, {
+        params: { storageIds: reportIds },
+      })
       .pipe(catchError(this.handleError()));
   }
 

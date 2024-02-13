@@ -20,12 +20,6 @@
   height: 100%;
 }
 
-.debug-display {
-  flex: 1 0 auto;
-  overflow-y: auto;
-  height: 100%;
-}
-
 .as-split-gutter {
   flex-basis: 3px !important;
   background-color: blue !important;

@@ -21,7 +21,6 @@ import { CloneModalComponent } from './test/clone-modal/clone-modal.component';
 import { DisplayTableComponent } from './shared/components/display-table/display-table.component';
 import { TableSettingsModalComponent } from './debug/table/table-settings-modal/table-settings-modal.component';
 import { TestFolderTreeComponent } from './test/test-folder-tree/test-folder-tree.component';
-import { CookieService } from 'ngx-cookie-service';
 import { jqxTreeModule } from 'jqwidgets-ng/jqxtree';
 import { CompareTreeComponent } from './compare/compare-tree/compare-tree.component';
 import { EditDisplayComponent } from './report/edit-display/edit-display.component';
@@ -33,6 +32,8 @@ import { AngularSplitModule } from 'angular-split';
 import { DeleteModalComponent } from './test/delete-modal/delete-modal.component';
 import { TextCompareComponent } from './text-compare/text-compare.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
+import { TableCellShortenerPipe } from './shared/pipes/table-cell-shortener.pipe';
+import { CustomEditorComponent } from './custom-editor/custom-editor.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ActiveFiltersComponent } from './debug/active-filters/active-filters.component';
 import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
@@ -61,6 +62,7 @@ import { CapitalizePipe } from './shared/pipes/capitalize.pipe';
     EditorComponent,
     DeleteModalComponent,
     TextCompareComponent,
+    CustomEditorComponent,
     ActiveFiltersComponent,
     DictionaryPipe,
     CapitalizePipe,
@@ -79,9 +81,10 @@ import { CapitalizePipe } from './shared/pipes/capitalize.pipe';
     MatProgressSpinnerModule,
     AngularSplitModule,
     MonacoEditorModule.forRoot(),
+    TableCellShortenerPipe,
     MatAutocompleteModule,
   ],
-  providers: [CookieService],
+  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -4,20 +4,20 @@
   </div>
   <div class="col">
     <div class="row">
-      <app-button [icon]="'fa fa-play'" [title]="'Run All'" (click)="runSelected()"></app-button>
-      <app-button [icon]="'fa fa-refresh'" [title]="'ReloadTestReports'" (click)="loadData(null)"></app-button>
+      <app-button data-cy-test="runAll" [icon]="'fa fa-play'" [title]="'Run All'" (click)="runSelected()"></app-button>
+      <app-button data-cy-test="refresh" [icon]="'fa fa-refresh'" [title]="'ReloadTestReports'" (click)="loadData(null)"></app-button>
       <app-button [text]="'Reset'" [title]="'Reset'" (click)="resetRunner()"></app-button>
       <app-button [icon]="'fa fa-cog'" [title]="'Options'" (click)="openSettingsModal()"></app-button>
-      <app-button [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
-      <app-button [title]="'Deselect All'" [text]="'Deselect All'" (click)="uncheckAll()"></app-button>
-      <app-button [icon]="'fa fa-trash'" [title]="'Delete Selected'" (click)="openDeleteModal()"></app-button>
+      <app-button data-cy-test="selectAll" [title]="'Select All'" [text]="'Select All'" (click)="checkAll()"></app-button>
+      <app-button data-cy-test="deselectAll" [title]="'Deselect All'" [text]="'Deselect All'" (click)="uncheckAll()"></app-button>
+      <app-button data-cy-test="deleteSelected" [icon]="'fa fa-trash'" [title]="'Delete Selected'" (click)="openDeleteModal()"></app-button>
       <app-button [text]="'Clone'" [title]="'Clone report'" (click)="openCloneModal()"></app-button>
-      <app-button [icon]="'fa fa-copy'" [title]="'Copy Selected'" (click)="copySelected()"></app-button>
-      <app-button [icon]="'fa fa-download'" [title]="'Download Binary'" (click)="downloadSelected()"></app-button>
-      <button type="button" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
+      <app-button data-cy-test="copySelected" [icon]="'fa fa-copy'" [title]="'Copy Selected'" (click)="copySelected()"></app-button>
+      <app-button data-cy-test="downloadBinary" [icon]="'fa fa-download'" [title]="'Download Binary'" (click)="downloadSelected()"></app-button>
+      <button data-cy-test="upload" type="button" class="btn btn-info my-2 mx-1 px-3"
               title="Upload" (click)="uploadFileTest.click()">
         <i class="fa fa-upload"></i>
-        <input #uploadFileTest (change)="uploadReport($event)" type="file" id="uploadFileTest">
+        <input data-cy-test="uploadFile" #uploadFileTest (change)="uploadReport($event)" type="file" id="uploadFileTest">
       </button>
     </div>
 
@@ -47,18 +47,18 @@
             <th>Options</th>
           </tr>
         </thead>
-        <tbody id="testReports">
+        <tbody data-cy-test="table" id="testReports">
         <ng-container *ngFor="let report of sortByName()" class="form-inline">
           <tr *ngIf="matches(report)">
               <td>
-                <input type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
+                <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
               </td>
               <td *ngIf="showStorageIds()">
                 {{report.storageId}}
               </td>
               <td>
-                <app-button [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report.storageId)"></app-button>
-                <app-button [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="openReport(report.storageId, report.name)"></app-button>
+                <app-button data-cy-test="runReport" [icon]="'fa fa-play'" [title]="'Run report'" (click)="run(report.storageId)"></app-button>
+                <app-button data-cy-test="openReport" [icon]="'fa fa-folder-open'" [title]="'Open report'" (click)="openReport(report.storageId, report.name)"></app-button>
               </td>
               <td>
                 {{ showRelativePath(report.path) }}{{ report.name }}
@@ -73,8 +73,8 @@
               </td>
               <td>
                 <span *ngIf="getReranReport(report.storageId)">
-                  <app-button [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report.storageId)"></app-button>
-                  <app-button [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report.storageId)"></app-button>
+                  <app-button data-cy-test="replaceReport" [text]="'Replace'" [title]="'Replace report'" (click)="replaceReport(report.storageId)"></app-button>
+                  <app-button data-cy-test="compareReport" [title]="'Compare'" [text]="'Compare'" (click)="compareReports(report.storageId)"></app-button>
                 </span>
               </td>
           </tr>

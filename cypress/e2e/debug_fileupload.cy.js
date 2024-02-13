@@ -12,12 +12,12 @@ describe('Debug file upload', function() {
     cy.fixture('testRerun.ttr', 'binary')
       .then(Cypress.Blob.binaryStringToBlob)
       .then(fileContent => {
-        cy.get('input#uploadFileTable').attachFile({
+        cy.get("[data-cy-debug='upload']").attachFile({
           fileContent,
           fileName: 'testRerun.ttr',
         });
       });
 
-    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should('have.length', 1);
   })
 });

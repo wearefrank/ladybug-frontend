@@ -1,20 +1,20 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { ToastComponent } from '../../shared/components/toast/toast.component';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../shared/interfaces/table-settings';
-import { catchError } from 'rxjs';
+import { catchError, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
-import { CookieService } from 'ngx-cookie-service';
 import { ChangeNodeLinkStrategyService } from '../../shared/services/node-link-strategy.service';
+import { SettingsService } from '../../shared/services/settings.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css'],
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
   metadataCount = 0;
   viewSettings: any = {
@@ -23,6 +23,27 @@ export class TableComponent implements OnInit {
     currentView: {},
     currentViewName: '',
   };
+
+  allRowsSelected: boolean = false;
+
+  shortenedTableHeaders: Map<string, string> = new Map([
+    ['Storage Id', 'Storage Id'],
+    ['End time', 'End time'],
+    ['Duration', 'Duration'],
+    ['Name', 'Name'],
+    ['Correlation Id', 'Correlation Id'],
+    ['Status', 'Status'],
+    ['Number of checkpoints', 'Checkpoints'],
+    ['Estimated memory usage', 'Memory'],
+    ['Storage size', 'Size'],
+    ['TIMESTAMP', 'TIMESTAMP'],
+    ['COMPONENT', 'COMPONENT'],
+    ['ENDPOINT NAME', 'ENDPOINT'],
+    ['CONVERSATION ID', 'CONVERSATION ID'],
+    ['CORRELATION ID', 'CORRELATION ID'],
+    ['NR OF CHECKPOINTS', 'NR OF CHECKPOINTS'],
+    ['STATUS', 'STATUS'],
+  ]);
 
   tableSettings: TableSettings = {
     reportMetadata: [],
@@ -40,25 +61,45 @@ export class TableComponent implements OnInit {
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @Output() changeViewEvent = new EventEmitter<any>();
-  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
   selectedRow: number = -1;
   doneRetrieving: boolean = false;
   @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
+  tableSpacing!: number;
+  tableSpacingSubscription!: Subscription;
+  showMultipleFiles!: boolean;
+  showMultipleFilesSubscription!: Subscription;
   currentFilters: Map<string, string> = new Map<string, string>();
 
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
-    private cookieService: CookieService,
-    private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService
+    private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService,
+    private settingsService: SettingsService,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
-    this.cookieService.set('transformationEnabled', 'true');
+    localStorage.setItem('transformationEnabled', 'true');
     this.loadData();
     this.listenForViewUpdate();
+    this.subscribeToSettingsObservables();
+  }
+
+  ngOnDestroy(): void {
+    this.tableSpacingSubscription.unsubscribe();
+  }
+
+  subscribeToSettingsObservables(): void {
+    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe((value: number): void => {
+      this.tableSpacing = value;
+    });
+    this.showMultipleFilesSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
+      (value: boolean) => {
+        this.showMultipleFiles = value;
+      },
+    );
   }
 
   retrieveRecords() {
@@ -70,17 +111,14 @@ export class TableComponent implements OnInit {
         this.tableSettings.filterValue,
         this.tableSettings.filterHeader,
         this.viewSettings.currentView.metadataNames,
-        this.viewSettings.currentView.storageName
+        this.viewSettings.currentView.storageName,
       )
       .subscribe({
         next: (value) => {
           this.setUniqueOptions(value);
           this.tableSettings.reportMetadata = value;
           this.tableSettings.tableLoaded = true;
-          this.toastComponent.addAlert({
-            type: 'success',
-            message: 'Data loaded!',
-          });
+          this.toastService.showSuccess('Data loaded!');
           this.doneRetrieving = true;
           httpServiceSubscription.unsubscribe();
         },
@@ -115,6 +153,7 @@ export class TableComponent implements OnInit {
   }
 
   changeView(event: any) {
+    this.allRowsSelected = false;
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
     this.viewSettings.currentViewName = event.target.value;
     this.clearFilters();
@@ -128,7 +167,7 @@ export class TableComponent implements OnInit {
         this.viewSettings.views = views;
         this.sortFilterList();
         let viewToUpdate = Object.keys(this.viewSettings.views).find(
-          (view) => view === this.viewSettings.currentView.name
+          (view) => view === this.viewSettings.currentView.name,
         );
         if (viewToUpdate) {
           this.viewSettings.currentView.nodeLinkStrategy = views[viewToUpdate].nodeLinkStrategy;
@@ -144,13 +183,12 @@ export class TableComponent implements OnInit {
       } else {
         this.viewSettings.views = views;
         this.viewSettings.currentViewName = Object.keys(this.viewSettings.views).find(
-          (view) => this.viewSettings.views[view].defaultView
+          (view) => this.viewSettings.views[view].defaultView,
         );
 
         this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
         this.viewSettings.currentView.name = this.viewSettings.currentViewName;
         this.changeViewEvent.emit(this.viewSettings.currentView);
-        // this.sortFilterList();
       }
 
       this.retrieveRecords();
@@ -185,6 +223,28 @@ export class TableComponent implements OnInit {
 
   toggleCheck(report: any): void {
     report.checked = !report.checked;
+    if (this.allRowsSelected && !report.checked) {
+      this.allRowsSelected = false;
+    }
+    this.allRowsSelected = this.checkIfAllRowsSelected();
+  }
+
+  checkIfAllRowsSelected() {
+    for (let reportMetada of this.tableSettings.reportMetadata) {
+      if (!reportMetada.checked) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  selectAllRows(): void {
+    this.allRowsSelected = !this.allRowsSelected;
+    if (this.allRowsSelected) {
+      this.selectAll();
+    } else {
+      this.deselectAll();
+    }
   }
 
   getStatusColor(metadata: any): string {
@@ -193,10 +253,15 @@ export class TableComponent implements OnInit {
       return name.toLowerCase() === 'status';
     });
     if (statusName && metadata[statusName]) {
-      style += metadata[statusName].toLowerCase() === 'success' ? '#c3e6cb' : '#f79c9c';
-      return style;
+      if (metadata[statusName].toLowerCase() === 'success') {
+        return '#c3e6cb';
+      } else if (metadata[statusName].toLowerCase() === 'null') {
+        return '#A9A9A9FF';
+      } else {
+        return '#f79c9c';
+      }
     }
-    return '';
+    return 'none';
   }
 
   showCompareButton(): boolean {
@@ -220,11 +285,17 @@ export class TableComponent implements OnInit {
   }
 
   openSelected(): void {
-    this.tableSettings.reportMetadata.forEach((report) => {
+    for (const report of this.tableSettings.reportMetadata) {
       if (report.checked) {
         this.openReport(report.storageId);
+        if (!this.showMultipleFiles) {
+          this.toastService.showWarning(
+            'Please enable show multiple files in settings to open multiple files in the debug tree',
+          );
+          break;
+        }
       }
-    });
+    }
   }
 
   deleteSelected(): void {
@@ -286,6 +357,7 @@ export class TableComponent implements OnInit {
   changeTableLimit(event: any): void {
     this.tableSettings.displayAmount = event.target.value === '' ? 0 : event.target.value;
     this.retrieveRecords();
+    this.allRowsSelected = false;
   }
 
   refresh(): void {
@@ -341,10 +413,7 @@ export class TableComponent implements OnInit {
       .filter((report) => report.checked)
       .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '');
     if (queryString === '') {
-      this.toastComponent.addAlert({
-        type: 'warning',
-        message: 'No reports selected to download',
-      });
+      this.toastService.showWarning('No reports selected to download');
     } else {
       this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
     }
@@ -365,6 +434,26 @@ export class TableComponent implements OnInit {
         this.openReportEvent.next(report);
       }
     });
+  }
+
+  //TODO: fix on backend
+  getShortenedTableHeaderNames(fullName: string): string {
+    if (this.shortenedTableHeaders.has(fullName)) {
+      return this.shortenedTableHeaders.get(fullName) as string;
+    }
+    return fullName;
+  }
+
+  getTableSpacing() {
+    return `${this.tableSpacing * 0.25}em 0 ${this.tableSpacing * 0.25}em 0`;
+  }
+
+  getFontSize() {
+    return `${8 + this.tableSpacing * 1.2}pt`;
+  }
+
+  getCheckBoxSize() {
+    return `${13 + this.tableSpacing}px`;
   }
 
   setUniqueOptions(data: any): void {
@@ -395,7 +484,7 @@ export class TableComponent implements OnInit {
       this.currentFilters.set(
         //FIXME: change to replaceAll when typescript is updated
         metadataLabel.toLowerCase().replace(' ', '').replace(' ', ''),
-        ''
+        '',
       );
     }
   }

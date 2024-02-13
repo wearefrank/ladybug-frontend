@@ -1,0 +1,68 @@
+describe("Tests for settings component", () => {
+  beforeEach(() => {
+    cy.createReport();
+    cy.createOtherReport();
+    cy.visit("");
+    // const desiredView = "File storage";
+    // cy.get("[data-cy-change-view-dropdown]").select(desiredView);
+    // cy.get("[data-cy-change-view-dropdown] option:selected").should(
+    //   "have.text",
+    //   desiredView
+    // );
+  });
+
+  xit("should alter spacing when spacing setting is altered", () => {
+    cy.get("[data-cy-debug='openSettings']").as("openSettingsModal").click();
+    cy.get("[data-cy-settings='spacingDropdown']").select("1x");
+    cy.get("[data-cy-settings='spacingDropdown'] option:selected").should(
+      "have.text",
+      "1x"
+    );
+    cy.get("[data-cy-settings='saveChanges']").as("saveButton").click();
+    cy.get("[data-cy-record-table-index='0']")
+      .find("td")
+      .first()
+      .as("tableCell");
+    cy.get("@tableCell").should("have.attr", "style", "padding: 0.25em 0px;");
+    cy.get("@openSettingsModal").click();
+    cy.get("[data-cy-settings='spacingDropdown']").select("0x");
+    cy.get("[data-cy-settings='spacingDropdown'] option:selected").should(
+      "have.text",
+      "0x"
+    );
+    cy.get("@saveButton").click();
+    cy.get("@tableCell").should("have.attr", "style", "padding: 0em 0px;");
+  });
+
+  xit("should allow multiple files to be opened in debug tree when setting is enabled and close all but one report when setting is disabled", () => {
+    cy.get("[data-cy-debug='openSettings']").as("openSettingsModal").click();
+    cy.get("[data-cy-settings='showAmount']").should(
+      "have.attr",
+      "value",
+      "false"
+    );
+    cy.get("[data-cy-settings='close']").click();
+    cy.get("[data-cy-record-table-index='0']").click();
+    cy.get("[data-cy-record-table-index='1']").click();
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
+      "have.length",
+      "1"
+    );
+    cy.get("@openSettingsModal").click();
+    cy.get("[data-cy-settings='showAmount']").click();
+    cy.get("[data-cy-settings='showAmount']").should("have.attr", "value", "true");
+    cy.get("[data-cy-settings='close']").click();
+    cy.get("[data-cy-record-table-index='0']").click();
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
+      "have.length",
+      "2"
+    );
+    cy.get("[data-cy-debug='openSettings']").as("openSettingsModal").click();
+    cy.get("[data-cy-settings='showAmount']").click();
+    cy.get("[data-cy-settings='close']").click();
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
+      "have.length",
+      "1"
+    );
+  });
+});

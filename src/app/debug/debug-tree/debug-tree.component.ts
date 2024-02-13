@@ -1,22 +1,26 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { HelperService } from '../../shared/services/helper.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
+import { SettingsService } from '../../shared/services/settings.service';
 
 @Component({
   selector: 'app-debug-tree',
   templateUrl: './debug-tree.component.html',
   styleUrls: ['./debug-tree.component.css'],
 })
-export class DebugTreeComponent implements AfterViewInit {
+export class DebugTreeComponent implements AfterViewInit, OnDestroy {
   @ViewChild('treeReference') treeReference!: jqxTreeComponent;
   @Output() selectReportEvent = new EventEmitter<any>();
   @Output() closeEntireTreeEvent = new EventEmitter<any>();
   loaded: boolean = false;
-  showOneAtATime: boolean = false;
+  showMultipleAtATime!: boolean;
+  showMultipleAtATimeSubscription!: Subscription;
   private _currentView: any;
+
+  private lastReport?: Report;
 
   @Input() set currentView(value: any) {
     if (this.loaded && this._currentView !== value) {
@@ -29,9 +33,31 @@ export class DebugTreeComponent implements AfterViewInit {
   get currentView(): any {
     return this._currentView;
   }
+
   @Input() adjustWidth: Observable<void> = {} as Observable<void>;
 
-  constructor(private helperService: HelperService, private httpService: HttpService) {}
+  constructor(
+    private helperService: HelperService,
+    private httpService: HttpService,
+    private settingsService: SettingsService,
+  ) {
+    this.subscribeToSettingsServiceObservables();
+  }
+
+  ngOnDestroy() {
+    this.showMultipleAtATimeSubscription.unsubscribe();
+  }
+
+  subscribeToSettingsServiceObservables(): void {
+    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
+      (value: boolean) => {
+        this.showMultipleAtATime = value;
+        if (!this.showMultipleAtATime) {
+          this.removeAllReportsButOne();
+        }
+      },
+    );
+  }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
@@ -48,7 +74,7 @@ export class DebugTreeComponent implements AfterViewInit {
     });
   }
 
-  hideOrShowCheckpointsBasedOnView(currentView: any) {
+  hideOrShowCheckpointsBasedOnView(currentView: any): void {
     this.getTreeReports().forEach((report) => {
       if (report.value.storageName === currentView.storageName) {
         this.httpService
@@ -65,13 +91,13 @@ export class DebugTreeComponent implements AfterViewInit {
     });
   }
 
-  prepareNextSelect(unmatched: string[], selectedReport: any) {
+  prepareNextSelect(unmatched: string[], selectedReport: any): void {
     if (unmatched.includes(selectedReport.value.uid)) {
       this.recursivelyFindParentThatWontBeDeleted(selectedReport, unmatched);
     }
   }
 
-  hideCheckpoints(unmatched: string[], children: any[]) {
+  hideCheckpoints(unmatched: string[], children: any[]): void {
     if (unmatched.length > 0) {
       children.forEach((node: any) => {
         let oki: any = this.treeReference.getItem(node);
@@ -91,24 +117,29 @@ export class DebugTreeComponent implements AfterViewInit {
     }
   }
 
-  adjustTreeWidth() {
+  adjustTreeWidth(): void {
     this.treeReference.width('100%');
   }
 
-  toggleShowAmount(): void {
-    this.showOneAtATime = !this.showOneAtATime;
+  removeAllReportsButOne(): void {
+    if (this.lastReport) {
+      this.addReportToTree(this.lastReport);
+    }
   }
 
   addReportToTree(report: Report): void {
+    this.lastReport = report;
     let tree = this.helperService.convertReportToJqxTree(report);
-    if (this.showOneAtATime) {
+    if (!this.showMultipleAtATime) {
       this.treeReference.clear();
     }
 
     this.treeReference.addTo(tree, null);
     this.treeReference.selectItem(
       // @ts-ignore
-      this.treeReference.getItems()[this.treeReference.getItems().findIndex((item: any) => item.id == tree.items[0].id)]
+      this.treeReference.getItems()[
+        this.treeReference.getItems().findIndex((item: any) => item.id == tree.items[0].id)
+      ],
     );
     this.hideOrShowCheckpointsBasedOnView(this.currentView);
   }
@@ -158,7 +189,7 @@ export class DebugTreeComponent implements AfterViewInit {
     this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
   }
 
-  changeSearchTerm(event: KeyboardEvent) {
+  changeSearchTerm(event: KeyboardEvent): void {
     const term: string = (event.target as HTMLInputElement).value.toLowerCase();
     this.treeReference.getItems().forEach((item: jqwidgets.TreeItem) => {
       const report = item.value as unknown as Report & {
@@ -178,7 +209,7 @@ export class DebugTreeComponent implements AfterViewInit {
     });
   }
 
-  getTreeReports() {
+  getTreeReports(): any[] {
     let reports: any[] = [];
     this.treeReference.getItems().forEach((item: any) => {
       if (item.value?.storageId != undefined) {

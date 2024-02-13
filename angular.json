@@ -29,6 +29,11 @@
                 "glob": "**/*",
                 "input": "node_modules/monaco-editor",
                 "output": "/assets/monaco/"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/ace-edit/src-min/",
+                "output": "/assets/editor-min/"
               }
             ],
             "styles": [
@@ -45,8 +50,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1mb",
-                  "maximumError": "2mb"
+                  "maximumWarning": "2.5mb",
+                  "maximumError": "3mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -77,10 +82,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "ladybug:build:production"
+              "buildTarget": "ladybug:build:production"
             },
             "development": {
-              "browserTarget": "ladybug:build:development",
+              "buildTarget": "ladybug:build:development",
               "proxyConfig": "src/proxy.conf.json"
             }
           },
@@ -92,7 +97,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ladybug:build"
+            "buildTarget": "ladybug:build"
           }
         },
         "test": {

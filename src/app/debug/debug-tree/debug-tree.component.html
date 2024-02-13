@@ -1,10 +1,10 @@
 <div class="h-100 pl-2" [hidden]="!(loaded && treeReference.getItems().length > 0)">
-  <div class="row" id="treeButtons" *ngIf="treeReference">
+  <div data-cy-debug-tree="buttons" class="row" id="treeButtons" *ngIf="treeReference">
     <app-button [icon]="'fa fa-expand'" [title]="'Expand All'" (click)="expandAll()"></app-button>
     <app-button [icon]="'fa fa-compress'" [title]="'Collapse All'" (click)="collapseAll()"></app-button>
-    <app-button [icon]="'fa fa-times'" [title]="'Close All'" (click)="closeEntireTree()"></app-button>
+    <app-button data-cy-debug-tree="closeAll" [icon]="'fa fa-times'" [title]="'Close All'" (click)="closeEntireTree()"></app-button>
     <div ngbDropdown title="Download">
-      <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTree" ngbDropdownToggle>
+      <button data-cy-debug-tree="download" class="btn btn-info my-2 mx-1" id="dropdownDownloadTree" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
       </button>
       <div ngbDropdownMenu aria-labelledby="dropdownDownloadTree">
@@ -13,8 +13,7 @@
         <button ngbDropdownItem (click)="downloadReports(true, false)">Binary</button>
       </div>
     </div>
-    <app-button [text]="showOneAtATime ? 'Show multiple' : 'Show one'" (click)="toggleShowAmount()"></app-button>
     <input class="my-2 mx-1 pl-1" type="text" name="search" placeholder="&#xF002;" (keyup)="changeSearchTerm($event)"/>
   </div>
-  <jqxTree id="debug-tree" #treeReference (onSelect)="selectReport($event)" [auto-create]="false"></jqxTree>
+  <jqxTree data-cy-debug-tree="root" id="debug-tree" #treeReference (onSelect)="selectReport($event)" [auto-create]="false"></jqxTree>
 </div>

@@ -1,59 +1,112 @@
-<div [hidden]="!displayReport">
-  <div class="row" id="displayButtons">
-    <app-button [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
-    <app-button *ngIf="report.encoding === 'Base64'" [text]="'Base64'" [title]="'Convert to Base64'" (click)="changeEncoding($event)"></app-button>
+<div #container class="h-100">
+  <div *ngIf="displayReport" class="d-flex flex-column">
+    <div class="d-flex justify-content-between align-items-center">
+      <div data-cy-debug-editor="buttons" class="row" id="displayButtons">
+        <app-button data-cy-debug-editor="copy" [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
+        <app-button *ngIf="report.encoding === 'Base64'"
+                    [text]="'Base64'"
+                    [title]="'Convert to Base64'"
+                    (click)="changeEncoding($event)"></app-button>
 
-    <div ngbDropdown title="Download">
-      <button class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
-        <i class="fa fa-download px-2"></i><span class="caret"></span>
-      </button>
-      <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
-        <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
-        <button ngbDropdownItem (click)="downloadReport(false, true)">XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
-        <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
+        <div ngbDropdown title="Download">
+          <button data-cy-debug-editor="download" class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
+            <i class="fa fa-download px-2"></i><span class="caret"></span>
+          </button>
+          <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
+            <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
+            <button ngbDropdownItem (click)="downloadReport(false, true)">
+              XML
+              <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i>
+            </button>
+            <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
+          </div>
+        </div>
+
+        <app-button data-cy-debug-editor="close" [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
+        <button data-cy-open-metadata-table
+                class="btn btn-info my-2 mx-1 px-3"
+                title="Open metadata table"
+                (click)="toggleMetadataTable()">
+          {{metadataTableVisible ? 'Hide' : 'Show'}} metadata
+        </button>
+      </div>
+      <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor"
+           (click)="showEditorPossibilitiesModal(possibilitiesModal)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" color="black"
+             viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+          <path
+            d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+        </svg>
       </div>
     </div>
 
-    <app-button [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
+    <div *ngIf="!report.xml">
+      <div *ngIf="report.noCloseReceivedForStream" id="noCloseReceivedLabel" class="btn btn-static my-2 mx-1 px-2">
+        No close received for stream
+      </div>
+      <div *ngIf="null !== report.streaming && report.streaming" id="waitingForMessageLabel"
+           class="btn btn-static my-2 mx-1 px-2">
+        {{ report.waitingForStream ? 'Waiting for message to be' : 'Message is'}} captured asynchronously from
+        a {{report.streaming.toLowerCase()}} stream
+      </div>
+
+      <div *ngIf="null === report.message" id="nullMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+        Message is null
+      </div>
+
+      <div *ngIf="'' === report.message" id="emptyMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+        Message is empty string
+      </div>
+
+      <div *ngIf="report.stubbed" id="stubbedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+        Message is stubbed
+      </div>
+
+      <div *ngIf="null !== report.encoding" id="encodedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+        Message of type {{report.messageClassName}} is encoded to string using {{report.encoding}}
+        <span *ngIf="this.report.showConverted">and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
+      </div>
+
+      <div *ngIf="report.preTruncatedMessageLength > 0"
+           id="truncatedMessageLabel"
+           class="btn btn-static my-2 mx-1 px-2">
+        Message is truncated ( {{ report.preTruncatedMessageLength - report.message.length}} characters removed)
+      </div>
+
+      <div *ngIf="null !== report.stubNotFound" id="stubNotFoundLabel" class="btn btn-static my-2 mx-1 px-2">
+        Could not find stub message for {{report.stubNotFound}}
+      </div>
+    </div>
+
+    <div *ngIf="metadataTableVisible">
+      <app-display-table [report]="report"></app-display-table>
+    </div>
   </div>
-
-  <div *ngIf="!report.xml">
-    <div *ngIf="report.noCloseReceivedForStream" id="noCloseReceivedLabel" class="btn btn-static my-2 mx-1 px-2">
-      No close received for stream
-    </div>
-    <div *ngIf="null !== report.streaming && report.streaming" id="waitingForMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-      {{ report.waitingForStream ? 'Waiting for message to be' : 'Message is'}} captured asynchronously from a {{report.streaming.toLowerCase()}} stream
-    </div>
-
-    <div *ngIf="null === report.message" id="nullMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-      Message is null
-    </div>
-
-    <div *ngIf="'' === report.message" id="emptyMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-      Message is empty string
-    </div>
-
-    <div *ngIf="report.stubbed" id="stubbedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-      Message is stubbed
-    </div>
-
-    <div *ngIf="null !== report.encoding" id="encodedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-      Message of type {{report.messageClassName}} is encoded to string using {{report.encoding}}
-      <span *ngIf="this.report.showConverted">and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
-    </div>
-
-    <div *ngIf="report.preTruncatedMessageLength > 0" id="truncatedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-      Message is truncated ( {{ report.preTruncatedMessageLength - report.message.length}} characters removed)
-    </div>
-
-    <div *ngIf="null !== report.stubNotFound" id="stubNotFoundLabel" class="btn btn-static my-2 mx-1 px-2">
-      Could not find stub message for {{report.stubNotFound}}
-    </div>
-  </div>
-
-  <app-editor id="editor"></app-editor>
-
-  <div class="pt-4">
-    <app-display-table [report]="report"></app-display-table>
-  </div>
+  <app-custom-editor [height]="containerHeight - 22" (saveReport)="onSave($event)" #editorComponent></app-custom-editor>
 </div>
+
+<ng-template #possibilitiesModal>
+  <div class="modal-header d-flex align-items-center">
+    <div class="modal-title">Possibilities for editor</div>
+    <button type="button" class="close" (click)="closeModal()">&times;</button>
+  </div>
+  <div class="modal-content pt-3 fs-3">
+    <p class="text-center mx-4 text-danger" style="font-size: 10pt">
+      Please make sure that the editor is focused when running commands, which is shown with the eye
+      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="black" viewBox="0 0 16 16">
+        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+      </svg>
+      icon.
+    </p>
+    <br>
+    <br>
+    <div class="mx-auto text-left">
+      <p><kbd>F1</kbd>: Show all possible commands</p>
+      <p><kbd>Ctrl + F</kbd>: Search document</p>
+      <p><kbd>Ctrl + G</kbd>: Go to line/column</p>
+      <p><kbd>Ctrl + A</kbd>: Select all</p>
+    </div>
+  </div>
+</ng-template>

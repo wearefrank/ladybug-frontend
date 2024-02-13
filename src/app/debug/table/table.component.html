@@ -1,134 +1,114 @@
-<div class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
+<div data-cy-debug="root" class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
   <div class="row d-flex align-items-center">
-    <app-button [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
-    <app-button [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
-    <app-button [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
+    <app-button data-cy-debug="refresh" [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
+    <app-button data-cy-debug="openSettings" [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
+    <app-button data-cy-debug="filter" [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
-      <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
+      <button data-cy-debug="download" class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
       </button>
       <div ngbDropdownMenu aria-labelledby="dropdownDownloadTable">
         <button ngbDropdownItem (click)="downloadReports(true, true)">XML & Binary</button>
-        <button ngbDropdownItem (click)="downloadReports(false, true)">
-          XML
-          <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i>
-        </button>
+        <button ngbDropdownItem (click)="downloadReports(false, true)">XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
         <button ngbDropdownItem (click)="downloadReports(true, false)">Binary</button>
       </div>
     </div>
     <button type="button" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
             title="Upload" (click)="uploadFileTable.click()">
       <i class="fa fa-upload"></i>
-      <input #uploadFileTable (change)="uploadReports($event)" type="file" id="uploadFileTable">
+      <input data-cy-debug="upload" #uploadFileTable (change)="uploadReports($event)" type="file" id="uploadFileTable">
     </button>
 
-    <app-button [title]="'Open Selected Reports'" [text]="'Open Selected'" (click)="openSelected()"></app-button>
-    <app-button [title]="'Select All Reports'" [text]="'Select All'" (click)="selectAll()"></app-button>
-    <app-button [title]="'Deselect All Reports'" [text]="'Deselect All'" (click)="deselectAll()"></app-button>
-    <app-button [title]="'Delete'" [icon]="'fa fa-trash'" (click)="deleteSelected()"></app-button>
+    <app-button data-cy-debug="openSelected" [title]="'Open Selected Reports'" [text]="'Open Selected'" (click)="openSelected()"></app-button>
+    <app-button data-cy-debug="delete" [title]="'Delete'" [icon]="'fa fa-trash'" (click)="deleteSelected()"></app-button>
 
+    <form class="pt-2" (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
     <form class="form-horizontal" (keydown.enter)="$event.preventDefault();"
           (keyup.enter)="changeTableLimit($event)">
       <div class="input-group-append">
-        <input type="number" id="displayAmount" class="form-control px-1" value="{{tableSettings.displayAmount}}"
-               (blur)="changeTableLimit($event)">
+          <input data-cy-debug="displayAmount" type="number" class="form-control px-1" value="{{tableSettings.displayAmount}}" (blur)="changeTableLimit($event)">
         <div class="input-group-text">/{{metadataCount}}</div>
       </div>
     </form>
 
     <div class="col-2 my-2 mx-1 px-2">
-      <select class="form-control" (change)="changeView($event)">
-        <option *ngFor="let view of viewSettings.views | keyvalue"
-                [selected]="view.key === viewSettings.currentView.name" value="{{view.key}}">{{view.key}}</option>
+      <select data-cy-change-view-dropdown class="form-control" (change)="changeView($event)">
+        <option *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView.name" value="{{view.key}}">{{view.key}}</option>
       </select>
     </div>
 
     <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.reportsInProgress }}</div>
     <div class="row" *ngIf="tableSettings.reportsInProgress > 0">
-      <div
-        class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in
-        progress: {{ tableSettings.estimatedMemoryUsage }}
-        Bytes
-      </div>
-
+      <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
       <div class="col input-group my-2 mx-1 px-2">
-        <input #openIndex type="number" min="0" value="{{tableSettings.reportsInProgress}}"
-               max="{{tableSettings.reportsInProgress}}"
-               (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')"
-               class="form-control" id="openInProgressNo"/>
+        <input #openIndex type="number" min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')" class="form-control" data-cy-debug="openInProgressNo"/>
         <div class="input-group-append">
-          <button class="btn btn-info" type="button" id="openReportInProgressButton"
-                  (click)="openReportInProgress(+openIndex.value)">Open
-          </button>
+          <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
         </div>
       </div>
 
-      <div class="col input-group my-2 mx-1 px-2">
-        <input #deleteIndex type="number" min="0" value="{{tableSettings.reportsInProgress}}"
-               max="{{tableSettings.reportsInProgress}}"
-               (change)="disableReportInProgressButton(+openIndex.value, '#deleteReportInProgressButton')"
-               class="form-control" id="deleteInProgressNo"/>
-        <div class="input-group-append">
-          <button class="btn btn-info" type="button" id="deleteReportInProgressButton"
-                  (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
-        </div>
-      </div>
+          <div class="col input-group my-2 mx-1 px-2">
+            <input #deleteIndex type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#deleteReportInProgressButton')" class="form-control" id="deleteInProgressNo"/>
+            <div class="input-group-append">
+              <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
+            </div>
+          </div>
 
     </div>
 
-    <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()"
-                (click)="compareTwoReports()"></app-button>
+    <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
     <app-button [text]="'Open In New Tab'" *ngIf="showOpenInTabButton()" (click)="openReportInTab()"></app-button>
     <app-active-filters class="ml-2" [activeFilters]="currentFilters" (click)="toggleFilter()"></app-active-filters>
   </div>
   <div [hidden]="doneRetrieving">
     <mat-spinner [mode]="'indeterminate'" [diameter]="30"></mat-spinner>
   </div>
-  <div [hidden]="!doneRetrieving" class="table-responsive" id="metadataTable">
-    <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)">
+  <div data-cy-debug="table" [hidden]="!doneRetrieving" class="table-responsive" id="metadataTable">
+    <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)" [style.font-size]="getFontSize()">
       <thead id="table-header">
-      <tr>
-        <th>Select</th>
-        <th *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
-            mat-sort-header="{{i}}">{{header}}</th>
-      </tr>
-      <tr id="filterRow" *ngIf="tableSettings.showFilter">
-        <th>
-          <app-button [icon]="'fa fa-undo'" [title]="'Clear filters'" (click)="clearFilters()"></app-button>
-        </th>
-        <th *ngFor="let header of viewSettings.currentView.metadataNames">
-          <div class="input-group">
-            <div>
-              <input
-                [matAutocomplete]="auto"
-                type="text"
-                title="{{tableSettings.metadataHeaders[header]}}"
-                class="form-control"
-                placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header.toLowerCase())">
+        <tr>
+          <th class="table-row-checkbox header-padding">
+            <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
+          </th>
+          <th class="text-center header-cell header-padding" *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
+              mat-sort-header="{{i}}" [title]="header">{{getShortenedTableHeaderNames(header)}}</th>
+        </tr>
+        <tr data-cy-debug="tableFilterRow" id="filterRow" *ngIf="tableSettings.showFilter">
+          <th class="vertical-middle">
+            <app-button [icon]="'fa fa-undo'" [title]="'Clear filters'" (click)="clearFilters()"></app-button>
+          </th>
+          <th *ngFor="let header of viewSettings.currentView.metadataNames" class="filter-header">
+            <div class="input-group">
+              <div>
+                <input
+                  [matAutocomplete]="auto"
+                  type="text"
+                  title="{{tableSettings.metadataHeaders[header]}}"
+                  class="form-control"
+                  placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header.toLowerCase())">
+              </div>
+              <mat-autocomplete #auto=matAutocomplete>
+                <mat-option
+                  *ngFor="let option of tableSettings.uniqueValues[header.toLowerCase()]"
+                  [value]="option" class="filter-option"
+                  (click)="changeFilter($event, header.toLowerCase(), option)">{{option}}</mat-option>
+              </mat-autocomplete>
             </div>
-            <mat-autocomplete #auto=matAutocomplete>
-              <mat-option
-                *ngFor="let option of tableSettings.uniqueValues[header.toLowerCase()]"
-                [value]="option" class="filter-option"
-                (click)="changeFilter($event, header.toLowerCase(), option)">{{option}}</mat-option>
-            </mat-autocomplete>
-          </div>
-        </th>
-      </tr>
+          </th>
+        </tr>
       </thead>
-      <tbody>
-      <tr (click)="highLightRow(i);"
-          *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index"
-          [ngClass]="{'highlight': selectedRow === i}"
-          class="table-row"
-          style="{{getStatusColor(row)}}"
-      >
-        <td>
-          <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)">
-        </td>
-        <td *ngFor="let metadataName of viewSettings.currentView.metadataNames"
-            (click)="openReport(row.storageId);">{{row[metadataName]}}</td>
-      </tr>
+      <tbody data-cy-debug="tableBody">
+        <tr class="table-row" *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index"
+            (click)="highLightRow(i);"
+            [ngClass]="{'highlight': selectedRow === i}"
+            style="background-color: {{getStatusColor(row)}}"
+            [attr.data-cy-record-table-index]=i
+        >
+          <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
+            <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
+          </td>
+          <td [style.padding]="getTableSpacing()" class="table-cell" *ngFor="let metadataName of viewSettings.currentView.metadataNames" (click)="openReport(row.storageId);" [title]="row[metadataName]">{{row[metadataName]|tableCellShortener}}</td>
+        </tr>
       </tbody>
     </table>
   </div>

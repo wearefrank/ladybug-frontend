@@ -1,52 +1,45 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Alert } from '../../interfaces/alert';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Toast } from '../../interfaces/toast';
+import { ToastService } from '../../services/toast.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-toast',
   templateUrl: './toast.component.html',
   styleUrls: ['./toast.component.css'],
 })
-export class ToastComponent implements OnInit {
-  TIMEOUT: number = 10_000;
-  selectedAlert: Alert = { type: '', message: '' };
-  @ViewChild('modal') modal!: any;
-  alerts: Alert[] = [
-    // {type: 'warning', message: 'There is some error wow!'},
-    // {type: 'danger', message: 'There is a big error wow!'},
-    // {type: 'success', message: 'There is no error wow!'}
-  ];
+export class ToastComponent implements OnInit, OnDestroy {
+  toastSubscription!: Subscription;
+  selectedAlert!: Toast;
+  @ViewChild('modal') modal!: TemplateRef<Element>;
+  toasts: Toast[] = [];
 
-  @ViewChild('staticAlert', { static: false }) staticAlert!: NgbAlert;
-
-  constructor(private modalService: NgbModal) {}
+  constructor(
+    private modalService: NgbModal,
+    private toastService: ToastService,
+  ) {}
 
   ngOnInit(): void {
-    // Show the alert for 5 seconds
-    setTimeout(() => {
-      if (this.staticAlert) {
-        this.staticAlert.close();
-        this.alerts = [];
-      }
-    }, this.TIMEOUT);
+    this.toastSubscription = this.toastService.toastObservable.subscribe((toast: Toast): void => {
+      this.toasts.push(toast);
+    });
   }
 
-  close(alert: Alert): void {
-    this.alerts.splice(this.alerts.indexOf(alert), 1);
-    this.ngOnInit();
+  ngOnDestroy(): void {
+    this.toastSubscription.unsubscribe();
   }
 
-  addAlert(alert: Alert): void {
-    this.alerts.push(alert);
-    this.ngOnInit();
+  close(alert: Toast): void {
+    this.toasts.splice(this.toasts.indexOf(alert), 1);
   }
 
-  showDetailedErrorMessages(alert: Alert) {
+  showDetailedErrorMessages(alert: Toast): void {
     this.selectedAlert = alert;
     this.modalService.open(this.modal, { size: 'lg' });
   }
 
-  copyToClipboard() {
+  copyToClipboard(): void {
     const text = document.querySelector('#detailedErrorMessage')!;
     navigator.clipboard.writeText(text.innerHTML).then(() => {
       const button = document.querySelector('#CopyToClipboard')!;

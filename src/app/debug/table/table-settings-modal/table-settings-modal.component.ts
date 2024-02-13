@@ -1,29 +1,86 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
-import { CookieService } from 'ngx-cookie-service';
-import { ToastComponent } from '../../../shared/components/toast/toast.component';
+import { SettingsService } from '../../../shared/services/settings.service';
+import { Subscription } from 'rxjs';
+import { ToastService } from '../../../shared/services/toast.service';
 
 @Component({
   selector: 'app-table-settings-modal',
   templateUrl: './table-settings-modal.component.html',
   styleUrls: ['./table-settings-modal.component.css'],
 })
-export class TableSettingsModalComponent {
+export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;
-  settingsForm = new UntypedFormGroup({
+  showMultipleAtATime: boolean = false;
+  showMultipleAtATimeSubscription!: Subscription;
+  tableSpacing: number = 1;
+  spacingOptions: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  tableSpacingSubscription!: Subscription;
+  showSearchWindowOnLoad: boolean = true;
+  showSearchWindowOnLoadSubscription!: Subscription;
+  prettifyOnLoad: boolean = true;
+  prettifyOnLoadSubscription!: Subscription;
+  settingsForm: UntypedFormGroup = new UntypedFormGroup({
+    showMultipleFilesAtATime: new UntypedFormControl(this.showMultipleAtATime),
+    showSearchWindowOnLoad: new UntypedFormControl(this.showSearchWindowOnLoad),
+    prettifyOnLoad: new UntypedFormControl(this.prettifyOnLoad),
+    tableSpacing: new UntypedFormControl(this.tableSpacing),
     generatorEnabled: new UntypedFormControl('Enabled'),
     regexFilter: new UntypedFormControl(''),
     transformationEnabled: new UntypedFormControl(true),
     transformation: new UntypedFormControl(''),
   });
-
   @Output() openLatestReportsEvent = new EventEmitter<any>();
-  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
   saving: boolean = false;
 
-  constructor(private modalService: NgbModal, private httpService: HttpService, private cookieService: CookieService) {}
+  constructor(
+    private modalService: NgbModal,
+    private httpService: HttpService,
+    private settingsService: SettingsService,
+    private toastService: ToastService,
+  ) {
+    this.subscribeToSettingsServiceObservables();
+  }
+
+  ngOnDestroy() {
+    this.showMultipleAtATimeSubscription.unsubscribe();
+    this.tableSpacingSubscription.unsubscribe();
+    this.showSearchWindowOnLoadSubscription.unsubscribe();
+  }
+
+  subscribeToSettingsServiceObservables(): void {
+    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
+      (value: boolean): void => {
+        this.showMultipleAtATime = value;
+        this.settingsForm.get('showMultipleFilesAtATime')?.setValue(this.showMultipleAtATime);
+      },
+    );
+    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe((value: number): void => {
+      this.tableSpacing = value;
+      this.settingsForm.get('tableSpacing')?.setValue(this.tableSpacing);
+    });
+    this.showSearchWindowOnLoadSubscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe(
+      (value: boolean): void => {
+        this.showSearchWindowOnLoad = value;
+        this.settingsForm.get('showSearchWindowOnLoad')?.setValue(this.showSearchWindowOnLoad);
+      },
+    );
+
+    this.prettifyOnLoadSubscription = this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
+      this.prettifyOnLoad = value;
+      this.settingsForm.get('prettifyOnLoad')?.setValue(this.prettifyOnLoad);
+    });
+  }
+
+  setShowMultipleAtATime(): void {
+    this.settingsService.setShowMultipleAtATime(!this.showMultipleAtATime);
+  }
+
+  setShowSearchWindowOnload(): void {
+    this.settingsService.setShowSearchWindowOnLoad(!this.showSearchWindowOnLoad);
+  }
 
   open(): void {
     this.loadSettings();
@@ -44,8 +101,8 @@ export class TableSettingsModalComponent {
 
   saveSettings(): void {
     const form: any = this.settingsForm.value;
-    this.cookieService.set('generatorEnabled', form.generatorEnabled);
-    this.cookieService.set('transformationEnabled', form.transformationEnabled.toString());
+    localStorage.setItem('generatorEnabled', form.generatorEnabled);
+    localStorage.setItem('transformationEnabled', form.transformationEnabled.toString());
     this.httpService.postTransformation(form.transformation).subscribe();
     const generatorEnabled: string = String(form.generatorEnabled === 'Enabled');
     let data: any = {
@@ -54,10 +111,7 @@ export class TableSettingsModalComponent {
     };
     this.httpService.postSettings(data).subscribe();
 
-    this.toastComponent.addAlert({
-      type: 'warning',
-      message: 'Reopen report to see updated XML',
-    });
+    this.toastService.showWarning('Reopen report to see updated XML');
     this.saving = true;
   }
 
@@ -66,6 +120,8 @@ export class TableSettingsModalComponent {
   }
 
   factoryReset(): void {
+    this.settingsForm.reset();
+    this.settingsService.setShowMultipleAtATime();
     this.httpService.resetSettings().subscribe((response) => this.saveResponseSetting(response));
     this.httpService.getTransformation(true).subscribe((resp) => {
       this.settingsForm.get('transformation')?.setValue(resp.transformation);
@@ -74,10 +130,8 @@ export class TableSettingsModalComponent {
 
   loadSettings(): void {
     this.httpService.getSettings().subscribe((response) => this.saveResponseSetting(response));
-    if (this.cookieService.get('transformationEnabled')) {
-      this.settingsForm
-        .get('transformationEnabled')
-        ?.setValue(this.cookieService.get('transformationEnabled') == 'true');
+    if (localStorage.getItem('transformationEnabled')) {
+      this.settingsForm.get('transformationEnabled')?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }
 
     this.httpService.getTransformation(false).subscribe((response) => {
@@ -87,8 +141,16 @@ export class TableSettingsModalComponent {
 
   saveResponseSetting(response: any) {
     const generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
-    this.cookieService.set('generatorEnabled', generatorStatus);
+    localStorage.setItem('generatorEnabled', generatorStatus);
     this.settingsForm.get('generatorEnabled')?.setValue(generatorStatus);
     this.settingsForm.get('regexFilter')?.setValue(response.regexFilter);
+  }
+
+  changeTableSpacing(value: any): void {
+    this.settingsService.setTableSpacing(Number(value));
+  }
+
+  setPrettifyOnLoad() {
+    this.settingsService.setPrettifyOnLoad(!this.prettifyOnLoad);
   }
 }
