@@ -1,7 +1,3 @@
-import chaiColors from 'chai-colors';
-
-chai.use(chaiColors);
-//Hard coded waits have to be replaced with intercepts and waits
 describe('Tests with one report', () => {
   beforeEach(() => {
     cy.clearDebugStore();
