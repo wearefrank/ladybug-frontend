@@ -60,8 +60,6 @@ export class CompareComponent implements OnInit, AfterViewInit {
   }
 
   renderDiffs(leftSide: string, rightSide: string): void {
-    this.compareData.originalReport.xml = leftSide;
-    this.compareData.runResultReport.xml = rightSide;
     this.originalModel = Object.assign({}, this.originalModel, {
       code: leftSide,
     });
