@@ -23,7 +23,16 @@ describe('Tests about copying', () => {
     cy.get('#metadataTable tbody', { timeout: 10000 })
       .find('tr')
       .should('not.exist');
+    cy.intercept({
+      method: 'GET',
+      hostname: 'localhost',
+      url: /\/api\/*?/g,
+    }).as('apiCall');
     cy.get('[data-cy-debug=\'refresh\']').click();
+    cy.wait('@apiCall').then(() =>
+      cy.log('All api requests have completed'),
+    );
+
     cy.get('#metadataTable tbody').find('tr').should('have.length', 1);
     cy.get('[data-cy-debug=\'selectAll\']').click();
     cy.get('[data-cy-debug=\'openSelected\']').click();
