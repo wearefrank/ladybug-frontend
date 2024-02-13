@@ -9,15 +9,7 @@ describe('Edit tests', () => {
 
   afterEach(() => {
     cy.clearDebugStore();
-    // cy.get('[data-cy-nav-tab=\'debugTab\']').click();
-    // cy.get('[data-cy-nav-tab=\'debugTab\'] a:eq(0)').should('have.class', 'active');
-    // // Wait for debug tab to be rendered
-    // cy.wait(1000);
-    // cy.get('[data-cy-debug-tree=\'closeAll\']').click();
-    // cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
     cy.navigateToTestTabAndWait();
-    // Give UI time to build up the test tab.
-    // cy.wait(1000);
     cy.get('[data-cy-test=\'selectAll\']').click();
     cy.get('[data-cy-test=\'deleteSelected\']').click();
     cy.get('[data-cy-delete-modal=\'confirm\']').click();
@@ -58,7 +50,6 @@ describe('Edit tests', () => {
     cy.get('button:contains(Yes)').click();
     cy.get('[data-cy-nav-tab=\'testTab\']').click();
     cy.get('[data-cy-test=\'runAll\']').click();
-    // cy.get('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'green');
   });
 
   it('Editing without pressing Edit produces error', () => {
