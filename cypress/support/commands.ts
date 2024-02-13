@@ -119,7 +119,7 @@ Cypress.Commands.add(
 );
 
 function getShownMonacoModelElement() {
-  cy.get('#editor [data-keybinding-context]').within(
+  cy.get("[data-cy-test-editor='editor'] [data-keybinding-context]").within(
     (monacoEditor: JQuery<HTMLElement>) => {
       const keybindingNumber = Number.parseInt(
         monacoEditor.attr('data-keybinding-context'),
@@ -157,13 +157,39 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
 //Clear reports in test tab if any present
 Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
   cy.visit('');
-  cy.get('[data-cy-nav-tab="testTab"]').click();
+  cy.get("[data-cy-nav-tab='testTab']").click();
   cy.wait(2000);
-  cy.get('#SelectAllButton').click();
-  cy.get('#DeleteSelectedButton').click();
-  console.log(Cypress.$('#confirmDeletion'));
-  if (Cypress.$('#confirmDeletion').length > 0) {
-    cy.get('#confirmDeletion').should('exist');
+  cy.get("[data-cy-test='selectAll']").click();
+  cy.get("[data-cy-test='deleteSelected']").click();
+  console.log(Cypress.$("[data-cy-delete-modal='confirm']"));
+  if (Cypress.$("[data-cy-delete-modal='confirm']").length > 0) {
+    cy.get("[data-cy-delete-modal='confirm']").should('exist');
   }
   cy.visit('');
 });
+
+Cypress.Commands.add('checkTableNumRows', n => {
+  if(n === 0) {
+    cy.get("[data-cy-debug='tableBody']")
+      .find("tr", { timeout: 10000 })
+      .should("not.exist");
+  } else {
+    cy.get("[data-cy-debug='tableBody']", { timeout: 10000 })
+      .find("tr", { timeout: 10000 })
+      .should("have.length", n);
+  }
+})
+
+Cypress.Commands.add('checkTestTableNumRows', n => {
+  cy.get("[data-cy-test='table'] tr", { timeout: 10000 }).should("have.length", n);
+})
+
+Cypress.Commands.add('checkTestTableReportsAre', reportNames => {
+  cy.checkTestTableNumRows(reportNames.length);
+  reportNames.forEach(reportName => {
+    cy.get("[data-cy-test='table']")
+    .find("tr")
+    .contains("/" + reportName)
+    .should("have.length", 1);
+  })
+})
