@@ -40,7 +40,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
   editorChangesSubject: Subject<string> = new Subject<string>();
 
   @HostListener('window:keydown', ['$event'])
-  keyBoardListener(event: KeyboardEvent) {
+  keyBoardListener(event: KeyboardEvent): void {
     if ((event.ctrlKey || event.metaKey) && event.key == 's') {
       event.preventDefault();
       this.onSave();
@@ -67,7 +67,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
   }
 
   subscribeToEditorChanges(): void {
-    this.editorChangesSubject.pipe(debounceTime(300)).subscribe((value) => {
+    this.editorChangesSubject.pipe(debounceTime(300)).subscribe((value: string) => {
       this.checkIfTextIsPretty();
     });
   }
