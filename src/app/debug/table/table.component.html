@@ -22,7 +22,7 @@
     <app-button data-cy-debug="openSelected" [title]="'Open Selected Reports'" [text]="'Open Selected'" (click)="openSelected()"></app-button>
     <app-button data-cy-debug="delete" [title]="'Delete'" [icon]="'fa fa-trash'" (click)="deleteSelected()"></app-button>
 
-    <form class="pt-2" (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
+    <form class="form-horizontal" (keydown.enter)="$event.preventDefault()" (keyup.enter)="changeTableLimit($event)">
       <div class="input-group-append">
           <input data-cy-debug="displayAmount" type="number" class="form-control px-1" value="{{tableSettings.displayAmount}}" (blur)="changeTableLimit($event)">
         <div class="input-group-text">/{{metadataCount}}</div>
