@@ -69,6 +69,7 @@ export class TableComponent implements OnInit, OnDestroy {
   tableSpacingSubscription!: Subscription;
   showMultipleFiles!: boolean;
   showMultipleFilesSubscription!: Subscription;
+  viewDropdownBoxWidth!: string;
 
   constructor(
     private httpService: HttpService,
@@ -178,6 +179,7 @@ export class TableComponent implements OnInit, OnDestroy {
         this.changeViewEvent.emit(this.viewSettings.currentView);
       } else {
         this.viewSettings.views = views;
+        this.calculateViewDropDownWidth();
         this.viewSettings.currentViewName = Object.keys(this.viewSettings.views).find(
           (view) => this.viewSettings.views[view].defaultView,
         );
@@ -445,5 +447,15 @@ export class TableComponent implements OnInit, OnDestroy {
 
   getCheckBoxSize() {
     return `${13 + this.tableSpacing}px`;
+  }
+
+  calculateViewDropDownWidth() {
+    let longestViewName = '';
+    for (let [key, value] of Object.entries(this.viewSettings.views)) {
+      if (key.length > longestViewName.length) {
+        longestViewName = key;
+      }
+    }
+    this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
   }
 }
