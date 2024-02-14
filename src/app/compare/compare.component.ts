@@ -25,7 +25,6 @@ export class CompareComponent implements OnInit, AfterViewInit {
   constructor(public compareData: CompareData) {}
 
   ngOnInit(): void {
-    console.log(this.compareData);
     this.renderDiffs(this.compareData.originalReport.xml, this.compareData.runResultReport.xml);
   }
 

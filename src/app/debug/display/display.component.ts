@@ -30,7 +30,6 @@ export class DisplayComponent {
 
   showReport(report: any): void {
     this.report = report;
-    console.log(report);
     this.displayReport = true;
     report.xml
       ? this.editorComponent.setNewReport(report.xml)
