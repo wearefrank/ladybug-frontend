@@ -1,7 +1,7 @@
 <div #container class="h-100">
   <div *ngIf="displayReport" class="d-flex flex-column">
     <div class="d-flex justify-content-between align-items-center">
-      <div class="row" id="displayButtons">
+      <div data-cy-debug-editor="buttons" class="row" id="displayButtons">
         <app-button data-cy-debug-editor="copy" [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
         <app-button *ngIf="report.encoding === 'Base64'"
                     [text]="'Base64'"
@@ -9,7 +9,7 @@
                     (click)="changeEncoding($event)"></app-button>
 
         <div ngbDropdown title="Download">
-          <button class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
+          <button data-cy-debug-editor="download" class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
             <i class="fa fa-download px-2"></i><span class="caret"></span>
           </button>
           <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">

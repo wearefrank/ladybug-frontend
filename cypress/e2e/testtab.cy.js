@@ -17,9 +17,9 @@ describe("About the Test tab", function () {
     cy.clearDebugStore();
     cy.get("[data-cy-nav-tab='debugTab']").click();
     cy.get("[data-cy-debug-tree='closeAll']").click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 0);
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 0);
+    cy.checkTestTableNumRows(0);
     cy.get("[data-cy-nav-tab='debugTab']").click();
     const downloadsFolder = Cypress.config("downloadsFolder");
     // cy.task("deleteDownloads", {
@@ -30,16 +30,11 @@ describe("About the Test tab", function () {
 
   it("Test deleting a report", () => {
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
     cy.functions.testTabDeselectReportNamed("/Another simple report");
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal='confirm']").click();
-    cy.get("#testReports")
-      .find("tr")
-      .should("have.length", 1)
-      .within(function ($reports) {
-        cy.wrap($reports).contains("/Another simple report");
-      });
+    cy.checkTestTableReportsAre(["Another simple report"]);
     cy.get("[data-cy-test='selectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal='confirm']").click();
@@ -47,25 +42,25 @@ describe("About the Test tab", function () {
 
   it("Test select all by deleting", function () {
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
 
     cy.get("[data-cy-test='selectAll']").click();
     checkTestTabTwoReportsSelected();
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal='confirm']").click();
-    cy.get("#testReports").find("tr").should("have.length", 0);
+    cy.checkTestTableNumRows(0);
   });
 
   it("Test deselect all", function () {
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.wait(100);
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
     cy.get("[data-cy-test='selectAll']").click();
     checkTestTabTwoReportsSelected();
     cy.get("[data-cy-test='deselectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.wait(1000);
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
     cy.get("[data-cy-test='selectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal='confirm']").click();
@@ -77,10 +72,10 @@ describe("About the Test tab", function () {
   xit("Download and upload", function () {
     const downloadsFolder = Cypress.config("downloadsFolder");
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
+    cy.checkTestTableNumRows(2);
     cy.get("[data-cy-test='selectAll']").click();
     cy.task("downloads", downloadsFolder).then((filesBefore) => {
-      cy.get("#DownloadBinaryButton").click();
+      cy.get("[data-cy-test='downloadBinary']").click();
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
       cy.task("downloads", downloadsFolder).then((filesAfter) => {
         const newFile = filesAfter.filter(
@@ -108,35 +103,35 @@ describe("About the Test tab", function () {
             console.log(
               `Have transformed content length ${fileContent.length}`,
             );
-            cy.get("input#uploadFileTest").attachFile({
+            cy.get("[data-cy-test='uploadFile']").attachFile({
               fileContent,
               fileName: newFile,
             });
           });
       });
     });
-    cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 4);
-    cy.get("#testReports tr td:nth-child(3):contains(/Simple report)").should(
+    cy.checkTestTableNumRows(4);
+    cy.get("[data-cy-test='table'] tr td:nth-child(3):contains(/Simple report)").should(
       "have.length",
       2,
     );
     cy.get(
-      "#testReports tr td:nth-child(3):contains(/Another simple report)",
+      "[data-cy-test='table'] tr td:nth-child(3):contains(/Another simple report)",
     ).should("have.length", 2);
   });
 
   // TODO : I have no idea what happens here
   // it('Download from tab test, upload to tab debug', function() {
   //   const downloadsFolder = Cypress.config('downloadsFolder');
-  //   cy.get('li#testTab').click();
-  //   cy.get('#testReports').find('tr').should('have.length', 2).within(function($reports) {
+  //   cy.get("li#testTab").click();
+  //   cy.get("[data-cy-test='table']").find("tr").should("have.length", 2).within(function($reports) {
   //     cy.wrap($reports).contains('/Simple report').should('have.length', 1);
   //     cy.wrap($reports).contains('/Another simple report').should('have.length', 1);
   //   });
   //   cy.functions.testTabSelectReportNamed('Simple report');
   //   cy.task('downloads', downloadsFolder).then(filesBefore => {
   //     cy.log('Before download, downloads folder contains files: ' + filesBefore.toString());
-  //     cy.get('#DownloadBinaryButton').click();
+  //     cy.get("[data-cy-test='downloadBinary']").click();
   //     cy.log('Waiting for ' + filesBefore.length)
   //     cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
   //     cy.task('downloads', downloadsFolder).then(filesAfter => {
@@ -149,7 +144,7 @@ describe("About the Test tab", function () {
   //       });
   //       cy.get('li#debugTab').click();
   //       // Wait for the front-end to complete showing the page
-  //       cy.get('#debug-tree .jqx-tree-dropdown-root li').should('have.length', 2);
+  //       cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li").should('have.length', 2);
   //       cy.readFile(cy.functions.downloadPath(newFile), 'binary')
   //       .then((rawContent) => {
   //         console.log(`Have content of uploaded file, length ${rawContent.length}`);
@@ -162,8 +157,8 @@ describe("About the Test tab", function () {
   //           fileName: newFile
   //         });
   //       });
-  //       cy.get('#debug-tree .jqx-tree-dropdown-root li').should('have.length', 3);
-  //       cy.get('#debug-tree .jqx-tree-dropdown-root li:contains(Simple report)').should('have.length', 2);
+  //       cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li").should('have.length', 3);
+  //       cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li:contains(Simple report)").should('have.length', 2);
   //     });
   //   });
   // });
@@ -179,16 +174,16 @@ function copyTheReportsToTestTab() {
   // was flaky because the selectIfNotSelected() custom command accessed
   // a detached DOM element.
   cy.wait(100);
-  cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 2);
+  cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 2);
   cy.wait(100);
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li:contains(Simple report) > div",
+    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Simple report) > div",
   ).click();
   cy.wait(100);
   cy.get("[data-cy-debug-editor='copy']").click();
   cy.wait(100);
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report) > div",
+    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Another simple report) > div",
   ).click();
   cy.wait(100);
   cy.get("[data-cy-debug-editor='copy']").click();
@@ -196,7 +191,7 @@ function copyTheReportsToTestTab() {
 }
 
 function checkTestTabTwoReportsSelected() {
-  cy.get("#testReports tr [type=checkbox]")
+  cy.get("[data-cy-test='table'] tr [type=checkbox]")
     .should("have.length", 2)
     .each(($checkbox) => {
       cy.wrap($checkbox).should("be.checked");
