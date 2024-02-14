@@ -33,6 +33,8 @@ import { DeleteModalComponent } from './test/delete-modal/delete-modal.component
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TableCellShortenerPipe } from './shared/pipes/table-cell-shortener.pipe';
 import { CustomEditorComponent } from './custom-editor/custom-editor.component';
+import { CheckpointTypePipe } from './shared/pipes/checkpoint-type.pipe';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 @NgModule({
   declarations: [
@@ -73,6 +75,8 @@ import { CustomEditorComponent } from './custom-editor/custom-editor.component';
     AngularSplitModule,
     MonacoEditorModule.forRoot(),
     TableCellShortenerPipe,
+    CheckpointTypePipe,
+    ClipboardModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
