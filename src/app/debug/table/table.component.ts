@@ -347,7 +347,8 @@ export class TableComponent implements OnInit, OnDestroy {
     const filterValue: string = value ?? event.target.value;
     if (this.currentFilters.get(header) !== filterValue) {
       this.tableSettings.filterValue = filterValue ?? '.*'
-      this.tableSettings.filterHeader = filterValue === '' ? '' : header;
+      this.tableSettings.filterHeader = filterValue;
+      this.tableSettings.filterHeader &&= header;
       this.retrieveRecords();
       this.currentFilters.set(header, filterValue);
       this.currentFilters = new Map(this.currentFilters);
