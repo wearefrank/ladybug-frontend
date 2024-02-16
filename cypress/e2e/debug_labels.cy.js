@@ -13,7 +13,7 @@ describe("Test labels", function () {
     cy.get("[data-cy-debug='selectAll']").click();
     cy.get("[data-cy-debug='openSelected']").click();
     cy.wait(300);
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 1);
     testTreeView("Message is null", "Null String");
   });
 
@@ -22,18 +22,18 @@ describe("Test labels", function () {
     cy.visit("");
     cy.get("[data-cy-debug='selectAll']").click();
     cy.get("[data-cy-debug='openSelected']").click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 1);
     testTreeView("Message is an empty string", "Empty String");
   });
 });
 
 function testTreeView(reportName, labelString) {
-  cy.get("#debug-tree .jqx-tree-dropdown-root > li > div").within(function (
+  cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li > div").within(function (
     $node
   ) {
     cy.wrap($node).contains(reportName);
   });
-  cy.get("#debug-tree .jqx-tree-dropdown-root > li > ul > li > div").within(
+  cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li > ul > li > div").within(
     function ($node) {
       cy.wrap($node).should("contain", reportName);
       cy.wrap($node)
@@ -43,7 +43,7 @@ function testTreeView(reportName, labelString) {
     }
   );
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li > ul > li > ul > li:nth-child(1) > div"
+    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li > ul > li > ul > li:nth-child(1) > div"
   ).within(function ($node) {
     cy.wrap($node).should("have.text", labelString);
     cy.wrap($node)
@@ -52,7 +52,7 @@ function testTreeView(reportName, labelString) {
       .should("eq", "assets/tree-icons/infopoint-odd.gif");
   });
   cy.get(
-    "#debug-tree .jqx-tree-dropdown-root > li > ul > li > ul > li:nth-child(2) > div"
+    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li > ul > li > ul > li:nth-child(2) > div"
   ).within(function ($node) {
     cy.wrap($node).should("have.text", reportName);
     cy.wrap($node)

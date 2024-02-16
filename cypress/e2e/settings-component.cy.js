@@ -19,7 +19,7 @@ describe("Tests for settings component", () => {
       "1x"
     );
     cy.get("[data-cy-settings='saveChanges']").as("saveButton").click();
-    cy.get('[data-cy-record-table-index="0"]')
+    cy.get("[data-cy-record-table-index='0']")
       .find("td")
       .first()
       .as("tableCell");
@@ -42,9 +42,9 @@ describe("Tests for settings component", () => {
       "false"
     );
     cy.get("[data-cy-settings='close']").click();
-    cy.get('[data-cy-record-table-index="0"]').click();
-    cy.get('[data-cy-record-table-index="1"]').click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should(
+    cy.get("[data-cy-record-table-index='0']").click();
+    cy.get("[data-cy-record-table-index='1']").click();
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
       "have.length",
       "1"
     );
@@ -52,15 +52,15 @@ describe("Tests for settings component", () => {
     cy.get("[data-cy-settings='showAmount']").click();
     cy.get("[data-cy-settings='showAmount']").should("have.attr", "value", "true");
     cy.get("[data-cy-settings='close']").click();
-    cy.get('[data-cy-record-table-index="0"]').click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should(
+    cy.get("[data-cy-record-table-index='0']").click();
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
       "have.length",
       "2"
     );
     cy.get("[data-cy-debug='openSettings']").as("openSettingsModal").click();
     cy.get("[data-cy-settings='showAmount']").click();
     cy.get("[data-cy-settings='close']").click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should(
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
       "have.length",
       "1"
     );

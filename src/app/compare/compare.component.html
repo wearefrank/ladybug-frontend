@@ -1,7 +1,15 @@
 <div class="flex flex-column" id="container">
-  <app-compare-tree #trees class="trees" (compareEvent)="showDifference($event)"
-                    (changeNodeLinkStrategyEvent)="changeNodeLinkStrategy($event)"></app-compare-tree>
+  <app-compare-tree
+    #trees
+    class="trees"
+    (compareEvent)="showDifference($event)"
+    (changeNodeLinkStrategyEvent)="changeNodeLinkStrategy($event)">
+  </app-compare-tree>
   <div class="text-diff-container pl-3 pb-2">
-    <app-text-compare [compareData]="compareData"></app-text-compare>
+    <ngx-monaco-diff-editor
+      class="diff-editor"
+      [options]="diffOptions"
+      [originalModel]="originalModel"
+      [modifiedModel]="modifiedModel"></ngx-monaco-diff-editor>
   </div>
 </div>

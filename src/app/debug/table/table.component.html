@@ -1,10 +1,10 @@
-<div class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
+<div data-cy-debug="root" class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
   <div class="row">
     <app-button data-cy-debug="refresh" [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button data-cy-debug="openSettings" [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
     <app-button data-cy-debug="filter" [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
-      <button class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
+      <button data-cy-debug="download" class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
       </button>
       <div ngbDropdownMenu aria-labelledby="dropdownDownloadTable">
@@ -23,15 +23,18 @@
     <app-button data-cy-debug="delete" [title]="'Delete'" [icon]="'fa fa-trash'" (click)="deleteSelected()"></app-button>
 
     <form class="pt-2" (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
-      <div class="input-group-append">
-          <input data-cy-debug="displayAmount" type="number" class="form-control px-1" value="{{tableSettings.displayAmount}}" (blur)="changeTableLimit($event)">
-        <div class="input-group-text">/{{metadataCount}}</div>
+      <div class='input-group'>
+          <input data-cy-debug='displayAmount' type='number' class='form-control input-field'
+                 value='{{tableSettings.displayAmount}}' (blur)='changeTableLimit($event)'>
+        <div class='input-group-append'>
+          <div class='input-group-text'>/{{metadataCount}}</div>
+        </div>
       </div>
     </form>
 
-    <div class="col-2 my-2 mx-1 px-2">
+    <div class="my-2 mx-1 px-2">
       <select data-cy-change-view-dropdown class="form-control" (change)="changeView($event)">
-        <option *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView.name" value="{{view.key}}">{{view.key}}</option>
+        <option [style.width]="viewDropdownBoxWidth" *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView.name" value="{{view.key}}">{{view.key}}</option>
       </select>
     </div>
 
@@ -44,7 +47,6 @@
             <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
           </div>
         </div>
-
           <div class="col input-group my-2 mx-1 px-2">
             <input #deleteIndex type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#deleteReportInProgressButton')" class="form-control" id="deleteInProgressNo"/>
             <div class="input-group-append">
@@ -61,7 +63,7 @@
   <div [hidden]="doneRetrieving">
     <mat-spinner [mode]="'indeterminate'" [diameter]="30"></mat-spinner>
   </div>
-  <div [hidden]="!doneRetrieving" class="table-responsive" id="metadataTable">
+  <div data-cy-debug="table" [hidden]="!doneRetrieving" class="table-responsive" id="metadataTable">
     <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)" [style.font-size]="getFontSize()">
       <thead id="table-header">
         <tr>
@@ -75,18 +77,18 @@
             {{getShortenedTableHeaderNames(header)}}
           </th>
         </tr>
-        <tr id="filterRow" *ngIf="tableSettings.showFilter">
+        <tr data-cy-debug="tableFilterRow" id="filterRow" *ngIf="tableSettings.showFilter">
           <th class="vertical-middle">
             <app-button [icon]="'fa fa-undo'" [title]="'Clear filters'" (click)="clearFilters()"></app-button>
           </th>
           <th *ngFor="let header of viewSettings.currentView.metadataNames" class="filter-header">
             <div class="input-group">
-              <input type="text" id="filter" title="{{tableSettings.metadataHeaders[header]}}" class="form-control" placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header)">
+              <input data-cy-debug="tableFilter" type="text" id="filter"  title="{{tableSettings.metadataHeaders[header]}}" class="form-control" placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header)">
             </div>
           </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody data-cy-debug="tableBody">
         <tr class="table-row" *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index"
             (click)="highLightRow(i);"
             [ngClass]="{'highlight': selectedRow === i}"

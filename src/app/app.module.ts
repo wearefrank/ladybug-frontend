@@ -30,7 +30,6 @@ import { ToggleComponent } from './shared/components/toggle/toggle.component';
 import { EditorComponent } from './shared/components/editor/editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { DeleteModalComponent } from './test/delete-modal/delete-modal.component';
-import { TextCompareComponent } from './text-compare/text-compare.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TableCellShortenerPipe } from './shared/pipes/table-cell-shortener.pipe';
 import { CustomEditorComponent } from './custom-editor/custom-editor.component';
@@ -57,7 +56,6 @@ import { CustomEditorComponent } from './custom-editor/custom-editor.component';
     ToggleComponent,
     EditorComponent,
     DeleteModalComponent,
-    TextCompareComponent,
     CustomEditorComponent,
   ],
   imports: [

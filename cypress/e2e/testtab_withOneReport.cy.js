@@ -9,10 +9,10 @@ describe("Tests with one report", function () {
     cy.visit("");
     cy.get("[data-cy-debug='selectAll']").click();
     cy.get("[data-cy-debug='openSelected']").click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 1);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 1);
     cy.get("[data-cy-debug-editor='copy']").click();
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports tr").should("have.length", 1);
+    cy.checkTestTableNumRows(1);
   });
 
   afterEach(function () {
@@ -22,14 +22,14 @@ describe("Tests with one report", function () {
     // Wait for debug tab to be rendered
     cy.wait(1000);
     cy.get("[data-cy-debug-tree='closeAll']").click();
-    cy.get("#debug-tree .jqx-tree-dropdown-root > li").should("have.length", 0);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 0);
     cy.get("[data-cy-nav-tab='testTab']").click();
     // Give UI time to build up the test tab.
     cy.wait(1000);
     cy.get("[data-cy-test='selectAll']").click();
     cy.get("[data-cy-test='deleteSelected']").click();
     cy.get("[data-cy-delete-modal='confirm']").click();
-    cy.get("#testReports tr", { timeout: 10000 }).should("have.length", 0);
+    cy.checkTestTableNumRows(0);
     cy.get("[data-cy-nav-tab='debugTab']").click();
   });
 
@@ -37,9 +37,9 @@ describe("Tests with one report", function () {
   // TODO: Fix issue and re-enable test.
   xit("Test copy in testtab", function () {
     // cy.functions.testTabSelectReportNamed('Simple report');
-    cy.get("#CopySelectedButton").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
-    cy.get("#testReports")
+    cy.get("[data-cy-test='copySelected']").click();
+    cy.checkTestTableNumRows(2);
+    cy.get("[data-cy-test='table']")
       .find("tr")
       .each(function ($report) {
         cy.wrap($report).find("[type=checkbox]").should("not.be.checked");
@@ -47,13 +47,13 @@ describe("Tests with one report", function () {
           .find("td:eq(2)")
           .should("include.text", "Simple report");
       });
-    cy.get("#OpenreportButton:eq(0)").click();
+    cy.get("[data-cy-test='openReport']:eq(0)").click();
     cy.wait(1000);
     cy.get(".report-tab .jqx-tree-dropdown-root > li > ul > li > div").click();
     cy.wait(1000);
     cy.get("[data-cy-test-editor='edit']").click();
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get(".report-tab #editor")
+    cy.get("[data-cy-test-editor='editor']")
       .click()
       .focused()
       .type("{ctrl}a")
@@ -69,7 +69,7 @@ describe("Tests with one report", function () {
     cy.wait(1000);
     cy.get("[data-cy-test-editor='edit']").click();
     cy.wait(1000);
-    cy.get(".report-tab #editor")
+    cy.get("[data-cy-test-editor='editor']")
       .click()
       .focused()
       .type("{ctrl}a")
@@ -77,9 +77,9 @@ describe("Tests with one report", function () {
     cy.get("[data-cy-test-editor='save']").click();
     cy.get("button:contains(Yes)").click();
     cy.get("[data-cy-nav-tab='testTab']").click();
-    cy.get("#testReports").find("tr").should("have.length", 2);
-    cy.get("#testReports tr:eq(0)").find("#RunreportButton").click();
-    cy.get("#testReports")
+    cy.checkTestTableNumRows(2);
+    cy.get("[data-cy-test='table'] tr:eq(0)").find("[data-cy-test='runReport']").click();
+    cy.get("[data-cy-test='table']")
       .find("tr:eq(0)")
       .within(function ($report) {
         cy.wrap($report)
@@ -87,8 +87,8 @@ describe("Tests with one report", function () {
           .should("have.css", "color")
           .and("be.colored", "green");
       });
-    cy.get("#testReports tr:eq(1)").find("#RunreportButton").click();
-    cy.get("#testReports")
+    cy.get("[data-cy-test='table'] tr:eq(1)").find("[data-cy-test='runReport']").click();
+    cy.get("[data-cy-test='table']")
       .find("tr:eq(1)")
       .within(function ($report) {
         cy.wrap($report)
@@ -102,8 +102,8 @@ describe("Tests with one report", function () {
   // TODO: Fix issue and re-enable test.
   it("Rerun, replace, succeed", function () {
     // cy.functions.testTabSelectReportNamed('Simple report');
-    cy.get("#testReports tr:eq(0)").find("#RunreportButton").click();
-    cy.get("#testReports")
+    cy.get("[data-cy-test='table'] tr:eq(0)").find("[data-cy-test='runReport']").click();
+    cy.get("[data-cy-test='table']")
       .find("tr:eq(0)")
       .within(function ($report) {
         cy.wrap($report)
@@ -112,9 +112,9 @@ describe("Tests with one report", function () {
           .and("be.colored", "red");
       });
     //Repeat process but expect same results? Einstein would have something to say about this
-    // cy.get("#testReports tr:eq(0)").find("#ReplacereportButton").click();
-    // cy.get("#testReports tr:eq(0)").find("#RunreportButton").click();
-    // cy.get("#testReports")
+    // cy.get("[data-cy-test='table'] tr:eq(0)").find("[data-cy-test='replaceReport']").click();
+    // cy.get("[data-cy-test='table'] tr:eq(0)").find("[data-cy-test='runReport']").click();
+    // cy.get("[data-cy-test='table']")
     //   .find("tr:eq(0)")
     //   .within(function ($report) {
     //     cy.wrap($report)

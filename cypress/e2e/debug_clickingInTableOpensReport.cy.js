@@ -21,17 +21,17 @@ describe("Clicking a report", function () {
     // Create a screenshot, because we want to have at least one after running the tests.
     // We can then check whether the screenshots are saved as artifacts by GitHub.
     cy.screenshot();
-    // cy.get('#treeButtons').should('not.be.visible')
-    cy.get(".table-responsive tbody").find("tr").first().click();
-    cy.get("#treeButtons").should("be.visible");
+    // cy.get("[data-cy-debug-tree='buttons']").should('not.be.visible')
+    cy.get("[data-cy-debug='tableBody']").find("tr").first().click();
+    cy.get("[data-cy-debug-tree='buttons']").should("be.visible");
   });
 
   it("Selecting report should show display", function () {
     cy.screenshot();
-    cy.get("#displayButtons").should("not.exist");
-    cy.get('[data-cy-element-name="editor"]').should("not.exist");
-    cy.get(".table-responsive tbody").find("tr").first().click();
-    cy.get("#displayButtons").should("be.visible");
-    cy.get('[data-cy-element-name="editor"]').should("be.visible");
+    cy.get("[data-cy-debug-editor='buttons']").should("not.exist");
+    cy.get("[data-cy-element-name='editor']").should("not.exist");
+    cy.get("[data-cy-debug='tableBody']").find("tr").first().click();
+    cy.get("[data-cy-debug-editor='buttons']").should("be.visible");
+    cy.get("[data-cy-element-name='editor']").should("be.visible");
   });
 });
