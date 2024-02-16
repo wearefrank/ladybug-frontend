@@ -20,7 +20,6 @@ describe('About the Test tab', () => {
     cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 0);
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.checkTestTableNumRows(0);
-    cy.deleteAllTestReports();
   });
 
   it("Test deleting a report", () => {
