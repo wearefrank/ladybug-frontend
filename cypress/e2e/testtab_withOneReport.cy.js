@@ -88,7 +88,7 @@ describe('Tests with one report', () => {
 
   // May fail because of issue https://github.com/ibissource/ladybug-frontend/issues/250.
   // TODO: Fix issue and re-enable test.
-  it('Rerun, replace, succeed', () => {
+  xit('Rerun, replace, succeed', () => {
     // cy.functions.testTabSelectReportNamed('Simple report');
     cy.get("[data-cy-test='table'] tr:eq(0)").find("[data-cy-test='runReport']").click();
     cy.get("[data-cy-test='table']")

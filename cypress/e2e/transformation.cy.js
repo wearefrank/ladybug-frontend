@@ -40,7 +40,7 @@ describe('Report transformation', () => {
     cy.get("[data-cy-open-metadata-table]").click();
     cy.get("[data-cy-element-name='editor']").contains('Name="IGNORED"');
     // The transformation should not affect the report table, only the XML in the Monaco editor
-    cy.get('[data-cy-metadata-table='reportname']').should(
+    cy.get('[data-cy-metadata-table="reportname"]').should(
       'have.text',
       'Name: Another simple report',
     );
