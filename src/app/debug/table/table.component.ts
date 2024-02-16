@@ -70,6 +70,7 @@ export class TableComponent implements OnInit, OnDestroy {
   tableSpacingSubscription!: Subscription;
   showMultipleFiles!: boolean;
   showMultipleFilesSubscription!: Subscription;
+  viewDropdownBoxWidth!: string;
   currentFilters: Map<string, string> = new Map<string, string>();
 
   defaultCheckBoxSize: number = 13;
@@ -186,6 +187,7 @@ export class TableComponent implements OnInit, OnDestroy {
         this.changeViewEvent.emit(this.viewSettings.currentView);
       } else {
         this.viewSettings.views = views;
+        this.calculateViewDropDownWidth();
         this.viewSettings.currentViewName = Object.keys(this.viewSettings.views).find(
           (view) => this.viewSettings.views[view].defaultView,
         );
@@ -252,7 +254,6 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   getStatusColor(metadata: any): string {
-    let style = 'background-color: ';
     let statusName = this.viewSettings.currentView.metadataNames.find((name: string) => {
       return name.toLowerCase() === 'status';
     });
@@ -479,5 +480,15 @@ export class TableComponent implements OnInit, OnDestroy {
     for (let metadataLabel of this.viewSettings.currentView.metadataNames) {
       this.currentFilters.set(metadataLabel.toLowerCase().replaceAll(' ', ''), '');
     }
+  }
+
+  calculateViewDropDownWidth() {
+    let longestViewName = '';
+    for (let [key, value] of Object.entries(this.viewSettings.views)) {
+      if (key.length > longestViewName.length) {
+        longestViewName = key;
+      }
+    }
+    this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
   }
 }

@@ -22,29 +22,31 @@
     <app-button data-cy-debug="openSelected" [title]="'Open Selected Reports'" [text]="'Open Selected'" (click)="openSelected()"></app-button>
     <app-button data-cy-debug="delete" [title]="'Delete'" [icon]="'fa fa-trash'" (click)="deleteSelected()"></app-button>
 
-    <form class="form-horizontal" (keydown.enter)="$event.preventDefault()" (keyup.enter)="changeTableLimit($event)">
-      <div class="input-group-append">
-          <input data-cy-debug="displayAmount" type="number" class="form-control px-1" value="{{tableSettings.displayAmount}}" (blur)="changeTableLimit($event)">
-        <div class="input-group-text">/{{metadataCount}}</div>
+    <form class="pt-2" (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
+      <div class='input-group'>
+          <input data-cy-debug='displayAmount' type='number' class='form-control input-field'
+                 value='{{tableSettings.displayAmount}}' (blur)='changeTableLimit($event)'>
+        <div class='input-group-append'>
+          <div class='input-group-text'>/{{metadataCount}}</div>
+        </div>
       </div>
     </form>
 
-    <div class="col-2 my-2 mx-1 px-2">
+    <div class="my-2 mx-1 px-2">
       <select data-cy-change-view-dropdown class="form-control" (change)="changeView($event)">
-        <option *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView.name" value="{{view.key}}">{{view.key}}</option>
+        <option [style.width]="viewDropdownBoxWidth" *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView.name" value="{{view.key}}">{{view.key}}</option>
       </select>
     </div>
 
     <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.reportsInProgress }}</div>
     <div class="row" *ngIf="tableSettings.reportsInProgress > 0">
       <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
-      <div class="col input-group my-2 mx-1 px-2">
-        <input #openIndex type="number" min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')" class="form-control" data-cy-debug="openInProgressNo"/>
-        <div class="input-group-append">
-          <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
+        <div class="col input-group my-2 mx-1 px-2">
+          <input #openIndex type="number" min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')" class="form-control" data-cy-debug="openInProgressNo"/>
+          <div class="input-group-append">
+            <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
+          </div>
         </div>
-      </div>
-
           <div class="col input-group my-2 mx-1 px-2">
             <input #deleteIndex type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#deleteReportInProgressButton')" class="form-control" id="deleteInProgressNo"/>
             <div class="input-group-append">
@@ -79,6 +81,7 @@
             <div class="input-group">
               <div>
                 <input
+                  data-cy-debug="tableFilter"
                   [matAutocomplete]="auto"
                   type="text"
                   title="{{tableSettings.metadataHeaders[header]}}"
