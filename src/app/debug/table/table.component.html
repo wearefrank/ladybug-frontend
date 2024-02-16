@@ -99,7 +99,7 @@
         <tr class="table-row" *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index"
             (click)="highLightRow(i);"
             [ngClass]="{'highlight': selectedRow === i}"
-            style="background-color: {{getStatusColor(row)}}"
+            [style.background-color]="getStatusColor(row)"
             [attr.data-cy-record-table-index]=i
         >
           <td class="table-row-checkbox" [style.padding]="getTableSpacing()">

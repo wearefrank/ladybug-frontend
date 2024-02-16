@@ -4,7 +4,7 @@
           [ngClass]="{'ml-1': !isFirst}"
           *ngIf="filter.value !== ''"
           class="filter-container d-flex align-items-center rounded-pill px-3 py-2 text-white ">
-    {{filter.key|capitalize}}: {{filter.value}}
+    {{filter.key|titlecase}}: {{filter.value}}
     </span>
   </span>
 </div>
