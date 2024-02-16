@@ -3,7 +3,6 @@ describe('About the Test tab', () => {
   });
 
   beforeEach(() => {
-    cy.deleteAllTestReports();
     cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
@@ -21,12 +20,7 @@ describe('About the Test tab', () => {
     cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 0);
     cy.get("[data-cy-nav-tab='testTab']").click();
     cy.checkTestTableNumRows(0);
-    cy.get("[data-cy-nav-tab='debugTab']").click();
-    const downloadsFolder = Cypress.config("downloadsFolder");
-    // cy.task("deleteDownloads", {
-    //   downloadsPath: downloadsFolder,
-    //   fileSep: Cypress.env("FILESEP"),
-    // });
+    cy.deleteAllTestReports();
   });
 
   it("Test deleting a report", () => {
