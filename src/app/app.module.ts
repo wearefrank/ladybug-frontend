@@ -37,7 +37,6 @@ import { CustomEditorComponent } from './custom-editor/custom-editor.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ActiveFiltersComponent } from './debug/active-filters/active-filters.component';
 import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
-import { CapitalizePipe } from './shared/pipes/capitalize.pipe';
 
 @NgModule({
   declarations: [
@@ -65,7 +64,6 @@ import { CapitalizePipe } from './shared/pipes/capitalize.pipe';
     CustomEditorComponent,
     ActiveFiltersComponent,
     DictionaryPipe,
-    CapitalizePipe,
   ],
   imports: [
     BrowserModule,
