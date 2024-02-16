@@ -30,10 +30,12 @@ import { ToggleComponent } from './shared/components/toggle/toggle.component';
 import { EditorComponent } from './shared/components/editor/editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { DeleteModalComponent } from './test/delete-modal/delete-modal.component';
-import { TextCompareComponent } from './text-compare/text-compare.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TableCellShortenerPipe } from './shared/pipes/table-cell-shortener.pipe';
 import { CustomEditorComponent } from './custom-editor/custom-editor.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { ActiveFiltersComponent } from './debug/active-filters/active-filters.component';
+import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
 
 @NgModule({
   declarations: [
@@ -57,8 +59,9 @@ import { CustomEditorComponent } from './custom-editor/custom-editor.component';
     ToggleComponent,
     EditorComponent,
     DeleteModalComponent,
-    TextCompareComponent,
     CustomEditorComponent,
+    ActiveFiltersComponent,
+    DictionaryPipe,
   ],
   imports: [
     BrowserModule,
@@ -75,6 +78,7 @@ import { CustomEditorComponent } from './custom-editor/custom-editor.component';
     AngularSplitModule,
     MonacoEditorModule.forRoot(),
     TableCellShortenerPipe,
+    MatAutocompleteModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

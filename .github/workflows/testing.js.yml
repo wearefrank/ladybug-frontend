@@ -190,7 +190,7 @@ jobs:
 
       - name: Run cypress with chrome browser - real frontend
         if: ${{ github.event.inputs.useRealFrontend == 'true' }}
-        uses: cypress-io/github-action@v2.9.7
+        uses: cypress-io/github-action@v6.6.0
         with:
           working-directory: ladybug-frontend
           wait-on: "http://localhost:8090"

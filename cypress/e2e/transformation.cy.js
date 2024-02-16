@@ -30,17 +30,17 @@ describe('Report transformation', () => {
     cy.get('[data-cy-debug=\'refresh\']').click();
 
     cy.wait(100);
-    cy.get('.table-responsive tbody')
-      .find('tr')
-      .should('have.length', 1)
+    cy.get("[data-cy-debug='tableBody']")
+      .find("tr")
+      .should("have.length", 1)
       .click();
-    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 1);
     // We test that the top node was not selected before.
-    cy.get('#debug-tree .jqx-tree-dropdown-root > li > div').click();
-    cy.get('[data-cy-open-metadata-table]').click();
-    cy.get('[data-cy-element-name="editor"]').contains('Name="IGNORED"');
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li > div").click();
+    cy.get("[data-cy-open-metadata-table]").click();
+    cy.get("[data-cy-element-name='editor']").contains('Name="IGNORED"');
     // The transformation should not affect the report table, only the XML in the Monaco editor
-    cy.get('[data-cy-metadata-table-reportname]').should(
+    cy.get('[data-cy-metadata-table='reportname']').should(
       'have.text',
       'Name: Another simple report',
     );

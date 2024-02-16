@@ -66,3 +66,16 @@ th {
 .vertical-middle {
   vertical-align: middle;
 }
+.input-field {
+  width: 4rem;
+  padding-left: 0.3rem;
+  padding-right: 0.25rem;
+}
+
+.filter-option {
+  height: fit-content;
+
+  > span {
+    font-size: 9pt;
+  }
+}

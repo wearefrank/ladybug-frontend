@@ -3,7 +3,7 @@
       <label class="p-2">
         Compare method:
       </label>
-      <select class="form-control col-md-1" (change)="changeNodeLinkStrategy($event)">
+      <select class="form-control w-fit" (change)="changeNodeLinkStrategy($event)">
         <option [selected]="nodeLinkStrategy === NodeLinkStrategy.PATH" value="PATH">Path</option>
         <option [selected]="nodeLinkStrategy === NodeLinkStrategy.CHECKPOINT_NUMBER.toString()" value="CHECKPOINT_NUMBER">Checkpoint number</option>
         <option [selected]="nodeLinkStrategy === NodeLinkStrategy.NONE.toString()" value="NONE">None</option>

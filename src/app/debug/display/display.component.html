@@ -1,7 +1,7 @@
 <div #container class="h-100">
   <div *ngIf="displayReport" class="d-flex flex-column">
     <div class="d-flex justify-content-between align-items-center">
-      <div class="row" id="displayButtons">
+      <div data-cy-debug-editor="buttons" class="row" id="displayButtons">
         <app-button data-cy-debug-editor="copy" [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
         <app-button *ngIf="report.encoding === 'Base64'"
                     [text]="'Base64'"
@@ -9,7 +9,7 @@
                     (click)="changeEncoding($event)"></app-button>
 
         <div ngbDropdown title="Download">
-          <button class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
+          <button data-cy-debug-editor="download" class="btn btn-info my-2 mx-1" id="dropdownDownloadDisplay" ngbDropdownToggle>
             <i class="fa fa-download px-2"></i><span class="caret"></span>
           </button>
           <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
@@ -32,7 +32,7 @@
       </div>
       <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor"
            (click)="showEditorPossibilitiesModal(possibilitiesModal)">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" color="black"
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" color="black"
              viewBox="0 0 16 16">
           <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
           <path

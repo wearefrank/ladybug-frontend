@@ -8,50 +8,50 @@ describe('About opened reports', () => {
 
   it('Close one', () => {
     cy.enableShowMultipleInDebugTree();
-    cy.get('[data-cy-debug=\'selectAll\']').click();
-    cy.get('[data-cy-debug=\'openSelected\']').click();
+    cy.get('[data-cy-debug="selectAll"]').click();
+    cy.get('[data-cy-debug="openSelected"]').click();
     // Each of the two reports has three lines.
-    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
-    cy.get('#debug-tree .jqx-tree-dropdown-root > li > div').should(
-      'contain',
-      'Simple report',
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 2);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li > div").should(
+      "contain",
+      "Simple report"
     );
     cy.get(
-      '#debug-tree .jqx-tree-dropdown-root > li > div:contains(Simple report)',
+      "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li > div:contains(Simple report)"
     )
       .first()
       .selectIfNotSelected();
-    cy.get('[data-cy-debug-editor=\'close\']').click();
-    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.get("[data-cy-debug-editor='close']").click();
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 1);
     // nth-child has an 1-based index
-    cy.get('#debug-tree .jqx-tree-dropdown-root > li > div')
-      .should('have.text', 'Another simple report')
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li > div")
+      .should("have.text", "Another simple report")
       .click();
-    cy.get('[data-cy-debug-editor=\'close\']').click();
-    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
+    cy.get("[data-cy-debug-editor='close']").click();
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 0);
   });
 
   it('Close all', () => {
     cy.enableShowMultipleInDebugTree();
-    cy.get('.table-responsive tbody tr td:contains(Simple report)')
+    cy.get("[data-cy-debug='tableBody'] tr td:contains(Simple report)")
       .first()
       .click();
-    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1);
-    cy.get('.table-responsive tbody tr td:contains("Another simple report")')
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 1);
+    cy.get("[data-cy-debug='tableBody'] tr td:contains('Another simple report')")
       .first()
       .click();
-    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 2);
     // Check sequence of opened reports. We expect "Simple report" first, then "Another simple report".
-    cy.get('#debug-tree .jqx-tree-dropdown-root li:nth-child(1) > div').should(
-      'contain',
-      'Simple report',
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li:nth-child(1) > div").should(
+      "contain",
+      "Simple report"
     );
-    cy.get('#debug-tree .jqx-tree-dropdown-root li:nth-child(2) > div').should(
-      'have.text',
-      'Another simple report',
+    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root li:nth-child(2) > div").should(
+      "have.text",
+      "Another simple report"
     );
-    cy.get('[data-cy-debug-tree=\'closeAll\']').click();
-    cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 0);
+    cy.get('[data-cy-debug-tree="closeAll"]').click();
+    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should("have.length", 0);
   });
 
   // // TODO: This can not be tested easily atm, since only the css is changed on expand and collapse
@@ -72,30 +72,30 @@ describe('About opened reports', () => {
 
   // it('Node info corresponds to selected node', () => {
   //   cy.get('button[id="OpenAllButton"]').click();
-  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should('have.length', 2);
   //   checkNodeInfo('Simple report');
   //   checkNodeInfo('Another simple report');
   // });
 
   // it('If there are open reports, then always one of them is selected', () => {
-  //   cy.get('.table-responsive tbody tr td:contains(Simple report)').first().click();
-  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1).each((node) => {
+  //   cy.get('data-cy-debug='tableBody' tr td:contains(Simple report)').first().click();
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should('have.length', 1).each((node) => {
   //     cy.wrap(node).should('have.text', 'Simple report');
   //   });
-  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li.node-selected').should('have.length', 1);
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li.node-selected").should('have.length', 1);
   //   // Index is zero-based. We want the first node after the root.
-  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li:eq(1)').should('have.class', 'node-selected');
-  //   cy.get('.table-responsive tbody').find('tr').contains('Another simple report').click();
-  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 2);
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:eq(1)").should('have.class', 'node-selected');
+  //   cy.get('data-cy-debug='tableBody'').find('tr').contains('Another simple report').click();
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should('have.length', 2);
   //   // When you open a new report, the new report is also selected.
-  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li.node-selected').should('have.length', 1).should('have.text', 'Another simple report');
-  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li:contains(Another simple report):eq(1)').should('have.class', 'node-selected');
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li.node-selected").should('have.length', 1).should('have.text', 'Another simple report');
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Another simple report):eq(1)").should('have.class', 'node-selected');
   //   cy.wait(1000)
   //   cy.get('button#CloseButton').click();
-  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li').should('have.length', 1).each((node) => {
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should('have.length', 1).each((node) => {
   //     cy.wrap(node).should('have.text', 'Simple report');
   //   });
-  //   cy.get('#debug-tree .jqx-tree-dropdown-root > li.node-selected').should('have.length', 1);
+  //   cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li.node-selected").should('have.length', 1);
   // });
 });
 
@@ -156,40 +156,40 @@ function checkNodeInfo(name) {
       cy.wrap(shownMonacoElement).find(`span:contains(${word})`);
     });
   });
-  cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name');
-  cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should(
-    'have.text',
-    `${name}`,
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(0)").should("have.text", "Name");
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(1)").should(
+    "have.text",
+    `${name}`
   );
-  cy.get('#displayedNodeTable tr:eq(4) td:eq(0)').should(
-    'have.text',
-    'StorageId',
+  cy.get("[data-cy-metadata-table='table'] tr:eq(4) td:eq(0)").should(
+    "have.text",
+    "StorageId"
   );
-  cy.get('#displayedNodeTable tr:eq(4) td:eq(1)').should('not.be.empty');
+  cy.get("[data-cy-metadata-table='table'] tr:eq(4) td:eq(1)").should("not.be.empty");
   cy.get(`div.treeview > ul > li:contains(${name}):eq(1)`).click();
   const helloWorld = 'Hello\xa0World!';
   cy.getShownMonacoModelElement().find(`span:contains(${helloWorld})`);
-  cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name');
-  cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should(
-    'have.text',
-    `${name}`,
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(0)").should("have.text", "Name");
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(1)").should(
+    "have.text",
+    `${name}`
   );
-  cy.get('#displayedNodeTable tr:eq(5) td:eq(0)').should(
-    'have.text',
-    'CheckpointUID',
+  cy.get('[data-cy-metadata-table="table"] tr:eq(5) td:eq(0)').should(
+    "have.text",
+    "CheckpointUID"
   );
-  cy.get('#displayedNodeTable tr:eq(5) td:eq(1)').should('not.be.empty');
-  cy.get(`div.treeview > ul > li:contains(${name}):eq(2)`).click();
-  const goodbyeWorld = 'Goodbye\xa0World!';
+  cy.get("[data-cy-metadata-table='table'] tr:eq(5) td:eq(1)").should("not.be.empty");
+  cy.get("[data-cy-debug-tree='root'] > ul > li:contains(${name}):eq(2)").click();
+  const goodbyeWorld = "Goodbye\xa0World!";
   cy.getShownMonacoModelElement().find(`span:contains(${goodbyeWorld})`);
-  cy.get('#displayedNodeTable tr:eq(0) td:eq(0)').should('have.text', 'Name');
-  cy.get('#displayedNodeTable tr:eq(0) td:eq(1)').should(
-    'have.text',
-    `${name}`,
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(0)").should("have.text", "Name");
+  cy.get("[data-cy-metadata-table='table'] tr:eq(0) td:eq(1)").should(
+    "have.text",
+    `${name}`
   );
-  cy.get('#displayedNodeTable tr:eq(5) td:eq(0)').should(
-    'have.text',
-    'CheckpointUID',
+  cy.get("[data-cy-metadata-table='table'] tr:eq(5) td:eq(0)").should(
+    "have.text",
+    "CheckpointUID"
   );
-  cy.get('#displayedNodeTable tr:eq(5) td:eq(1)').should('not.be.empty');
+  cy.get("[data-cy-metadata-table='table'] tr:eq(5) td:eq(1)").should("not.be.empty");
 }
