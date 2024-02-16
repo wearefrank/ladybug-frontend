@@ -34,7 +34,10 @@
                 "glob": "**/*",
                 "input": "node_modules/ace-edit/src-min/",
                 "output": "/assets/editor-min/"
-              }
+              },
+              "package.json",
+              "README.md",
+              "LICENSE"
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
