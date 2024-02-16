@@ -37,10 +37,10 @@
     </div>
   </div>
   <div data-cy-metadata-table='table' class='metadata-table' id='displayedNodeTable' >
-    <div class='table-row' data-cy-metadata-table='reportname'>
-      <div class="key">Name:</div>
-      <div class="value" [cdkCopyToClipboard]="report.name">{{report.name}}</div>
-    </div>
+<!--    <div class='table-row' data-cy-metadata-table='reportname'>-->
+<!--      <div class="key">Name:</div>-->
+<!--      <div class="value" [cdkCopyToClipboard]="report.name">{{report.name}}</div>-->
+<!--    </div>-->
     <div class='table-row' *ngIf='!report.xml'>
       <div class="key">Type</div>
       <div class="value" [cdkCopyToClipboard]="report.type">{{report.type|checkpointType}}</div>

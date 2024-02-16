@@ -31,6 +31,9 @@
           {{metadataTableVisible ? 'Hide' : 'Show'}} metadata
         </button>
       </div>
+      @if (report.name) {
+        <div [cdkCopyToClipboard]='report.name' class='my-auto display-5 report-name'>{{report.name}}</div>
+      }
       <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor"
            (click)="showEditorPossibilitiesModal(possibilitiesModal)">
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" color="black"
