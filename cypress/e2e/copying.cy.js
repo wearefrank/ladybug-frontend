@@ -1,5 +1,6 @@
 describe("Tests about copying", function () {
   beforeEach(() => {
+    cy.initializeApp();
     cy.clearDebugStore();
   });
 

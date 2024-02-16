@@ -1,24 +1,12 @@
-describe('Table size and toggle filter', function () {
+describe('Table size and toggle filter', () => {
   beforeEach(() => {
     cy.clearDebugStore();
-    Cypress.Screenshot.defaults({
-      blackout: ['.foo'],
-      capture: 'viewport',
-      clip: { x: 0, y: 0, width: 200, height: 200 },
-      scale: false,
-      disableTimersAndAnimations: true,
-      screenshotOnRunFailure: true,
-      onBeforeScreenshot () { },
-      onAfterScreenshot () { },
-    })
-
     cy.createReport();
     cy.createOtherReport();
-    cy.visit('')
-    cy.wait(500)
-  })
+    cy.initializeApp();
+  });
 
-  it('Typing in a table size and retyping it', function () {
+  it('Typing in a table size and retyping it', () => {
     // We only assume here that the default is two or more.
     cy.get("[data-cy-debug='tableBody']").find('tr').should('have.length', 2);
     cy.get("[data-cy-debug='displayAmount']").type('{selectAll}{del}{enter}');
@@ -37,7 +25,7 @@ describe('Table size and toggle filter', function () {
     cy.get("[data-cy-debug='tableBody']").find('tr').should('have.length', 2)
   })
 
-  it('After clicking filter button, the filters should appear', function () {
+  it('After clicking filter button, the filters should appear',  () => {
     cy.get("[data-cy-debug='tableFilterRow']").should('not.exist')
     cy.get("[data-cy-debug='filter']").click()
     cy.get("[data-cy-debug='tableFilterRow']").should('be.visible')
@@ -46,7 +34,7 @@ describe('Table size and toggle filter', function () {
     cy.get("[data-cy-debug='tableFilterRow']").should('not.exist')
   })
 
-  it('Type in a filter parameter', function () {
+  it('Type in a filter parameter',  () => {
     cy.get("[data-cy-debug='filter']").click()
     cy.get("[data-cy-debug='tableFilter']").eq(3).type("(Simple report){enter}")
     cy.get("[data-cy-debug='tableBody']").find('tr').should('have.length', 1)
