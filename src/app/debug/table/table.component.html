@@ -1,5 +1,5 @@
 <div data-cy-debug="root" class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
-  <div class="row">
+  <div class="row d-flex align-items-center">
     <app-button data-cy-debug="refresh" [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
     <app-button data-cy-debug="openSettings" [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
     <app-button data-cy-debug="filter" [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
@@ -42,7 +42,7 @@
     <div class="row" *ngIf="tableSettings.reportsInProgress > 0">
       <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
         <div class="col input-group my-2 mx-1 px-2">
-          <input #openIndex type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')" class="form-control" data-cy-debug="openInProgressNo"/>
+          <input #openIndex type="number" min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')" class="form-control" data-cy-debug="openInProgressNo"/>
           <div class="input-group-append">
             <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
           </div>
@@ -58,7 +58,7 @@
 
     <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
     <app-button [text]="'Open In New Tab'" *ngIf="showOpenInTabButton()" (click)="openReportInTab()"></app-button>
-
+    <app-active-filters class="ml-2" [activeFilters]="currentFilters" (click)="toggleFilter()"></app-active-filters>
   </div>
   <div [hidden]="doneRetrieving">
     <mat-spinner [mode]="'indeterminate'" [diameter]="30"></mat-spinner>
@@ -83,7 +83,21 @@
           </th>
           <th *ngFor="let header of viewSettings.currentView.metadataNames" class="filter-header">
             <div class="input-group">
-              <input data-cy-debug="tableFilter" type="text" id="filter"  title="{{tableSettings.metadataHeaders[header]}}" class="form-control" placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header)">
+              <div>
+                <input
+                  data-cy-debug="tableFilter"
+                  [matAutocomplete]="auto"
+                  type="text"
+                  title="{{tableSettings.metadataHeaders[header]}}"
+                  class="form-control"
+                  placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header.toLowerCase())">
+              </div>
+              <mat-autocomplete #auto=matAutocomplete>
+                <mat-option
+                  *ngFor="let option of tableSettings.uniqueValues[header.toLowerCase()]"
+                  [value]="option" class="filter-option"
+                  (click)="changeFilter($event, header.toLowerCase(), option)">{{option}}</mat-option>
+              </mat-autocomplete>
             </div>
           </th>
         </tr>

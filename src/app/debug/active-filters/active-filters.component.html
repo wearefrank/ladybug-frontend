@@ -1,0 +1,10 @@
+<div *ngIf="activeFilters" class="d-flex flex-row">
+  <span *ngFor="let filter of activeFilters | dictionary;first as isFirst">
+    <span title="Active filter for {{filter.key}}"
+          [ngClass]="{'ml-1': !isFirst}"
+          *ngIf="filter.value !== ''"
+          class="filter-container d-flex align-items-center rounded-pill px-3 py-2 text-white ">
+    {{filter.key|titlecase}}: {{filter.value}}
+    </span>
+  </span>
+</div>
