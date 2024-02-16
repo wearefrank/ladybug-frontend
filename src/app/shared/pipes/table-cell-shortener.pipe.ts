@@ -11,7 +11,10 @@ export class TableCellShortenerPipe implements PipeTransform {
     if (value == undefined) {
       return value;
     }
-    //Remove milliseconds if value is a timestamp with milliseconds
+    return this.removeMillisecondsFromTimestamp(value);
+  }
+
+  removeMillisecondsFromTimestamp(value: string): string {
     if (value.match('\\b\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\b')) {
       return value.slice(0, Math.max(0, value.indexOf('.')));
     }
