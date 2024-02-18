@@ -35,9 +35,21 @@
                 "input": "node_modules/ace-edit/src-min/",
                 "output": "/assets/editor-min/"
               },
-              "package.json",
-              "README.md",
-              "LICENSE"
+              {
+                "glob": "package.json",
+                "input": "./",
+                "output": "/"
+              },
+              {
+                "glob": "README.md",
+                "input": "./",
+                "output": "/"
+              },
+              {
+                "glob": "LICENSE",
+                "input": "./",
+                "output": "/"
+              }
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
