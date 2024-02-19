@@ -55,6 +55,7 @@ export class TableComponent implements OnInit, OnDestroy {
     filterHeader: '',
     reportsInProgress: 0,
     estimatedMemoryUsage: '',
+    uniqueValues: {},
   };
   @Output() openReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
@@ -70,6 +71,11 @@ export class TableComponent implements OnInit, OnDestroy {
   showMultipleFiles!: boolean;
   showMultipleFilesSubscription!: Subscription;
   viewDropdownBoxWidth!: string;
+  currentFilters: Map<string, string> = new Map<string, string>();
+
+  defaultCheckBoxSize: number = 13;
+  defaultFontSize: number = 8;
+  fontSizeSpacingModifier: number = 1.2;
 
   constructor(
     private httpService: HttpService,
@@ -114,6 +120,7 @@ export class TableComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (value) => {
+          this.setUniqueOptions(value);
           this.tableSettings.reportMetadata = value;
           this.tableSettings.tableLoaded = true;
           this.toastService.showSuccess('Data loaded!');
@@ -153,7 +160,7 @@ export class TableComponent implements OnInit, OnDestroy {
   changeView(event: any) {
     this.allRowsSelected = false;
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
-    this.viewSettings.currentView.name = event.target.value;
+    this.viewSettings.currentViewName = event.target.value;
     this.clearFilters();
     this.changeViewEvent.emit(this.viewSettings.currentView);
     this.selectedRow = -1;
@@ -163,6 +170,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.changeNodeLinkStrategyService.changeNodeLinkStrategy.subscribe(() => {
       this.httpService.getViews().subscribe((views) => {
         this.viewSettings.views = views;
+        this.sortFilterList();
         let viewToUpdate = Object.keys(this.viewSettings.views).find(
           (view) => view === this.viewSettings.currentView.name,
         );
@@ -310,7 +318,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.tableSettings.reportMetadata.forEach((report) => (report.checked = false));
   }
 
-  compareTwoReports() {
+  compareTwoReports(): void {
     let compareReports: any = {};
 
     let selectedReports: string[] = this.tableSettings.reportMetadata
@@ -340,11 +348,16 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeFilter(event: any, header: string): void {
-    const filterValue = event.target.value;
-    this.tableSettings.filterValue = filterValue === '' ? '.*' : filterValue;
-    this.tableSettings.filterHeader = filterValue === '' ? '' : header;
-    this.retrieveRecords();
+  changeFilter(event: any, header: string, value?: string): void {
+    const filterValue: string = value ?? event.target.value;
+    if (this.currentFilters.get(header) !== filterValue) {
+      this.tableSettings.filterValue = filterValue ?? '.*';
+      this.tableSettings.filterHeader = filterValue;
+      this.tableSettings.filterHeader &&= header;
+      this.retrieveRecords();
+      this.currentFilters.set(header, filterValue);
+      this.currentFilters = new Map(this.currentFilters);
+    }
   }
 
   changeTableLimit(event: any): void {
@@ -370,7 +383,7 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  highLightRow(event: any) {
+  highLightRow(event: any): void {
     this.selectedRow = event;
   }
 
@@ -382,13 +395,13 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  openReportInProgress(index: number) {
+  openReportInProgress(index: number): void {
     this.httpService.getReportInProgress(index).subscribe((report) => {
       this.openReportEvent.next(report);
     });
   }
 
-  deleteReportInProgress(index: number) {
+  deleteReportInProgress(index: number): void {
     this.httpService.deleteReportInProgress(index).subscribe({
       complete: () => {
         this.loadReportInProgressSettings();
@@ -396,7 +409,7 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  disableReportInProgressButton(index: number, selector: string) {
+  disableReportInProgressButton(index: number, selector: string): void {
     let element: HTMLButtonElement = document.querySelector(selector)!;
     element.disabled = index == 0 || index > this.tableSettings.reportsInProgress;
   }
@@ -421,7 +434,7 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  showUploadedReports(formData: any) {
+  showUploadedReports(formData: any): void {
     this.httpService.uploadReport(formData).subscribe((data) => {
       for (let report of data) {
         this.openReportEvent.next(report);
@@ -437,19 +450,39 @@ export class TableComponent implements OnInit, OnDestroy {
     return fullName;
   }
 
-  getTableSpacing() {
+  getTableSpacing(): string {
     return `${this.tableSpacing * 0.25}em 0 ${this.tableSpacing * 0.25}em 0`;
   }
 
-  getFontSize() {
-    return `${8 + this.tableSpacing * 1.2}pt`;
+  getFontSize(): string {
+    return `${this.defaultFontSize + this.tableSpacing * this.fontSizeSpacingModifier}pt`;
   }
 
-  getCheckBoxSize() {
-    return `${13 + this.tableSpacing}px`;
+  getCheckBoxSize(): string {
+    return `${this.defaultCheckBoxSize + this.tableSpacing}px`;
   }
 
-  calculateViewDropDownWidth() {
+  setUniqueOptions(data: any): void {
+    this.tableSettings.uniqueValues = {};
+    for (const headerName of this.viewSettings.currentView.metadataLabels as string[]) {
+      const lowerHeaderName = headerName.toLowerCase();
+      const upperHeaderName = headerName.toUpperCase();
+      let uniqueValues: Set<string> = new Set<string>();
+      for (let element of data) {
+        uniqueValues.add(element[lowerHeaderName]);
+        uniqueValues.add(element[upperHeaderName]);
+      }
+      this.tableSettings.uniqueValues[lowerHeaderName] = uniqueValues.size < 15 ? uniqueValues : [];
+    }
+  }
+
+  sortFilterList(): void {
+    for (let metadataLabel of this.viewSettings.currentView.metadataNames) {
+      this.currentFilters.set(metadataLabel.toLowerCase().replaceAll(' ', ''), '');
+    }
+  }
+
+  calculateViewDropDownWidth(): void {
     let longestViewName = '';
     for (let [key, value] of Object.entries(this.viewSettings.views)) {
       if (key.length > longestViewName.length) {

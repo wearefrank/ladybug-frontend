@@ -17,7 +17,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
   @Output() saveReport: Subject<string> = new Subject<string>();
   protected readonly editorViewsConst = editorViewsConst;
   unsavedChanges: boolean = false;
-  readOnlyMode: boolean = false; //Set to true for now until save and rerun is implemented
+  readOnlyMode: boolean = true; //Set to true for now until save and rerun is implemented
   options: any = {
     theme: 'vs-light',
     language: 'xml',
@@ -40,12 +40,16 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
   editorChangesSubject: Subject<string> = new Subject<string>();
 
   @HostListener('window:keydown', ['$event'])
-  onSave(event: KeyboardEvent): void {
+  keyBoardListener(event: KeyboardEvent): void {
     if ((event.ctrlKey || event.metaKey) && event.key == 's') {
       event.preventDefault();
-      if (this.unsavedChanges) {
-        this.save();
-      }
+      this.onSave();
+    }
+  }
+
+  onSave(): void {
+    if (this.unsavedChanges) {
+      this.save();
     }
   }
 
@@ -63,7 +67,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
   }
 
   subscribeToEditorChanges(): void {
-    this.editorChangesSubject.pipe(debounceTime(300)).subscribe((value) => {
+    this.editorChangesSubject.pipe(debounceTime(300)).subscribe((value: string) => {
       this.checkIfTextIsPretty();
     });
   }

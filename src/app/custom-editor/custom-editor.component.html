@@ -1,19 +1,18 @@
-<div style="height: {{height - 30}}px; position: relative;" *ngIf="rawFile">
-    <div #container>
+<div style.height="{{height - 30}}px" class='position-relative' *ngIf="rawFile">
+    <div>
       <ngx-monaco-editor
-          #editor
           data-cy-element-name="editor"
           (onInit)="initEditor($event)"
           [options]="options"
           [(ngModel)]="editorContent"
           (ngModelChange)="onChange($event)"
-          style="height: {{height - 43}}px"
+          style.height="{{height - 43}}px"
           class="editor">
       </ngx-monaco-editor>
     </div>
   <div class="status-bar">
     <div class="left-side">
-      <div class="status"
+      <div *ngIf='!readOnlyMode' class="status"
            title="{{unsavedChanges ? 'This file has unsaved changed, press ctrl + s to save' : 'No unsaved changes'}}">
           <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" viewBox="0 0 16 16">
             <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z"/>
@@ -21,7 +20,7 @@
           </svg>
           <span class="status-text">{{unsavedChanges ? 'Unsaved' : 'Saved'}}</span>
       </div>
-      <div class="status" title="Editor is in focus">
+      <div class="status" [title]="editorFocused ? 'Editor is in focus, commands can be run: press F1 for options' : 'Editor is not in focus, click on the editor to focus'">
         <div *ngIf="editorFocused; else unfocused">
           <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" viewBox="0 0 16 16">
             <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
@@ -35,20 +34,18 @@
             <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
           </svg>
         </ng-template>
-        <span class="status-text">{{!editorFocused ? 'Unfocused' : 'Focused'}}</span>
+        <span class="status-text">{{editorFocused ? 'Focused' : 'Unfocused'}}</span>
       </div>
     </div>
-    <div #buttons class="right-side">
-      <select name="" id="" class="drop-down"
+    <div class="right-side">
+      <select class="drop-down"
               [(ngModel)]="currentView"
               (ngModelChange)="onViewChange($event)">
         <option *ngFor="let view of editorViewsConst; let index = index"
                 [selected]="editorViewsConst[index] === currentView"
                 [ngValue]="editorViewsConst[index]">{{view|titlecase}}</option>
       </select>
-
     </div>
-
   </div>
 </div>
 

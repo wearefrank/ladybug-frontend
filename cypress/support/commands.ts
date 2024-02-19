@@ -11,22 +11,52 @@
 
 import Chainable = Cypress.Chainable;
 
-function createReport() {
+Cypress.Commands.add('initializeApp' as keyof Chainable, () => {
+  //Custom command to initialize app and wait for all api requests
+  cy.intercept({
+    method: 'GET',
+    hostname: 'localhost',
+    url: /\/api\/*?/g,
+  }).as('apiCall');
+  cy.visit('');
+  cy.wait('@apiCall').then(() =>
+    cy.log('All api requests have completed'),
+  );
+});
+
+Cypress.Commands.add('navigateToTestTabAndWait' as keyof Chainable, () => {
+  navigateToTabAndWait('test');
+});
+
+Cypress.Commands.add('navigateToDebugTabAndWait' as keyof Chainable, () => {
+  navigateToTabAndWait('debug');
+});
+
+//More string values can be added for each tab that can be opened
+function navigateToTabAndWait(tab: 'debug' | 'test') {
+  const apiCallAlias = `apiCall${tab}Tab`;
+  cy.intercept({ method: 'GET', hostname: 'localhost', url: /\/api\/*?/g }).as(apiCallAlias);
+  cy.visit('');
+  cy.get(`[data-cy-nav-tab="${tab}Tab"]`).click();
+  cy.wait(`@${apiCallAlias}`).then(() => {
+    cy.log('All api requests have completed, ');
+  });
+}
+
+Cypress.Commands.add('createReport' as keyof Chainable, () => {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') + '/index.jsp?createReport=Simple%20report',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
-}
-
-Cypress.Commands.add('createReport' as keyof Chainable, createReport);
+});
 
 function createOtherReport() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Another%20simple%20report',
+    '/index.jsp?createReport=Another%20simple%20report',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -37,7 +67,7 @@ Cypress.Commands.add('createOtherReport' as keyof Chainable, createOtherReport);
 function createRunningReport() {
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Waiting%20for%20thread%20to%20start',
+    '/index.jsp?createReport=Waiting%20for%20thread%20to%20start',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -52,7 +82,7 @@ function createReportWithLabelNull() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Message%20is%20null',
+    '/index.jsp?createReport=Message%20is%20null',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -67,7 +97,7 @@ function createReportWithLabelEmpty() {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     Cypress.env('backendServer') +
-      '/index.jsp?createReport=Message%20is%20an%20empty%20string',
+    '/index.jsp?createReport=Message%20is%20an%20empty%20string',
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
@@ -149,16 +179,14 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
-  cy.get("[data-cy-debug='openSettings']").click();
-  cy.get("[data-cy-settings='showAmount']").click();
-  cy.get("[data-cy-settings='saveChanges']").click();
+  cy.get('[data-cy-debug="openSettings"]').click();
+  cy.get('[data-cy-settings="showAmount"]').click();
+  cy.get('[data-cy-settings="saveChanges"]').click();
 });
 
 //Clear reports in test tab if any present
 Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
-  cy.visit('');
-  cy.get("[data-cy-nav-tab='testTab']").click();
-  cy.wait(2000);
+  cy.navigateToTestTabAndWait();
   cy.get("[data-cy-test='selectAll']").click();
   cy.get("[data-cy-test='deleteSelected']").click();
   console.log(Cypress.$("[data-cy-delete-modal='confirm']"));
@@ -167,6 +195,8 @@ Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
   }
   cy.visit('');
 });
+
+
 
 Cypress.Commands.add('checkTableNumRows', n => {
   if(n === 0) {

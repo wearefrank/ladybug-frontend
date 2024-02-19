@@ -35,6 +35,9 @@ import { TableCellShortenerPipe } from './shared/pipes/table-cell-shortener.pipe
 import { CustomEditorComponent } from './custom-editor/custom-editor.component';
 import { CheckpointTypePipe } from './shared/pipes/checkpoint-type.pipe';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { ActiveFiltersComponent } from './debug/active-filters/active-filters.component';
+import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
 
 @NgModule({
   declarations: [
@@ -59,6 +62,8 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     EditorComponent,
     DeleteModalComponent,
     CustomEditorComponent,
+    ActiveFiltersComponent,
+    DictionaryPipe,
   ],
   imports: [
     BrowserModule,
@@ -75,6 +80,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     AngularSplitModule,
     MonacoEditorModule.forRoot(),
     TableCellShortenerPipe,
+    MatAutocompleteModule,
     CheckpointTypePipe,
     ClipboardModule,
   ],

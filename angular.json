@@ -34,6 +34,21 @@
                 "glob": "**/*",
                 "input": "node_modules/ace-edit/src-min/",
                 "output": "/assets/editor-min/"
+              },
+              {
+                "glob": "package.json",
+                "input": "./",
+                "output": "/"
+              },
+              {
+                "glob": "README.md",
+                "input": "./",
+                "output": "/"
+              },
+              {
+                "glob": "LICENSE",
+                "input": "./",
+                "output": "/"
               }
             ],
             "styles": [
