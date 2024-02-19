@@ -10,7 +10,7 @@ describe('Edit tests', () => {
     cy.get('[data-cy-test-editor=\'edit\']').click();
     cy.wait(1000);
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get("[data-cy-test-editor='editor']")
+    cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
@@ -27,7 +27,7 @@ describe('Edit tests', () => {
     cy.wait(1000);
     cy.get('[data-cy-test-editor=\'edit\']').click();
     cy.wait(1000);
-    cy.get("[data-cy-test-editor='editor']")
+    cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
@@ -44,10 +44,10 @@ describe('Edit tests', () => {
     cy.get('.report-tab .jqx-tree-dropdown-root > li > ul > li > div').click();
     cy.wait(1000);
     // Do not press Edit button
-    cy.get("[data-cy-test-editor='save']").should("have.length", 0);
-    cy.get("[data-cy-test-editor='editor']").click().type("x");
-    cy.get("[data-cy-test-editor='readonlyLabel']").contains("OFF");
-    cy.get(".message").should("have.length", 0);
+    cy.get('[data-cy-test-editor="save"]').should('have.length', 0);
+    cy.get('[data-cy-test-editor="editor"]').click().type('x');
+    cy.get('[data-cy-test-editor="readonlyLabel"]').contains('OFF');
+    cy.get('.message').should('have.length', 0);
     cleanup()
   });
 
@@ -55,11 +55,11 @@ describe('Edit tests', () => {
     prepareEdit();
     cy.get('.report-tab .jqx-tree-dropdown-root > li > ul > li > div').click();
     cy.wait(1000);
-    cy.get("[data-cy-test-editor='edit']").click();
-    cy.get("[data-cy-test-editor='readonlyLabel']").contains("ON");
+    cy.get('[data-cy-test-editor="edit"]').click();
+    cy.get('[data-cy-test-editor="readonlyLabel"]').contains('ON');
     cy.wait(1000);
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get("[data-cy-test-editor='editor']")
+    cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
@@ -84,13 +84,13 @@ function prepareEdit() {
   cy.createReport();
   cy.initializeApp();
   cy.wait(100);
-  cy.get("[data-cy-debug='selectAll']").click();
-  cy.get("[data-cy-debug='openSelected']").click();
-  cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 1);
-  cy.get("[data-cy-debug-editor='copy']").click();
-  cy.get("[data-cy-nav-tab='testTab']").click();
+  cy.get('[data-cy-debug="selectAll"]').click();
+  cy.get('[data-cy-debug="openSelected"]').click();
+  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1);
+  cy.get('[data-cy-debug-editor="copy"]').click();
+  cy.get('[data-cy-nav-tab="testTab"]').click();
   cy.checkTestTableNumRows(1);
-  cy.get("[data-cy-test='openReport']").click();
+  cy.get('[data-cy-test="openReport"]').click();
   // Martijn hopes this fixes an issue in Firefox.
   cy.wait(1000);
   cy.get('[data-cy-nav-tab=\'Simple report\']')
@@ -103,19 +103,19 @@ function prepareEdit() {
 
 function cleanup() {
   cy.clearDebugStore();
-  cy.get("[data-cy-nav-tab='debugTab'] a").click();
-  cy.get("[data-cy-nav-tab='debugTab'] a:eq(0)").should("have.class", "active");
+  cy.get('[data-cy-nav-tab="debugTab"] a').click();
+  cy.get('[data-cy-nav-tab="debugTab"] a:eq(0)').should('have.class', 'active');
   // Wait for debug tab to be rendered
   cy.wait(1000);
-  cy.get("[data-cy-debug-tree='closeAll']").click();
-  cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 0);
-  cy.get("[data-cy-nav-tab='testTab']").click();
+  cy.get('[data-cy-debug-tree="closeAll"]').click();
+  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 0);
+  cy.get('[data-cy-nav-tab="testTab"]').click();
   // Give UI time to build up the test tab.
   cy.wait(1000);
-  cy.get("[data-cy-test='selectAll']").click();
-  cy.get("[data-cy-test='deleteSelected']").click();
-  cy.get("[data-cy-delete-modal='confirm']").click();
+  cy.get('[data-cy-test="selectAll"]').click();
+  cy.get('[data-cy-test="deleteSelected"]').click();
+  cy.get('[data-cy-delete-modal="confirm"]').click();
   cy.checkTestTableNumRows(0);
-  cy.get("[data-cy-nav-tab='debugTab']").click();
+  cy.get('[data-cy-nav-tab="debugTab"]').click();
   cy.deleteAllTestReports();
 }
