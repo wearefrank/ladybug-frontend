@@ -1,11 +1,11 @@
-const path = require("path");
+const path = require('path');
 
-describe("Debug tab download", function () {
+describe('Debug tab download', function () {
   beforeEach(() => {
     cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
-    cy.visit("");
+    cy.visit('');
     cy.wait(500);
   });
 
@@ -19,33 +19,33 @@ describe("Debug tab download", function () {
     // We cannot do this by setting Cypress setting "trashAssetsBeforeRuns" to "true".
     // That would also delete downloads/.gitignore, which is not what we want.
     // The 'deleteDownloads' task skips .gitignore.
-    const downloadsFolder = Cypress.config("downloadsFolder");
-    cy.task("deleteDownloads", {
+    const downloadsFolder = Cypress.config('downloadsFolder');
+    cy.task('deleteDownloads', {
       downloadsPath: downloadsFolder,
-      fileSep: Cypress.env("FILESEP"),
+      fileSep: Cypress.env('FILESEP'),
     });
   });
 
   // Fails because of issue https://github.com/ibissource/ladybug-frontend/issues/249.
   // TODO: Fix issue and re-enable test.
-  xit("Download and upload table", function () {
-    const downloadsFolder = Cypress.config("downloadsFolder");
-    cy.task("downloads", downloadsFolder).then((filesBefore) => {
-      cy.get("[data-cy-debug='tableBody']")
-        .find("tr")
-        .should("have.length", 2);
-      cy.get("[data-cy-debug='download']").click();
-      cy.get("[data-cy-debug='root']")
+  xit('Download and upload table', function () {
+    const downloadsFolder = Cypress.config('downloadsFolder');
+    cy.task('downloads', downloadsFolder).then((filesBefore) => {
+      cy.get('[data-cy-debug="tableBody"]')
+        .find('tr')
+        .should('have.length', 2);
+      cy.get('[data-cy-debug="download"]').click();
+      cy.get('[data-cy-debug="root"]')
         .find('button:contains("XML & Binary")[class="dropdown-item"]')
         .click();
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
-      cy.task("downloads", downloadsFolder).then((filesAfter) => {
+      cy.task('downloads', downloadsFolder).then((filesAfter) => {
         const newFile = filesAfter.filter(
           (file) => !filesBefore.includes(file)
         )[0];
-        expect(newFile).to.contain("Ladybug Debug");
-        expect(newFile).to.contain("2 reports");
-        cy.readFile(cy.functions.downloadPath(newFile), "binary", {
+        expect(newFile).to.contain('Ladybug Debug');
+        expect(newFile).to.contain('2 reports');
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary', {
           timeout: 15000,
         })
           .should((buffer) => expect(buffer.length).to.be.gt(10))
@@ -53,14 +53,14 @@ describe("Debug tab download", function () {
             cy.log(`Number of read bytes: ${buffer.length}`);
           });
         cy.clearDebugStore();
-        cy.get("[data-cy-debug='refresh']").click();
+        cy.get('[data-cy-debug="refresh"]').click();
         cy.wait(100);
-        cy.get("[data-cy-debug='tableBody']").find("tr").should("not.exist");
-        cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
-          "have.length",
+        cy.get('[data-cy-debug="tableBody"]').find('tr').should('not.exist');
+        cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should(
+          'have.length',
           0
         );
-        cy.readFile(cy.functions.downloadPath(newFile), "binary")
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary')
           .then((rawContent) => {
             console.log(
               `Have content of uploaded file, length ${rawContent.length}`
@@ -71,17 +71,17 @@ describe("Debug tab download", function () {
             console.log(
               `Have transformed content length ${fileContent.length}`
             );
-            cy.get("[data-cy-debug='upload']").attachFile({
+            cy.get('[data-cy-debug="upload"]').attachFile({
               fileContent,
               fileName: newFile,
             });
           });
-        cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
-          "have.length",
+        cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should(
+          'have.length',
           0
         );
-        cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
-          "have.length",
+        cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should(
+          'have.length',
           2
         );
       });
@@ -90,98 +90,98 @@ describe("Debug tab download", function () {
 
   // Fails because of issue https://github.com/ibissource/ladybug-frontend/issues/249.
   // TODO: Fix issue and re-enable test.
-  xit("Download all open reports", function () {
-    const downloadsFolder = Cypress.config("downloadsFolder");
-    cy.get("[data-cy-debug='tableBody']").find("tr").should("have.length", 2);
-    cy.get("[data-cy-debug='selectAll']").click();
-    cy.get("[data-cy-debug='openSelected']").click();
-    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 2);
+  xit('Download all open reports', function () {
+    const downloadsFolder = Cypress.config('downloadsFolder');
+    cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 2);
+    cy.get('[data-cy-debug="selectAll"]').click();
+    cy.get('[data-cy-debug="openSelected"]').click();
+    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 2);
     cy.get(
-      "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Simple report)"
-    ).should("have.length", 1);
+      '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Simple report)'
+    ).should('have.length', 1);
     cy.get(
-      "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Another simple report)"
-    ).should("have.length", 1);
+      '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Another simple report)'
+    ).should('have.length', 1);
     // Debug store should not be cleared, because the report being downloaded
     // is requested here from the backend. The backend should still have the
     // report to have a valid test.
-    cy.task("downloads", downloadsFolder)
-      .should("have.length.at.least", 0)
+    cy.task('downloads', downloadsFolder)
+      .should('have.length.at.least', 0)
       .then((filesBefore) => {
-        cy.get("[data-cy-debug-tree='download']").click();
+        cy.get('[data-cy-debug-tree="download"]').click();
         cy.get(
-          "[data-cy-debug-tree='buttons'] button:contains('XML & Binary')[class='dropdown-item']"
+          '[data-cy-debug-tree="buttons"] button:contains("XML & Binary")[class="dropdown-item"]'
         ).click();
         cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
-        cy.task("downloads", downloadsFolder).then((filesAfter) => {
+        cy.task('downloads', downloadsFolder).then((filesAfter) => {
           const newFile = filesAfter.filter(
             (file) => !filesBefore.includes(file)
           )[0];
-          expect(newFile).to.contain("Ladybug Debug");
-          expect(newFile).to.contain("2 reports");
-          cy.readFile(cy.functions.downloadPath(newFile), "binary", {
+          expect(newFile).to.contain('Ladybug Debug');
+          expect(newFile).to.contain('2 reports');
+          cy.readFile(cy.functions.downloadPath(newFile), 'binary', {
             timeout: 15000,
           })
             .should((buffer) => expect(buffer.length).to.be.gt(10))
             .then((buffer) => {
               cy.log(`Number of read bytes: ${buffer.length}`);
             });
-          cy.get("[data-cy-debug-tree='closeAll']").click();
-          cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
-            "have.length",
+          cy.get('[data-cy-debug-tree="closeAll"]').click();
+          cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should(
+            'have.length',
             0
           );
-          cy.readFile(cy.functions.downloadPath(newFile), "binary")
+          cy.readFile(cy.functions.downloadPath(newFile), 'binary')
             .then(Cypress.Blob.binaryStringToBlob)
             .then((fileContent) => {
-              cy.get("[data-cy-debug='upload']").attachFile({
+              cy.get('[data-cy-debug="upload"]').attachFile({
                 fileContent,
                 fileName: newFile,
               });
             });
         });
       });
-    cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 2);
+    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 2);
     cy.get(
-      "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Simple report)"
-    ).should("have.length", 1);
+      '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Simple report)'
+    ).should('have.length', 1);
     cy.get(
-      "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Another simple report)"
-    ).should("have.length", 1);
+      '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Another simple report)'
+    ).should('have.length', 1);
   });
 
   // Fails because of issue https://github.com/ibissource/ladybug-frontend/issues/249.
   // TODO: Fix issue and re-enable test.
-  xit("Download displayed report, from root node", function () {
+  xit('Download displayed report, from root node', function () {
     testDownloadFromNode(0);
   });
 
   // Fails because of issue https://github.com/ibissource/ladybug-frontend/issues/249.
   // TODO: Fix issue and re-enable test.
-  xit("Download displayed report, from start node", function () {
+  xit('Download displayed report, from start node', function () {
     testDownloadFromNode(1);
   });
 
   // Fails because of issue https://github.com/ibissource/ladybug-frontend/issues/249.
   // TODO: Fix issue and re-enable test.
-  xit("Download displayed report, from end node", function () {
+  xit('Download displayed report, from end node', function () {
     testDownloadFromNode(2);
   });
 });
 
 function testDownloadFromNode(nodeNum) {
-  const downloadsFolder = Cypress.config("downloadsFolder");
+  const downloadsFolder = Cypress.config('downloadsFolder');
   cy.wait(100);
-  cy.get("[data-cy-debug='tableBody']").find("tr").should("have.length", 2);
-  cy.get("[data-cy-debug='selectAll']").click();
-  cy.get("[data-cy-debug='openSelected']").click();
-  cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should("have.length", 2);
+  cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 2);
+  cy.get('[data-cy-debug="selectAll"]').click();
+  cy.get('[data-cy-debug="openSelected"]').click();
+  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 2);
   cy.get(
-    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Simple report)"
-  ).should("have.length", 1);
+    '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Simple report)'
+  ).should('have.length', 1);
   cy.get(
-    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Another simple report)"
-  ).should("have.length", 1);
+    '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Another simple report)'
+  ).should('have.length', 1);
   // Debug store should not be cleared, because the report being downloaded
   // is requested here from the backend. The backend should still have the
   // report to have a valid test.
@@ -198,47 +198,47 @@ function testDownloadFromNode(nodeNum) {
       string +
       " > div"
   ).click();
-  cy.task("downloads", downloadsFolder)
-    .should("have.length", 1)
+  cy.task('downloads', downloadsFolder)
+    .should('have.length', 1)
     .then((filesBefore) => {
-      cy.get("[data-cy-debug-editor='download']").click();
+      cy.get('[data-cy-debug-editor="download"]').click();
       cy.get(
-        "[data-cy-debug-editor='buttons'] button:contains('Binary'):not(:contains('XML'))[class='dropdown-item']"
+        '[data-cy-debug-editor="buttons"] button:contains("Binary"):not(:contains("XML"))[class="dropdown-item"]'
       ).click();
       cy.waitForNumFiles(downloadsFolder, filesBefore.length + 1);
-      cy.task("downloads", downloadsFolder).then((filesAfter) => {
+      cy.task('downloads', downloadsFolder).then((filesAfter) => {
         const newFile = filesAfter.filter(
           (file) => !filesBefore.includes(file)
         )[0];
-        expect(newFile).to.contain("Simple report.ttr");
-        expect(newFile).not.to.contain("other");
-        cy.readFile(cy.functions.downloadPath(newFile), "binary", {
+        expect(newFile).to.contain('Simple report.ttr');
+        expect(newFile).not.to.contain('other');
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary', {
           timeout: 15000,
         })
           .should((buffer) => expect(buffer.length).to.be.gt(10))
           .then((buffer) => {
             cy.log(`Number of read bytes: ${buffer.length}`);
           });
-        cy.get("[data-cy-debug-tree='closeAll']").click();
-        cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li").should(
-          "have.length",
+        cy.get('[data-cy-debug-tree="closeAll"]').click();
+        cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should(
+          'have.length',
           0
         );
-        cy.readFile(cy.functions.downloadPath(newFile), "binary")
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary')
           .then(Cypress.Blob.binaryStringToBlob)
           .then((fileContent) => {
-            cy.get("[data-cy-debug='upload']").attachFile({
+            cy.get('[data-cy-debug="upload"]').attachFile({
               fileContent,
               fileName: newFile,
             });
           });
       });
     });
-  cy.get("[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li", { timeout: 10000 }).should(
-    "have.length",
+  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li', { timeout: 10000 }).should(
+    'have.length',
     1
   );
   cy.get(
-    "[data-cy-debug-tree='root'] .jqx-tree-dropdown-root > li:contains(Simple report):not(:contains(other))"
-  ).should("have.length", 1);
+    '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Simple report):not(:contains(other))'
+  ).should('have.length', 1);
 }
