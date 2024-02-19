@@ -7,7 +7,7 @@ describe('Edit tests', () => {
     prepareEdit();
     cy.get('.report-tab .jqx-tree-dropdown-root > li > ul > li > div').click();
     cy.wait(1000);
-    cy.get('[data-cy-test-editor=\'edit\']').click();
+    cy.get('[data-cy-test-editor="edit"]').click();
     cy.wait(1000);
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
     cy.get('[data-cy-test-editor="editor"]')
@@ -15,7 +15,7 @@ describe('Edit tests', () => {
       .focused()
       .type('{ctrl}a')
       .type('Hello Original World!');
-    cy.get('[data-cy-test-editor=\'save\']').click();
+    cy.get('[data-cy-test-editor="save"]').click();
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.get('.col:not(.text-right)').contains('Hello World!');
     cy.get('.col.text-right').contains('Hello Original World!');
@@ -25,17 +25,17 @@ describe('Edit tests', () => {
       '.report-tab .jqx-tree-dropdown-root > li > ul > li > ul > li > div',
     ).click();
     cy.wait(1000);
-    cy.get('[data-cy-test-editor=\'edit\']').click();
+    cy.get('[data-cy-test-editor="edit"]').click();
     cy.wait(1000);
     cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
       .type('Goodbye Original World!');
-    cy.get('[data-cy-test-editor=\'save\']').click();
+    cy.get('[data-cy-test-editor="save"]').click();
     cy.get('button:contains(Yes)').click();
-    cy.get('[data-cy-nav-tab=\'testTab\']').click();
-    cy.get('[data-cy-test=\'runAll\']').click();
+    cy.get('[data-cy-nav-tab="testTab"]').click();
+    cy.get('[data-cy-test="runAll"]').click();
     cleanup()
   });
 
@@ -64,17 +64,17 @@ describe('Edit tests', () => {
       .focused()
       .type('{ctrl}a')
       .type('Hello Original World!');
-    cy.get('[data-cy-test-editor=\'save\']').click();
+    cy.get('[data-cy-test-editor="save"]').click();
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.contains('Hello Original World!');
     // Give dialog time to initialize
     cy.wait(1000);
     cy.get('button:contains(No)').click();
     cy.get('.modal-title').should('have.length', 0);
-    cy.get('[data-cy-test-editor=\'save\']').should('have.length', 1);
+    cy.get('[data-cy-test-editor="save"]').should('have.length', 1);
     cy.contains('Hello Original World!');
     cy.navigateToTestTabAndWait();
-    cy.get('[data-cy-test=\'runAll\']').click();
+    cy.get('[data-cy-test="runAll"]').click();
     // cy.get('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
     cy.deleteAllTestReports();
   });
@@ -93,7 +93,7 @@ function prepareEdit() {
   cy.get('[data-cy-test="openReport"]').click();
   // Martijn hopes this fixes an issue in Firefox.
   cy.wait(1000);
-  cy.get('[data-cy-nav-tab=\'Simple report\']')
+  cy.get('[data-cy-nav-tab="Simple report"]')
     .find('a.active')
     .should('include.text', 'Simple report');
   // Wait until the tab has been rendered

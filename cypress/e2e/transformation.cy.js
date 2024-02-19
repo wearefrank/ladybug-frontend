@@ -5,16 +5,16 @@ describe('Report transformation', () => {
 
   afterEach(() => {
     cy.clearDebugStore();
-    cy.get('[data-cy-debug=\'openSettings\']').click();
+    cy.get('[data-cy-debug="openSettings"]').click();
     // Factory reset in settings dialog. Resets
     // transformation to factory value.
-    cy.get('[data-cy-settings=\'factoryReset\']').click();
-    cy.get('[data-cy-settings=\'saveChanges\']').click();
+    cy.get('[data-cy-settings="factoryReset"]').click();
+    cy.get('[data-cy-settings="saveChanges"]').click();
   });
 
   it('Update transformation', () => {
     cy.visit('');
-    cy.get('[data-cy-debug=\'openSettings\']').click();
+    cy.get('[data-cy-debug="openSettings"]').click();
     cy.get('textarea[formcontrolname=transformation]').type('{selectAll}');
     cy.get('textarea[formcontrolname=transformation]').type('{del}');
     cy.get('textarea[formcontrolname=transformation]').within((textArea) => {
@@ -25,9 +25,9 @@ describe('Report transformation', () => {
     cy.get(
       'input[type=checkbox][formcontrolname=transformationEnabled]',
     ).check();
-    cy.get('[data-cy-settings=\'saveChanges\']').click();
+    cy.get('[data-cy-settings="saveChanges"]').click();
     cy.createOtherReport();
-    cy.get('[data-cy-debug=\'refresh\']').click();
+    cy.get('[data-cy-debug="refresh"]').click();
 
     cy.wait(100);
     cy.get('[data-cy-debug="tableBody"]')

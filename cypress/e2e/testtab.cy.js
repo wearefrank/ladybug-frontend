@@ -38,7 +38,7 @@ describe('About the Test tab', () => {
     cy.get('[data-cy-nav-tab="testTab"]').click();
     cy.checkTestTableNumRows(2);
 
-    cy.get('[data-cy-test=\'selectAll\']').click();
+    cy.get('[data-cy-test="selectAll"]').click();
     checkTestTabTwoReportsSelected();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
@@ -46,13 +46,13 @@ describe('About the Test tab', () => {
   });
 
   it('Test deselect all', () => {
-    cy.get('[data-cy-nav-tab=\'testTab\']').click();
+    cy.get('[data-cy-nav-tab="testTab"]').click();
     cy.wait(100);
     cy.checkTestTableNumRows(2);
     cy.get('[data-cy-test="selectAll"]').click();
     checkTestTabTwoReportsSelected();
-    cy.get('[data-cy-test=\'deselectAll\']').click();
-    cy.get('[data-cy-test=\'deleteSelected\']').click();
+    cy.get('[data-cy-test="deselectAll"]').click();
+    cy.get('[data-cy-test="deleteSelected"]').click();
     cy.wait(1000);
     cy.checkTestTableNumRows(2);
     cy.get('[data-cy-test="selectAll"]').click();
@@ -160,8 +160,8 @@ describe('About the Test tab', () => {
 
 function copyTheReportsToTestTab() {
   cy.enableShowMultipleInDebugTree();
-  cy.get('[data-cy-debug=\'selectAll\']').click();
-  cy.get('[data-cy-debug=\'openSelected\']').click();
+  cy.get('[data-cy-debug="selectAll"]').click();
+  cy.get('[data-cy-debug="openSelected"]').click();
   // We test many times already that opening two reports yields six nodes.
   // Adding the test here again has another purpose. We want the DOM to
   // be stable before we go on with the test. Without this guard, the test
@@ -174,13 +174,13 @@ function copyTheReportsToTestTab() {
     '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Simple report) > div',
   ).click();
   cy.wait(100);
-  cy.get('[data-cy-debug-editor=\'copy\']').click();
+  cy.get('[data-cy-debug-editor="copy"]').click();
   cy.wait(100);
   cy.get(
     '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Another simple report) > div',
   ).click();
   cy.wait(100);
-  cy.get('[data-cy-debug-editor=\'copy\']').click();
+  cy.get('[data-cy-debug-editor="copy"]').click();
   cy.wait(1000);
 }
 

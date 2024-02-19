@@ -14,11 +14,11 @@ describe('Tests with one report', () => {
   afterEach(() => {
     cy.clearDebugStore();
     cy.navigateToTestTabAndWait();
-    cy.get('[data-cy-test=\'selectAll\']').click();
-    cy.get('[data-cy-test=\'deleteSelected\']').click();
-    cy.get('[data-cy-delete-modal=\'confirm\']').click();
+    cy.get('[data-cy-test="selectAll"]').click();
+    cy.get('[data-cy-test="deleteSelected"]').click();
+    cy.get('[data-cy-delete-modal="confirm"]').click();
     cy.checkTestTableNumRows(0);
-    cy.get('[data-cy-nav-tab=\'debugTab\']').click();
+    cy.get('[data-cy-nav-tab="debugTab"]').click();
   });
 
   // May fail because of issue https://github.com/ibissource/ladybug-frontend/issues/250.
@@ -39,14 +39,14 @@ describe('Tests with one report', () => {
     cy.wait(1000);
     cy.get('.report-tab .jqx-tree-dropdown-root > li > ul > li > div').click();
     cy.wait(1000);
-    cy.get('[data-cy-test-editor=\'edit\']').click();
+    cy.get('[data-cy-test-editor="edit"]').click();
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
     cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
       .type('Hello Original World!');
-    cy.get('[data-cy-test-editor=\'save\']').click();
+    cy.get('[data-cy-test-editor="save"]').click();
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.get('.col:not(.text-right)').contains('Hello World!');
     cy.get('.col.text-right').contains('Hello Original World!');
@@ -55,7 +55,7 @@ describe('Tests with one report', () => {
       '.report-tab .jqx-tree-dropdown-root > li > ul > li > ul > li > div',
     ).click();
     cy.wait(1000);
-    cy.get('[data-cy-test-editor=\'edit\']').click();
+    cy.get('[data-cy-test-editor="edit"]').click();
     cy.wait(1000);
     cy.get('[data-cy-test-editor="editor"]')
       .click()

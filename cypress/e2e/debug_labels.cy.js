@@ -4,14 +4,14 @@ describe('Test labels', () => {
   });
 
   afterEach(() => {
-    cy.get('[data-cy-debug-tree=\'closeAll\']').click();
+    cy.get('[data-cy-debug-tree="closeAll"]').click();
   });
 
   it('Test label null', () => {
     cy.createReportWithLabelNull();
     cy.initializeApp();
-    cy.get('[data-cy-debug=\'selectAll\']').click();
-    cy.get('[data-cy-debug=\'openSelected\']').click();
+    cy.get('[data-cy-debug="selectAll"]').click();
+    cy.get('[data-cy-debug="openSelected"]').click();
     cy.wait(300);
     cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1);
     testTreeView('Message is null', 'Null String');
