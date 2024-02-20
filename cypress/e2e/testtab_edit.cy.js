@@ -86,8 +86,7 @@ function prepareEdit() {
   cy.wait(100);
   cy.get('[data-cy-debug="selectAll"]').click();
   cy.get('[data-cy-debug="openSelected"]').click();
-  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1);
-  cy.get('[data-cy-debug-editor="copy"]').click();
+  cy.debugTreeGuardedCopyReport('Simple report');
   cy.get('[data-cy-nav-tab="testTab"]').click();
   cy.checkTestTableNumRows(1);
   cy.get('[data-cy-test="openReport"]').click();
