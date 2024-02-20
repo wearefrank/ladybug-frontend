@@ -5,7 +5,7 @@ describe('Tests with one report', () => {
     cy.initializeApp();
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();
-    cy.debugTreeGuardedCopyReport('Simple report');
+    cy.debugTreeGuardedCopyReport('Simple report', 3);
     cy.get('[data-cy-nav-tab="testTab"]').click();
     cy.checkTestTableNumRows(1);
   });

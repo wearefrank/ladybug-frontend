@@ -224,8 +224,8 @@ Cypress.Commands.add('checkTestTableReportsAre', reportNames => {
   })
 })
 
-Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName) => {
-  cy.get(`[data-cy-debug-tree="root"] .jqx-tree-dropdown-root li:contains(${reportName})`).should('have.length', 3);
+Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes) => {
+  cy.get(`[data-cy-debug-tree="root"] .jqx-tree-dropdown-root li:contains(${reportName})`).should('have.length', numExpandedNodes);
   cy.intercept({
     method: 'PUT',
     hostname: 'localhost',
