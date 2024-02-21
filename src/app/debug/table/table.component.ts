@@ -97,20 +97,16 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   subscribeToSettingsObservables(): void {
-    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe((value: number): void => {
-      this.tableSpacing = value;
-    });
-    this.showMultipleFilesSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
-      (value: boolean) => {
-        this.showMultipleFiles = value;
-      },
-    );
+    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable
+      .subscribe((value: number) => this.tableSpacing = value);
+    this.showMultipleFilesSubscription = this.settingsService.showMultipleAtATimeObservable
+      .subscribe((value: boolean) => this.showMultipleFiles = value);
   }
 
   retrieveRecords() {
     this.doneRetrieving = false;
     this.tableSettings.reportMetadata = [];
-    const httpServiceSubscription = this.httpService
+    this.httpService
       .getMetadataReports(
         this.tableSettings.displayAmount,
         this.tableSettings.filterValue,
@@ -125,7 +121,6 @@ export class TableComponent implements OnInit, OnDestroy {
           this.tableSettings.tableLoaded = true;
           this.toastService.showSuccess('Data loaded!');
           this.doneRetrieving = true;
-          httpServiceSubscription.unsubscribe();
         },
         error: () => {
           catchError(this.httpService.handleError());
