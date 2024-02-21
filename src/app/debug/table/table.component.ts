@@ -55,7 +55,7 @@ export class TableComponent implements OnInit, OnDestroy {
     filterHeader: '',
     reportsInProgress: 0,
     estimatedMemoryUsage: '',
-    uniqueValues: {},
+    uniqueValues: new Map<string, Array<string>>(),
   };
   @Output() openReportEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
@@ -463,7 +463,6 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   setUniqueOptions(data: any): void {
-    this.tableSettings.uniqueValues = {};
     for (const headerName of this.viewSettings.currentView.metadataLabels as string[]) {
       const lowerHeaderName = headerName.toLowerCase();
       const upperHeaderName = headerName.toUpperCase();
@@ -472,8 +471,30 @@ export class TableComponent implements OnInit, OnDestroy {
         uniqueValues.add(element[lowerHeaderName]);
         uniqueValues.add(element[upperHeaderName]);
       }
-      this.tableSettings.uniqueValues[lowerHeaderName] = uniqueValues.size < 15 ? uniqueValues : [];
+      this.tableSettings.uniqueValues.set(
+        lowerHeaderName,
+        uniqueValues.size < 15 ? this.sortUniqueValues(uniqueValues) : ([] as string[]),
+      );
     }
+  }
+
+  sortUniqueValues(values: Set<string>): string[] {
+    //Sort list alphabetically, if string is actually a number, sort smallest to biggest
+    return [...values].sort((a, b) => {
+      // eslint-disable-next-line unicorn/prefer-number-properties
+      const isANumber = !isNaN(Number(a));
+      // eslint-disable-next-line unicorn/prefer-number-properties
+      const isBNumber = !isNaN(Number(b));
+      if (isANumber && isBNumber) {
+        return Number(a) - Number(b);
+      }
+      if (isANumber && !isBNumber) {
+        return -1;
+      } else if (!isANumber && isBNumber) {
+        return 1;
+      }
+      return String(a).localeCompare(String(b));
+    });
   }
 
   sortFilterList(): void {
