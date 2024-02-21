@@ -32,7 +32,7 @@
         </button>
       </div>
       @if (report.name) {
-        <div [cdkCopyToClipboard]='report.name' class='my-auto display-5 report-name'>{{report.name}}</div>
+        <div [cdkCopyToClipboard]="report.name" data-cy-metadata-table="reportname" class="my-auto display-5 report-name">{{report.name}}</div>
       }
       <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor"
            (click)="showEditorPossibilitiesModal(possibilitiesModal)">
