@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReportDisplayComponent } from './report-display.component';
+import { DisplayComponent } from '../debug/display/display.component';
 
 describe('ReportDisplayComponent', () => {
   let component: ReportDisplayComponent;
@@ -8,7 +9,7 @@ describe('ReportDisplayComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReportDisplayComponent],
+      declarations: [ReportDisplayComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReportDisplayComponent);
