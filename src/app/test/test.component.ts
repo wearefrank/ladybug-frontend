@@ -24,8 +24,8 @@ export class TestComponent implements OnInit {
   currentView: any = {
     metadataNames: ['storageId', 'name', 'path'],
     storageName: 'Test',
-  }; // Hard-coded for now
-  targetStorage: string = 'Debug';
+    targetStorage: '',
+  };
   @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
@@ -91,6 +91,13 @@ export class TestComponent implements OnInit {
   }
 
   loadData(path: any): void {
+    this.httpService.getViews().subscribe((views) => {
+      const defaultViewKey = Object.keys(views).find((view) => views[view].defaultView);
+      if (defaultViewKey) {
+        const selectedView = views[defaultViewKey];
+        this.currentView.targetStorage = selectedView.storageName;
+      }
+    });
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value) => {
         this.reports = value;
@@ -108,7 +115,7 @@ export class TestComponent implements OnInit {
   run(reportId: string): void {
     if (this.generatorStatus === 'Enabled') {
       this.httpService
-        .runReport(this.currentView.storageName, this.targetStorage, reportId)
+        .runReport(this.currentView.storageName, this.currentView.targetStorage, reportId)
         .subscribe((response: any) => {
           this.showResult(response);
         });
@@ -208,7 +215,7 @@ export class TestComponent implements OnInit {
   }
 
   replaceReport(reportId: string): void {
-    this.httpService.replaceReport(reportId, this.targetStorage).subscribe(() => {
+    this.httpService.replaceReport(reportId, this.currentView.targetStorage).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.id != reportId);
     });
   }
