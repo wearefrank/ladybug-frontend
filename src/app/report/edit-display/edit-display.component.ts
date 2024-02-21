@@ -5,7 +5,7 @@ import { HttpService } from '../../shared/services/http.service';
 // @ts-ignore
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
-import { EditorComponent } from '../../shared/components/editor/editor.component';
+import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 
 @Component({
   selector: 'app-edit-display',
@@ -13,6 +13,7 @@ import { EditorComponent } from '../../shared/components/editor/editor.component
   styleUrls: ['./edit-display.component.css'],
 })
 export class EditDisplayComponent {
+  editingEnabled: boolean = false;
   editingChildNode: boolean = false;
   editingRootNode: boolean = false;
   rerunResult: string = '';
@@ -22,7 +23,7 @@ export class EditDisplayComponent {
     storageName: 'Test',
   };
   @Output() saveReportEvent = new EventEmitter<any>();
-  @ViewChild(EditorComponent) editor!: EditorComponent;
+  @ViewChild(CustomEditorComponent) editor!: CustomEditorComponent;
   @ViewChild('name') name!: ElementRef;
   @ViewChild('description') description!: ElementRef;
   @ViewChild('path') path!: ElementRef;
@@ -39,13 +40,15 @@ export class EditDisplayComponent {
 
   showReport(report: any): void {
     this.report = report;
-    report.xml ? this.editor.setValue(report.xml) : this.editor.setValue(this.helperService.convertMessage(report));
+    report.xml
+      ? this.editor.setNewReport(report.xml)
+      : this.editor.setNewReport(this.helperService.convertMessage(report));
     this.rerunResult = '';
     this.disableEditing(); // For switching from editing current report to another
   }
 
   changeEncoding(button: any): void {
-    this.editor.setValue(this.helperService.changeEncoding(this.report, button));
+    this.editor.setNewReport(this.helperService.changeEncoding(this.report, button));
   }
 
   rerunReport(): void {
@@ -138,16 +141,16 @@ export class EditDisplayComponent {
       this.editingRootNode = true;
     } else {
       this.editingChildNode = true;
-      this.editor.enableEdit();
     }
+    this.editingEnabled = true;
   }
 
   disableEditing() {
     if (this.editingChildNode) {
       this.editingChildNode = false;
-      this.editor?.disableEdit();
     }
     this.editingRootNode = false;
+    this.editingEnabled = false;
   }
 
   saveOrDiscard(type: string): void {
@@ -156,14 +159,13 @@ export class EditDisplayComponent {
     } else {
       this.discardChanges();
     }
-
     this.disableEditing();
     this.modalService.dismissAll();
   }
 
   discardChanges() {
     if (!this.report.xml) {
-      this.editor.setValue(this.differenceModal[0].originalValue);
+      this.editor.setNewReport(this.differenceModal[0].originalValue);
     }
   }
 

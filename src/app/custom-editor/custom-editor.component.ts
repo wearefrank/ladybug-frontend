@@ -1,8 +1,10 @@
-import { Component, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import * as prettierPluginHtml from 'prettier/plugins/html';
 import * as prettier from 'prettier';
 import { debounceTime, Subject, Subscription } from 'rxjs';
 import { SettingsService } from '../shared/services/settings.service';
+import { editor } from 'monaco-editor';
+import IEditor = editor.IEditor;
 
 export const editorViewsConst = ['raw', 'xml'] as const;
 export type EditorView = (typeof editorViewsConst)[number];
@@ -12,12 +14,13 @@ export type EditorView = (typeof editorViewsConst)[number];
   templateUrl: './custom-editor.component.html',
   styleUrl: './custom-editor.component.css',
 })
-export class CustomEditorComponent implements OnInit, OnDestroy {
+export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
+  editor!: IEditor;
   @Input() height!: number;
   @Output() saveReport: Subject<string> = new Subject<string>();
   protected readonly editorViewsConst = editorViewsConst;
   unsavedChanges: boolean = false;
-  readOnlyMode: boolean = true; //Set to true for now until save and rerun is implemented
+  @Input() readOnlyMode: boolean = true;
   options: any = {
     theme: 'vs-light',
     language: 'xml',
@@ -35,9 +38,13 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
   isPrettified: boolean = false;
   currentView: EditorView = 'raw';
   editorFocused: boolean = false;
+  editorChangesSubject: Subject<string> = new Subject<string>();
+
+  //Settings attributes
   showPrettifyOnLoad: boolean = true;
   showPrettifyOnLoadSubscription!: Subscription;
-  editorChangesSubject: Subject<string> = new Subject<string>();
+  showSearchWindowOnLoad: boolean = true;
+  showSearchWindowOnLoadSubscription!: Subscription;
 
   @HostListener('window:keydown', ['$event'])
   keyBoardListener(event: KeyboardEvent): void {
@@ -56,14 +63,33 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
   constructor(private settingsService: SettingsService) {}
 
   ngOnInit(): void {
-    this.showPrettifyOnLoadSubscription = this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
-      this.showPrettifyOnLoad = value;
-    });
     this.subscribeToEditorChanges();
+    this.subscribeToSettings();
   }
 
   ngOnDestroy(): void {
     this.showPrettifyOnLoadSubscription.unsubscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['readOnlyMode'] && changes['readOnlyMode'].currentValue != undefined && this.editor) {
+      this.updateReadOnlyMode();
+    }
+  }
+
+  updateReadOnlyMode(): void {
+    this.editor.updateOptions({ readOnly: this.readOnlyMode });
+  }
+
+  subscribeToSettings(): void {
+    this.showSearchWindowOnLoadSubscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe(
+      (value: boolean) => {
+        this.showSearchWindowOnLoad = value;
+      },
+    );
+    this.showPrettifyOnLoadSubscription = this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
+      this.showPrettifyOnLoad = value;
+    });
   }
 
   subscribeToEditorChanges(): void {
@@ -74,6 +100,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
 
   initEditor(editor: any): void {
     if (editor) {
+      this.editor = editor;
       editor.onDidFocusEditorWidget((): void => {
         this.editorFocused = true;
       });
@@ -145,7 +172,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
     this.setValue(value);
     this.editorContentCopy = value;
     this.rawFile = value;
-    this.checkIfTextIsPretty();
+    if (value != null || value !== '') this.checkIfTextIsPretty();
     if (this.showPrettifyOnLoad) {
       this.onViewChange('xml');
     }
@@ -153,5 +180,9 @@ export class CustomEditorComponent implements OnInit, OnDestroy {
 
   setValue(value: string): void {
     this.editorContent = value;
+  }
+
+  getValue(): string {
+    return this.editorContent ?? '';
   }
 }

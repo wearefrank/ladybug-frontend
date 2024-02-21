@@ -1,25 +1,35 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { DisplayComponent } from './display/display.component';
 import { Report } from '../shared/interfaces/report';
 import { DebugTreeComponent } from './debug-tree/debug-tree.component';
 import { Subject } from 'rxjs';
+import { DebugReportService } from './debug-report.service';
+import { TabService } from '../shared/services/tab.service';
 
 @Component({
   selector: 'app-debug',
   templateUrl: './debug.component.html',
   styleUrls: ['./debug.component.css'],
 })
-export class DebugComponent implements AfterViewInit {
+export class DebugComponent implements OnInit, AfterViewInit {
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
-  @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
   @ViewChild('splitter') splitter: any;
-  currentView: any = {};
-  treeWidth: Subject<void> = new Subject<void>();
-
   @ViewChild('bottom') bottom!: ElementRef;
+  currentView: any = {};
+
+  treeWidth: Subject<void> = new Subject<void>();
   bottomHeight: number = 0;
+
+  constructor(
+    private debugReportService: DebugReportService,
+    private tabService: TabService,
+  ) {}
+
+  ngOnInit() {
+    this.subscribeToServices();
+  }
 
   ngAfterViewInit() {
     if (this.splitter.dragProgress$) {
@@ -28,6 +38,10 @@ export class DebugComponent implements AfterViewInit {
       });
     }
     this.listenToHeight();
+  }
+
+  subscribeToServices() {
+    this.debugReportService.changeViewObservable.subscribe((view) => (this.currentView = view));
   }
 
   listenToHeight(): void {
@@ -54,16 +68,12 @@ export class DebugComponent implements AfterViewInit {
     this.debugTreeComponent.removeReport(currentReport);
   }
 
-  openSelectedReports(data: any) {
-    this.openSelectedCompareReportsEvent.emit(data);
+  openSelectedReports(data: any): void {
+    this.tabService.openNewCompareTab(data);
   }
 
-  changeView(view: any) {
-    this.currentView = view;
-  }
-
-  openReportInSeparateTab(data: any) {
+  openReportInSeparateTab(data: any): void {
     data.data.currentView = this.currentView;
-    this.openReportInSeparateTabEvent.emit(data);
+    this.tabService.openNewTab(data);
   }
 }

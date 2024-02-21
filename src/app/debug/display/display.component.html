@@ -54,7 +54,6 @@
       <div *ngIf="null === report.message" id="nullMessageLabel" class="btn btn-static my-2 mx-1 px-2">
         Message is null
       </div>
-
       <div *ngIf="'' === report.message" id="emptyMessageLabel" class="btn btn-static my-2 mx-1 px-2">
         Message is empty string
       </div>
@@ -83,7 +82,7 @@
       <app-display-table [report]="report"></app-display-table>
     </div>
   </div>
-  <app-custom-editor [height]="containerHeight - 22" (saveReport)="onSave($event)" #editorComponent></app-custom-editor>
+  <app-custom-editor [readOnlyMode]="true" [height]="containerHeight - 22" (saveReport)="onSave($event)" #editorComponent></app-custom-editor>
 </div>
 
 <ng-template #possibilitiesModal>
