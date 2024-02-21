@@ -159,7 +159,10 @@
       "setParserOptionsProject": true
     },
     "@angular-eslint/schematics:library": {
-      "setParserOptionsProject": true
+      "setParserOptionsProject": true,
+    },
+    "@schematics/angular:component": {
+      "standalone": false
     }
   }
 }
