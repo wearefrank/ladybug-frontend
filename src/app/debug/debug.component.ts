@@ -67,13 +67,4 @@ export class DebugComponent implements OnInit, AfterViewInit {
   closeReport(currentReport: any): void {
     this.debugTreeComponent.removeReport(currentReport);
   }
-
-  openSelectedReports(data: any): void {
-    this.tabService.openNewCompareTab(data);
-  }
-
-  openReportInSeparateTab(data: any): void {
-    data.data.currentView = this.currentView;
-    this.tabService.openNewTab(data);
-  }
 }

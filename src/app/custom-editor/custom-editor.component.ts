@@ -172,7 +172,9 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
     this.setValue(value);
     this.editorContentCopy = value;
     this.rawFile = value;
-    if (value != null || value !== '') this.checkIfTextIsPretty();
+    if (value != null || value !== '') {
+      this.checkIfTextIsPretty();
+    }
     if (this.showPrettifyOnLoad) {
       this.onViewChange('xml');
     }

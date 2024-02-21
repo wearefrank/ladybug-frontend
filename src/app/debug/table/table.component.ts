@@ -9,6 +9,7 @@ import { ChangeNodeLinkStrategyService } from '../../shared/services/node-link-s
 import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { DebugReportService } from '../debug-report.service';
+import { TabService } from '../../shared/services/tab.service';
 
 @Component({
   selector: 'app-table',
@@ -59,13 +60,10 @@ export class TableComponent implements OnInit, OnDestroy {
     uniqueValues: {},
   };
   @Output() openReportEvent = new EventEmitter<any>();
-  @Output() openCompareReportsEvent = new EventEmitter<any>();
-  @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
   selectedRow: number = -1;
   doneRetrieving: boolean = false;
-  @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
   tableSpacing!: number;
   tableSpacingSubscription!: Subscription;
   showMultipleFiles!: boolean;
@@ -84,6 +82,7 @@ export class TableComponent implements OnInit, OnDestroy {
     private settingsService: SettingsService,
     private toastService: ToastService,
     private debugReportService: DebugReportService,
+    private tabService: TabService,
   ) {}
 
   ngOnInit(): void {
@@ -283,7 +282,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.httpService.getReport(reportTab.storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
-      this.openReportInSeparateTabEvent.emit({
+      this.tabService.openNewTab({
         data: report,
         name: report.name,
       });
@@ -344,7 +343,7 @@ export class TableComponent implements OnInit, OnDestroy {
       },
 
       complete: () => {
-        this.openSelectedCompareReportsEvent.emit(compareReports);
+        this.tabService.openNewCompareTab(compareReports);
       },
     });
   }
