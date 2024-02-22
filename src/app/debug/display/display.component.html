@@ -5,8 +5,8 @@
         <app-button data-cy-debug-editor="copy" [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
         <app-button
           *ngIf="report.encoding === 'Base64'"
-          [text]="'Base64'"
-          [title]="'Convert to Base64'"
+          text="Base64"
+          title="Convert to Base64"
           (click)="changeEncoding($event)"></app-button>
 
         <div ngbDropdown title="Download">
@@ -49,7 +49,7 @@
     <app-display-table [report]="report"></app-display-table>
     }
   </div>
-  <app-custom-editor [height]="containerHeight - 22" (saveReport)="onSave($event)" #editorComponent></app-custom-editor>
+  <app-custom-editor [readOnlyMode]="true" [height]="containerHeight - 22" (saveReport)="onSave($event)" #editorComponent></app-custom-editor>
 </div>
 
 <ng-template #possibilitiesModal>

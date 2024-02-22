@@ -27,7 +27,6 @@ import { EditDisplayComponent } from './report/edit-display/edit-display.compone
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DebugTreeComponent } from './debug/debug-tree/debug-tree.component';
 import { ToggleComponent } from './shared/components/toggle/toggle.component';
-import { EditorComponent } from './shared/components/editor/editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { DeleteModalComponent } from './test/delete-modal/delete-modal.component';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
@@ -38,6 +37,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ActiveFiltersComponent } from './debug/active-filters/active-filters.component';
 import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
+import { ReportDisplayComponent } from './report-display/report-display.component';
 
 @NgModule({
   declarations: [
@@ -59,11 +59,11 @@ import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
     EditDisplayComponent,
     DebugTreeComponent,
     ToggleComponent,
-    EditorComponent,
     DeleteModalComponent,
     CustomEditorComponent,
     ActiveFiltersComponent,
     DictionaryPipe,
+    ReportDisplayComponent,
   ],
   imports: [
     BrowserModule,
