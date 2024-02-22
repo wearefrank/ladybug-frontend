@@ -42,7 +42,7 @@ describe('Report transformation', () => {
     // The transformation should not affect the report table, only the XML in the Monaco editor
     cy.get('[data-cy-metadata-table="reportname"]').should(
       'have.text',
-      'Name: Another simple report',
+      'Another simple report',
     );
   });
 });
