@@ -5,7 +5,6 @@ describe('About the Test tab', () => {
   beforeEach(() => {
     cy.clearDebugStore();
     cy.createReport();
-    cy.initializeApp();
     cy.createOtherReport();
     cy.initializeApp();
     copyTheReportsToTestTab();
