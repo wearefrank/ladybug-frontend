@@ -10,6 +10,7 @@ import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { ToastService } from '../shared/services/toast.service';
+import { TabService } from '../shared/services/tab.service';
 
 @Component({
   selector: 'app-test',
@@ -26,7 +27,6 @@ export class TestComponent implements OnInit {
     storageName: 'Test',
     targetStorage: '',
   };
-  @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent)
@@ -39,6 +39,7 @@ export class TestComponent implements OnInit {
     private httpService: HttpService,
     private helperService: HelperService,
     private toastService: ToastService,
+    private tabService: TabService,
   ) {}
 
   openCloneModal(): void {
@@ -163,7 +164,7 @@ export class TestComponent implements OnInit {
     this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
-      this.openReportInSeparateTabEvent.emit({ data: report, name: name });
+      this.tabService.openNewTab({ data: report, name: name });
     });
   }
 
@@ -207,7 +208,7 @@ export class TestComponent implements OnInit {
   compareReports(id: string): void {
     const reranReport = this.reranReports.find((report: ReranReport) => report.id == id);
     if (reranReport) {
-      this.openCompareReportsEvent.emit({
+      this.tabService.openNewCompareTab({
         originalReport: reranReport.originalReport,
         runResultReport: reranReport.runResultReport,
       });

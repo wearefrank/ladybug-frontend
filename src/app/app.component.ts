@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Injector, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Injector, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ReportComponent, ReportData } from './report/report.component';
 import { Title } from '@angular/platform-browser';
 import { HttpService } from './shared/services/http.service';
@@ -8,6 +8,9 @@ import { TestComponent } from './test/test.component';
 import { DynamicService } from './shared/services/dynamic.service';
 import { CompareData } from './compare/compare-data';
 import { SettingsService } from './shared/services/settings.service';
+import { DebugReportService } from './debug/debug-report.service';
+import { TabService } from './shared/services/tab.service';
+import { Subscription } from 'rxjs';
 
 declare var require: any;
 const { version: appVersion } = require('../../package.json');
@@ -17,7 +20,7 @@ const { version: appVersion } = require('../../package.json');
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   injector!: Injector;
   reportInjector!: Injector;
   compareInjector!: Injector;
@@ -26,6 +29,14 @@ export class AppComponent implements AfterViewInit {
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
   @ViewChild(TestComponent) testComponent!: TestComponent;
 
+  title = 'ladybug';
+  active = 1;
+  previousActive = 1;
+  tabs: { key: string; value: any; id: string; data: any }[] = [];
+
+  newTabSubscription!: Subscription;
+  newCompareTabSubscription!: Subscription;
+
   constructor(
     private inj: Injector,
     private titleService: Title,
@@ -33,22 +44,37 @@ export class AppComponent implements AfterViewInit {
     private dynamicService: DynamicService,
     //make sure settings are retrieved from localstorage on startup by initializing the service on startup
     private settingsService: SettingsService,
+    private debugReportService: DebugReportService,
+    private tabService: TabService,
   ) {
     this.appVersion = appVersion;
     this.titleService.setTitle('Ladybug - v' + this.appVersion);
+  }
+
+  ngOnInit() {
+    this.subscribeToServices();
   }
 
   ngAfterViewInit(): void {
     this.observeReportSave();
   }
 
-  title = 'ladybug';
-  active = 1;
-  previousActive = 1;
-  tabs: { key: string; value: any; id: string; data: any }[] = [];
+  ngOnDestroy() {
+    this.newTabSubscription.unsubscribe();
+    this.newCompareTabSubscription.unsubscribe();
+  }
 
-  openReportInSeparateTab(defaultDisplay: boolean, data: any): void {
-    data.data.defaultDisplay = defaultDisplay;
+  subscribeToServices() {
+    this.newTabSubscription = this.tabService.openReportInTabObservable.subscribe((value) =>
+      this.openReportInSeparateTab(value),
+    );
+
+    this.newCompareTabSubscription = this.tabService.openInCompareObservable.subscribe((value) =>
+      this.openNewCompareTab(value),
+    );
+  }
+
+  openReportInSeparateTab(data: any): void {
     const tabIndex: number = this.tabs.findIndex((tab) => tab.id === data.data.storageId);
     if (tabIndex == -1) {
       this.changingTabs(data.data, 'Report');

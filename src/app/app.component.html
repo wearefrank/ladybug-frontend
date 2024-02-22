@@ -3,15 +3,13 @@
     <li data-cy-nav-tab='debugTab' [ngbNavItem]="1" [destroyOnHide]="false">
       <a ngbNavLink>Debug</a>
       <ng-template ngbNavContent>
-        <app-debug (openReportInSeparateTabEvent)="openReportInSeparateTab(true, $event)"
-                   (openSelectedCompareReportsEvent)="openNewCompareTab($event)"></app-debug>
+        <app-debug></app-debug>
       </ng-template>
     </li>
     <li data-cy-nav-tab="testTab" [ngbNavItem]="2" [destroyOnHide]="false">
       <a ngbNavLink>Test</a>
       <ng-template ngbNavContent>
-        <app-test (openReportInSeparateTabEvent)="openReportInSeparateTab(false, $event)"
-                  (openCompareReportsEvent)="openNewCompareTab($event)"></app-test>
+        <app-test></app-test>
       </ng-template>
     </li>
     <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 3" attr.data-cy-nav-tab="{{tab.key}}">

@@ -8,6 +8,8 @@ import { Report } from '../../shared/interfaces/report';
 import { ChangeNodeLinkStrategyService } from '../../shared/services/node-link-strategy.service';
 import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { DebugReportService } from '../debug-report.service';
+import { TabService } from '../../shared/services/tab.service';
 
 @Component({
   selector: 'app-table',
@@ -58,14 +60,10 @@ export class TableComponent implements OnInit, OnDestroy {
     uniqueValues: {},
   };
   @Output() openReportEvent = new EventEmitter<any>();
-  @Output() openCompareReportsEvent = new EventEmitter<any>();
-  @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
-  @Output() changeViewEvent = new EventEmitter<any>();
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
   selectedRow: number = -1;
   doneRetrieving: boolean = false;
-  @Output() openReportInSeparateTabEvent = new EventEmitter<any>();
   tableSpacing!: number;
   tableSpacingSubscription!: Subscription;
   showMultipleFiles!: boolean;
@@ -83,6 +81,8 @@ export class TableComponent implements OnInit, OnDestroy {
     private changeNodeLinkStrategyService: ChangeNodeLinkStrategyService,
     private settingsService: SettingsService,
     private toastService: ToastService,
+    private debugReportService: DebugReportService,
+    private tabService: TabService,
   ) {}
 
   ngOnInit(): void {
@@ -162,7 +162,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
     this.viewSettings.currentViewName = event.target.value;
     this.clearFilters();
-    this.changeViewEvent.emit(this.viewSettings.currentView);
+    this.debugReportService.changeView(this.viewSettings.currentView);
     this.selectedRow = -1;
   }
 
@@ -184,7 +184,7 @@ export class TableComponent implements OnInit, OnDestroy {
   loadData(): void {
     this.httpService.getViews().subscribe((views) => {
       if (Object.keys(this.viewSettings.currentView).length > 0) {
-        this.changeViewEvent.emit(this.viewSettings.currentView);
+        this.debugReportService.changeView(this.viewSettings.currentView);
       } else {
         this.viewSettings.views = views;
         this.calculateViewDropDownWidth();
@@ -194,7 +194,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
         this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
         this.viewSettings.currentView.name = this.viewSettings.currentViewName;
-        this.changeViewEvent.emit(this.viewSettings.currentView);
+        this.debugReportService.changeView(this.viewSettings.currentView);
       }
 
       this.retrieveRecords();
@@ -282,7 +282,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.httpService.getReport(reportTab.storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
-      this.openReportInSeparateTabEvent.emit({
+      this.tabService.openNewTab({
         data: report,
         name: report.name,
       });
@@ -343,7 +343,7 @@ export class TableComponent implements OnInit, OnDestroy {
       },
 
       complete: () => {
-        this.openSelectedCompareReportsEvent.emit(compareReports);
+        this.tabService.openNewCompareTab(compareReports);
       },
     });
   }

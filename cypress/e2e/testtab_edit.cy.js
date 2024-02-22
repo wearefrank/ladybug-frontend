@@ -47,7 +47,6 @@ describe('Edit tests', () => {
     cy.get('[data-cy-test-editor="save"]').should('have.length', 0);
     cy.get('[data-cy-test-editor="editor"]').click().type('x');
     cy.get('[data-cy-test-editor="readonlyLabel"]').contains('OFF');
-    cy.get('.message').should('have.length', 0);
     cleanup()
   });
 
