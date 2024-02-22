@@ -23,8 +23,7 @@ describe('Tests about copying', function () {
     cy.checkTableNumRows(1);
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1);
-    cy.get('[data-cy-debug-editor="copy"]').click();
+    cy.debugTreeGuardedCopyReport('Simple report', 3);
     cy.get('[data-cy-nav-tab="testTab"]').click();
     // We test that the user does not have to refresh here.
     cy.checkTestTableReportsAre(["Simple report"]);
