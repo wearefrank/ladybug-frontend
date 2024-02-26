@@ -75,7 +75,12 @@
     </div>
     <div class='table-row' *ngIf='!report.xml'>
       <div class="key">Number of characters</div>
-      <div class="value" [cdkCopyToClipboard]="report.message.length">{{ report.message.length}}</div>
+        @if(report.message && report.message.length > 0) {
+          <div class="value" [cdkCopyToClipboard]="report.message.length">{{ report.message.length }}</div>
+        }
+        @else {
+          <div class="value"></div>
+        }
     </div>
     <div class='table-row' *ngIf='report.xml'>
       <div class="key">Transformation</div>
