@@ -32,6 +32,8 @@ import { DeleteModalComponent } from './test/delete-modal/delete-modal.component
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TableCellShortenerPipe } from './shared/pipes/table-cell-shortener.pipe';
 import { CustomEditorComponent } from './custom-editor/custom-editor.component';
+import { CheckpointTypePipe } from './shared/pipes/checkpoint-type.pipe';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ActiveFiltersComponent } from './debug/active-filters/active-filters.component';
 import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
@@ -79,6 +81,8 @@ import { ReportDisplayComponent } from './report-display/report-display.componen
     MonacoEditorModule.forRoot(),
     TableCellShortenerPipe,
     MatAutocompleteModule,
+    CheckpointTypePipe,
+    ClipboardModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

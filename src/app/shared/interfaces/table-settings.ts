@@ -8,5 +8,5 @@ export interface TableSettings {
   filterHeader: string;
   reportsInProgress: number;
   estimatedMemoryUsage: string;
-  uniqueValues: any;
+  uniqueValues: Map<string, Array<string>>;
 }

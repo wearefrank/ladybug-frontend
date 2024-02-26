@@ -1,25 +1,28 @@
-import { Component, Input } from '@angular/core';
-import { HelperService } from '../../services/helper.service';
+import { Component, Input, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'app-display-table',
   templateUrl: './display-table.component.html',
   styleUrls: ['./display-table.component.css'],
 })
-export class DisplayTableComponent {
-  @Input()
-  get report() {
-    return this._report;
+export class DisplayTableComponent implements OnChanges {
+  @Input() report!: any;
+  anyMessagesPresent: boolean = false;
+
+  ngOnChanges(): void {
+    this.checkIfAnyMessagesPresent();
   }
-  set report(report: any) {
-    this._report = report;
-  }
 
-  public _report: any = {};
-
-  constructor(private helperService: HelperService) {}
-
-  getCheckpointType(type: number) {
-    return this.helperService.getCheckpointType(type);
+  checkIfAnyMessagesPresent(): void {
+    this.anyMessagesPresent = !!(
+      !this.report.xml &&
+      (this.report.noCloseReceivedForStream ||
+        this.report.streaming ||
+        this.report.stubbed ||
+        !this.report.message ||
+        this.report.encoding ||
+        (this.report.preTruncatedMessage && this.report.preTruncatedMessageLength.length > 0) ||
+        this.report.stubNotFound)
+    );
   }
 }

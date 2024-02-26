@@ -87,13 +87,14 @@
                   data-cy-debug="tableFilter"
                   [matAutocomplete]="auto"
                   type="text"
-                  title="{{tableSettings.metadataHeaders[header]}}"
+                  [title]="tableSettings.metadataHeaders[header]"
                   class="form-control"
-                  placeholder="Filter for {{header}}" (keydown.enter)="changeFilter($event, header.toLowerCase())">
+                  placeholder="Filter for {{header}}"
+                  (keydown.enter)="changeFilter($event, header.toLowerCase())">
               </div>
               <mat-autocomplete #auto=matAutocomplete>
                 <mat-option
-                  *ngFor="let option of tableSettings.uniqueValues[header.toLowerCase()]"
+                  *ngFor="let option of tableSettings.uniqueValues.get(header.toLowerCase())"
                   [value]="option" class="filter-option"
                   (click)="changeFilter($event, header.toLowerCase(), option)">{{option}}</mat-option>
               </mat-autocomplete>

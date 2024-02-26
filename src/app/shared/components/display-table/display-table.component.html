@@ -1,69 +1,106 @@
-<div class="d-flex flex-column">
-  <div class="px-1 py-2" data-cy-metadata-table="reportname"><strong>Name:</strong> {{_report.name}}</div>
-  <div class="d-flex flex-row">
-    <table data-cy-metadata-table="table" class="table" id="displayedNodeTable">
-      <tr *ngIf="!_report.xml">
-        <td><strong>Type</strong></td>
-        <td>{{getCheckpointType(_report.type)}}</td>
-      </tr>
-      <tr *ngIf="_report.xml">
-        <td><strong>Description</strong></td>
-        <td>{{_report.description}}</td>
-      </tr>
-      <tr *ngIf="!_report.xml">
-        <td><strong>Thread name</strong></td>
-        <td>{{ _report.threadName}}</td>
-      </tr>
-      <tr *ngIf="!_report.xml">
-        <td><strong>Source class name</strong></td>
-        <td>{{ _report.sourceClassName}}</td>
-      </tr>
-      <tr *ngIf="!_report.xml">
-        <td><strong>Message class name</strong></td>
-        <td>{{ _report.messageClassName}}</td>
-      </tr>
-      <tr>
-        <td><strong>Path</strong></td>
-        <td>{{ _report.path}}</td>
-      </tr>
-    </table>
-    <table class="table">
-      <tr *ngIf="!_report.xml">
-        <td><strong>CheckpointUID</strong></td>
-        <td>{{ _report.uid}}</td>
-      </tr>
-      <tr *ngIf="!_report.xml">
-        <td><strong>Level</strong></td>
-        <td>{{ _report.level}}</td>
-      </tr>
-      <tr *ngIf="!_report.xml">
-        <td><strong>Encoding</strong></td>
-        <td>{{ _report.encoding}}</td>
-      </tr>
-      <tr *ngIf="!_report.xml && _report.message">
-        <td><strong>Number of characters</strong></td>
-        <td>{{ _report.message.length}}</td>
-      </tr>
-      <tr *ngIf="_report.xml">
-        <td><strong>Transformation</strong></td>
-        <td>{{ _report.transformation}}</td>
-      </tr>
-      <tr *ngIf="_report.xml">
-        <td><strong>StorageId</strong></td>
-        <td>{{ _report.storageId}}</td>
-      </tr>
-      <tr *ngIf="_report.xml">
-        <td><strong>Storage</strong></td>
-        <td>{{ _report.storage}}</td>
-      </tr>
-      <tr>
-        <td><strong>Estimated memory usage</strong></td>
-        <td>{{ _report.estimatedMemoryUsage}}</td>
-      </tr>
-      <tr *ngIf="_report.xml">
-        <td><strong>CorrelationId</strong></td>
-        <td>{{ _report.correlationId}}</td>
-      </tr>
-    </table>
+<div class="d-flex flex-column mb-2">
+  <div *ngIf="anyMessagesPresent" class="my-2 mx-1">
+    <div *ngIf="report.noCloseReceivedForStream" id="noCloseReceivedLabel" class="btn btn-static px-2">
+      No close received for stream
+    </div>
+    <div *ngIf="report.streaming" id="waitingForMessageLabel"
+         class="btn btn-static  px-2">
+      {{report.waitingForStream ? 'Waiting for message to be' : 'Message is'}} captured asynchronously from
+      a {{report.streaming.toLowerCase()}} stream
+    </div>
+
+    <div *ngIf="null === report.message" id="nullMessageLabel" class="btn btn-static  px-2">
+      Message is null
+    </div>
+
+    <div *ngIf="'' === report.message" id="emptyMessageLabel" class="btn btn-static  px-2">
+      Message is empty string
+    </div>
+
+    <div *ngIf="report.stubbed" id="stubbedMessageLabel" class="btn btn-static  px-2">
+      Message is stubbed
+    </div>
+
+    <div *ngIf="null !== report.encoding" id="encodedMessageLabel" class="btn btn-static px-2">
+      Message of type {{report.messageClassName}} is encoded to string using {{report.encoding}}
+      <span *ngIf="this.report.showConverted">and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
+    </div>
+
+    <div *ngIf="report.preTruncatedMessageLength > 0"
+         id="truncatedMessageLabel"
+         class="btn btn-static  px-2">
+      Message is truncated ( {{report.preTruncatedMessageLength -report.message.length}} characters removed)
+    </div>
+
+    <div *ngIf="null !==report.stubNotFound" id="stubNotFoundLabel" class="btn btn-static px-2">
+      Could not find stub message for {{report.stubNotFound}}
+    </div>
+  </div>
+  <div data-cy-metadata-table='table' class='metadata-table' id='displayedNodeTable' >
+    <div class='table-row' *ngIf='!report.xml'>
+      <div class="key">Type</div>
+      <div class="value" [cdkCopyToClipboard]="report.type">{{report.type|checkpointType}}</div>
+    </div>
+    <div class='table-row' *ngIf="report.xml">
+      <div class="key">Description</div>
+      <div class="value" [cdkCopyToClipboard]="report.description">{{report.description}}</div>
+    </div>
+    <div class='table-row' *ngIf='!report.xml'>
+      <div class="key">Thread name</div>
+      <div class="value" [cdkCopyToClipboard]="report.threadName">{{ report.threadName}}</div>
+    </div>
+    <div class='table-row' *ngIf='!report.xml'>
+      <div class="key">Source class name</div>
+      <div class="value" [cdkCopyToClipboard]="report.sourceClassName">{{ report.sourceClassName}}</div>
+    </div>
+    <div class='table-row' *ngIf='!report.xml'>
+      <div class="key">Message class name</div>
+      <div class="value" [cdkCopyToClipboard]="report.messageClassName">{{ report.messageClassName}}</div>
+    </div>
+    <div class='table-row' *ngIf='!report.xml'>
+      <div class="key">Path</div>
+      <div class="value" [cdkCopyToClipboard]="report.path">{{ report.path}}</div>
+    </div>
+    <div class='table-row' *ngIf='!report.xml'>
+      <div class="key">CheckpointUID</div>
+      <div class="value" [cdkCopyToClipboard]="report.uid">{{ report.uid}}</div>
+    </div>
+    <div class='table-row' *ngIf='!report.xml'>
+      <div class="key">Level</div>
+      <div class="value" [cdkCopyToClipboard]="report.level">{{ report.level}}</div>
+    </div>
+    <div class='table-row' *ngIf='!report.xml'>
+      <div class="key">Encoding</div>
+      <div class="value" [cdkCopyToClipboard]="report.encoding">{{ report.encoding}}</div>
+    </div>
+    <div class='table-row' *ngIf='!report.xml'>
+      <div class="key">Number of characters</div>
+        @if(report.message && report.message.length > 0) {
+          <div class="value" [cdkCopyToClipboard]="report.message.length">{{ report.message.length }}</div>
+        }
+        @else {
+          <div class="value"></div>
+        }
+    </div>
+    <div class='table-row' *ngIf='report.xml'>
+      <div class="key">Transformation</div>
+      <div class="value" [cdkCopyToClipboard]="report.transformation">{{ report.transformation}}</div>
+    </div>
+    <div class='table-row' *ngIf='report.xml'>
+      <div class="key">StorageId</div>
+      <div class="value" [cdkCopyToClipboard]="report.storageId">{{ report.storageId}}</div>
+    </div>
+    <div class='table-row' *ngIf='report.xml'>
+      <div class="key">Storage</div>
+      <div class="value" [cdkCopyToClipboard]="report.storage">{{ report.storage}}</div>
+    </div>
+    <div class='table-row' *ngIf='report.xml'>
+      <div class="key">Estimated memory usage</div>
+      <div class="value" [cdkCopyToClipboard]="report.estimatedMemoryUsage">{{ report.estimatedMemoryUsage}}</div>
+    </div>
+    <div class='table-row' *ngIf='report.xml'>
+      <div class="key">CorrelationId</div>
+      <div class="value" [cdkCopyToClipboard]="report.correlationId">{{ report.correlationId}}</div>
+    </div>
   </div>
 </div>
