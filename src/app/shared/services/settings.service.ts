@@ -18,6 +18,7 @@ export class SettingsService {
     this.setTableSpacing(cappedTableSpacing);
     this.setShowSearchWindowOnLoad(localStorage.getItem(this.showSearchWindowOnLoadKey) === 'true');
     this.setPrettifyOnLoad(localStorage.getItem(this.prettifyOnLoadKey) === 'true');
+    this.setTimeoutTimeForInProgressReport(Number(localStorage.getItem(this.timeoutTimeInProgressReportKey)) ?? 1);
   }
 
   //Show multiple files in debug tree
@@ -65,5 +66,17 @@ export class SettingsService {
     this.prettifyOnLoad = value;
     this.prettifyOnLoadSubject.next(value);
     localStorage.setItem(this.prettifyOnLoadKey, String(this.prettifyOnLoad));
+  }
+
+  private timeoutTimeInProgressReportKey: string = 'timeoutTimeInProgressReport';
+  private timeoutTimeInProgressReport: number = 30_000;
+  private timeoutTimeInProgressReportSubject: Subject<number> = new ReplaySubject(1);
+  public timeoutTimeInProgressReportObservable: Observable<number> =
+    this.timeoutTimeInProgressReportSubject.asObservable();
+
+  public setTimeoutTimeForInProgressReport(value: number = 30_000): void {
+    this.timeoutTimeInProgressReport = value;
+    this.timeoutTimeInProgressReportSubject.next(value);
+    localStorage.setItem(this.timeoutTimeInProgressReportKey, String(value));
   }
 }

@@ -1,9 +1,9 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../shared/interfaces/table-settings';
-import { catchError, Subscription } from 'rxjs';
+import { catchError, Subscription, switchMap } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { ChangeNodeLinkStrategyService } from '../../shared/services/node-link-strategy.service';
 import { SettingsService } from '../../shared/services/settings.service';
@@ -74,6 +74,11 @@ export class TableComponent implements OnInit, OnDestroy {
   defaultCheckBoxSize: number = 13;
   defaultFontSize: number = 8;
   fontSizeSpacingModifier: number = 1.2;
+  hasTimedOut: boolean = false;
+  reportsInProgress: { [key: string]: number } = {};
+  // input in milliseconds (1s == 1000)
+  timeoutTimeInProgressReport!: number;
+  timeoutTimeInProgressReportSubscription!: Subscription;
 
   constructor(
     private httpService: HttpService,
@@ -182,6 +187,8 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
+    // this.settingsService.
+
     this.httpService.getViews().subscribe((views) => {
       if (Object.keys(this.viewSettings.currentView).length > 0) {
         this.debugReportService.changeView(this.viewSettings.currentView);
@@ -215,8 +222,29 @@ export class TableComponent implements OnInit, OnDestroy {
       next: (settings) => {
         this.tableSettings.reportsInProgress = settings.reportsInProgress;
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
+        this.loadReportInProgressDates();
       },
     });
+  }
+
+  loadReportInProgressDates() {
+    let hasChanged: boolean = false;
+    for (let i = 1; i <= this.tableSettings.reportsInProgress; i++) {
+      this.httpService.getReportInProgress(i).subscribe((report: Report) => {
+        if (this.reportsInProgress[report.correlationId] == null) {
+          this.reportsInProgress[report.correlationId] = report.startTime;
+        } else if (
+          Date.now() - new Date(this.reportsInProgress[report.correlationId]).getTime() >
+          this.timeoutTimeInProgressReport
+        ) {
+          this.hasTimedOut = true;
+          hasChanged = true;
+        }
+      });
+    }
+    if (!hasChanged) {
+      this.hasTimedOut = false;
+    }
   }
 
   openSettingsModal(): void {

@@ -55,6 +55,10 @@
 
     </div>
 
+    @if (hasTimedOut) {
+      <h4 class="progress-report-timout">[One or more reports are in progress for more than {{ (this.timeoutTimeInProgressReport / 1000) }} seconds]</h4>
+    }
+
     <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
     <app-button [text]="'Open In New Tab'" *ngIf="showOpenInTabButton()" (click)="openReportInTab()"></app-button>
     <app-active-filters class="ml-2" [activeFilters]="currentFilters" (click)="toggleFilter()"></app-active-filters>

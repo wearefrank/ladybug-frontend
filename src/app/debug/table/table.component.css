@@ -79,3 +79,9 @@ th {
     font-size: 9pt;
   }
 }
+
+.progress-report-timout {
+  color: red;
+  width: 100%;
+  margin-left: 1vw;
+}

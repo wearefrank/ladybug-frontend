@@ -60,3 +60,23 @@ describe('With running reports', () => {
     cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('not.exist');
   });
 });
+
+describe('Test running reports', () => {
+  beforeEach(() => {
+    cy.createRunningReport();
+    cy.createRunningReport();
+    cy.initializeApp();
+  });
+
+  afterEach(() => {
+    cy.removeReportInProgress();
+    cy.removeReportInProgress();
+  });
+
+  it('If no running reports then number of running reports is zero', () => {
+    //tablesettings modal component input component
+    cy.wait(2000);
+    cy.get('[data-cy-debug="refresh"]').click();
+    cy.contains('[One or more reports are in progress for more than 1 seconds]')
+  });
+});

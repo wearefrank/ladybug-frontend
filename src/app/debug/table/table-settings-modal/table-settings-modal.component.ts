@@ -22,6 +22,8 @@ export class TableSettingsModalComponent implements OnDestroy {
   showSearchWindowOnLoadSubscription!: Subscription;
   prettifyOnLoad: boolean = true;
   prettifyOnLoadSubscription!: Subscription;
+  timeoutTimeInProgressReport: number = 30_000;
+  timeoutTimeInProgressReportSubscription!: Subscription;
   settingsForm: UntypedFormGroup = new UntypedFormGroup({
     showMultipleFilesAtATime: new UntypedFormControl(this.showMultipleAtATime),
     showSearchWindowOnLoad: new UntypedFormControl(this.showSearchWindowOnLoad),
@@ -31,6 +33,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     regexFilter: new UntypedFormControl(''),
     transformationEnabled: new UntypedFormControl(true),
     transformation: new UntypedFormControl(''),
+    timeoutTimeInProgressReport: new UntypedFormControl(this.timeoutTimeInProgressReport),
   });
   @Output() openLatestReportsEvent = new EventEmitter<any>();
   saving: boolean = false;
@@ -72,6 +75,13 @@ export class TableSettingsModalComponent implements OnDestroy {
       this.prettifyOnLoad = value;
       this.settingsForm.get('prettifyOnLoad')?.setValue(this.prettifyOnLoad);
     });
+
+    this.timeoutTimeInProgressReportSubscription = this.settingsService.timeoutTimeInProgressReportObservable.subscribe(
+      (value: number) => {
+        this.timeoutTimeInProgressReport = value;
+        this.settingsForm.get('timeoutTimeInProgressReport');
+      },
+    );
   }
 
   setShowMultipleAtATime(): void {
@@ -152,5 +162,9 @@ export class TableSettingsModalComponent implements OnDestroy {
 
   setPrettifyOnLoad() {
     this.settingsService.setPrettifyOnLoad(!this.prettifyOnLoad);
+  }
+
+  setTimeoutTimeInProgressReport(target: any) {
+    this.settingsService.setTimeoutTimeForInProgressReport(Number(target));
   }
 }
