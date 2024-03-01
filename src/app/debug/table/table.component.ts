@@ -99,6 +99,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.tableSpacingSubscription.unsubscribe();
+    this.timeoutTimeInProgressReportSubscription.unsubscribe();
   }
 
   subscribeToSettingsObservables(): void {
@@ -203,6 +204,11 @@ export class TableComponent implements OnInit, OnDestroy {
         this.viewSettings.currentView.name = this.viewSettings.currentViewName;
         this.debugReportService.changeView(this.viewSettings.currentView);
       }
+
+      this.timeoutTimeInProgressReportSubscription =
+        this.settingsService.timeoutTimeInProgressReportObservable.subscribe((value: number) => {
+          this.timeoutTimeInProgressReport = value;
+        });
 
       this.retrieveRecords();
       this.getUserHelp();
