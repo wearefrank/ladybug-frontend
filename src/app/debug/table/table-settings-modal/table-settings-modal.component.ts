@@ -75,13 +75,6 @@ export class TableSettingsModalComponent implements OnDestroy {
       this.prettifyOnLoad = value;
       this.settingsForm.get('prettifyOnLoad')?.setValue(this.prettifyOnLoad);
     });
-
-    this.timeoutTimeInProgressReportSubscription = this.settingsService.timeoutTimeInProgressReportObservable.subscribe(
-      (value: number) => {
-        this.timeoutTimeInProgressReport = value;
-        this.settingsForm.get('timeoutTimeInProgressReport');
-      },
-    );
   }
 
   setShowMultipleAtATime(): void {
@@ -162,9 +155,5 @@ export class TableSettingsModalComponent implements OnDestroy {
 
   setPrettifyOnLoad() {
     this.settingsService.setPrettifyOnLoad(!this.prettifyOnLoad);
-  }
-
-  setTimeoutTimeInProgressReport(target: any) {
-    this.settingsService.setTimeoutTimeForInProgressReport(Number(target));
   }
 }

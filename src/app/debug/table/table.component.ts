@@ -76,9 +76,7 @@ export class TableComponent implements OnInit, OnDestroy {
   fontSizeSpacingModifier: number = 1.2;
   hasTimedOut: boolean = false;
   reportsInProgress: { [key: string]: number } = {};
-  // input in milliseconds (1s == 1000)
-  timeoutTimeInProgressReport!: number;
-  timeoutTimeInProgressReportSubscription!: Subscription;
+  reportsInProgressThreshold!: number;
 
   constructor(
     private httpService: HttpService,
@@ -99,7 +97,6 @@ export class TableComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.tableSpacingSubscription.unsubscribe();
-    this.timeoutTimeInProgressReportSubscription.unsubscribe();
   }
 
   subscribeToSettingsObservables(): void {
@@ -188,8 +185,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    // this.settingsService.
-
+    this.setReportInProgressThreshold();
     this.httpService.getViews().subscribe((views) => {
       if (Object.keys(this.viewSettings.currentView).length > 0) {
         this.debugReportService.changeView(this.viewSettings.currentView);
@@ -204,11 +200,6 @@ export class TableComponent implements OnInit, OnDestroy {
         this.viewSettings.currentView.name = this.viewSettings.currentViewName;
         this.debugReportService.changeView(this.viewSettings.currentView);
       }
-
-      this.timeoutTimeInProgressReportSubscription =
-        this.settingsService.timeoutTimeInProgressReportObservable.subscribe((value: number) => {
-          this.timeoutTimeInProgressReport = value;
-        });
 
       this.retrieveRecords();
       this.getUserHelp();
@@ -241,7 +232,7 @@ export class TableComponent implements OnInit, OnDestroy {
           this.reportsInProgress[report.correlationId] = report.startTime;
         } else if (
           Date.now() - new Date(this.reportsInProgress[report.correlationId]).getTime() >
-          this.timeoutTimeInProgressReport
+          this.reportsInProgressThreshold
         ) {
           this.hasTimedOut = true;
           hasChanged = true;
@@ -545,5 +536,9 @@ export class TableComponent implements OnInit, OnDestroy {
       }
     }
     this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
+  }
+
+  setReportInProgressThreshold() {
+    this.reportsInProgressThreshold = 10_000;
   }
 }
