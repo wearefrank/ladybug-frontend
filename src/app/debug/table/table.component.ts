@@ -185,7 +185,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
-    this.setReportInProgressThreshold();
+    this.loadReportInProgressThreshold();
     this.httpService.getViews().subscribe((views) => {
       if (Object.keys(this.viewSettings.currentView).length > 0) {
         this.debugReportService.changeView(this.viewSettings.currentView);
@@ -538,7 +538,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
   }
 
-  setReportInProgressThreshold() {
-    this.reportsInProgressThreshold = 10_000;
+  loadReportInProgressThreshold() {
+    this.httpService.getReportsInProgressThresholdTime().subscribe((time) => (this.reportsInProgressThreshold = time));
   }
 }
