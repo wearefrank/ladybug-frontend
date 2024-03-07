@@ -4,7 +4,7 @@ export default defineConfig({
   trashAssetsBeforeRuns: false,
   env: {
     backendServer: 'http://localhost:80',
-    FILESEP: '\\',
+    FILESEP: '\\'
   },
   e2e: {
     baseUrl: 'http://localhost:4200',
@@ -15,5 +15,6 @@ export default defineConfig({
     viewportWidth: 1920,
     viewportHeight: 1080,
     experimentalRunAllSpecs: true,
+    video: true
   },
 });
