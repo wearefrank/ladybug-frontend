@@ -168,13 +168,13 @@ function copyTheReportsToTestTab() {
     '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Simple report) > div',
   ).click();
   cy.wait(100);
-  cy.debugTreeGuardedCopyReport('Simple report', 3);
+  cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
   cy.wait(100);
   cy.get(
     '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Another simple report) > div',
   ).click();
   cy.wait(100);
-  cy.debugTreeGuardedCopyReport('Another simple report', 3);
+  cy.debugTreeGuardedCopyReport('Another simple report', 3, 'second');
   cy.wait(1000);
 }
 

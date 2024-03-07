@@ -224,16 +224,17 @@ Cypress.Commands.add('checkTestTableReportsAre', reportNames => {
   })
 })
 
-Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes) => {
-  cy.wait(100);
+Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes, aliasSuffix) => {
+  let alias = `debugTreeGuardedCopyReport_${aliasSuffix}`;
   cy.get(`[data-cy-debug-tree="root"] .jqx-tree-dropdown-root li:contains(${reportName})`).should('have.length', numExpandedNodes);
   cy.intercept({
     method: 'PUT',
     hostname: 'localhost',
     url: /\/api\/report\/store\/*?/g,
-  }).as('apiCopyReportCall');
+    times: 1
+  }).as(alias);
   cy.get('[data-cy-debug-editor="copy"]').click();
-  cy.wait('@apiCopyReportCall', {'timeout': 10_000}).then((res) => {
+  cy.wait(`@${alias}`).then((res) => {
     cy.wrap(res).its('request.url').should('contain', 'Test');
     cy.wrap(res).its('request.body').as('requestBody');
     cy.get('@requestBody').its('Debug').should('have.length', 1);
