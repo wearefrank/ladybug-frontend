@@ -1,16 +1,10 @@
 describe('About the Test tab', () => {
   beforeEach(() => {
-  });
-
-  beforeEach(() => {
     cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
     copyTheReportsToTestTab();
-    // Give the server time to process the request.
-    // TODO: Find a better way to implement this than a timeout.
-    cy.wait(1000);
   });
 
   afterEach(() => {
