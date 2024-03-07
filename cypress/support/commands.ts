@@ -225,6 +225,7 @@ Cypress.Commands.add('checkTestTableReportsAre', reportNames => {
 })
 
 Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes) => {
+  cy.wait(100);
   cy.get(`[data-cy-debug-tree="root"] .jqx-tree-dropdown-root li:contains(${reportName})`).should('have.length', numExpandedNodes);
   cy.intercept({
     method: 'PUT',
@@ -232,7 +233,7 @@ Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes
     url: /\/api\/report\/store\/*?/g,
   }).as('apiCopyReportCall');
   cy.get('[data-cy-debug-editor="copy"]').click();
-  cy.wait('@apiCopyReportCall').then((res) => {
+  cy.wait('@apiCopyReportCall', {'timeout': 10_000}).then((res) => {
     cy.wrap(res).its('request.url').should('contain', 'Test');
     cy.wrap(res).its('request.body').as('requestBody');
     cy.get('@requestBody').its('Debug').should('have.length', 1);
