@@ -4,6 +4,16 @@ describe('About the Test tab', () => {
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
+    let storageIds = [];
+    cy.get('[data-cy-debug="tableBody"] tr').each($row => {
+      cy.wrap($row).find('td:eq(1)').invoke('text').then(s => {
+        storageIds.push(s);
+        cy.log(`Table has storage id ${s}`);
+      })
+    })
+    cy.get('[data-cy-debug="tableBody"] tr').then(() => {
+      cy.log(`Table has storage ids: [${storageIds}]`)
+    })
     copyTheReportsToTestTab();
   });
 
