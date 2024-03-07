@@ -229,10 +229,11 @@ Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes
   cy.intercept({
     method: 'PUT',
     hostname: 'localhost',
-    url: /\/api\/report\/store\/Test/g,
+    url: /\/api\/report\/store\/*?/g,
   }).as('apiCopyReportCall');
   cy.get('[data-cy-debug-editor="copy"]').click();
   cy.wait('@apiCopyReportCall').then((res) => {
+    cy.wrap(res).its('request.url').should('contain', 'Test');
     cy.wrap(res).its('request.body').as('requestBody');
     cy.get('@requestBody').its('Debug').should('have.length', 1);
     cy.wrap(res).its('response.statusCode').should('equal', 200);
