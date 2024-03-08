@@ -14,6 +14,9 @@ describe('About the Test tab', () => {
     cy.get('[data-cy-debug="tableBody"] tr').then(() => {
       cy.log(`Table has storage ids: [${storageIds}]`)
     })
+    // When making videos is enabled, the number of frames is limited.
+    // We want to see these storage ids. This is the reason for this wait.
+    cy.wait(2000);
     copyTheReportsToTestTab();
   });
 
