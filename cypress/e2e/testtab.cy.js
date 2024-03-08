@@ -198,3 +198,4 @@ function checkTestTabTwoReportsSelected() {
       cy.wrap($checkbox).should('be.checked');
     });
 }
+
