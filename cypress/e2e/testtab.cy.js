@@ -4,7 +4,7 @@ describe('About the Test tab', () => {
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
-    let storageIds = [];
+    const storageIds = [];
     cy.get('[data-cy-debug="tableBody"] tr').each($row => {
       cy.wrap($row).find('td:eq(1)').invoke('text').then(s => {
         storageIds.push(s);
