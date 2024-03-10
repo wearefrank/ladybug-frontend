@@ -1,16 +1,23 @@
 describe('About the Test tab', () => {
   beforeEach(() => {
-  });
-
-  beforeEach(() => {
     cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
+    const storageIds = [];
+    cy.get('[data-cy-debug="tableBody"] tr').each($row => {
+      cy.wrap($row).find('td:eq(1)').invoke('text').then(s => {
+        storageIds.push(s);
+        cy.log(`Table has storage id ${s}`);
+      })
+    })
+    cy.get('[data-cy-debug="tableBody"] tr').then(() => {
+      cy.log(`Table has storage ids: [${storageIds}]`)
+    })
+    // When making videos is enabled, the number of frames is limited.
+    // We want to see these storage ids. This is the reason for this wait.
+    cy.wait(2000);
     copyTheReportsToTestTab();
-    // Give the server time to process the request.
-    // TODO: Find a better way to implement this than a timeout.
-    cy.wait(1000);
   });
 
   afterEach(() => {
@@ -174,13 +181,13 @@ function copyTheReportsToTestTab() {
     '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Simple report) > div',
   ).click();
   cy.wait(100);
-  cy.debugTreeGuardedCopyReport('Simple report', 3);
+  cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
   cy.wait(100);
   cy.get(
     '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Another simple report) > div',
   ).click();
   cy.wait(100);
-  cy.debugTreeGuardedCopyReport('Another simple report', 3);
+  cy.debugTreeGuardedCopyReport('Another simple report', 3, 'second');
   cy.wait(1000);
 }
 
@@ -191,3 +198,4 @@ function checkTestTabTwoReportsSelected() {
       cy.wrap($checkbox).should('be.checked');
     });
 }
+
