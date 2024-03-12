@@ -22,8 +22,6 @@ export class TableSettingsModalComponent implements OnDestroy {
   showSearchWindowOnLoadSubscription!: Subscription;
   prettifyOnLoad: boolean = true;
   prettifyOnLoadSubscription!: Subscription;
-  timeoutTimeInProgressReport: number = 30_000;
-  timeoutTimeInProgressReportSubscription!: Subscription;
   settingsForm: UntypedFormGroup = new UntypedFormGroup({
     showMultipleFilesAtATime: new UntypedFormControl(this.showMultipleAtATime),
     showSearchWindowOnLoad: new UntypedFormControl(this.showSearchWindowOnLoad),
@@ -33,7 +31,6 @@ export class TableSettingsModalComponent implements OnDestroy {
     regexFilter: new UntypedFormControl(''),
     transformationEnabled: new UntypedFormControl(true),
     transformation: new UntypedFormControl(''),
-    timeoutTimeInProgressReport: new UntypedFormControl(this.timeoutTimeInProgressReport),
   });
   @Output() openLatestReportsEvent = new EventEmitter<any>();
   saving: boolean = false;
