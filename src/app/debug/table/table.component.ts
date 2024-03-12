@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../shared/interfaces/table-settings';
-import { catchError, Subscription, switchMap } from 'rxjs';
+import { catchError, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { ChangeNodeLinkStrategyService } from '../../shared/services/node-link-strategy.service';
 import { SettingsService } from '../../shared/services/settings.service';
