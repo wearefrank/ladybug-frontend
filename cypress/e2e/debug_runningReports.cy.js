@@ -69,12 +69,17 @@ describe('Test Reports in progress warning', () => {
 
   afterEach(() => {
     cy.removeReportInProgress();
+    cy.request(
+      Cypress.env('backendServer') + '/index.jsp?setReportInProgressThreshold=300000',
+    );
   });
 
   it('If threshold time has been met then show warning', () => {
-    cy.wait(10000);
+    cy.request(
+      Cypress.env('backendServer') + '/index.jsp?setReportInProgressThreshold=1',
+    );
     cy.get('[data-cy-debug="refresh"]').click();
-    cy.contains('[One or more reports are in progress for more than 10 seconds]');
+    cy.contains(`[One or more reports are in progress for more than ${1 / 1000 / 60} minutes]`);
   });
 });
 
