@@ -55,7 +55,7 @@ export class TableComponent implements OnInit, OnDestroy {
     showFilter: false,
     filterValue: '(.*)',
     filterHeader: '',
-    reportsInProgress: 0,
+    numberOfReportsInProgress: 0,
     estimatedMemoryUsage: '',
     uniqueValues: new Map<string, Array<string>>(),
   };
@@ -217,7 +217,7 @@ export class TableComponent implements OnInit, OnDestroy {
   loadReportInProgressSettings() {
     this.httpService.getSettings().subscribe({
       next: (settings) => {
-        this.tableSettings.reportsInProgress = settings.reportsInProgress;
+        this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
         this.loadReportInProgressDates();
       },
@@ -226,7 +226,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   loadReportInProgressDates() {
     let hasChanged: boolean = false;
-    for (let index = 1; index <= this.tableSettings.reportsInProgress; index++) {
+    for (let index = 1; index <= this.tableSettings.numberOfReportsInProgress; index++) {
       this.httpService.getReportInProgress(index).subscribe((report: Report) => {
         if (this.reportsInProgress[report.correlationId] == null) {
           this.reportsInProgress[report.correlationId] = report.startTime;
@@ -439,7 +439,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   disableReportInProgressButton(index: number, selector: string): void {
     let element: HTMLButtonElement = document.querySelector(selector)!;
-    element.disabled = index == 0 || index > this.tableSettings.reportsInProgress;
+    element.disabled = index == 0 || index > this.tableSettings.numberOfReportsInProgress;
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
