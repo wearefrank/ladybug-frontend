@@ -226,14 +226,11 @@ export class TableComponent implements OnInit, OnDestroy {
 
   loadReportInProgressDates() {
     let hasChanged: boolean = false;
-    for (let i = 1; i <= this.tableSettings.reportsInProgress; i++) {
-      this.httpService.getReportInProgress(i).subscribe((report: Report) => {
+    for (let index = 1; index <= this.tableSettings.reportsInProgress; index++) {
+      this.httpService.getReportInProgress(index).subscribe((report: Report) => {
         if (this.reportsInProgress[report.correlationId] == null) {
           this.reportsInProgress[report.correlationId] = report.startTime;
-        } else if (
-          Date.now() - new Date(this.reportsInProgress[report.correlationId]).getTime() >
-          this.reportsInProgressThreshold
-        ) {
+        } else if (this.reportsInProgressMetThreshold(report)) {
           this.hasTimedOut = true;
           hasChanged = true;
         }
@@ -242,6 +239,12 @@ export class TableComponent implements OnInit, OnDestroy {
     if (!hasChanged) {
       this.hasTimedOut = false;
     }
+  }
+
+  reportsInProgressMetThreshold(report: Report): boolean {
+    return (
+      Date.now() - new Date(this.reportsInProgress[report.correlationId]).getTime() > this.reportsInProgressThreshold
+    );
   }
 
   openSettingsModal(): void {
