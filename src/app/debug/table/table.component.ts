@@ -228,9 +228,8 @@ export class TableComponent implements OnInit, OnDestroy {
     let hasChanged: boolean = false;
     for (let index = 1; index <= this.tableSettings.numberOfReportsInProgress; index++) {
       this.httpService.getReportInProgress(index).subscribe((report: Report) => {
-        if (this.reportsInProgress[report.correlationId] == null) {
-          this.reportsInProgress[report.correlationId] = report.startTime;
-        } else if (this.reportsInProgressMetThreshold(report)) {
+        this.reportsInProgress[report.correlationId] ??= report.startTime;
+        if (this.reportsInProgressMetThreshold(report)) {
           this.hasTimedOut = true;
           hasChanged = true;
         }
