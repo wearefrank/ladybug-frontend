@@ -75,7 +75,7 @@ export class TableComponent implements OnInit, OnDestroy {
   defaultFontSize: number = 8;
   fontSizeSpacingModifier: number = 1.2;
   hasTimedOut: boolean = false;
-  reportsInProgress: { [key: string]: number } = {};
+  reportsInProgress: Record<string, number> = {};
   reportsInProgressThreshold!: number;
 
   constructor(
