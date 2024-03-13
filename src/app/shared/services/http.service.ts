@@ -86,7 +86,7 @@ export class HttpService {
   }
 
   getReportsInProgressThresholdTime() {
-    return this.http.get<any>('api/testtool/in-progress/threshold-time').pipe(catchError(this.handleError()));
+    return this.http.get<number>('api/testtool/in-progress/threshold-time').pipe(catchError(this.handleError()));
   }
 
   getTestReports(metadataNames: string[], storage: string): Observable<any> {
