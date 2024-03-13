@@ -23,9 +23,9 @@
 
     <form (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
       <div class='input-group'>
-          <input data-cy-debug='displayAmount' type='number' class='form-control input-field'
+        <input data-cy-debug='displayAmount' type='number' class='form-control input-field'
                  [value]="tableSettings.displayAmount" (blur)='changeTableLimit($event)'>
-        <div class='input-group-append'>
+        <div data-cy-debug="amountShown" class='input-group-append'>
           <div class='input-group-text'>/{{metadataCount}}</div>
         </div>
       </div>
