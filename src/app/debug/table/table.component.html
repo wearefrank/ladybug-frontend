@@ -23,8 +23,8 @@
 
     <form (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
       <div class="input-group">
-        <input data-cy-debug="displayAmount" type="number" class='form-control input-field'
-                 [value]="tableSettings.displayAmount" (blur)='changeTableLimit($event)'>
+        <input data-cy-debug="displayAmount" type="number" class="form-control input-field"
+                 [value]="tableSettings.displayAmount" (blur)="changeTableLimit($event)">
         <div data-cy-debug="amountShown" class="input-group-append">
           <div class="input-group-text">/{{metadataCount}}</div>
         </div>
@@ -59,7 +59,7 @@
     }
 
     <app-button text="Compare" title="Compare" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
-    <app-button text="'Open In New Tab'" *ngIf="showOpenInTabButton()" (click)="openReportInTab()"></app-button>
+    <app-button text="Open In New Tab" *ngIf="showOpenInTabButton()" (click)="openReportInTab()"></app-button>
     <app-active-filters class="ml-2" [activeFilters]="currentFilters" (click)="toggleFilter()"></app-active-filters>
   </div>
   <div [hidden]="doneRetrieving">
