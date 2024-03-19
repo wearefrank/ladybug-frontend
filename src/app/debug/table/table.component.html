@@ -22,11 +22,11 @@
     <app-button data-cy-debug="delete" title="Delete" icon="fa fa-trash" (click)="deleteSelected()"></app-button>
 
     <form (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
-      <div class='input-group'>
-        <input data-cy-debug='displayAmount' type='number' class='form-control input-field'
+      <div class="input-group">
+        <input data-cy-debug="displayAmount" type="number" class='form-control input-field'
                  [value]="tableSettings.displayAmount" (blur)='changeTableLimit($event)'>
-        <div data-cy-debug="amountShown" class='input-group-append'>
-          <div class='input-group-text'>/{{metadataCount}}</div>
+        <div data-cy-debug="amountShown" class="input-group-append">
+          <div class="input-group-text">/{{metadataCount}}</div>
         </div>
       </div>
     </form>
@@ -40,19 +40,18 @@
     <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.numberOfReportsInProgress }}</div>
     <div class="row" *ngIf="tableSettings.numberOfReportsInProgress > 0">
       <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
-        <div class="col input-group my-2 mx-1 px-2">
-          <input #openIndex type="number" min="0" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')" class="form-control" data-cy-debug="openInProgressNo"/>
-          <div class="input-group-append">
-            <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
-          </div>
+      <div class="col input-group my-2 mx-1 px-2">
+        <input #openIndex type="number" min="0" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" class="form-control" data-cy-debug="openInProgressNo"/>
+        <div class="input-group-append">
+          <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
         </div>
-          <div class="col input-group my-2 mx-1 px-2">
-            <input #deleteIndex type="number" min="0" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" (change)="disableReportInProgressButton(+openIndex.value, '#deleteReportInProgressButton')" class="form-control" id="deleteInProgressNo"/>
-            <div class="input-group-append">
-              <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
-            </div>
-          </div>
-
+      </div>
+      <div class="col input-group my-2 mx-1 px-2">
+        <input #deleteIndex type="number" min="0" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" class="form-control" id="deleteInProgressNo"/>
+        <div class="input-group-append">
+          <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
+        </div>
+      </div>
     </div>
 
     @if (hasTimedOut) {

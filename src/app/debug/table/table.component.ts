@@ -436,11 +436,6 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  disableReportInProgressButton(index: number, selector: string): void {
-    let element: HTMLButtonElement = document.querySelector(selector)!;
-    element.disabled = index == 0 || index > this.tableSettings.numberOfReportsInProgress;
-  }
-
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
     const queryString: string = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
