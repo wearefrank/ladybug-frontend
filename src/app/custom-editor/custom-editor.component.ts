@@ -6,7 +6,7 @@ import { SettingsService } from '../shared/services/settings.service';
 import { editor } from 'monaco-editor';
 import IEditor = editor.IEditor;
 
-export const editorViewsConst = ['raw', 'xml'] as const;
+export const editorViewsConst = ['raw', 'xml', 'json'] as const;
 export type EditorView = (typeof editorViewsConst)[number];
 
 @Component({
@@ -18,7 +18,6 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   editor!: IEditor;
   @Input() height!: number;
   @Output() saveReport: Subject<string> = new Subject<string>();
-  protected readonly editorViewsConst = editorViewsConst;
   unsavedChanges: boolean = false;
   @Input() readOnlyMode: boolean = true;
   options: any = {
@@ -45,6 +44,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   showPrettifyOnLoadSubscription!: Subscription;
   showSearchWindowOnLoad: boolean = true;
   showSearchWindowOnLoadSubscription!: Subscription;
+  availableViews!: EditorView[];
 
   @HostListener('window:keydown', ['$event'])
   keyBoardListener(event: KeyboardEvent): void {
@@ -136,24 +136,42 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
     this.currentView = editorViewsConst[index];
     if (this.currentView == 'raw') {
       this.editorContent = this.rawFile;
-    }
-    if (this.currentView == 'xml') {
+    } else {
       this.prettify();
     }
   }
 
   prettify(): void {
     if (this.editorContent && !this.isPrettified) {
-      prettier
-        .format(this.editorContent, {
-          parser: 'html',
-          plugins: [prettierPluginHtml],
-          bracketSameLine: true,
-        })
-        .then((result: string): void => {
-          this.setValue(result);
-          this.isPrettified = true;
-        });
+      if (this.currentView == 'xml' && this.isXml()) {
+        prettier
+          .format(this.editorContent, {
+            parser: 'html',
+            plugins: [prettierPluginHtml],
+            bracketSameLine: true,
+          })
+          .then((result: string): void => {
+            this.setValue(result);
+            this.isPrettified = true;
+          });
+      }
+      if (this.currentView == 'json' && this.isJson()) {
+        this.editorContent = JSON.stringify(JSON.parse(this.editorContent), null, '  '); //Indents set to two spaces
+        this.isPrettified = true;
+      }
+    }
+  }
+
+  isXml(): boolean {
+    console.log('check');
+    return this.rawFile.charAt(0) == '<';
+  }
+
+  isJson(): boolean {
+    try {
+      return JSON.parse(this.rawFile) && !!this.rawFile;
+    } catch {
+      return false;
     }
   }
 
@@ -172,12 +190,21 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
     this.setValue(value);
     this.editorContentCopy = value;
     this.rawFile = value;
+    this.setAvailableViews();
     if (value != null || value !== '') {
       this.checkIfTextIsPretty();
     }
     if (this.showPrettifyOnLoad) {
-      this.onViewChange('xml');
+      if (this.isXml()) {
+        this.onViewChange('xml');
+        return;
+      }
+      if (this.isJson()) {
+        this.onViewChange('json');
+        return;
+      }
     }
+    this.onViewChange('raw');
   }
 
   setValue(value: string): void {
@@ -186,5 +213,19 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
 
   getValue(): string {
     return this.editorContent ?? '';
+  }
+
+  setAvailableViews(): void {
+    if (!this.isJson() && !this.isXml()) {
+      this.availableViews = editorViewsConst.filter((view: EditorView) => view == 'raw');
+      return;
+    }
+    if (!this.isXml()) {
+      this.availableViews = editorViewsConst.filter((view: EditorView) => view !== 'xml');
+      return;
+    }
+    if (!this.isJson()) {
+      this.availableViews = editorViewsConst.filter((view: EditorView) => view !== 'json');
+    }
   }
 }

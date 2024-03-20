@@ -242,3 +242,12 @@ Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes
     cy.log('Api call to copy report has been completed');
   });
 })
+
+
+Cypress.Commands.add('clickFirstFileInFileTree', () => {
+  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > div').click();
+});
+
+Cypress.Commands.add('clickRowInTable', (index: number) => {
+  cy.get('[data-cy-debug="tableBody"]').find('tr').eq(index).click();
+});

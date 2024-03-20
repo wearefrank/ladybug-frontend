@@ -1,0 +1,39 @@
+describe('Tests for custom editor in debug tab', () => {
+  beforeEach(() => {
+    cy.createReport();
+    cy.initializeApp();
+  });
+
+  afterEach(() => {
+    cy.clearDebugStore();
+  });
+
+  it('should set xml as available view if editor content is xml file', () => {
+    cy.clickRowInTable(0);
+    cy.clickFirstFileInFileTree();
+    cy.get('[data-cy-editor="viewDropDown"]').as('viewDropDown').find('option:selected').should('contain.text', 'Raw');
+    // eslint-disable-next-line sonarjs/no-duplicate-string
+    cy.get('@viewDropDown').find('option').should('have.length', 2);
+    cy.get('@viewDropDown').find('option').eq(0).should('have.text', 'Raw');
+    cy.get('@viewDropDown').find('option').eq(1).should('have.text', 'Xml');
+    cy.get('@viewDropDown').find('option').eq(2).should('not.exist');
+  });
+
+  it('should apply effect based on selected view', () => {
+    cy.clickRowInTable(0);
+    cy.clickFirstFileInFileTree();
+    cy.get('[data-cy-editor="viewDropDown"]').as('viewDropDown');
+    let numberOfLines = 0;
+    cy.get('div.line-numbers').then((elements) => {
+      numberOfLines = elements.length;
+    });
+    cy.get('@viewDropDown').select('Xml');
+    cy.get('div.line-numbers').then((elements) => {
+      expect(elements.length).to.be.greaterThan(numberOfLines);
+    });
+    cy.get('@viewDropDown').select('Raw');
+    cy.get('div.line-numbers').then((elements) => {
+      expect(elements.length).to.eq(numberOfLines);
+    });
+  });
+});
