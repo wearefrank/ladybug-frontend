@@ -218,7 +218,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
       if (value === ' ') {
         continue;
       }
-      return value === '<';
+      return value.charAt(i) === '<';
     }
     return false;
   }
