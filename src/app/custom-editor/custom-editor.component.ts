@@ -45,6 +45,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   showSearchWindowOnLoad: boolean = true;
   showSearchWindowOnLoadSubscription!: Subscription;
   availableViews!: EditorView[];
+  contentType!: EditorView;
 
   @HostListener('window:keydown', ['$event'])
   keyBoardListener(event: KeyboardEvent): void {
@@ -143,7 +144,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
 
   prettify(): void {
     if (this.editorContent && !this.isPrettified) {
-      if (this.currentView == 'xml' && this.isXml()) {
+      if (this.currentView == 'xml' && this.contentType == 'xml') {
         prettier
           .format(this.editorContent, {
             parser: 'html',
@@ -155,23 +156,10 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
             this.isPrettified = true;
           });
       }
-      if (this.currentView == 'json' && this.isJson()) {
+      if (this.currentView == 'json' && this.contentType == 'json') {
         this.editorContent = JSON.stringify(JSON.parse(this.editorContent), null, '  '); //Indents set to two spaces
         this.isPrettified = true;
       }
-    }
-  }
-
-  isXml(): boolean {
-    console.log('check');
-    return this.rawFile.charAt(0) == '<';
-  }
-
-  isJson(): boolean {
-    try {
-      return JSON.parse(this.rawFile) && !!this.rawFile;
-    } catch {
-      return false;
     }
   }
 
@@ -190,21 +178,38 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
     this.setValue(value);
     this.editorContentCopy = value;
     this.rawFile = value;
+    this.setContentType();
     this.setAvailableViews();
     if (value != null || value !== '') {
       this.checkIfTextIsPretty();
     }
     if (this.showPrettifyOnLoad) {
-      if (this.isXml()) {
+      if (this.contentType == 'xml') {
         this.onViewChange('xml');
         return;
       }
-      if (this.isJson()) {
+      if (this.contentType == 'json') {
         this.onViewChange('json');
         return;
       }
     }
     this.onViewChange('raw');
+  }
+
+  setContentType(): void {
+    if (this.rawFile.charAt(0) == '<') {
+      this.contentType = 'xml';
+      return;
+    }
+    try {
+      if (JSON.parse(this.rawFile) && this.rawFile) {
+        this.contentType = 'json';
+        return;
+      }
+    } catch {
+      //If error occurs, rawFile is not a json file
+    }
+    this.contentType = 'raw';
   }
 
   setValue(value: string): void {
@@ -216,16 +221,10 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   setAvailableViews(): void {
-    if (!this.isJson() && !this.isXml()) {
-      this.availableViews = editorViewsConst.filter((view: EditorView) => view == 'raw');
-      return;
+    const availableViews: EditorView[] = ['raw'];
+    if (this.contentType != 'raw') {
+      availableViews.push(this.contentType);
     }
-    if (!this.isXml()) {
-      this.availableViews = editorViewsConst.filter((view: EditorView) => view !== 'xml');
-      return;
-    }
-    if (!this.isJson()) {
-      this.availableViews = editorViewsConst.filter((view: EditorView) => view !== 'json');
-    }
+    this.availableViews = availableViews;
   }
 }
