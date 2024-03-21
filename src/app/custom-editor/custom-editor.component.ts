@@ -46,10 +46,11 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   showSearchWindowOnLoadSubscription!: Subscription;
   availableViews!: EditorView[];
   contentType!: EditorView;
+  INDENT_TWO_SPACES: string = '  ';
 
   @HostListener('window:keydown', ['$event'])
   keyBoardListener(event: KeyboardEvent): void {
-    if ((event.ctrlKey || event.metaKey) && event.key == 's') {
+    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
       event.preventDefault();
       this.onSave();
     }
@@ -131,11 +132,11 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
 
   onViewChange(value: EditorView): void {
     const index: number = editorViewsConst.indexOf(value);
-    if (index == -1) {
+    if (index === -1) {
       return;
     }
     this.currentView = editorViewsConst[index];
-    if (this.currentView == 'raw') {
+    if (this.currentView === 'raw') {
       this.editorContent = this.rawFile;
     } else {
       this.prettify();
@@ -144,7 +145,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
 
   prettify(): void {
     if (this.editorContent && !this.isPrettified) {
-      if (this.currentView == 'xml' && this.contentType == 'xml') {
+      if (this.currentView === 'xml' && this.contentType === 'xml') {
         prettier
           .format(this.editorContent, {
             parser: 'html',
@@ -156,8 +157,8 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
             this.isPrettified = true;
           });
       }
-      if (this.currentView == 'json' && this.contentType == 'json') {
-        this.editorContent = JSON.stringify(JSON.parse(this.editorContent), null, '  '); //Indents set to two spaces
+      if (this.currentView === 'json' && this.contentType === 'json') {
+        this.editorContent = JSON.stringify(JSON.parse(this.editorContent), null, this.INDENT_TWO_SPACES);
         this.isPrettified = true;
       }
     }
@@ -180,15 +181,15 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
     this.rawFile = value;
     this.setContentType();
     this.setAvailableViews();
-    if (value != null || value !== '') {
+    if (value !== null || value !== '') {
       this.checkIfTextIsPretty();
     }
     if (this.showPrettifyOnLoad) {
-      if (this.contentType == 'xml') {
+      if (this.contentType === 'xml') {
         this.onViewChange('xml');
         return;
       }
-      if (this.contentType == 'json') {
+      if (this.contentType === 'json') {
         this.onViewChange('json');
         return;
       }
@@ -197,7 +198,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   setContentType(): void {
-    if (this.rawFile.charAt(0) == '<') {
+    if (this.checkIfFileIsXml(this.rawFile)) {
       this.contentType = 'xml';
       return;
     }
@@ -212,6 +213,16 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
     this.contentType = 'raw';
   }
 
+  checkIfFileIsXml(value: string): boolean {
+    for (let i = 0; i < value.length; i++) {
+      if (value === ' ') {
+        continue;
+      }
+      return value === '<';
+    }
+    return false;
+  }
+
   setValue(value: string): void {
     this.editorContent = value;
   }
@@ -222,7 +233,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
 
   setAvailableViews(): void {
     const availableViews: EditorView[] = ['raw'];
-    if (this.contentType != 'raw') {
+    if (this.contentType !== 'raw') {
       availableViews.push(this.contentType);
     }
     this.availableViews = availableViews;
