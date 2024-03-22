@@ -60,3 +60,26 @@ describe('With running reports', () => {
     cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('not.exist');
   });
 });
+
+describe('Test Reports in progress warning', () => {
+  beforeEach(() => {
+    cy.createRunningReport();
+    cy.initializeApp();
+  });
+
+  afterEach(() => {
+    cy.removeReportInProgress();
+    cy.request(
+      Cypress.env('backendServer') + '/index.jsp?setReportInProgressThreshold=300000',
+    );
+  });
+
+  it('If threshold time has been met then show warning', () => {
+    cy.request(
+      Cypress.env('backendServer') + '/index.jsp?setReportInProgressThreshold=1',
+    );
+    cy.get('[data-cy-debug="refresh"]').click();
+    cy.contains(`[One or more reports are in progress for more than ${1 / 1000 / 60} minutes]`);
+  });
+});
+

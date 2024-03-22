@@ -55,7 +55,7 @@ export class TableComponent implements OnInit, OnDestroy {
     showFilter: false,
     filterValue: '(.*)',
     filterHeader: '',
-    reportsInProgress: 0,
+    numberOfReportsInProgress: 0,
     estimatedMemoryUsage: '',
     uniqueValues: new Map<string, Array<string>>(),
   };
@@ -74,6 +74,9 @@ export class TableComponent implements OnInit, OnDestroy {
   defaultCheckBoxSize: number = 13;
   defaultFontSize: number = 8;
   fontSizeSpacingModifier: number = 1.2;
+  hasTimedOut: boolean = false;
+  reportsInProgress: Record<string, number> = {};
+  reportsInProgressThreshold!: number;
 
   constructor(
     private httpService: HttpService,
@@ -182,6 +185,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadData(): void {
+    this.loadReportInProgressThreshold();
     this.httpService.getViews().subscribe((views) => {
       if (Object.keys(this.viewSettings.currentView).length > 0) {
         this.debugReportService.changeView(this.viewSettings.currentView);
@@ -213,10 +217,33 @@ export class TableComponent implements OnInit, OnDestroy {
   loadReportInProgressSettings() {
     this.httpService.getSettings().subscribe({
       next: (settings) => {
-        this.tableSettings.reportsInProgress = settings.reportsInProgress;
+        this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
+        this.loadReportInProgressDates();
       },
     });
+  }
+
+  loadReportInProgressDates() {
+    let hasChanged: boolean = false;
+    for (let index = 1; index <= this.tableSettings.numberOfReportsInProgress; index++) {
+      this.httpService.getReportInProgress(index).subscribe((report: Report) => {
+        this.reportsInProgress[report.correlationId] ??= report.startTime;
+        if (this.reportsInProgressMetThreshold(report)) {
+          this.hasTimedOut = true;
+          hasChanged = true;
+        }
+      });
+    }
+    if (!hasChanged) {
+      this.hasTimedOut = false;
+    }
+  }
+
+  reportsInProgressMetThreshold(report: Report): boolean {
+    return (
+      Date.now() - new Date(this.reportsInProgress[report.correlationId]).getTime() > this.reportsInProgressThreshold
+    );
   }
 
   openSettingsModal(): void {
@@ -409,11 +436,6 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  disableReportInProgressButton(index: number, selector: string): void {
-    let element: HTMLButtonElement = document.querySelector(selector)!;
-    element.disabled = index == 0 || index > this.tableSettings.reportsInProgress;
-  }
-
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
     const queryString: string = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
@@ -511,5 +533,9 @@ export class TableComponent implements OnInit, OnDestroy {
       }
     }
     this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
+  }
+
+  loadReportInProgressThreshold() {
+    this.httpService.getReportsInProgressThresholdTime().subscribe((time) => (this.reportsInProgressThreshold = time));
   }
 }

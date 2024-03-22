@@ -6,7 +6,7 @@ export interface TableSettings {
   filterValue: string;
   tableLoaded: boolean;
   filterHeader: string;
-  reportsInProgress: number;
+  numberOfReportsInProgress: number;
   estimatedMemoryUsage: string;
   uniqueValues: Map<string, Array<string>>;
 }
