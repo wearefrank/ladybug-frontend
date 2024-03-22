@@ -32,8 +32,8 @@ export class HttpService {
     this.toastService.showSuccess(message);
   }
 
-  getViews(): Observable<{[key: string]: View}> {
-    return this.http.get<{[key: string]: View}>('api/testtool/views').pipe(catchError(this.handleError()));
+  getViews(): Observable<{ [key: string]: View }> {
+    return this.http.get<{ [key: string]: View }>('api/testtool/views').pipe(catchError(this.handleError()));
   }
 
   getMetadataReports(
