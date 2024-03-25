@@ -6,7 +6,11 @@ import { SettingsService } from '../shared/services/settings.service';
 import { editor } from 'monaco-editor';
 import IEditor = editor.IEditor;
 
-export const editorViewsConst = ['raw', 'xml', 'json'] as const;
+export const basicContentTypes = ['raw'] as const;
+export type BasicView = (typeof basicContentTypes)[number];
+export const prettyContentTypes = ['xml', 'json'] as const;
+export type PrettyView = (typeof prettyContentTypes)[number];
+export const editorViewsConst = [...basicContentTypes, ...prettyContentTypes] as const;
 export type EditorView = (typeof editorViewsConst)[number];
 
 @Component({
@@ -15,11 +19,11 @@ export type EditorView = (typeof editorViewsConst)[number];
   styleUrl: './custom-editor.component.css',
 })
 export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
-  editor!: IEditor;
   @Input() height!: number;
-  @Output() saveReport: Subject<string> = new Subject<string>();
-  unsavedChanges: boolean = false;
   @Input() readOnlyMode: boolean = true;
+  @Output() saveReport: Subject<string> = new Subject<string>();
+  editor!: IEditor;
+  unsavedChanges: boolean = false;
   options: any = {
     theme: 'vs-light',
     language: 'xml',
@@ -38,6 +42,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   currentView: EditorView = 'raw';
   editorFocused: boolean = false;
   editorChangesSubject: Subject<string> = new Subject<string>();
+  INDENT_TWO_SPACES: string = '  ';
 
   //Settings attributes
   showPrettifyOnLoad: boolean = true;
@@ -46,7 +51,8 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   showSearchWindowOnLoadSubscription!: Subscription;
   availableViews!: EditorView[];
   contentType!: EditorView;
-  INDENT_TWO_SPACES: string = '  ';
+
+  constructor(private settingsService: SettingsService) {}
 
   @HostListener('window:keydown', ['$event'])
   keyBoardListener(event: KeyboardEvent): void {
@@ -61,8 +67,6 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
       this.save();
     }
   }
-
-  constructor(private settingsService: SettingsService) {}
 
   ngOnInit(): void {
     this.subscribeToEditorChanges();
@@ -131,11 +135,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   onViewChange(value: EditorView): void {
-    const index: number = editorViewsConst.indexOf(value);
-    if (index === -1) {
-      return;
-    }
-    this.currentView = editorViewsConst[index];
+    this.currentView = value;
     if (this.currentView === 'raw') {
       this.editorContent = this.rawFile;
     } else {
@@ -184,15 +184,9 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
     if (value !== null || value !== '') {
       this.checkIfTextIsPretty();
     }
-    if (this.showPrettifyOnLoad) {
-      if (this.contentType === 'xml') {
-        this.onViewChange('xml');
-        return;
-      }
-      if (this.contentType === 'json') {
-        this.onViewChange('json');
-        return;
-      }
+    if (this.showPrettifyOnLoad && this.isPrettifiable(this.contentType)) {
+      this.onViewChange(this.contentType);
+      return;
     }
     this.onViewChange('raw');
   }
@@ -203,7 +197,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
     try {
-      if (JSON.parse(this.rawFile) && this.rawFile) {
+      if (this.rawFile && JSON.parse(this.rawFile)) {
         this.contentType = 'json';
         return;
       }
@@ -215,7 +209,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
 
   checkIfFileIsXml(value: string): boolean {
     for (let i = 0; i < value.length; i++) {
-      if (value.charAt(i) === ' ') {
+      if (value.charAt(i) === ' ' || value.charAt(i) === '\t') {
         continue;
       }
       return value.charAt(i) === '<';
@@ -232,10 +226,18 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   setAvailableViews(): void {
-    const availableViews: EditorView[] = ['raw'];
-    if (this.contentType !== 'raw') {
+    const availableViews: EditorView[] = [...basicContentTypes];
+    if (!availableViews.includes(this.contentType)) {
       availableViews.push(this.contentType);
     }
     this.availableViews = availableViews;
+  }
+
+  isPrettifiable(value: EditorView): boolean {
+    return prettyContentTypes.includes(value as PrettyView);
+  }
+
+  isBasicView(value: EditorView): boolean {
+    return basicContentTypes.includes(value as BasicView);
   }
 }
