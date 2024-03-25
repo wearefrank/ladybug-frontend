@@ -64,10 +64,11 @@
                 {{ showRelativePath(report.path) }}{{ report.name }}
               </td>
               <td>
-                <span>{{extractVariables(report.variables)}}</span>
+                <span data-cy-test="variables">{{extractVariables(report.variables)}}</span>
               </td>
               <td>
-                <span *ngIf="getReranReport(report.storageId)" id="runResult#{{report.storageId}}" style="color: {{getReranReport(report.storageId).color}}">
+                <span *ngIf="getReranReport(report.storageId)" id="runResult#{{report.storageId}}" data-cy-test="runResult"
+                  style="color: {{getReranReport(report.storageId).color}}">
                   {{ getReranReport(report.storageId).resultString }}
                 </span>
               </td>
