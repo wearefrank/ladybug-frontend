@@ -6,7 +6,11 @@ import { SettingsService } from '../shared/services/settings.service';
 import { editor } from 'monaco-editor';
 import IEditor = editor.IEditor;
 
-export const editorViewsConst = ['raw', 'xml'] as const;
+export const basicContentTypes = ['raw'] as const;
+export type BasicView = (typeof basicContentTypes)[number];
+export const prettyContentTypes = ['xml', 'json'] as const;
+export type PrettyView = (typeof prettyContentTypes)[number];
+export const editorViewsConst = [...basicContentTypes, ...prettyContentTypes] as const;
 export type EditorView = (typeof editorViewsConst)[number];
 
 @Component({
@@ -15,12 +19,11 @@ export type EditorView = (typeof editorViewsConst)[number];
   styleUrl: './custom-editor.component.css',
 })
 export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
-  editor!: IEditor;
   @Input() height!: number;
-  @Output() saveReport: Subject<string> = new Subject<string>();
-  protected readonly editorViewsConst = editorViewsConst;
-  unsavedChanges: boolean = false;
   @Input() readOnlyMode: boolean = true;
+  @Output() saveReport: Subject<string> = new Subject<string>();
+  editor!: IEditor;
+  unsavedChanges: boolean = false;
   options: any = {
     theme: 'vs-light',
     language: 'xml',
@@ -39,16 +42,21 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   currentView: EditorView = 'raw';
   editorFocused: boolean = false;
   editorChangesSubject: Subject<string> = new Subject<string>();
+  INDENT_TWO_SPACES: string = '  ';
 
   //Settings attributes
   showPrettifyOnLoad: boolean = true;
   showPrettifyOnLoadSubscription!: Subscription;
   showSearchWindowOnLoad: boolean = true;
   showSearchWindowOnLoadSubscription!: Subscription;
+  availableViews!: EditorView[];
+  contentType!: EditorView;
+
+  constructor(private settingsService: SettingsService) {}
 
   @HostListener('window:keydown', ['$event'])
   keyBoardListener(event: KeyboardEvent): void {
-    if ((event.ctrlKey || event.metaKey) && event.key == 's') {
+    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
       event.preventDefault();
       this.onSave();
     }
@@ -59,8 +67,6 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
       this.save();
     }
   }
-
-  constructor(private settingsService: SettingsService) {}
 
   ngOnInit(): void {
     this.subscribeToEditorChanges();
@@ -129,31 +135,32 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   onViewChange(value: EditorView): void {
-    const index: number = editorViewsConst.indexOf(value);
-    if (index == -1) {
-      return;
-    }
-    this.currentView = editorViewsConst[index];
-    if (this.currentView == 'raw') {
+    this.currentView = value;
+    if (this.currentView === 'raw') {
       this.editorContent = this.rawFile;
-    }
-    if (this.currentView == 'xml') {
+    } else {
       this.prettify();
     }
   }
 
   prettify(): void {
     if (this.editorContent && !this.isPrettified) {
-      prettier
-        .format(this.editorContent, {
-          parser: 'html',
-          plugins: [prettierPluginHtml],
-          bracketSameLine: true,
-        })
-        .then((result: string): void => {
-          this.setValue(result);
-          this.isPrettified = true;
-        });
+      if (this.currentView === 'xml' && this.contentType === 'xml') {
+        prettier
+          .format(this.editorContent, {
+            parser: 'html',
+            plugins: [prettierPluginHtml],
+            bracketSameLine: true,
+          })
+          .then((result: string): void => {
+            this.setValue(result);
+            this.isPrettified = true;
+          });
+      }
+      if (this.currentView === 'json' && this.contentType === 'json') {
+        this.editorContent = JSON.stringify(JSON.parse(this.editorContent), null, this.INDENT_TWO_SPACES);
+        this.isPrettified = true;
+      }
     }
   }
 
@@ -172,12 +179,42 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
     this.setValue(value);
     this.editorContentCopy = value;
     this.rawFile = value;
-    if (value != null || value !== '') {
+    this.setContentType();
+    this.setAvailableViews();
+    if (value !== null || value !== '') {
       this.checkIfTextIsPretty();
     }
-    if (this.showPrettifyOnLoad) {
-      this.onViewChange('xml');
+    if (this.showPrettifyOnLoad && this.isPrettifiable(this.contentType)) {
+      this.onViewChange(this.contentType);
+      return;
     }
+    this.onViewChange('raw');
+  }
+
+  setContentType(): void {
+    if (this.checkIfFileIsXml(this.rawFile)) {
+      this.contentType = 'xml';
+      return;
+    }
+    try {
+      if (this.rawFile && JSON.parse(this.rawFile)) {
+        this.contentType = 'json';
+        return;
+      }
+    } catch {
+      //If error occurs, rawFile is not a json file
+    }
+    this.contentType = 'raw';
+  }
+
+  checkIfFileIsXml(value: string): boolean {
+    for (let i = 0; i < value.length; i++) {
+      if (value.charAt(i) === ' ' || value.charAt(i) === '\t') {
+        continue;
+      }
+      return value.charAt(i) === '<';
+    }
+    return false;
   }
 
   setValue(value: string): void {
@@ -186,5 +223,21 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
 
   getValue(): string {
     return this.editorContent ?? '';
+  }
+
+  setAvailableViews(): void {
+    const availableViews: EditorView[] = [...basicContentTypes];
+    if (!availableViews.includes(this.contentType)) {
+      availableViews.push(this.contentType);
+    }
+    this.availableViews = availableViews;
+  }
+
+  isPrettifiable(value: EditorView): boolean {
+    return prettyContentTypes.includes(value as PrettyView);
+  }
+
+  isBasicView(value: EditorView): boolean {
+    return basicContentTypes.includes(value as BasicView);
   }
 }
