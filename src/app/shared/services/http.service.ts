@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { ToastService } from './toast.service';
+import { View } from '../interfaces/view';
 
 @Injectable({
   providedIn: 'root',
@@ -31,8 +32,8 @@ export class HttpService {
     this.toastService.showSuccess(message);
   }
 
-  getViews(): Observable<any> {
-    return this.http.get('api/testtool/views').pipe(catchError(this.handleError()));
+  getViews(): Observable<Record<string, View>> {
+    return this.http.get<Record<string, View>>('api/testtool/views').pipe(catchError(this.handleError()));
   }
 
   getMetadataReports(
