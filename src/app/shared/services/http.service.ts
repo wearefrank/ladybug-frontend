@@ -15,6 +15,7 @@ export class HttpService {
     private toastService: ToastService,
   ) {}
 
+  //TODO: fix Observable and error typing
   handleError() {
     return (error: any): Observable<any> => {
       const message = error.error;
@@ -53,6 +54,7 @@ export class HttpService {
     });
   }
 
+  //TODO: fix Observable and get typing
   getUserHelp(storage: string, metadataNames: string[]): Observable<any> {
     return this.http.get<any>('api/metadata/' + storage + '/userHelp', {
       params: {
@@ -61,10 +63,12 @@ export class HttpService {
     });
   }
 
-  getMetadataCount(storage: string): Observable<any> {
-    return this.http.get('api/metadata/' + storage + '/count').pipe(catchError(this.handleError()));
+  //TODO: fix Observable typing
+  getMetadataCount(storage: string): Observable<number> {
+    return this.http.get<number>('api/metadata/' + storage + '/count').pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix Observable and get typing
   getLatestReports(amount: number, storage: string): Observable<any> {
     return this.http
       .get<any>('api/report/latest/' + storage + '/' + amount)
@@ -72,6 +76,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix get typing
   getReportInProgress(index: number) {
     return this.http
       .get<any>('api/testtool/in-progress/' + index)
@@ -79,6 +84,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix Observable and get typing
   deleteReportInProgress(index: number): Observable<any> {
     return this.http
       .delete<any>('api/testtool/in-progress/' + index)
@@ -86,16 +92,19 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix Observable typing
   getReportsInProgressThresholdTime(): Observable<any> {
     return this.http.get<number>('api/testtool/in-progress/threshold-time').pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix Observable typing
   getTestReports(metadataNames: string[], storage: string): Observable<any> {
     return this.http.get<any>('api/metadata/' + storage + '/', {
       params: { metadataNames: metadataNames },
     });
   }
 
+  //TODO: fix get typing
   getReport(reportId: string, storage: string) {
     return this.http
       .get<any>(
@@ -110,6 +119,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix get typing
   getReports(reportIds: string[], storage: string) {
     return this.http
       .get<any>(
@@ -119,6 +129,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix params typing
   updateReport(reportId: string, params: any, storage: string): Observable<void> {
     return this.http
       .post('api/report/' + storage + '/' + reportId, params)
@@ -126,6 +137,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix data typing
   copyReport(data: any, storage: string): Observable<void> {
     return this.http
       .put('api/report/store/' + storage, data)
@@ -133,6 +145,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix map typing
   updatePath(reportIds: string[], storage: string, map: any) {
     return this.http
       .put('api/report/move/' + storage, map, {
@@ -141,6 +154,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix Observable typing
   uploadReport(formData: FormData): Observable<any> {
     return this.http
       .post('api/report/upload', formData, {
@@ -150,6 +164,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix Observable typing
   uploadReportToStorage(formData: FormData, storage: string): Observable<any> {
     return this.http
       .post('api/report/upload/' + storage, formData, {
@@ -159,6 +174,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix settings typing
   postSettings(settings: any): Observable<void> {
     return this.http
       .post('api/testtool', settings)
@@ -166,6 +182,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix transformation typing
   postTransformation(transformation: any): Observable<void> {
     return (
       this.http
@@ -175,24 +192,29 @@ export class HttpService {
     );
   }
 
+  //TODO: fix Observable and get typing
   getTransformation(defaultTransformation: boolean): Observable<any> {
     return this.http
       .get<any>('api/testtool/transformation/' + defaultTransformation)
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix Observable and get typing
   getSettings(): Observable<any> {
     return this.http.get<any>('api/testtool').pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix Observable typing
   resetSettings(): Observable<any> {
     return this.http.get('api/testtool/reset').pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix post typing
   reset(): Observable<void> {
     return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix post typing
   runReport(storage: string, targetStorage: string, reportId: string): Observable<void> {
     return this.http
       .post<any>('api/runner/run/' + storage + '/' + targetStorage + '/' + reportId, {
@@ -202,6 +224,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix Observable and put typing
   runDisplayReport(reportId: string, storage: string): Observable<any> {
     return this.http
       .put<any>('api/runner/replace/' + storage + '/' + reportId, {
@@ -211,6 +234,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  //TODO: fix map typing
   cloneReport(storage: string, storageId: string, map: any) {
     return this.http
       .post('api/report/move/' + storage + '/' + storageId, map)
