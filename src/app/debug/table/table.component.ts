@@ -209,7 +209,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadMetadataCount() {
-    this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: any) => {
+    this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: number) => {
       this.metadataCount = count;
     });
   }
