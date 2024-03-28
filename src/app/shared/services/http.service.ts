@@ -55,8 +55,8 @@ export class HttpService {
   }
 
   //TODO: fix Observable and get typing
-  getUserHelp(storage: string, metadataNames: string[]): Observable<any> {
-    return this.http.get<any>('api/metadata/' + storage + '/userHelp', {
+  getUserHelp(storage: string, metadataNames: string[]): Observable<Object[]> {
+    return this.http.get<Object[]>('api/metadata/' + storage + '/userHelp', {
       params: {
         metadataNames: metadataNames,
       },
