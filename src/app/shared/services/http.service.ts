@@ -42,8 +42,8 @@ export class HttpService {
     filterHeader: string,
     metadataNames: string[],
     storage: string,
-  ): Observable<any> {
-    return this.http.get('api/metadata/' + storage + '/', {
+  ): Observable<Object[]> {
+    return this.http.get<Object[]>('api/metadata/' + storage + '/', {
       params: {
         limit: limit,
         filterHeader: filterHeader,
