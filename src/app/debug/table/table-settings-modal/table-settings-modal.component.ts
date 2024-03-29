@@ -105,7 +105,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     localStorage.setItem('transformationEnabled', form.transformationEnabled.toString());
     this.httpService.postTransformation(form.transformation).subscribe();
     const generatorEnabled: string = String(form.generatorEnabled === 'Enabled');
-    let data: any = {
+    let data: Object = {
       generatorEnabled: generatorEnabled,
       regexFilter: form.regexFilter,
     };
@@ -135,6 +135,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     }
 
     this.httpService.getTransformation(false).subscribe((response) => {
+      console.log(typeof response, response);
       this.settingsForm.get('transformation')?.setValue(response.transformation);
     });
   }

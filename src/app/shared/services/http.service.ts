@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { ToastService } from './toast.service';
 import { View } from '../interfaces/view';
 
@@ -55,6 +55,7 @@ export class HttpService {
   }
 
   //TODO: fix Observable and get typing
+  //TODODONE
   getUserHelp(storage: string, metadataNames: string[]): Observable<Object[]> {
     return this.http.get<Object[]>('api/metadata/' + storage + '/userHelp', {
       params: {
@@ -64,6 +65,7 @@ export class HttpService {
   }
 
   //TODO: fix Observable typing
+  //TODODONE
   getMetadataCount(storage: string): Observable<number> {
     return this.http.get<number>('api/metadata/' + storage + '/count').pipe(catchError(this.handleError()));
   }
@@ -107,23 +109,14 @@ export class HttpService {
   //TODO: fix get typing
   getReport(reportId: string, storage: string) {
     return this.http
-      .get<any>(
-        // eslint-disable-next-line sonarjs/no-duplicate-string
-        'api/report/' +
-          storage +
-          '/' +
-          reportId +
-          '/?xml=true&globalTransformer=' +
-          localStorage.getItem('transformationEnabled'),
-      )
+      .get<any>('api/report/' + storage + '/' + reportId + '/?xml=true&globalTransformer=' + localStorage.getItem('transformationEnabled'))
       .pipe(catchError(this.handleError()));
   }
 
   //TODO: fix get typing
   getReports(reportIds: string[], storage: string) {
     return this.http
-      .get<any>(
-        'api/report/' + storage + '/?xml=true&globalTransformer=' + localStorage.getItem('transformationEnabled'),
+      .get<any>('api/report/' + storage + '/?xml=true&globalTransformer=' + localStorage.getItem('transformationEnabled'),
         { params: { storageIds: reportIds } },
       )
       .pipe(catchError(this.handleError()));
@@ -175,7 +168,8 @@ export class HttpService {
   }
 
   //TODO: fix settings typing
-  postSettings(settings: any): Observable<void> {
+  //TODODONE
+  postSettings(settings: Object): Observable<void> {
     return this.http
       .post('api/testtool', settings)
       .pipe(tap(() => this.handleSuccess('Settings saved!')))
@@ -183,7 +177,8 @@ export class HttpService {
   }
 
   //TODO: fix transformation typing
-  postTransformation(transformation: any): Observable<void> {
+  //TODODONE
+  postTransformation(transformation: string): Observable<void> {
     return (
       this.http
         .post('api/testtool/transformation', { transformation: transformation })
@@ -193,9 +188,10 @@ export class HttpService {
   }
 
   //TODO: fix Observable and get typing
-  getTransformation(defaultTransformation: boolean): Observable<any> {
+  //TODODONE
+  getTransformation(defaultTransformation: boolean): Observable<Record<string, string>> {
     return this.http
-      .get<any>('api/testtool/transformation/' + defaultTransformation)
+      .get<Record<string, string>>('api/testtool/transformation/' + defaultTransformation)
       .pipe(catchError(this.handleError()));
   }
 
@@ -210,8 +206,9 @@ export class HttpService {
   }
 
   //TODO: fix post typing
+  //TODODONE
   reset(): Observable<void> {
-    return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError()));
+    return this.http.post<void>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
 
   //TODO: fix post typing

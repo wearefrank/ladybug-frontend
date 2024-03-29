@@ -416,6 +416,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openLatestReports(amount: number): void {
     this.httpService.getLatestReports(amount, this.viewSettings.currentView.storageName).subscribe((data) => {
+      console.log(data)
       data.forEach((report: any) => {
         this.openReportEvent.next(report);
       });
