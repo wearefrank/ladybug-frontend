@@ -133,11 +133,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     if (localStorage.getItem('transformationEnabled')) {
       this.settingsForm.get('transformationEnabled')?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }
-
-    this.httpService.getTransformation(false).subscribe((response) => {
-      console.log(typeof response, response);
-      this.settingsForm.get('transformation')?.setValue(response.transformation);
-    });
+    this.httpService.getTransformation(false).subscribe((response) => this.settingsForm.get('transformation')?.setValue(response.transformation));
   }
 
   saveResponseSetting(response: any) {

@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { ToastService } from './toast.service';
 import { View } from '../interfaces/view';
+import { OptionsSettings } from '../interfaces/options-settings';
 
 @Injectable({
   providedIn: 'root',
@@ -196,13 +197,15 @@ export class HttpService {
   }
 
   //TODO: fix Observable and get typing
-  getSettings(): Observable<any> {
-    return this.http.get<any>('api/testtool').pipe(catchError(this.handleError()));
+  //TODODONE
+  getSettings(): Observable<OptionsSettings> {
+    return this.http.get<OptionsSettings>('api/testtool').pipe(catchError(this.handleError()));
   }
 
   //TODO: fix Observable typing
-  resetSettings(): Observable<any> {
-    return this.http.get('api/testtool/reset').pipe(catchError(this.handleError()));
+  //TODODONE
+  resetSettings(): Observable<OptionsSettings> {
+    return this.http.get<OptionsSettings>('api/testtool/reset').pipe(catchError(this.handleError()));
   }
 
   //TODO: fix post typing
