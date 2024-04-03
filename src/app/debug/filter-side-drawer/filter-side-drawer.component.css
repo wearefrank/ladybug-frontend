@@ -9,13 +9,23 @@
   z-index: 1000;
 }
 
-.vertical-panel * {
-  margin-top: 1rem;
-  margin-left: 1rem;
-}
-
 .close-filter-btn {
   position: absolute;
   bottom: 1rem;
   left: 1rem;
+}
+
+.metadata-input-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 80vh;
+}
+
+.metadata-input {
+  padding: 5px;
+}
+
+.filter-label {
+  font-size: 1rem;
 }

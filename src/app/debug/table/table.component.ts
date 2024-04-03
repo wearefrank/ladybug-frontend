@@ -170,6 +170,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.clearFilters();
     this.debugReportService.changeView(this.viewSettings.currentView);
     this.selectedRow = -1;
+    this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
   }
 
   listenForViewUpdate() {
@@ -256,6 +257,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   toggleFilter(): void {
+    this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
     this.filterService.setShowFilter(this.tableSettings.showFilter);
   }

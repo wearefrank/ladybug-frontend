@@ -1,7 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FilterService } from './filter.service';
 import { Subscription } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { auto } from '@popperjs/core';
 
 @Component({
   selector: 'app-filter-side-drawer',
@@ -17,21 +18,33 @@ import { animate, style, transition, trigger } from '@angular/animations';
     ]),
   ],
 })
-export class FilterSideDrawerComponent implements OnDestroy {
+export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected shouldShowFilter!: boolean;
-  shouldShowFilterSubscriber: Subscription;
+  shouldShowFilterSubscriber!: Subscription;
+  protected metadataNames!: string[];
+  metadataNamesSubscriber!: Subscription;
 
-  constructor(private filterService: FilterService) {
-    this.shouldShowFilterSubscriber = filterService.showFilterObserver.subscribe((show) => {
+  constructor(private filterService: FilterService) {}
+
+  ngOnInit(): void {
+    this.shouldShowFilterSubscriber = this.filterService.showFilterObserver.subscribe((show) => {
       this.shouldShowFilter = show;
     });
+    this.metadataNamesSubscriber = this.filterService.metadataNamesObserver.subscribe(
+      (metadataNames: string[]): void => {
+        this.metadataNames = metadataNames;
+      },
+    );
   }
 
   ngOnDestroy(): void {
     this.shouldShowFilterSubscriber.unsubscribe();
+    this.metadataNamesSubscriber.unsubscribe();
   }
 
   closeFilter() {
     this.filterService.setShowFilter(false);
   }
+
+  protected readonly auto = auto;
 }

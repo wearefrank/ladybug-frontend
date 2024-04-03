@@ -1,12 +1,11 @@
 <div @removeTrigger class="vertical-panel" *ngIf="shouldShowFilter">
-  <p>wow</p>
-  <p>wow</p>
-  <p>wow</p>
-  <p>wow</p>
-  <p>wow</p>
-  <p>wow</p>
-  <p>wow</p>
-  <p>wow</p>
-  <p>wow</p>
+  <label class="filter-label">Filter Reports</label>
+  <div class="metadata-input-container">
+    <input *ngFor="let metadataName of metadataNames"
+           class="metadata-input"
+           type="text"
+           [title]="metadataName"
+           placeholder="Filter for {{metadataName}}">
+  </div>
   <button class="close-filter-btn btn btn-info my-2 mx-1 px-3" (click)="closeFilter()">Close</button>
 </div>

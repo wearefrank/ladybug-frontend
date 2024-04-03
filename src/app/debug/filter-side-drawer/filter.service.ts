@@ -16,4 +16,8 @@ export class FilterService {
   setShowFilter(show: boolean): void {
     this.showFilterSubject.next(show);
   }
+
+  setMetadataNames(metadataNames: string[]): void {
+    this.metadataNamesSubject.next(metadataNames);
+  }
 }
