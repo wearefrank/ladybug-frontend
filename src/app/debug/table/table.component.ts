@@ -10,6 +10,7 @@ import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { DebugReportService } from '../debug-report.service';
 import { TabService } from '../../shared/services/tab.service';
+import { FilterService } from '../filter-side-drawer/filter.service';
 
 @Component({
   selector: 'app-table',
@@ -70,6 +71,7 @@ export class TableComponent implements OnInit, OnDestroy {
   showMultipleFilesSubscription!: Subscription;
   viewDropdownBoxWidth!: string;
   currentFilters: Map<string, string> = new Map<string, string>();
+  showFilterSubscription!: Subscription;
 
   defaultCheckBoxSize: number = 13;
   defaultFontSize: number = 8;
@@ -86,6 +88,7 @@ export class TableComponent implements OnInit, OnDestroy {
     private toastService: ToastService,
     private debugReportService: DebugReportService,
     private tabService: TabService,
+    private filterService: FilterService,
   ) {}
 
   ngOnInit(): void {
@@ -204,7 +207,9 @@ export class TableComponent implements OnInit, OnDestroy {
       this.retrieveRecords();
       this.getUserHelp();
     });
-
+    this.showFilterSubscription = this.filterService.showFilterObserver.subscribe((show: boolean): void => {
+      this.tableSettings.showFilter = show;
+    });
     this.loadReportInProgressSettings();
   }
 
@@ -252,6 +257,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   toggleFilter(): void {
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
+    this.filterService.setShowFilter(this.tableSettings.showFilter);
   }
 
   toggleCheck(report: any): void {

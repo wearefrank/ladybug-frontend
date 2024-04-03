@@ -38,6 +38,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ActiveFiltersComponent } from './debug/active-filters/active-filters.component';
 import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
 import { ReportDisplayComponent } from './report-display/report-display.component';
+import { FilterSideDrawerComponent } from './debug/filter-side-drawer/filter-side-drawer.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { ReportDisplayComponent } from './report-display/report-display.componen
     ActiveFiltersComponent,
     DictionaryPipe,
     ReportDisplayComponent,
+    FilterSideDrawerComponent,
   ],
   imports: [
     BrowserModule,
