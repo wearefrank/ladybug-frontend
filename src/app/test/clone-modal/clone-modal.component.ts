@@ -35,7 +35,7 @@ export class CloneModalComponent {
   }
 
   generateClones() {
-    let map: any = {
+    let map: Object = {
       csv: this.variableForm.value.variables,
       message: this.variableForm.value.message,
     };

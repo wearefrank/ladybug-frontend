@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, map, Observable, of, tap } from 'rxjs';
+import { catchError, Observable, of, tap } from 'rxjs';
 import { ToastService } from './toast.service';
 import { View } from '../interfaces/view';
 import { OptionsSettings } from '../interfaces/options-settings';
@@ -96,13 +96,15 @@ export class HttpService {
   }
 
   //TODO: fix Observable typing
-  getReportsInProgressThresholdTime(): Observable<any> {
+  //TODODONE
+  getReportsInProgressThresholdTime(): Observable<number> {
     return this.http.get<number>('api/testtool/in-progress/threshold-time').pipe(catchError(this.handleError()));
   }
 
   //TODO: fix Observable typing
-  getTestReports(metadataNames: string[], storage: string): Observable<any> {
-    return this.http.get<any>('api/metadata/' + storage + '/', {
+  //TODODONE
+  getTestReports(metadataNames: string[], storage: string): Observable<Object[]> {
+    return this.http.get<Object[]>('api/metadata/' + storage + '/', {
       params: { metadataNames: metadataNames },
     });
   }
@@ -140,7 +142,8 @@ export class HttpService {
   }
 
   //TODO: fix map typing
-  updatePath(reportIds: string[], storage: string, map: any) {
+  //TODODONE
+  updatePath(reportIds: string[], storage: string, map: Object) {
     return this.http
       .put('api/report/move/' + storage, map, {
         params: { storageIds: reportIds },
@@ -149,9 +152,10 @@ export class HttpService {
   }
 
   //TODO: fix Observable typing
-  uploadReport(formData: FormData): Observable<any> {
+  //TODODONE
+  uploadReport(formData: FormData): Observable<Object[]> {
     return this.http
-      .post('api/report/upload', formData, {
+      .post<Object[]>('api/report/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       .pipe(tap(() => this.handleSuccess('Report uploaded!')))
@@ -159,7 +163,8 @@ export class HttpService {
   }
 
   //TODO: fix Observable typing
-  uploadReportToStorage(formData: FormData, storage: string): Observable<any> {
+  //TODODONE
+  uploadReportToStorage(formData: FormData, storage: string): Observable<Object> {
     return this.http
       .post('api/report/upload/' + storage, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -215,9 +220,10 @@ export class HttpService {
   }
 
   //TODO: fix post typing
+  //TODODONE
   runReport(storage: string, targetStorage: string, reportId: string): Observable<void> {
     return this.http
-      .post<any>('api/runner/run/' + storage + '/' + targetStorage + '/' + reportId, {
+      .post<JSON>('api/runner/run/' + storage + '/' + targetStorage + '/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
@@ -235,7 +241,8 @@ export class HttpService {
   }
 
   //TODO: fix map typing
-  cloneReport(storage: string, storageId: string, map: any) {
+  //TODODONE
+  cloneReport(storage: string, storageId: string, map: Object) {
     return this.http
       .post('api/report/move/' + storage + '/' + storageId, map)
       .pipe(tap(() => this.handleSuccess('Report cloned!')))

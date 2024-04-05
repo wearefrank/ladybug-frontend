@@ -199,7 +199,7 @@ export class TestComponent implements OnInit {
   uploadReport(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
-      const formData: any = new FormData();
+      const formData: FormData = new FormData();
       formData.append('file', file);
       this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData(''));
     }

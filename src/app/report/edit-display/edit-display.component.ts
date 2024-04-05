@@ -54,6 +54,7 @@ export class EditDisplayComponent {
   rerunReport(): void {
     let reportId: string = this.report.storageId;
     this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
+      console.log(response)
       let element = document.querySelector('#showRerunResult')!;
       if (this.report == response) {
         element.setAttribute('style', 'background-color: green');
