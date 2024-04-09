@@ -11,7 +11,9 @@ export class FilterService {
   private metadataNamesSubject: Subject<string[]> = new Subject();
   metadataNamesObserver: Observable<string[]> = this.metadataNamesSubject.asObservable();
 
-  constructor() {}
+  private filters: Record<string, string> = {};
+  private filterContextSubject: Subject<Record<string, string>> = new Subject();
+  filterContextObserver: Observable<Record<string, string>> = this.filterContextSubject.asObservable();
 
   setShowFilter(show: boolean): void {
     this.showFilterSubject.next(show);
@@ -19,5 +21,16 @@ export class FilterService {
 
   setMetadataNames(metadataNames: string[]): void {
     this.metadataNamesSubject.next(metadataNames);
+    for (const metadataName of metadataNames) {
+      if (!(metadataName in this.filters)) this.updateFilterContext(metadataName, '');
+    }
+    for (const filterName in this.filters) {
+      if (!metadataNames.includes(filterName)) delete this.filters[filterName];
+    }
+  }
+
+  updateFilterContext(filterName: string, filterContext: string): void {
+    this.filters[filterName] = filterContext;
+    this.filterContextSubject.next(this.filters);
   }
 }

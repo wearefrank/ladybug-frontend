@@ -1,11 +1,17 @@
 <div @removeTrigger class="vertical-panel" *ngIf="shouldShowFilter">
   <label class="filter-label">Filter Reports</label>
-  <div class="metadata-input-container">
-    <input *ngFor="let metadataName of metadataNames"
-           class="metadata-input"
-           type="text"
-           [title]="metadataName"
-           placeholder="Filter for {{metadataName}}">
+  <div class="filter-input-container">
+    @for (metadataName of metadataNames; track metadataNames) {
+      <div class="metadata-input-container">
+        <label class="metadata-input-label">{{ metadataName }}</label>
+        <input
+          class="metadata-input"
+          type="text"
+          [title]="metadataName"
+          placeholder="Filter for {{metadataName}}"
+          (keydown.enter)="updateFilter($event, metadataName)">
+      </div>
+    }
   </div>
-  <button class="close-filter-btn btn btn-info my-2 mx-1 px-3" (click)="closeFilter()">Close</button>
+  <button class="close-filter-btn btn btn-info" (click)="closeFilter()">Close</button>
 </div>

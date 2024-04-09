@@ -23,6 +23,8 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   shouldShowFilterSubscriber!: Subscription;
   protected metadataNames!: string[];
   metadataNamesSubscriber!: Subscription;
+  protected filters: Record<string, string> = {};
+  filterSubscriber!: Subscription;
 
   constructor(private filterService: FilterService) {}
 
@@ -35,11 +37,17 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
         this.metadataNames = metadataNames;
       },
     );
+    this.filterSubscriber = this.filterService.filterContextObserver.subscribe(
+      (filterContext: Record<string, string>) => {
+        this.filters = filterContext;
+      },
+    );
   }
 
   ngOnDestroy(): void {
     this.shouldShowFilterSubscriber.unsubscribe();
     this.metadataNamesSubscriber.unsubscribe();
+    this.filterSubscriber.unsubscribe();
   }
 
   closeFilter() {
@@ -47,4 +55,8 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   protected readonly auto = auto;
+
+  updateFilter(filterEvent: any, metadataName: string) {
+    this.filterService.updateFilterContext(metadataName, filterEvent.target.value);
+  }
 }
