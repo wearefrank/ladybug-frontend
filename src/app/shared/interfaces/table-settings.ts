@@ -3,9 +3,9 @@ export interface TableSettings {
   metadataHeaders: any[];
   displayAmount: number;
   showFilter: boolean;
+  filterHeader: string;
   filterValue: string;
   tableLoaded: boolean;
-  filterHeader: string;
   numberOfReportsInProgress: number;
   estimatedMemoryUsage: string;
   uniqueValues: Map<string, Array<string>>;
