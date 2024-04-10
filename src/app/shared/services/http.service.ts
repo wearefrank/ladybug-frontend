@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { ToastService } from './toast.service';
 import { View } from '../interfaces/view';
 import { OptionsSettings } from '../interfaces/options-settings';
+import { Report } from '../interfaces/report';
+import { CompareReport } from '../interfaces/compare-reports';
 
 @Injectable({
   providedIn: 'root',
@@ -16,9 +18,8 @@ export class HttpService {
     private toastService: ToastService,
   ) {}
 
-  //TODO: fix Observable and error typing
-  handleError() {
-    return (error: any): Observable<any> => {
+  handleError(): (error: HttpErrorResponse) => Observable<any> {
+    return (error: HttpErrorResponse): Observable<any> => {
       const message = error.error;
       if (message.includes('- detailed error message -')) {
         const errorMessageParts = message.split('- detailed error message -');
@@ -55,8 +56,6 @@ export class HttpService {
     });
   }
 
-  //TODO: fix Observable and get typing
-  //TODODONE
   getUserHelp(storage: string, metadataNames: string[]): Observable<Object[]> {
     return this.http.get<Object[]>('api/metadata/' + storage + '/userHelp', {
       params: {
@@ -65,84 +64,77 @@ export class HttpService {
     });
   }
 
-  //TODO: fix Observable typing
-  //TODODONE
   getMetadataCount(storage: string): Observable<number> {
     return this.http.get<number>('api/metadata/' + storage + '/count').pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix Observable and get typing
-  getLatestReports(amount: number, storage: string): Observable<any> {
+  getLatestReports(amount: number, storage: string): Observable<Report[]> {
     return this.http
-      .get<any>('api/report/latest/' + storage + '/' + amount)
+      .get<Report[]>('api/report/latest/' + storage + '/' + amount)
       .pipe(tap(() => this.handleSuccess('Latest' + amount + 'reports opened!')))
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix get typing
   getReportInProgress(index: number) {
     return this.http
-      .get<any>('api/testtool/in-progress/' + index)
+      .get<Report>('api/testtool/in-progress/' + index)
       .pipe(tap(() => this.handleSuccess('Opened report in progress with index [' + index + ']')))
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix Observable and get typing
-  deleteReportInProgress(index: number): Observable<any> {
+  deleteReportInProgress(index: number): Observable<Report> {
     return this.http
-      .delete<any>('api/testtool/in-progress/' + index)
+      .delete<Report>('api/testtool/in-progress/' + index)
       .pipe(tap(() => this.handleSuccess('Deleted report in progress with index [' + index + ']')))
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix Observable typing
-  //TODODONE
   getReportsInProgressThresholdTime(): Observable<number> {
     return this.http.get<number>('api/testtool/in-progress/threshold-time').pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix Observable typing
-  //TODODONE
   getTestReports(metadataNames: string[], storage: string): Observable<Object[]> {
     return this.http.get<Object[]>('api/metadata/' + storage + '/', {
       params: { metadataNames: metadataNames },
     });
   }
 
-  //TODO: fix get typing
   getReport(reportId: string, storage: string) {
     return this.http
-      .get<any>('api/report/' + storage + '/' + reportId + '/?xml=true&globalTransformer=' + localStorage.getItem('transformationEnabled'))
-      .pipe(catchError(this.handleError()));
-  }
-
-  //TODO: fix get typing
-  getReports(reportIds: string[], storage: string) {
-    return this.http
-      .get<any>('api/report/' + storage + '/?xml=true&globalTransformer=' + localStorage.getItem('transformationEnabled'),
-        { params: { storageIds: reportIds } },
+      .get<CompareReport>(
+        // eslint-disable-next-line sonarjs/no-duplicate-string
+        'api/report/' +
+          storage +
+          '/' +
+          reportId +
+          '/?xml=true&globalTransformer=' +
+          localStorage.getItem('transformationEnabled'),
       )
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix params typing
-  updateReport(reportId: string, params: any, storage: string): Observable<void> {
+  getReports(reportIds: string[], storage: string) {
+    return this.http
+      .get<
+        Record<string, CompareReport>
+      >('api/report/' + storage + '/?xml=true&globalTransformer=' + localStorage.getItem('transformationEnabled'), { params: { storageIds: reportIds } })
+      .pipe(catchError(this.handleError()));
+  }
+
+  updateReport(reportId: string, params: object, storage: string): Observable<Object> {
     return this.http
       .post('api/report/' + storage + '/' + reportId, params)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix data typing
-  copyReport(data: any, storage: string): Observable<void> {
+  copyReport(data: object, storage: string): Observable<Object> {
     return this.http
       .put('api/report/store/' + storage, data)
       .pipe(tap(() => this.handleSuccess('Report copied!')))
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix map typing
-  //TODODONE
   updatePath(reportIds: string[], storage: string, map: Object) {
     return this.http
       .put('api/report/move/' + storage, map, {
@@ -151,8 +143,6 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix Observable typing
-  //TODODONE
   uploadReport(formData: FormData): Observable<Object[]> {
     return this.http
       .post<Object[]>('api/report/upload', formData, {
@@ -162,8 +152,6 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix Observable typing
-  //TODODONE
   uploadReportToStorage(formData: FormData, storage: string): Observable<Object> {
     return this.http
       .post('api/report/upload/' + storage, formData, {
@@ -173,18 +161,14 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix settings typing
-  //TODODONE
-  postSettings(settings: Object): Observable<void> {
+  postSettings(settings: Object): Observable<Object> {
     return this.http
       .post('api/testtool', settings)
       .pipe(tap(() => this.handleSuccess('Settings saved!')))
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix transformation typing
-  //TODODONE
-  postTransformation(transformation: string): Observable<void> {
+  postTransformation(transformation: string): Observable<Object> {
     return (
       this.http
         .post('api/testtool/transformation', { transformation: transformation })
@@ -193,55 +177,42 @@ export class HttpService {
     );
   }
 
-  //TODO: fix Observable and get typing
-  //TODODONE
   getTransformation(defaultTransformation: boolean): Observable<Record<string, string>> {
     return this.http
       .get<Record<string, string>>('api/testtool/transformation/' + defaultTransformation)
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix Observable and get typing
-  //TODODONE
   getSettings(): Observable<OptionsSettings> {
     return this.http.get<OptionsSettings>('api/testtool').pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix Observable typing
-  //TODODONE
   resetSettings(): Observable<OptionsSettings> {
     return this.http.get<OptionsSettings>('api/testtool/reset').pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix post typing
-  //TODODONE
   reset(): Observable<void> {
     return this.http.post<void>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix post typing
-  //TODODONE
   runReport(storage: string, targetStorage: string, reportId: string): Observable<void> {
     return this.http
-      .post<JSON>('api/runner/run/' + storage + '/' + targetStorage + '/' + reportId, {
+      .post<void>('api/runner/run/' + storage + '/' + targetStorage + '/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix Observable and put typing
-  runDisplayReport(reportId: string, storage: string): Observable<any> {
+  runDisplayReport(reportId: string, storage: string): Observable<Object> {
     return this.http
-      .put<any>('api/runner/replace/' + storage + '/' + reportId, {
+      .put<Report>('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
       .pipe(catchError(this.handleError()));
   }
 
-  //TODO: fix map typing
-  //TODODONE
   cloneReport(storage: string, storageId: string, map: Object) {
     return this.http
       .post('api/report/move/' + storage + '/' + storageId, map)
@@ -249,13 +220,13 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  deleteReport(reportIds: string[], storage: string): Observable<void> {
+  deleteReport(reportIds: string[], storage: string): Observable<Object> {
     return this.http
       .delete('api/report/' + storage, { params: { storageIds: reportIds } })
       .pipe(catchError(this.handleError()));
   }
 
-  replaceReport(reportId: string, storage: string): Observable<void> {
+  replaceReport(reportId: string, storage: string): Observable<Object> {
     return this.http
       .put('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
@@ -263,7 +234,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  getUnmatchedCheckpoints(storageName: string, storageId: string, viewName: string): Observable<void> {
+  getUnmatchedCheckpoints(storageName: string, storageId: string, viewName: string): Observable<Object> {
     return this.http
       .get('api/report/' + storageName + '/' + storageId + '/checkpoints/uids', {
         params: { view: viewName, invert: true },

@@ -459,10 +459,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   showUploadedReports(formData: any): void {
     this.httpService.uploadReport(formData).subscribe((data) => {
-      console.log(typeof data, data);
-      
       for (let report of data) {
-        console.log(report)
         this.openReportEvent.next(report);
       }
     });
@@ -541,7 +538,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   loadReportInProgressThreshold() {
     this.httpService.getReportsInProgressThresholdTime().subscribe((time) => {
-      (this.reportsInProgressThreshold = time)
+      this.reportsInProgressThreshold = time;
     });
   }
 }
