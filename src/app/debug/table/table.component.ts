@@ -424,7 +424,6 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openReportInProgress(index: number): void {
     this.httpService.getReportInProgress(index).subscribe((report) => {
-      console.log(report);
       this.openReportEvent.next(report);
     });
   }

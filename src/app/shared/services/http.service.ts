@@ -6,6 +6,10 @@ import { View } from '../interfaces/view';
 import { OptionsSettings } from '../interfaces/options-settings';
 import { Report } from '../interfaces/report';
 import { CompareReport } from '../interfaces/compare-reports';
+import { TestListItem } from '../interfaces/test-list-item';
+import { CloneReport } from '../interfaces/clone-report';
+import { UploadParams } from '../interfaces/upload-params';
+import { UpdatePathSettings } from '../interfaces/update-path-settings';
 
 @Injectable({
   providedIn: 'root',
@@ -45,8 +49,8 @@ export class HttpService {
     filterHeader: string,
     metadataNames: string[],
     storage: string,
-  ): Observable<Object[]> {
-    return this.http.get<Object[]>('api/metadata/' + storage + '/', {
+  ): Observable<Report[]> {
+    return this.http.get<Report[]>('api/metadata/' + storage + '/', {
       params: {
         limit: limit,
         filterHeader: filterHeader,
@@ -56,8 +60,8 @@ export class HttpService {
     });
   }
 
-  getUserHelp(storage: string, metadataNames: string[]): Observable<Object[]> {
-    return this.http.get<Object[]>('api/metadata/' + storage + '/userHelp', {
+  getUserHelp(storage: string, metadataNames: string[]): Observable<Report[]> {
+    return this.http.get<Report[]>('api/metadata/' + storage + '/userHelp', {
       params: {
         metadataNames: metadataNames,
       },
@@ -93,8 +97,8 @@ export class HttpService {
     return this.http.get<number>('api/testtool/in-progress/threshold-time').pipe(catchError(this.handleError()));
   }
 
-  getTestReports(metadataNames: string[], storage: string): Observable<Object[]> {
-    return this.http.get<Object[]>('api/metadata/' + storage + '/', {
+  getTestReports(metadataNames: string[], storage: string): Observable<TestListItem[]> {
+    return this.http.get<TestListItem[]>('api/metadata/' + storage + '/', {
       params: { metadataNames: metadataNames },
     });
   }
@@ -121,21 +125,21 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  updateReport(reportId: string, params: object, storage: string): Observable<Object> {
+  updateReport(reportId: string, params: Report, storage: string): Observable<void> {
     return this.http
       .post('api/report/' + storage + '/' + reportId, params)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }
 
-  copyReport(data: object, storage: string): Observable<Object> {
+  copyReport(data: Record<string, string[]>, storage: string): Observable<void> {
     return this.http
       .put('api/report/store/' + storage, data)
       .pipe(tap(() => this.handleSuccess('Report copied!')))
       .pipe(catchError(this.handleError()));
   }
 
-  updatePath(reportIds: string[], storage: string, map: Object) {
+  updatePath(reportIds: string[], storage: string, map: UpdatePathSettings) {
     return this.http
       .put('api/report/move/' + storage, map, {
         params: { storageIds: reportIds },
@@ -143,16 +147,16 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  uploadReport(formData: FormData): Observable<Object[]> {
+  uploadReport(formData: FormData): Observable<Report[]> {
     return this.http
-      .post<Object[]>('api/report/upload', formData, {
+      .post<Report[]>('api/report/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       .pipe(tap(() => this.handleSuccess('Report uploaded!')))
       .pipe(catchError(this.handleError()));
   }
 
-  uploadReportToStorage(formData: FormData, storage: string): Observable<Object> {
+  uploadReportToStorage(formData: FormData, storage: string): Observable<void> {
     return this.http
       .post('api/report/upload/' + storage, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -161,14 +165,14 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  postSettings(settings: Object): Observable<Object> {
+  postSettings(settings: UploadParams): Observable<void> {
     return this.http
       .post('api/testtool', settings)
       .pipe(tap(() => this.handleSuccess('Settings saved!')))
       .pipe(catchError(this.handleError()));
   }
 
-  postTransformation(transformation: string): Observable<Object> {
+  postTransformation(transformation: string): Observable<void> {
     return (
       this.http
         .post('api/testtool/transformation', { transformation: transformation })
@@ -204,7 +208,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  runDisplayReport(reportId: string, storage: string): Observable<Object> {
+  runDisplayReport(reportId: string, storage: string): Observable<Report> {
     return this.http
       .put<Report>('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
@@ -213,20 +217,20 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  cloneReport(storage: string, storageId: string, map: Object) {
+  cloneReport(storage: string, storageId: string, map: CloneReport) {
     return this.http
       .post('api/report/move/' + storage + '/' + storageId, map)
       .pipe(tap(() => this.handleSuccess('Report cloned!')))
       .pipe(catchError(this.handleError()));
   }
 
-  deleteReport(reportIds: string[], storage: string): Observable<Object> {
+  deleteReport(reportIds: string[], storage: string): Observable<void> {
     return this.http
       .delete('api/report/' + storage, { params: { storageIds: reportIds } })
       .pipe(catchError(this.handleError()));
   }
 
-  replaceReport(reportId: string, storage: string): Observable<Object> {
+  replaceReport(reportId: string, storage: string): Observable<void> {
     return this.http
       .put('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
@@ -234,7 +238,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  getUnmatchedCheckpoints(storageName: string, storageId: string, viewName: string): Observable<Object> {
+  getUnmatchedCheckpoints(storageName: string, storageId: string, viewName: string): Observable<void> {
     return this.http
       .get('api/report/' + storageName + '/' + storageId + '/checkpoints/uids', {
         params: { view: viewName, invert: true },

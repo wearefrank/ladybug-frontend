@@ -11,6 +11,7 @@ import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { ToastService } from '../shared/services/toast.service';
 import { TabService } from '../shared/services/tab.service';
+import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
 
 @Component({
   selector: 'app-test',
@@ -252,7 +253,7 @@ export class TestComponent implements OnInit {
       if (!path.startsWith('/')) {
         path = '/' + path;
       }
-      let map = { path: path, action: action };
+      let map: UpdatePathSettings = { path: path, action: action };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => {
         this.loadData(path);
       });

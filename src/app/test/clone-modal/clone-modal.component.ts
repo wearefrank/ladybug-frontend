@@ -3,6 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { CloneReport } from 'src/app/shared/interfaces/clone-report';
 
 @Component({
   selector: 'app-clone-modal',
@@ -35,7 +36,7 @@ export class CloneModalComponent {
   }
 
   generateClones() {
-    let map: Object = {
+    let map: CloneReport = {
       csv: this.variableForm.value.variables,
       message: this.variableForm.value.message,
     };
