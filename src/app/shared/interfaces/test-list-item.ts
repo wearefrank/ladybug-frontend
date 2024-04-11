@@ -1,6 +1,6 @@
 export interface TestListItem {
-    checked: boolean;
-    name: string;
-    path: string;
-    storageId: string;
+  checked: boolean;
+  name: string;
+  path: string;
+  storageId: string;
 }

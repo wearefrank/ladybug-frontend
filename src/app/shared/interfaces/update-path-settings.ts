@@ -1,4 +1,4 @@
 export interface UpdatePathSettings {
-    path: string;
-    action: string;
+  path: string;
+  action: string;
 }

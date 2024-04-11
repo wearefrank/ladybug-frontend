@@ -112,7 +112,6 @@ export class TableSettingsModalComponent implements OnDestroy {
       regexFilter: form.regexFilter,
     };
     this.httpService.postSettings(data).subscribe();
-    console.log(typeof form, form)
 
     this.toastService.showWarning('Reopen report to see updated XML');
     this.saving = true;
@@ -132,9 +131,7 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   loadSettings(): void {
-    this.httpService.getSettings().subscribe((response) => {
-      console.log(response)
-      this.saveResponseSetting(response)});
+    this.httpService.getSettings().subscribe((response) => this.saveResponseSetting(response));
     if (localStorage.getItem('transformationEnabled')) {
       this.settingsForm.get('transformationEnabled')?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }

@@ -1,4 +1,4 @@
 export interface CloneReport {
-    csv: string;
-    message: string;
+  csv: string;
+  message: string;
 }
