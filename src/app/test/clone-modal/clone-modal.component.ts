@@ -40,6 +40,8 @@ export class CloneModalComponent {
       csv: this.variableForm.value.variables,
       message: this.variableForm.value.message,
     };
-    this.httpService.cloneReport(this.currentView.storageName, this.report.storageId.toString(), map).subscribe(() => this.cloneReportEvent.emit());
+    this.httpService
+    .cloneReport(this.currentView.storageName, this.report.storageId.toString(), map)
+    .subscribe(() => this.cloneReportEvent.emit());
   }
 }
