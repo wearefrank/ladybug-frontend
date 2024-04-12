@@ -12,6 +12,8 @@ import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { ToastService } from '../shared/services/toast.service';
 import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
+import { View } from '../shared/interfaces/view';
+import { TestListItem } from '../shared/interfaces/test-list-item';
 
 @Component({
   selector: 'app-test',
@@ -19,7 +21,7 @@ import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
   styleUrls: ['./test.component.css'],
 })
 export class TestComponent implements OnInit {
-  reports: any[] = [];
+  reports: any[] = []; //could be TestListItem
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
@@ -60,7 +62,7 @@ export class TestComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadData(null);
+    this.loadData('');
     this.getGeneratorStatus();
   }
 
@@ -92,16 +94,16 @@ export class TestComponent implements OnInit {
     });
   }
 
-  loadData(path: any): void {
-    this.httpService.getViews().subscribe((views) => {
-      const defaultViewKey = Object.keys(views).find((view) => views[view].defaultView);
+  loadData(path: string): void {
+    this.httpService.getViews().subscribe((views: Record<string, View>) => {
+      const defaultViewKey = Object.keys(views).find((view: string) => views[view].defaultView);
       if (defaultViewKey) {
         const selectedView = views[defaultViewKey];
         this.currentView.targetStorage = selectedView.storageName;
       }
     });
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
-      next: (value) => {
+      next: (value: TestListItem[]) => {
         this.reports = value;
         this.testFolderTreeComponent.updateFolderTree(this.reports, path);
       },
@@ -227,7 +229,7 @@ export class TestComponent implements OnInit {
     let data: any = {};
     data[this.currentView.storageName] = copiedIds;
     this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
-      this.loadData(null);
+      this.loadData('');
     });
   }
 

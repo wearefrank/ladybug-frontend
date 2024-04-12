@@ -10,6 +10,7 @@ import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { DebugReportService } from '../debug-report.service';
 import { TabService } from '../../shared/services/tab.service';
+import { View } from 'src/app/shared/interfaces/view';
 
 @Component({
   selector: 'app-table',
@@ -122,7 +123,7 @@ export class TableComponent implements OnInit, OnDestroy {
         this.viewSettings.currentView.storageName,
       )
       .subscribe({
-        next: (value) => {
+        next: (value: Report[]) => {
           this.setUniqueOptions(value);
           this.tableSettings.reportMetadata = value;
           this.tableSettings.tableLoaded = true;
@@ -171,11 +172,11 @@ export class TableComponent implements OnInit, OnDestroy {
 
   listenForViewUpdate() {
     this.changeNodeLinkStrategyService.changeNodeLinkStrategy.subscribe(() => {
-      this.httpService.getViews().subscribe((views) => {
+      this.httpService.getViews().subscribe((views: Record<string, View>) => {
         this.viewSettings.views = views;
         this.sortFilterList();
         let viewToUpdate = Object.keys(this.viewSettings.views).find(
-          (view) => view === this.viewSettings.currentView.name,
+          (view: string) => view === this.viewSettings.currentView.name,
         );
         if (viewToUpdate) {
           this.viewSettings.currentView.nodeLinkStrategy = views[viewToUpdate].nodeLinkStrategy;
@@ -186,14 +187,14 @@ export class TableComponent implements OnInit, OnDestroy {
 
   loadData(): void {
     this.loadReportInProgressThreshold();
-    this.httpService.getViews().subscribe((views) => {
+    this.httpService.getViews().subscribe((views: Record<string, View>) => {
       if (Object.keys(this.viewSettings.currentView).length > 0) {
         this.debugReportService.changeView(this.viewSettings.currentView);
       } else {
         this.viewSettings.views = views;
         this.calculateViewDropDownWidth();
         this.viewSettings.currentViewName = Object.keys(this.viewSettings.views).find(
-          (view) => this.viewSettings.views[view].defaultView,
+          (view: string) => this.viewSettings.views[view].defaultView,
         );
 
         this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
