@@ -536,7 +536,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadReportInProgressThreshold() {
-    this.httpService.getReportsInProgressThresholdTime().subscribe((time) => {
+    this.httpService.getReportsInProgressThresholdTime().subscribe((time: number) => {
       this.reportsInProgressThreshold = time;
     });
   }
