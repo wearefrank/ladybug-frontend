@@ -254,9 +254,7 @@ export class TestComponent implements OnInit {
         path = '/' + path;
       }
       let map: UpdatePathSettings = { path: path, action: action };
-      this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => {
-        this.loadData(path);
-      });
+      this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
     } else {
       this.toastService.showWarning('No Report Selected!');
     }

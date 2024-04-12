@@ -107,7 +107,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     localStorage.setItem('transformationEnabled', form.transformationEnabled.toString());
     this.httpService.postTransformation(form.transformation).subscribe();
     const generatorEnabled: string = String(form.generatorEnabled === 'Enabled');
-    let data: UploadParams = {
+    const data: UploadParams = {
       generatorEnabled: generatorEnabled,
       regexFilter: form.regexFilter,
     };

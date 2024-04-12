@@ -79,7 +79,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  getReportInProgress(index: number) {
+  getReportInProgress(index: number): Observable<Report> {
     return this.http
       .get<Report>('api/testtool/in-progress/' + index)
       .pipe(tap(() => this.handleSuccess('Opened report in progress with index [' + index + ']')))
@@ -103,7 +103,7 @@ export class HttpService {
     });
   }
 
-  getReport(reportId: string, storage: string) {
+  getReport(reportId: string, storage: string): Observable<CompareReport> {
     return this.http
       .get<CompareReport>(
         // eslint-disable-next-line sonarjs/no-duplicate-string
@@ -117,7 +117,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  getReports(reportIds: string[], storage: string) {
+  getReports(reportIds: string[], storage: string): Observable<Record<string, CompareReport>> {
     return this.http
       .get<
         Record<string, CompareReport>
@@ -139,7 +139,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  updatePath(reportIds: string[], storage: string, map: UpdatePathSettings) {
+  updatePath(reportIds: string[], storage: string, map: UpdatePathSettings): Observable<void> {
     return this.http
       .put('api/report/move/' + storage, map, {
         params: { storageIds: reportIds },
@@ -217,7 +217,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  cloneReport(storage: string, storageId: string, map: CloneReport) {
+  cloneReport(storage: string, storageId: string, map: CloneReport): Observable<void> {
     return this.http
       .post('api/report/move/' + storage + '/' + storageId, map)
       .pipe(tap(() => this.handleSuccess('Report cloned!')))
