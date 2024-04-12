@@ -41,7 +41,7 @@ export class CloneModalComponent {
       message: this.variableForm.value.message,
     };
     this.httpService
-    .cloneReport(this.currentView.storageName, this.report.storageId.toString(), map)
-    .subscribe(() => this.cloneReportEvent.emit());
+      .cloneReport(this.currentView.storageName, this.report.storageId.toString(), map)
+      .subscribe(() => this.cloneReportEvent.emit());
   }
 }
