@@ -38,6 +38,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ActiveFiltersComponent } from './debug/active-filters/active-filters.component';
 import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
 import { ReportDisplayComponent } from './report-display/report-display.component';
+import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
 
 @NgModule({
   declarations: [
@@ -83,6 +84,7 @@ import { ReportDisplayComponent } from './report-display/report-display.componen
     MatAutocompleteModule,
     CheckpointTypePipe,
     ClipboardModule,
+    NgSimpleFileTreeModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
