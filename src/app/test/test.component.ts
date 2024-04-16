@@ -11,6 +11,7 @@ import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { ToastService } from '../shared/services/toast.service';
 import { TabService } from '../shared/services/tab.service';
+import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
 
 @Component({
   selector: 'app-test',
@@ -199,7 +200,7 @@ export class TestComponent implements OnInit {
   uploadReport(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
-      const formData: any = new FormData();
+      const formData: FormData = new FormData();
       formData.append('file', file);
       this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData(''));
     }
@@ -252,10 +253,8 @@ export class TestComponent implements OnInit {
       if (!path.startsWith('/')) {
         path = '/' + path;
       }
-      let map = { path: path, action: action };
-      this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => {
-        this.loadData(path);
-      });
+      let map: UpdatePathSettings = { path: path, action: action };
+      this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
     } else {
       this.toastService.showWarning('No Report Selected!');
     }

@@ -5,6 +5,8 @@ import { HttpService } from '../../../shared/services/http.service';
 import { SettingsService } from '../../../shared/services/settings.service';
 import { Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
+import { OptionsSettings } from 'src/app/shared/interfaces/options-settings';
+import { UploadParams } from 'src/app/shared/interfaces/upload-params';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -105,7 +107,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     localStorage.setItem('transformationEnabled', form.transformationEnabled.toString());
     this.httpService.postTransformation(form.transformation).subscribe();
     const generatorEnabled: string = String(form.generatorEnabled === 'Enabled');
-    let data: any = {
+    const data: UploadParams = {
       generatorEnabled: generatorEnabled,
       regexFilter: form.regexFilter,
     };
@@ -133,10 +135,9 @@ export class TableSettingsModalComponent implements OnDestroy {
     if (localStorage.getItem('transformationEnabled')) {
       this.settingsForm.get('transformationEnabled')?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }
-
-    this.httpService.getTransformation(false).subscribe((response) => {
-      this.settingsForm.get('transformation')?.setValue(response.transformation);
-    });
+    this.httpService
+      .getTransformation(false)
+      .subscribe((response) => this.settingsForm.get('transformation')?.setValue(response.transformation));
   }
 
   saveResponseSetting(response: any) {

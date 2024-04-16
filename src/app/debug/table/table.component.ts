@@ -209,7 +209,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadMetadataCount() {
-    this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: any) => {
+    this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: number) => {
       this.metadataCount = count;
     });
   }
@@ -536,6 +536,8 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadReportInProgressThreshold() {
-    this.httpService.getReportsInProgressThresholdTime().subscribe((time) => (this.reportsInProgressThreshold = time));
+    this.httpService.getReportsInProgressThresholdTime().subscribe((time: number) => {
+      this.reportsInProgressThreshold = time;
+    });
   }
 }
