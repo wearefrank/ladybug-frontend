@@ -25,20 +25,27 @@ describe('Table size and toggle filter', () => {
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 2)
   })
 
-  it('After clicking filter button, the filters should appear',  () => {
-    cy.get('[data-cy-debug="tableFilterRow"]').should('not.exist')
+  it('After clicking filter button, the filter side drawer should appear', () => {
+    cy.get('[data-cy-debug="filter-side-drawer"]').should('not.exist')
     cy.get('[data-cy-debug="filter"]').click()
-    cy.get('[data-cy-debug="tableFilterRow"]').should('be.visible')
-
+    cy.get('[data-cy-debug="filter-side-drawer"]').should('be.visible')
     cy.get('[data-cy-debug="filter"]').click()
-    cy.get('[data-cy-debug="tableFilterRow"]').should('not.exist')
+    cy.get('[data-cy-debug="filter-side-drawer"]').should('not.exist')
+    cy.get('[data-cy-debug="filter"]').click()
+    cy.get('[data-cy-debug="filter-side-drawer"]').should('be.visible')
+    cy.get('[data-cy-debug="close-filter-btn"]').click()
+    cy.get('[data-cy-debug="filter-side-drawer"]').should('not.exist')
   })
 
-  it('Type in a filter parameter',  () => {
+  it('Type in a filter parameter should limit the records viewed in the record table', () => {
     cy.get('[data-cy-debug="filter"]').click()
     cy.get('[data-cy-debug="tableFilter"]').eq(3).type('(Simple report){enter}')
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 1)
     cy.get('[data-cy-debug="tableFilter"]').eq(3).clear().type('{enter}')
+    cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 2)
+    cy.get('[data-cy-debug="tableFilter"]').eq(3).type('(Simple report){enter}')
+    cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 1)
+    cy.get('[data-cy-debug="clear-filter-btn"').click()
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 2)
   })
 })

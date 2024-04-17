@@ -56,7 +56,11 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
 
   protected readonly auto = auto;
 
-  updateFilter(filterEvent: any, metadataName: string) {
+  updateFilter(filterEvent: any, metadataName: string): void {
     this.filterService.updateFilterContext(metadataName, filterEvent.target.value);
+  }
+
+  resetFilter(): void {
+    this.filterService.resetFilter();
   }
 }

@@ -1,4 +1,4 @@
-<div @removeTrigger class="vertical-panel" *ngIf="shouldShowFilter">
+<div @removeTrigger class="filter-vertical-panel" data-cy-debug="filter-side-drawer" *ngIf="shouldShowFilter">
   <label class="filter-label">Filter Reports</label>
   <div class="filter-input-container">
     @for (metadataName of metadataNames; track metadataNames) {
@@ -7,11 +7,14 @@
         <input
           class="metadata-input"
           type="text"
+          [(ngModel)]="filters[metadataName]"
           [title]="metadataName"
           placeholder="Filter for {{metadataName}}"
-          (keydown.enter)="updateFilter($event, metadataName)">
+          (keydown.enter)="updateFilter($event, metadataName)"
+          data-cy-debug="tableFilter">
       </div>
     }
   </div>
-  <button class="close-filter-btn btn btn-info" (click)="closeFilter()">Close</button>
+  <button class="close-filter-btn btn btn-info" (click)="closeFilter()" data-cy-debug="close-filter-btn">Close</button>
+  <button class="clear-filter-btn btn btn-info" (click)="resetFilter()" data-cy-debug="clear-filter-btn">Clear</button>
 </div>

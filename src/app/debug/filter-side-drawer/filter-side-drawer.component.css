@@ -1,4 +1,4 @@
-.vertical-panel {
+.filter-vertical-panel {
   position: fixed;
   top: 0;
   right: 0;
@@ -16,6 +16,13 @@
   position: inherit;
   bottom: 1rem;
   margin-left: 1rem;
+}
+
+.clear-filter-btn {
+  position: inherit;;
+  bottom: 1rem;
+  margin-right: 1rem;
+  right: 0;
 }
 
 .filter-input-container {
@@ -46,6 +53,8 @@
 
 .filter-label {
   font-size: 1rem;
+  margin-left: 1rem;
+  margin-top: 1rem;
 }
 
 .metadata-input-label {

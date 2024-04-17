@@ -3,8 +3,8 @@ export interface TableSettings {
   metadataHeaders: any[];
   displayAmount: number;
   showFilter: boolean;
-  filterHeader: string;
-  filterValue: string;
+  filterHeaders: string[];
+  filterValues: string[];
   tableLoaded: boolean;
   numberOfReportsInProgress: number;
   estimatedMemoryUsage: string;

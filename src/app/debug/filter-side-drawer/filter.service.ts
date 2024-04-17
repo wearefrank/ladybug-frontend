@@ -21,16 +21,15 @@ export class FilterService {
 
   setMetadataNames(metadataNames: string[]): void {
     this.metadataNamesSubject.next(metadataNames);
-    for (const metadataName of metadataNames) {
-      if (!(metadataName in this.filters)) this.updateFilterContext(metadataName, '');
-    }
-    for (const filterName in this.filters) {
-      if (!metadataNames.includes(filterName)) delete this.filters[filterName];
-    }
   }
 
   updateFilterContext(filterName: string, filterContext: string): void {
-    this.filters[filterName] = filterContext;
+    if (filterContext.length > 0) this.filters[filterName] = filterContext;
+    else delete this.filters[filterName];
     this.filterContextSubject.next(this.filters);
+  }
+
+  resetFilter(): void {
+    this.filterContextSubject.next({});
   }
 }
