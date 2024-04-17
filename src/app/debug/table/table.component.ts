@@ -144,7 +144,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.httpService
       .getUserHelp(this.viewSettings.currentView.storageName, this.viewSettings.currentView.metadataNames)
       .subscribe({
-        next: (response) => {
+        next: (response: Report[]) => {
           this.tableSettings.metadataHeaders = response;
         },
       });
