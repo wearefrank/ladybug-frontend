@@ -5,4 +5,5 @@ export interface View {
   metadataNames: string[];
   nodeLinkStrategy: string;
   storageName: string;
+  name?: string;
 }

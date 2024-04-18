@@ -11,6 +11,10 @@ import { ToastService } from '../../shared/services/toast.service';
 import { DebugReportService } from '../debug-report.service';
 import { TabService } from '../../shared/services/tab.service';
 import { View } from 'src/app/shared/interfaces/view';
+import { ViewSettings } from 'src/app/shared/interfaces/view-settings';
+import { OptionsSettings } from 'src/app/shared/interfaces/options-settings';
+import { CheckedReport } from 'src/app/shared/interfaces/checked-report';
+import { CompareReport } from 'src/app/shared/interfaces/compare-reports';
 
 @Component({
   selector: 'app-table',
@@ -19,11 +23,19 @@ import { View } from 'src/app/shared/interfaces/view';
 })
 export class TableComponent implements OnInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
-  metadataCount = 0;
-  viewSettings: any = {
+  metadataCount: number = 0;
+  viewSettings: ViewSettings = {
     defaultView: '',
-    views: [],
-    currentView: {},
+    views: {},
+    currentView: {
+      // metadataLabels: [],
+      // defaultView: false,
+      // crudStorage: true,
+      // metadataNames: [],
+      // nodeLinkStrategy: '',
+      // storageName: '',
+      // name: '',
+    },
     currentViewName: '',
   };
 
@@ -111,7 +123,7 @@ export class TableComponent implements OnInit, OnDestroy {
     );
   }
 
-  retrieveRecords() {
+  retrieveRecords(): void {
     this.doneRetrieving = false;
     this.tableSettings.reportMetadata = [];
     const httpServiceSubscription = this.httpService
@@ -140,7 +152,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadMetadataCount();
   }
 
-  getUserHelp() {
+  getUserHelp(): void {
     this.httpService
       .getUserHelp(this.viewSettings.currentView.storageName, this.viewSettings.currentView.metadataNames)
       .subscribe({
@@ -150,7 +162,7 @@ export class TableComponent implements OnInit, OnDestroy {
       });
   }
 
-  clearFilters() {
+  clearFilters(): void {
     let element: NodeListOf<HTMLInputElement> = document.querySelectorAll('#filter')!;
     element.forEach((element: HTMLInputElement) => {
       element.value = '';
@@ -161,7 +173,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.retrieveRecords();
   }
 
-  changeView(event: any) {
+  changeView(event: any): void {
     this.allRowsSelected = false;
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
     this.viewSettings.currentViewName = event.target.value;
@@ -170,7 +182,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.selectedRow = -1;
   }
 
-  listenForViewUpdate() {
+  listenForViewUpdate(): void {
     this.changeNodeLinkStrategyService.changeNodeLinkStrategy.subscribe(() => {
       this.httpService.getViews().subscribe((views: Record<string, View>) => {
         this.viewSettings.views = views;
@@ -193,9 +205,8 @@ export class TableComponent implements OnInit, OnDestroy {
       } else {
         this.viewSettings.views = views;
         this.calculateViewDropDownWidth();
-        this.viewSettings.currentViewName = Object.keys(this.viewSettings.views).find(
-          (view: string) => this.viewSettings.views[view].defaultView,
-        );
+        this.viewSettings.currentViewName =
+          Object.keys(this.viewSettings.views).find((view: string) => this.viewSettings.views[view].defaultView) || '';
 
         this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
         this.viewSettings.currentView.name = this.viewSettings.currentViewName;
@@ -209,15 +220,15 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadReportInProgressSettings();
   }
 
-  loadMetadataCount() {
+  loadMetadataCount(): void {
     this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: number) => {
       this.metadataCount = count;
     });
   }
 
-  loadReportInProgressSettings() {
+  loadReportInProgressSettings(): void {
     this.httpService.getSettings().subscribe({
-      next: (settings) => {
+      next: (settings: OptionsSettings) => {
         this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
         this.loadReportInProgressDates();
@@ -225,9 +236,9 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadReportInProgressDates() {
+  loadReportInProgressDates(): void {
     let hasChanged: boolean = false;
-    for (let index = 1; index <= this.tableSettings.numberOfReportsInProgress; index++) {
+    for (let index: number = 1; index <= this.tableSettings.numberOfReportsInProgress; index++) {
       this.httpService.getReportInProgress(index).subscribe((report: Report) => {
         this.reportsInProgress[report.correlationId] ??= report.startTime;
         if (this.reportsInProgressMetThreshold(report)) {
@@ -255,7 +266,8 @@ export class TableComponent implements OnInit, OnDestroy {
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
   }
 
-  toggleCheck(report: any): void {
+  toggleCheck(report: CheckedReport): void {
+    this.log('Table.Component.ts - 268:', report);
     report.checked = !report.checked;
     if (this.allRowsSelected && !report.checked) {
       this.allRowsSelected = false;
@@ -263,9 +275,9 @@ export class TableComponent implements OnInit, OnDestroy {
     this.allRowsSelected = this.checkIfAllRowsSelected();
   }
 
-  checkIfAllRowsSelected() {
-    for (let reportMetada of this.tableSettings.reportMetadata) {
-      if (!reportMetada.checked) {
+  checkIfAllRowsSelected(): boolean {
+    for (let reportMetadata of this.tableSettings.reportMetadata) {
+      if (!reportMetadata.checked) {
         return false;
       }
     }
@@ -281,7 +293,7 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  getStatusColor(metadata: any): string {
+  getStatusColor(metadata: string[]): string {
     let statusName = this.viewSettings.currentView.metadataNames.find((name: string) => {
       return name.toLowerCase() === 'status';
     });
@@ -298,23 +310,25 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   showCompareButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 2;
+    return this.tableSettings.reportMetadata.filter((report: CheckedReport) => report.checked).length == 2;
   }
 
   showOpenInTabButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 1;
+    return this.tableSettings.reportMetadata.filter((report: CheckedReport) => report.checked).length == 1;
   }
 
   openReportInTab(): void {
     let reportTab = this.tableSettings.reportMetadata.find((report) => report.checked);
-    this.httpService.getReport(reportTab.storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
-      let report: Report = data.report;
-      report.xml = data.xml;
-      this.tabService.openNewTab({
-        data: report,
-        name: report.name,
+    this.httpService
+      .getReport(reportTab.storageId, this.viewSettings.currentView.storageName)
+      .subscribe((data: CompareReport) => {
+        let report: Report = data.report;
+        report.xml = data.xml;
+        this.tabService.openNewTab({
+          data: report,
+          name: report.name,
+        });
       });
-    });
   }
 
   openSelected(): void {
@@ -332,18 +346,18 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   deleteSelected(): void {
-    const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
+    const reportIds: string[] = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
     this.httpService.deleteReport(reportIds, this.viewSettings.currentView.storageName).subscribe(() => {
       this.retrieveRecords();
     });
   }
 
   selectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report) => (report.checked = true));
+    this.tableSettings.reportMetadata.forEach((report: CheckedReport) => (report.checked = true));
   }
 
   deselectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report) => (report.checked = false));
+    this.tableSettings.reportMetadata.forEach((report: CheckedReport) => (report.checked = false));
   }
 
   compareTwoReports(): void {
@@ -368,6 +382,7 @@ export class TableComponent implements OnInit, OnDestroy {
           viewName: this.viewSettings.currentView.name,
           nodeLinkStrategy: this.viewSettings.currentView.nodeLinkStrategy,
         };
+        this.log(compareReports);
       },
 
       complete: () => {
@@ -536,9 +551,19 @@ export class TableComponent implements OnInit, OnDestroy {
     this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
   }
 
-  loadReportInProgressThreshold() {
+  loadReportInProgressThreshold(): void {
     this.httpService.getReportsInProgressThresholdTime().subscribe((time: number) => {
       this.reportsInProgressThreshold = time;
+    });
+  }
+
+  log(...loggable: any) {
+    console.log(...loggable);
+  }
+
+  logForEach(array: any) {
+    array.forEach((element: any) => {
+      console.log(element);
     });
   }
 }
