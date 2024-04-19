@@ -6,6 +6,7 @@ import { HttpService } from '../../shared/services/http.service';
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
+import { Report } from 'src/app/shared/interfaces/report';
 
 @Component({
   selector: 'app-edit-display',
@@ -179,10 +180,11 @@ export class EditDisplayComponent {
       checkpointId = this.report.uid.split('#')[1];
     }
 
-    const params = saveStubStrategy
+    const params: Report = saveStubStrategy
       ? { stub: stubStrategy, checkpointId: checkpointId }
       : this.getReportValues(checkpointId);
 
+    // TODO: figure out the typing of the updateReport function.
     this.httpService.updateReport(storageId, params, this.currentView.storageName).subscribe((response: any) => {
       response.report.xml = response.xml;
       this.saveReportEvent.next(response.report);

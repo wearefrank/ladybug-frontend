@@ -5,7 +5,7 @@ import { ToastService } from './toast.service';
 import { View } from '../interfaces/view';
 import { OptionsSettings } from '../interfaces/options-settings';
 import { Report } from '../interfaces/report';
-import { CompareReport } from '../interfaces/compare-reports';
+import { CompareReport } from '../interfaces/compare-report';
 import { TestListItem } from '../interfaces/test-list-item';
 import { CloneReport } from '../interfaces/clone-report';
 import { UploadParams } from '../interfaces/upload-params';
@@ -125,6 +125,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
+  // TODO: figure out the typing of the updateReport function
   updateReport(reportId: string, params: Report, storage: string): Observable<void> {
     return this.http
       .post('api/report/' + storage + '/' + reportId, params)
@@ -132,7 +133,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  copyReport(data: Record<string, string[]>, storage: string): Observable<void> {
+  copyReport(data: Record<string, number[]>, storage: string): Observable<void> {
     return this.http
       .put('api/report/store/' + storage, data)
       .pipe(tap(() => this.handleSuccess('Report copied!')))

@@ -1,4 +1,4 @@
-export interface CheckedReport {
+export interface DebugListItem {
   checked?: boolean;
   correlationId: string;
   duration: string;

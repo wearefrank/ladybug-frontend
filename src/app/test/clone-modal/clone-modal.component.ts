@@ -4,6 +4,8 @@ import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { CloneReport } from 'src/app/shared/interfaces/clone-report';
+import { CompareReport } from 'src/app/shared/interfaces/compare-report';
+import { TestListItem } from 'src/app/shared/interfaces/test-list-item';
 
 @Component({
   selector: 'app-clone-modal',
@@ -27,12 +29,14 @@ export class CloneModalComponent {
     private httpService: HttpService,
   ) {}
 
-  open(selectedReport: any) {
-    this.httpService.getReport(selectedReport.storageId, this.currentView.storageName).subscribe((response) => {
-      this.report = response.report;
-      this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
-      this.modalService.open(this.modal);
-    });
+  open(selectedReport: TestListItem) {
+    this.httpService
+      .getReport(selectedReport.storageId, this.currentView.storageName)
+      .subscribe((response: CompareReport) => {
+        this.report = response.report;
+        this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
+        this.modalService.open(this.modal);
+      });
   }
 
   generateClones() {

@@ -14,6 +14,9 @@ import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
 import { View } from '../shared/interfaces/view';
 import { TestListItem } from '../shared/interfaces/test-list-item';
+import { CurrentTestView } from '../shared/interfaces/current-test-view';
+import { CompareReport } from '../shared/interfaces/compare-report';
+import { UploadEvent } from '../shared/interfaces/upload-event';
 
 @Component({
   selector: 'app-test',
@@ -21,11 +24,12 @@ import { TestListItem } from '../shared/interfaces/test-list-item';
   styleUrls: ['./test.component.css'],
 })
 export class TestComponent implements OnInit {
-  reports: any[] = []; //could be TestListItem
+  // TODO: find out type of reports variable
+  reports: any[] = []; //could be TestListItem, but doesnt have property 'variables'. variables needed for test.component.html:67
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
-  currentView: any = {
+  currentView: CurrentTestView = {
     metadataNames: ['storageId', 'name', 'path'],
     storageName: 'Test',
     targetStorage: '',
@@ -89,16 +93,16 @@ export class TestComponent implements OnInit {
 
   getCopiedReports(): void {
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
-      next: (response) => this.addCopiedReports(response),
+      next: (response: TestListItem[]) => this.addCopiedReports(response),
       error: () => catchError(this.httpService.handleError()),
     });
   }
 
   loadData(path: string): void {
     this.httpService.getViews().subscribe((views: Record<string, View>) => {
-      const defaultViewKey = Object.keys(views).find((view: string) => views[view].defaultView);
+      const defaultViewKey: string | undefined = Object.keys(views).find((view: string) => views[view].defaultView);
       if (defaultViewKey) {
-        const selectedView = views[defaultViewKey];
+        const selectedView: View = views[defaultViewKey];
         this.currentView.targetStorage = selectedView.storageName;
       }
     });
@@ -164,7 +168,7 @@ export class TestComponent implements OnInit {
   }
 
   openReport(storageId: string, name: string): void {
-    this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data) => {
+    this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data: CompareReport) => {
       let report: Report = data.report;
       report.xml = data.xml;
       this.tabService.openNewTab({ data: report, name: name });
@@ -199,8 +203,8 @@ export class TestComponent implements OnInit {
     }
   }
 
-  uploadReport(event: any): void {
-    const file: File = event.target.files[0];
+  uploadReport(event: UploadEvent): void {
+    const file: File = event.target.files![0];
     if (file) {
       const formData: FormData = new FormData();
       formData.append('file', file);
@@ -226,8 +230,9 @@ export class TestComponent implements OnInit {
 
   copySelected(): void {
     let copiedIds: string[] = this.helperService.getSelectedIds(this.reports);
-    let data: any = {};
-    data[this.currentView.storageName] = copiedIds;
+    let parsedIdCopies: number[] = copiedIds.map(Number);
+    let data: Record<string, number[]> = {};
+    data[this.currentView.storageName] = parsedIdCopies;
     this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
       this.loadData('');
     });

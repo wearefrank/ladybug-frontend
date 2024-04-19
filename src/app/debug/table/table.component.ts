@@ -13,8 +13,9 @@ import { TabService } from '../../shared/services/tab.service';
 import { View } from 'src/app/shared/interfaces/view';
 import { ViewSettings } from 'src/app/shared/interfaces/view-settings';
 import { OptionsSettings } from 'src/app/shared/interfaces/options-settings';
-import { CheckedReport } from 'src/app/shared/interfaces/checked-report';
-import { CompareReport } from 'src/app/shared/interfaces/compare-reports';
+import { DebugListItem } from 'src/app/shared/interfaces/debug-list-item';
+import { CompareReport } from 'src/app/shared/interfaces/compare-report';
+import { CompareReports } from 'src/app/shared/interfaces/compare-reports';
 
 @Component({
   selector: 'app-table',
@@ -266,8 +267,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
   }
 
-  toggleCheck(report: CheckedReport): void {
-    this.log('Table.Component.ts - 268:', report);
+  toggleCheck(report: DebugListItem): void {
     report.checked = !report.checked;
     if (this.allRowsSelected && !report.checked) {
       this.allRowsSelected = false;
@@ -310,15 +310,15 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   showCompareButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report: CheckedReport) => report.checked).length == 2;
+    return this.tableSettings.reportMetadata.filter((report: DebugListItem) => report.checked).length == 2;
   }
 
   showOpenInTabButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report: CheckedReport) => report.checked).length == 1;
+    return this.tableSettings.reportMetadata.filter((report: DebugListItem) => report.checked).length == 1;
   }
 
   openReportInTab(): void {
-    let reportTab = this.tableSettings.reportMetadata.find((report) => report.checked);
+    let reportTab: DebugListItem = this.tableSettings.reportMetadata.find((report: DebugListItem) => report.checked);
     this.httpService
       .getReport(reportTab.storageId, this.viewSettings.currentView.storageName)
       .subscribe((data: CompareReport) => {
@@ -353,27 +353,27 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   selectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report: CheckedReport) => (report.checked = true));
+    this.tableSettings.reportMetadata.forEach((report: DebugListItem) => (report.checked = true));
   }
 
   deselectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report: CheckedReport) => (report.checked = false));
+    this.tableSettings.reportMetadata.forEach((report: DebugListItem) => (report.checked = false));
   }
 
   compareTwoReports(): void {
-    let compareReports: any = {};
+    let compareReports: Partial<CompareReports> = {};
 
     let selectedReports: string[] = this.tableSettings.reportMetadata
-      .filter((report) => report.checked)
-      .map((report) => report.storageId);
+      .filter((report: DebugListItem) => report.checked)
+      .map((report: DebugListItem) => report.storageId);
     this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
-      next: (data) => {
-        let leftObject = data[selectedReports[0]];
-        let originalReport = leftObject.report;
+      next: (data: Record<string, CompareReport>) => {
+        let leftObject: CompareReport = data[selectedReports[0]];
+        let originalReport: Report = leftObject.report;
         originalReport.xml = leftObject.xml;
 
-        let rightObject = data[selectedReports[1]];
-        let runResultReport = rightObject.report;
+        let rightObject: CompareReport = data[selectedReports[1]];
+        let runResultReport: Report = rightObject.report;
         runResultReport.xml = rightObject.xml;
 
         compareReports = {
@@ -382,7 +382,6 @@ export class TableComponent implements OnInit, OnDestroy {
           viewName: this.viewSettings.currentView.name,
           nodeLinkStrategy: this.viewSettings.currentView.nodeLinkStrategy,
         };
-        this.log(compareReports);
       },
 
       complete: () => {
@@ -418,12 +417,14 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: string): void {
-    this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
-      let report: Report = data.report;
-      report.xml = data.xml;
-      report.storageName = this.viewSettings.currentView.storageName;
-      this.openReportEvent.next(report);
-    });
+    this.httpService
+      .getReport(storageId, this.viewSettings.currentView.storageName)
+      .subscribe((data: CompareReport) => {
+        let report: Report = data.report;
+        report.xml = data.xml;
+        report.storageName = this.viewSettings.currentView.storageName;
+        this.openReportEvent.next(report);
+      });
   }
 
   highLightRow(event: any): void {
@@ -431,15 +432,15 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openLatestReports(amount: number): void {
-    this.httpService.getLatestReports(amount, this.viewSettings.currentView.storageName).subscribe((data) => {
-      data.forEach((report: any) => {
+    this.httpService.getLatestReports(amount, this.viewSettings.currentView.storageName).subscribe((data: Report[]) => {
+      data.forEach((report: Report) => {
         this.openReportEvent.next(report);
       });
     });
   }
 
   openReportInProgress(index: number): void {
-    this.httpService.getReportInProgress(index).subscribe((report) => {
+    this.httpService.getReportInProgress(index).subscribe((report: Report) => {
       this.openReportEvent.next(report);
     });
   }
@@ -472,8 +473,8 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  showUploadedReports(formData: any): void {
-    this.httpService.uploadReport(formData).subscribe((data) => {
+  showUploadedReports(formData: FormData): void {
+    this.httpService.uploadReport(formData).subscribe((data: Report[]) => {
       for (let report of data) {
         this.openReportEvent.next(report);
       }

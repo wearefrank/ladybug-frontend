@@ -1,6 +1,9 @@
 import { Report } from './report';
 
-export interface CompareReport {
-  report: Report;
-  xml: string;
+export interface CompareReports {
+  originalReport: Report;
+  runResultReport: Report;
+  viewName: string;
+  nodeLinkStrategy: string;
+  id?: string;
 }

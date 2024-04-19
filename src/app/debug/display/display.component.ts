@@ -50,7 +50,7 @@ export class DisplayComponent {
 
   copyReport(): void {
     const storageId: number = this.report.xml ? +this.report.storageId : +this.report.uid.split('#')[0];
-    const data: any = {};
+    const data: Record<string, number[]> = {};
     data[this.currentView.storageName] = [storageId];
     this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this
   }
