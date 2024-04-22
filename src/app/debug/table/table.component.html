@@ -1,8 +1,8 @@
 <div data-cy-debug="root" class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
   <div class="row d-flex align-items-center">
-    <app-button data-cy-debug="refresh" [icon]="'fa fa-refresh'" [title]="'Refresh'" (click)="refresh()"></app-button>
-    <app-button data-cy-debug="openSettings" [icon]="'fa fa-cog'" [title]="'Settings'" (click)="openSettingsModal()"></app-button>
-    <app-button data-cy-debug="filter" [icon]="'fa fa-filter'" [title]="'Filter'" (click)="toggleFilter()"></app-button>
+    <app-button data-cy-debug="refresh" icon="fa fa-refresh" title="Refresh" (click)="refresh()"></app-button>
+    <app-button data-cy-debug="openSettings" icon="fa fa-cog" title="Settings" (click)="openSettingsModal()"></app-button>
+    <app-button data-cy-debug="filter" icon="fa fa-filter" title="Filter" (click)="toggleFilter()"></app-button>
     <div ngbDropdown title="Download">
       <button data-cy-debug="download" class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
         <i class="fa fa-download px-2"></i><span class="caret"></span>
@@ -18,49 +18,52 @@
       <i class="fa fa-upload"></i>
       <input data-cy-debug="upload" #uploadFileTable (change)="uploadReports($event)" type="file" id="uploadFileTable">
     </button>
-    <app-button data-cy-debug="openSelected" [title]="'Open Selected Reports'" [text]="'Open Selected'" (click)="openSelected()"></app-button>
-    <app-button data-cy-debug="delete" [title]="'Delete'" [icon]="'fa fa-trash'" (click)="deleteSelected()"></app-button>
+    <app-button data-cy-debug="openSelected" title="Open Selected Reports" text="Open Selected" (click)="openSelected()"></app-button>
+    <app-button data-cy-debug="delete" title="Delete" icon="fa fa-trash" (click)="deleteSelected()"></app-button>
 
     <form (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
-      <div class='input-group'>
-          <input data-cy-debug='displayAmount' type='number' class='form-control input-field'
-                 value='{{tableSettings.displayAmount}}' (blur)='changeTableLimit($event)'>
-        <div data-cy-debug="amountShown" class='input-group-append'>
-          <div class='input-group-text'>/{{metadataCount}}</div>
+      <div class="input-group">
+        <input data-cy-debug="displayAmount" type="number" class="form-control input-field"
+                 [value]="tableSettings.displayAmount" (blur)="changeTableLimit($event)">
+        <div data-cy-debug="amountShown" class="input-group-append">
+          <div class="input-group-text">/{{metadataCount}}</div>
         </div>
       </div>
     </form>
 
     <div class="my-2 mx-1 px-2">
       <select data-cy-change-view-dropdown class="form-control" (change)="changeView($event)">
-        <option [style.width]="viewDropdownBoxWidth" *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView.name" value="{{view.key}}">{{view.key}}</option>
+        <option [style.width]="viewDropdownBoxWidth" *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView.name" [value]="view.key">{{view.key}}</option>
       </select>
     </div>
 
-    <div data-cy-debug-in-progress-counter class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.reportsInProgress }}</div>
-    <div class="row" *ngIf="tableSettings.reportsInProgress > 0">
+    <div data-cy-debug-in-progress-counter class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.numberOfReportsInProgress }}</div>
+    <div class="row" *ngIf="tableSettings.numberOfReportsInProgress > 0">
       <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
-        <div class="col input-group my-2 mx-1 px-2">
-          <input #openIndex type="number" min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#openReportInProgressButton')" class="form-control" data-cy-debug="openInProgressNo"/>
-          <div class="input-group-append">
-            <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
-          </div>
+      <div class="col input-group my-2 mx-1 px-2">
+        <input #openIndex type="number" min="0" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" class="form-control" data-cy-debug="openInProgressNo"/>
+        <div class="input-group-append">
+          <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
         </div>
-          <div class="col input-group my-2 mx-1 px-2">
-            <input #deleteIndex type="number"  min="0" value="{{tableSettings.reportsInProgress}}" max="{{tableSettings.reportsInProgress}}" (change)="disableReportInProgressButton(+openIndex.value, '#deleteReportInProgressButton')" class="form-control" id="deleteInProgressNo"/>
-            <div class="input-group-append">
-              <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
-            </div>
-          </div>
-
+      </div>
+      <div class="col input-group my-2 mx-1 px-2">
+        <input #deleteIndex type="number" min="0" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" class="form-control" id="deleteInProgressNo"/>
+        <div class="input-group-append">
+          <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
+        </div>
+      </div>
     </div>
 
-    <app-button [text]="'Compare'" [title]="'Compare'" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
-    <app-button [text]="'Open In New Tab'" *ngIf="showOpenInTabButton()" (click)="openReportInTab()"></app-button>
+    @if (hasTimedOut) {
+      <h4 class="progress-report-timout">[One or more reports are in progress for more than {{ this.reportsInProgressThreshold / 1000 / 60 }} minutes]</h4>
+    }
+
+    <app-button text="Compare" title="Compare" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
+    <app-button text="Open In New Tab" *ngIf="showOpenInTabButton()" (click)="openReportInTab()"></app-button>
     <app-active-filters class="ml-2" [activeFilters]="currentFilters" (click)="toggleFilter()"></app-active-filters>
   </div>
   <div [hidden]="doneRetrieving">
-    <mat-spinner [mode]="'indeterminate'" [diameter]="30"></mat-spinner>
+    <mat-spinner mode="indeterminate" [diameter]="30"></mat-spinner>
   </div>
   <div data-cy-debug="table" [hidden]="!doneRetrieving" class="table-responsive" id="metadataTable">
     <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)" [style.font-size]="getFontSize()">
@@ -78,7 +81,7 @@
         </tr>
         <tr data-cy-debug="tableFilterRow" id="filterRow" *ngIf="tableSettings.showFilter">
           <th class="vertical-middle">
-            <app-button [icon]="'fa fa-undo'" [title]="'Clear filters'" (click)="clearFilters()"></app-button>
+            <app-button icon="fa fa-undo" title="Clear filters" (click)="clearFilters()"></app-button>
           </th>
           <th *ngFor="let header of viewSettings.currentView.metadataNames" class="filter-header">
             <div class="input-group">
