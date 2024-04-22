@@ -240,7 +240,7 @@ Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes
     cy.wrap(res).its('response.statusCode').should('equal', 200);
     cy.log('Api call to copy report has been completed');
   });
-})
+});
 
 
 Cypress.Commands.add('clickFirstFileInFileTree', () => {
@@ -249,8 +249,6 @@ Cypress.Commands.add('clickFirstFileInFileTree', () => {
 
 Cypress.Commands.add('clickRowInTable', (index: number) => {
   cy.get('[data-cy-debug="tableBody"]').find('tr').eq(index).click();
-});
-
 });
 
 Cypress.Commands.add('checkFileTreeLength', (n: number) => {
