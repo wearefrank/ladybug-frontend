@@ -17,6 +17,7 @@ import { TestListItem } from '../shared/interfaces/test-list-item';
 import { CurrentTestView } from '../shared/interfaces/current-test-view';
 import { CompareReport } from '../shared/interfaces/compare-report';
 import { UploadEvent } from '../shared/interfaces/upload-event';
+import { OptionsSettings } from '../shared/interfaces/options-settings';
 
 @Component({
   selector: 'app-test',
@@ -74,7 +75,7 @@ export class TestComponent implements OnInit {
     if (localStorage.getItem('generatorEnabled')) {
       this.generatorStatus = localStorage.getItem('generatorEnabled')!;
     } else {
-      this.httpService.getSettings().subscribe((response) => {
+      this.httpService.getSettings().subscribe((response: OptionsSettings) => {
         this.generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
         localStorage.setItem('generatorEnabled', this.generatorStatus);
       });
@@ -124,7 +125,7 @@ export class TestComponent implements OnInit {
     if (this.generatorStatus === 'Enabled') {
       this.httpService
         .runReport(this.currentView.storageName, this.currentView.targetStorage, reportId)
-        .subscribe((response: any) => {
+        .subscribe((response: TestResult) => {
           this.showResult(response);
         });
     } else {
@@ -203,7 +204,8 @@ export class TestComponent implements OnInit {
     }
   }
 
-  uploadReport(event: UploadEvent): void {
+  // TODO: find out what type event is
+  uploadReport(event: any): void {
     const file: File = event.target.files![0];
     if (file) {
       const formData: FormData = new FormData();
@@ -224,7 +226,7 @@ export class TestComponent implements OnInit {
 
   replaceReport(reportId: string): void {
     this.httpService.replaceReport(reportId, this.currentView.targetStorage).subscribe(() => {
-      this.reranReports = this.reranReports.filter((report) => report.id != reportId);
+      this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
     });
   }
 

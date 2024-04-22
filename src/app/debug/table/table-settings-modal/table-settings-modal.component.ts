@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
 import { OptionsSettings } from 'src/app/shared/interfaces/options-settings';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
+import { SettingsForm } from 'src/app/shared/interfaces/settings-form';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -102,7 +103,7 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   saveSettings(): void {
-    const form: any = this.settingsForm.value;
+    const form: SettingsForm = this.settingsForm.value;
     localStorage.setItem('generatorEnabled', form.generatorEnabled);
     localStorage.setItem('transformationEnabled', form.transformationEnabled.toString());
     this.httpService.postTransformation(form.transformation).subscribe();
@@ -124,20 +125,22 @@ export class TableSettingsModalComponent implements OnDestroy {
   factoryReset(): void {
     this.settingsForm.reset();
     this.settingsService.setShowMultipleAtATime();
-    this.httpService.resetSettings().subscribe((response) => this.saveResponseSetting(response));
-    this.httpService.getTransformation(true).subscribe((resp) => {
-      this.settingsForm.get('transformation')?.setValue(resp.transformation);
+    this.httpService.resetSettings().subscribe((response: OptionsSettings) => this.saveResponseSetting(response));
+    this.httpService.getTransformation(true).subscribe((response: Record<string, string>) => {
+      this.settingsForm.get('transformation')?.setValue(response.transformation);
     });
   }
 
   loadSettings(): void {
-    this.httpService.getSettings().subscribe((response) => this.saveResponseSetting(response));
+    this.httpService.getSettings().subscribe((response: OptionsSettings) => this.saveResponseSetting(response));
     if (localStorage.getItem('transformationEnabled')) {
       this.settingsForm.get('transformationEnabled')?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }
     this.httpService
       .getTransformation(false)
-      .subscribe((response) => this.settingsForm.get('transformation')?.setValue(response.transformation));
+      .subscribe((response: Record<string, string>) =>
+        this.settingsForm.get('transformation')?.setValue(response.transformation),
+      );
   }
 
   saveResponseSetting(response: any) {

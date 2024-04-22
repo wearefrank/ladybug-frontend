@@ -18,7 +18,7 @@ export class EditDisplayComponent {
   editingChildNode: boolean = false;
   editingRootNode: boolean = false;
   rerunResult: string = '';
-  report: any = {};
+  report: Partial<Report> = {};
   @Input() id: string = '';
   currentView: any = {
     storageName: 'Test',
@@ -53,9 +53,9 @@ export class EditDisplayComponent {
   }
 
   rerunReport(): void {
-    let reportId: string = this.report.storageId;
-    this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
-      let element = document.querySelector('#showRerunResult')!;
+    let reportId: string = String(this.report.storageId);
+    this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response: Report) => {
+      let element: Element = document.querySelector('#showRerunResult')!;
       if (this.report == response) {
         element.setAttribute('style', 'background-color: green');
         this.rerunResult = '[Rerun succeeded]';
@@ -67,7 +67,7 @@ export class EditDisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    let queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
+    let queryString: string = this.report.xml ? this.report.storageId!.toString() : this.report.uid!.split('#')[0];
     this.helperService.download(queryString + '&', this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
   }
@@ -88,7 +88,7 @@ export class EditDisplayComponent {
         break;
       }
       default: {
-        stubStrategy = this.report.stub;
+        stubStrategy = String(this.report.stub);
       }
     }
     this.saveChanges(true, stubStrategy);
@@ -112,10 +112,11 @@ export class EditDisplayComponent {
   }
 
   addToDifferenceModal(keyword: string, elementValue: string) {
-    const difference = new DiffMatchPatch().diff_main(this.report[keyword] ?? '', elementValue ?? '');
+    const keywordIndex = keyword as keyof Report;
+    const difference = new DiffMatchPatch().diff_main(this.report[keywordIndex] ?? '', elementValue ?? '');
     this.differenceModal.push({
       name: keyword,
-      originalValue: this.report[keyword],
+      originalValue: this.report[keywordIndex],
       difference: difference,
     });
   }
@@ -156,7 +157,7 @@ export class EditDisplayComponent {
 
   saveOrDiscard(type: string): void {
     if (type === 'save') {
-      this.saveChanges(false, this.report.stub);
+      this.saveChanges(false, String(this.report.stub));
     } else {
       this.discardChanges();
     }
@@ -174,10 +175,10 @@ export class EditDisplayComponent {
     let checkpointId: string = '';
     let storageId: string;
     if (this.report.xml) {
-      storageId = this.report.storageId;
+      storageId = String(this.report.storageId);
     } else {
-      storageId = this.report.uid.split('#')[0];
-      checkpointId = this.report.uid.split('#')[1];
+      storageId = this.report.uid!.split('#')[0];
+      checkpointId = this.report.uid!.split('#')[1];
     }
 
     const params: Report = saveStubStrategy

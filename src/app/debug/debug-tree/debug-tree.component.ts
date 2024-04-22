@@ -5,6 +5,7 @@ import { HelperService } from '../../shared/services/helper.service';
 import { Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
+import { DebugTreeProperties } from 'src/app/shared/interfaces/debug-tree-properties';
 
 @Component({
   selector: 'app-debug-tree',
@@ -75,10 +76,10 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
   }
 
   hideOrShowCheckpointsBasedOnView(currentView: any): void {
-    this.getTreeReports().forEach((report) => {
+    this.getTreeReports().forEach((report: any) => {
       if (report.value.storageName === currentView.storageName) {
         this.httpService
-          .getUnmatchedCheckpoints(report.value.storageName, report.value.storageId, currentView.name)
+          .getUnmatchedCheckpoints(report.value.storageName, String(report.value.storageId), currentView.name)
           .subscribe((unmatched: any) => {
             const selectedReport: any = this.treeReference.getSelectedItem();
             this.prepareNextSelect(unmatched, selectedReport);

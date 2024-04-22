@@ -16,6 +16,7 @@ import { OptionsSettings } from 'src/app/shared/interfaces/options-settings';
 import { DebugListItem } from 'src/app/shared/interfaces/debug-list-item';
 import { CompareReport } from 'src/app/shared/interfaces/compare-report';
 import { CompareReports } from 'src/app/shared/interfaces/compare-reports';
+import { UploadEvent } from 'src/app/shared/interfaces/upload-event';
 
 @Component({
   selector: 'app-table',
@@ -464,6 +465,7 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
+  // TODO: find out what type event is
   uploadReports(event: any): void {
     const file: File = event.target.files[0];
     if (file) {

@@ -20,6 +20,19 @@ export interface Report {
   transformation: string;
   variableCsv: string;
 
+  stub: number;
+  uid: string;
+  encoding: string;
+  message: string;
+  stubbed: boolean;
+  messageClassName: string;
+  waitingForStream: boolean;
+  streaming: string;
+  noCloseReceivedForStream: boolean;
+  showConverted: boolean;
+  preTruncatedMessageLength: number;
+  stubNotFound: boolean;
+
   storageName: string;
   variablesAsMap: any; // Map<String, String>
   xml: string; // Custom for the xml representation of the report
