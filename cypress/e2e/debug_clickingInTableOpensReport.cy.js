@@ -7,7 +7,7 @@ describe('Clicking a report', () => {
   });
 
   it('Selecting report should show a tree', () => {
-    cy.get('[data-cy-debug-tree="buttons"]').should('not.be.visible');
+    cy.get('[data-cy-debug-tree="buttons"]').should('not.exist');
     cy.get('[data-cy-debug="tableBody"]').find('tr').first().click();
     cy.get('[data-cy-debug-tree="buttons"]').should('be.visible');
   });

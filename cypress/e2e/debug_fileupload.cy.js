@@ -18,6 +18,6 @@ describe('Debug file upload', () => {
         });
       });
 
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.checkFileTreeLength(1);
   })
 });

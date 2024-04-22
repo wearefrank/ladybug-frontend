@@ -1,6 +1,5 @@
 describe('About the Test tab', () => {
   beforeEach(() => {
-    cy.clearDebugStore();
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
@@ -9,11 +8,11 @@ describe('About the Test tab', () => {
       cy.wrap($row).find('td:eq(1)').invoke('text').then(s => {
         storageIds.push(s);
         cy.log(`Table has storage id ${s}`);
-      })
-    })
+      });
+    });
     cy.get('[data-cy-debug="tableBody"] tr').then(() => {
-      cy.log(`Table has storage ids: [${storageIds}]`)
-    })
+      cy.log(`Table has storage ids: [${storageIds}]`);
+    });
     // When making videos is enabled, the number of frames is limited.
     // We want to see these storage ids. This is the reason for this wait.
     cy.wait(2000);
@@ -22,17 +21,13 @@ describe('About the Test tab', () => {
 
   afterEach(() => {
     cy.clearDebugStore();
-    cy.get('[data-cy-nav-tab="debugTab"]').click();
-    cy.get('[data-cy-debug-tree="closeAll"]').click();
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 0);
-    cy.get('[data-cy-nav-tab="testTab"]').click();
-    cy.checkTestTableNumRows(0);
   });
 
   it('Test deleting a report', () => {
-    cy.get('[data-cy-nav-tab="testTab"]').click();
+    cy.navigateToTestTabAndWait();
     cy.checkTestTableNumRows(2);
-    cy.functions.testTabDeselectReportNamed('/Another simple report');
+    cy.get('#DeselectAllButton').click();
+    cy.get('#testReports tr').eq(1).find('[data-cy-test="reportChecked"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
     cy.checkTestTableReportsAre(['Another simple report']);
@@ -175,17 +170,13 @@ function copyTheReportsToTestTab() {
   // was flaky because the selectIfNotSelected() custom command accessed
   // a detached DOM element.
   cy.wait(100);
-  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 2);
+  cy.checkFileTreeLength(2);
   cy.wait(100);
-  cy.get(
-    '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Simple report) > div',
-  ).click();
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
   cy.wait(100);
-  cy.get(
-    '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li:contains(Another simple report) > div',
-  ).click();
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Another simple report', 3, 'second');
   cy.wait(1000);

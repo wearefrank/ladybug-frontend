@@ -29,7 +29,7 @@ describe('Tests about copying', function () {
     cy.checkTestTableReportsAre(["Simple report"]);
     cy.get('[data-cy-nav-tab="debugTab"]').click();
     cy.checkTableNumRows(1);
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.checkFileTreeLength(1);
     cy.get('[data-cy-nav-tab="testTab"]').click();
     // Do not refresh. The test tab should have saved its state.
     cy.checkTestTableReportsAre(["Simple report"]);
