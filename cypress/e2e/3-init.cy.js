@@ -8,8 +8,7 @@
 describe('Ladybug simple protractor test', () => {
 
   beforeEach(() => {
-    //Use custom command to initialize app and wait for all api requests
-    cy.initializeApp();
+    cy.resetApp();
   });
 
   it('Confirm title of ladybug app', () => {

@@ -24,6 +24,24 @@ Cypress.Commands.add('initializeApp' as keyof Chainable, () => {
   );
 });
 
+Cypress.Commands.add('resetApp' as keyof Chainable, () => {
+  cy.clearDebugStore();
+  cy.initializeApp();
+  cy.get('[data-cy-debug="selectAll"]').click();
+  cy.get('[data-cy-debug="delete"]').click();
+  cy.intercept({
+    method: 'GET',
+    hostname: 'localhost',
+    url: /\/api\/*?/g,
+  }).as('deleteAll');
+  cy.visit('');
+  cy.wait('@deleteAll').then(() =>
+    cy.log('Successfully removed files'),
+  );
+  cy.deleteAllTestReports();
+  cy.initializeApp();
+})
+
 Cypress.Commands.add('navigateToTestTabAndWait' as keyof Chainable, () => {
   navigateToTabAndWait('test');
 });
@@ -243,8 +261,8 @@ Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes
 });
 
 
-Cypress.Commands.add('clickFirstFileInFileTree', () => {
-  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > div').click();
+Cypress.Commands.add('clickFirstFileInFileTree' as keyof Chainable, () => {
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('app-tree-item').eq(0).click();
 });
 
 Cypress.Commands.add('clickRowInTable', (index: number) => {
