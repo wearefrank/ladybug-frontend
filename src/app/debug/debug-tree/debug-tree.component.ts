@@ -133,6 +133,11 @@ export class DebugTreeComponent implements OnDestroy {
   transformReportToHierarchyStructure(report: Report): Report {
     const checkpoints = report.checkpoints;
     for (let i = 0; i < checkpoints.length; i++) {
+      checkpoints[i].icon = this.helperService.getImage(
+        checkpoints[i].type,
+        checkpoints[i].encoding,
+        checkpoints[i].level,
+      );
       if (i - 1 >= 0 && checkpoints[i].type > 1) {
         if (!checkpoints[i - 1].checkpoints) {
           checkpoints[i - 1].checkpoints = [];
