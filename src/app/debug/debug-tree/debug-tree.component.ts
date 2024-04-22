@@ -175,7 +175,7 @@ export class DebugTreeComponent implements OnDestroy {
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
     let queryString = '';
     for (let treeReport of this.getTreeReports()) {
-      queryString += 'id=' + treeReport.storageId + '&';
+      queryString += `id=${treeReport.storageId}&`;
     }
     this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
   }
