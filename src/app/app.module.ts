@@ -39,6 +39,7 @@ import { ActiveFiltersComponent } from './debug/active-filters/active-filters.co
 import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
 import { ReportDisplayComponent } from './report-display/report-display.component';
 import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
+import { FileTreeComponent } from './shared/components/file-tree/file-tree.component';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
     ActiveFiltersComponent,
     DictionaryPipe,
     ReportDisplayComponent,
+    FileTreeComponent,
   ],
   imports: [
     BrowserModule,

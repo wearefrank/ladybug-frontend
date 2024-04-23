@@ -1,5 +1,7 @@
 import { AfterViewInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
+import { FileTreeComponent } from '../../shared/components/file-tree/file-tree.component';
+import { FileTreeOptions } from 'ng-simple-file-tree';
 
 @Component({
   selector: 'app-test-folder-tree',
@@ -8,14 +10,23 @@ import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 })
 export class TestFolderTreeComponent implements AfterViewInit {
   @ViewChild('treeReference') treeReference!: jqxTreeComponent;
+  @ViewChild('tree') tree!: FileTreeComponent;
   baseFolder: any = { label: 'Reports', value: '', filter: '', items: [], expanded: true, selected: true };
   latestAddedFolder: any = this.baseFolder;
   @Output() changeFolderEvent = new EventEmitter<any>();
 
-  constructor() {}
+  treeOptions: FileTreeOptions = {
+    folderBehaviourOnClick: 'select',
+    highlightOpenFolders: true,
+  };
 
   ngAfterViewInit(): void {
-    this.treeReference.createComponent({ source: [this.baseFolder], height: '90%', width: '100%', allowDrag: false });
+    this.treeReference.createComponent({
+      source: [this.baseFolder],
+      height: '90%',
+      width: '100%',
+      allowDrag: false,
+    });
   }
 
   updateFolderTree(reports: any, addedFolderPath: any) {

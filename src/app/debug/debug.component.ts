@@ -52,7 +52,7 @@ export class DebugComponent implements OnInit, AfterViewInit {
   }
 
   addReportToTree(report: Report): void {
-    this.debugTreeComponent.addReportToTree(report);
+    this.debugTreeComponent.tree.addReportToTree(report);
   }
 
   selectReport(currentReport: Report): void {
@@ -64,7 +64,7 @@ export class DebugComponent implements OnInit, AfterViewInit {
   }
 
   closeReport(currentReport: any): void {
-    this.debugTreeComponent.removeReport(currentReport);
+    this.debugTreeComponent.tree.removeReport(currentReport);
   }
 
   onViewChange(viewName: string) {

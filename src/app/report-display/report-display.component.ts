@@ -66,7 +66,7 @@ export class ReportDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   addReportToTree(report: Report): void {
-    this.debugTreeComponent.addReportToTree(report);
+    this.debugTreeComponent.tree.addReportToTree(report);
   }
 
   selectReport(currentReport: any): void {
@@ -79,7 +79,7 @@ export class ReportDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   closeReport(currentReport: any): void {
-    this.debugTreeComponent.removeReport(currentReport);
+    this.debugTreeComponent.tree.removeReport(currentReport);
   }
 
   openReportInSeparateTab(data: any) {
