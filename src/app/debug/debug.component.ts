@@ -55,9 +55,8 @@ export class DebugComponent implements OnInit, AfterViewInit {
     this.debugTreeComponent.addReportToTree(report);
   }
 
-  selectReport(currentReport: any): void {
-    let report = currentReport.owner.selectedItem.value;
-    this.displayComponent.showReport(report);
+  selectReport(currentReport: Report): void {
+    this.displayComponent.showReport(currentReport);
   }
 
   closeEntireTree(): void {
@@ -66,5 +65,9 @@ export class DebugComponent implements OnInit, AfterViewInit {
 
   closeReport(currentReport: any): void {
     this.debugTreeComponent.removeReport(currentReport);
+  }
+
+  onViewChange(viewName: string) {
+    this.currentView.currentViewName = viewName;
   }
 }

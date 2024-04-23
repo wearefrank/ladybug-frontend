@@ -18,4 +18,6 @@ export interface Checkpoint {
   uid: string;
   waitingForStream: boolean;
   storageId?: string;
+  checkpoints?: Checkpoint[];
+  icon?: string;
 }
