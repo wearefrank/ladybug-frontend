@@ -1,5 +1,6 @@
 describe('About the Test tab', () => {
   beforeEach(() => {
+    cy.resetApp();
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();

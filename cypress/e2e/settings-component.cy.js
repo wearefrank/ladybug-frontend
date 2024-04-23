@@ -5,6 +5,11 @@ describe('Tests for settings component', () => {
     cy.initializeApp();
   });
 
+  afterEach(() => {
+    cy.clearDebugStore();
+    cy.deleteAllTestReports();
+  })
+
   it('should alter spacing when spacing setting is altered', () => {
     cy.get('[data-cy-debug="openSettings"]').as('openSettingsModal').click();
     cy.get('[data-cy-settings="spacingDropdown"]').select('1x');
