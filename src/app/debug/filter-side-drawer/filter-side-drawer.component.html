@@ -9,7 +9,7 @@
           type="text"
           [(ngModel)]="filters[metadataName]"
           [title]="metadataName"
-          placeholder="Filter for {{metadataName}}"
+          [placeholder]="'Filter for' + metadataName"
           (keydown.enter)="updateFilter($event, metadataName)"
           data-cy-debug="tableFilter">
       </div>
