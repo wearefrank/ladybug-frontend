@@ -24,6 +24,24 @@ Cypress.Commands.add('initializeApp' as keyof Chainable, () => {
   );
 });
 
+Cypress.Commands.add('resetApp' as keyof Chainable, () => {
+  cy.clearDebugStore();
+  cy.initializeApp();
+  cy.get('[data-cy-debug="selectAll"]').click();
+  cy.get('[data-cy-debug="delete"]').click();
+  cy.intercept({
+    method: 'GET',
+    hostname: 'localhost',
+    url: /\/api\/*?/g,
+  }).as('deleteAll');
+  cy.visit('');
+  cy.wait('@deleteAll').then(() =>
+    cy.log('Successfully removed files'),
+  );
+  cy.deleteAllTestReports();
+  cy.initializeApp();
+})
+
 Cypress.Commands.add('navigateToTestTabAndWait' as keyof Chainable, () => {
   navigateToTabAndWait('test');
 });
@@ -197,9 +215,8 @@ Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
 });
 
 
-
 Cypress.Commands.add('checkTableNumRows', n => {
-  if(n === 0) {
+  if (n === 0) {
     cy.get('[data-cy-debug="tableBody"]')
       .find('tr', { timeout: 10000 })
       .should('not.exist');
@@ -208,30 +225,30 @@ Cypress.Commands.add('checkTableNumRows', n => {
       .find('tr', { timeout: 10000 })
       .should('have.length', n);
   }
-})
+});
 
 Cypress.Commands.add('checkTestTableNumRows', n => {
   cy.get('[data-cy-test="table"] tr', { timeout: 10000 }).should('have.length', n);
-})
+});
 
 Cypress.Commands.add('checkTestTableReportsAre', reportNames => {
   cy.checkTestTableNumRows(reportNames.length);
   reportNames.forEach(reportName => {
     cy.get('[data-cy-test="table"]')
-    .find('tr')
-    .contains('/' + reportName)
-    .should('have.length', 1);
-  })
-})
+      .find('tr')
+      .contains('/' + reportName)
+      .should('have.length', 1);
+  });
+});
 
 Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes, aliasSuffix) => {
-  let alias = `debugTreeGuardedCopyReport_${aliasSuffix}`;
-  cy.get(`[data-cy-debug-tree="root"] .jqx-tree-dropdown-root li:contains(${reportName})`).should('have.length', numExpandedNodes);
+  const alias = `debugTreeGuardedCopyReport_${aliasSuffix}`;
+  cy.get(`[data-cy-debug-tree="root"] > app-tree-item .item-name:contains(${reportName})`).should('have.length', numExpandedNodes);
   cy.intercept({
     method: 'PUT',
     hostname: 'localhost',
     url: /\/api\/report\/store\/*?/g,
-    times: 1
+    times: 1,
   }).as(alias);
   cy.get('[data-cy-debug-editor="copy"]').click();
   cy.wait(`@${alias}`).then((res) => {
@@ -241,13 +258,17 @@ Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes
     cy.wrap(res).its('response.statusCode').should('equal', 200);
     cy.log('Api call to copy report has been completed');
   });
-})
+});
 
 
-Cypress.Commands.add('clickFirstFileInFileTree', () => {
-  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > div').click();
+Cypress.Commands.add('clickFirstFileInFileTree' as keyof Chainable, () => {
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('app-tree-item').eq(0).click();
 });
 
 Cypress.Commands.add('clickRowInTable', (index: number) => {
   cy.get('[data-cy-debug="tableBody"]').find('tr').eq(index).click();
+});
+
+Cypress.Commands.add('checkFileTreeLength', (n: number) => {
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').should('have.length', n);
 });

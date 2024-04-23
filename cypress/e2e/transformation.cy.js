@@ -15,8 +15,7 @@ describe('Report transformation', () => {
   it('Update transformation', () => {
     cy.visit('');
     cy.get('[data-cy-debug="openSettings"]').click();
-    cy.get('textarea[formcontrolname=transformation]').type('{selectAll}');
-    cy.get('textarea[formcontrolname=transformation]').type('{del}');
+    cy.get('textarea[formcontrolname=transformation]').type('{selectAll}{del}');
     cy.get('textarea[formcontrolname=transformation]').within((textArea) => {
       cy.fixture('ignoreName.xslt').then((newText) =>
         cy.wrap(textArea).type(newText),
@@ -34,9 +33,9 @@ describe('Report transformation', () => {
       .find('tr')
       .should('have.length', 1)
       .click();
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.checkFileTreeLength(1);
     // We test that the top node was not selected before.
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > div').click();
+    // cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > div').click();
     cy.get('[data-cy-open-metadata-table]').click();
     cy.get('[data-cy-element-name="editor"]').contains('Name="IGNORED"');
     // The transformation should not affect the report table, only the XML in the Monaco editor

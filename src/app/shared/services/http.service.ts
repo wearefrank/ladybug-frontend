@@ -1,8 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { ToastService } from './toast.service';
 import { View } from '../interfaces/view';
+import { OptionsSettings } from '../interfaces/options-settings';
+import { Report } from '../interfaces/report';
+import { CompareReport } from '../interfaces/compare-reports';
+import { TestListItem } from '../interfaces/test-list-item';
+import { CloneReport } from '../interfaces/clone-report';
+import { UploadParams } from '../interfaces/upload-params';
+import { UpdatePathSettings } from '../interfaces/update-path-settings';
 
 @Injectable({
   providedIn: 'root',
@@ -15,8 +22,8 @@ export class HttpService {
     private toastService: ToastService,
   ) {}
 
-  handleError() {
-    return (error: any): Observable<any> => {
+  handleError(): (error: HttpErrorResponse) => Observable<any> {
+    return (error: HttpErrorResponse): Observable<any> => {
       const message = error.error;
       if (message.includes('- detailed error message -')) {
         const errorMessageParts = message.split('- detailed error message -');
@@ -42,8 +49,8 @@ export class HttpService {
     filterHeader: string[],
     metadataNames: string[],
     storage: string,
-  ): Observable<any> {
-    return this.http.get('api/metadata/' + storage + '/', {
+  ): Observable<Report[]> {
+    return this.http.get<Report[]>('api/metadata/' + storage + '/', {
       params: {
         limit: limit,
         filterHeader: filterHeader,
@@ -53,52 +60,52 @@ export class HttpService {
     });
   }
 
-  getUserHelp(storage: string, metadataNames: string[]): Observable<any> {
-    return this.http.get<any>('api/metadata/' + storage + '/userHelp', {
+  getUserHelp(storage: string, metadataNames: string[]): Observable<Report[]> {
+    return this.http.get<Report[]>('api/metadata/' + storage + '/userHelp', {
       params: {
         metadataNames: metadataNames,
       },
     });
   }
 
-  getMetadataCount(storage: string): Observable<any> {
-    return this.http.get('api/metadata/' + storage + '/count').pipe(catchError(this.handleError()));
+  getMetadataCount(storage: string): Observable<number> {
+    return this.http.get<number>('api/metadata/' + storage + '/count').pipe(catchError(this.handleError()));
   }
 
-  getLatestReports(amount: number, storage: string): Observable<any> {
+  getLatestReports(amount: number, storage: string): Observable<Report[]> {
     return this.http
-      .get<any>('api/report/latest/' + storage + '/' + amount)
+      .get<Report[]>('api/report/latest/' + storage + '/' + amount)
       .pipe(tap(() => this.handleSuccess('Latest' + amount + 'reports opened!')))
       .pipe(catchError(this.handleError()));
   }
 
-  getReportInProgress(index: number) {
+  getReportInProgress(index: number): Observable<Report> {
     return this.http
-      .get<any>('api/testtool/in-progress/' + index)
+      .get<Report>('api/testtool/in-progress/' + index)
       .pipe(tap(() => this.handleSuccess('Opened report in progress with index [' + index + ']')))
       .pipe(catchError(this.handleError()));
   }
 
-  deleteReportInProgress(index: number): Observable<any> {
+  deleteReportInProgress(index: number): Observable<Report> {
     return this.http
-      .delete<any>('api/testtool/in-progress/' + index)
+      .delete<Report>('api/testtool/in-progress/' + index)
       .pipe(tap(() => this.handleSuccess('Deleted report in progress with index [' + index + ']')))
       .pipe(catchError(this.handleError()));
   }
 
-  getReportsInProgressThresholdTime(): Observable<any> {
+  getReportsInProgressThresholdTime(): Observable<number> {
     return this.http.get<number>('api/testtool/in-progress/threshold-time').pipe(catchError(this.handleError()));
   }
 
-  getTestReports(metadataNames: string[], storage: string): Observable<any> {
-    return this.http.get<any>('api/metadata/' + storage + '/', {
+  getTestReports(metadataNames: string[], storage: string): Observable<TestListItem[]> {
+    return this.http.get<TestListItem[]>('api/metadata/' + storage + '/', {
       params: { metadataNames: metadataNames },
     });
   }
 
-  getReport(reportId: string, storage: string) {
+  getReport(reportId: string, storage: string): Observable<CompareReport> {
     return this.http
-      .get<any>(
+      .get<CompareReport>(
         // eslint-disable-next-line sonarjs/no-duplicate-string
         'api/report/' +
           storage +
@@ -110,30 +117,29 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  getReports(reportIds: string[], storage: string) {
+  getReports(reportIds: string[], storage: string): Observable<Record<string, CompareReport>> {
     return this.http
-      .get<any>(
-        'api/report/' + storage + '/?xml=true&globalTransformer=' + localStorage.getItem('transformationEnabled'),
-        { params: { storageIds: reportIds } },
-      )
+      .get<
+        Record<string, CompareReport>
+      >('api/report/' + storage + '/?xml=true&globalTransformer=' + localStorage.getItem('transformationEnabled'), { params: { storageIds: reportIds } })
       .pipe(catchError(this.handleError()));
   }
 
-  updateReport(reportId: string, params: any, storage: string): Observable<void> {
+  updateReport(reportId: string, params: Report, storage: string): Observable<void> {
     return this.http
       .post('api/report/' + storage + '/' + reportId, params)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }
 
-  copyReport(data: any, storage: string): Observable<void> {
+  copyReport(data: Record<string, string[]>, storage: string): Observable<void> {
     return this.http
       .put('api/report/store/' + storage, data)
       .pipe(tap(() => this.handleSuccess('Report copied!')))
       .pipe(catchError(this.handleError()));
   }
 
-  updatePath(reportIds: string[], storage: string, map: any) {
+  updatePath(reportIds: string[], storage: string, map: UpdatePathSettings): Observable<void> {
     return this.http
       .put('api/report/move/' + storage, map, {
         params: { storageIds: reportIds },
@@ -141,16 +147,16 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  uploadReport(formData: FormData): Observable<any> {
+  uploadReport(formData: FormData): Observable<Report[]> {
     return this.http
-      .post('api/report/upload', formData, {
+      .post<Report[]>('api/report/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       .pipe(tap(() => this.handleSuccess('Report uploaded!')))
       .pipe(catchError(this.handleError()));
   }
 
-  uploadReportToStorage(formData: FormData, storage: string): Observable<any> {
+  uploadReportToStorage(formData: FormData, storage: string): Observable<void> {
     return this.http
       .post('api/report/upload/' + storage, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -159,14 +165,14 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  postSettings(settings: any): Observable<void> {
+  postSettings(settings: UploadParams): Observable<void> {
     return this.http
       .post('api/testtool', settings)
       .pipe(tap(() => this.handleSuccess('Settings saved!')))
       .pipe(catchError(this.handleError()));
   }
 
-  postTransformation(transformation: any): Observable<void> {
+  postTransformation(transformation: string): Observable<void> {
     return (
       this.http
         .post('api/testtool/transformation', { transformation: transformation })
@@ -175,43 +181,43 @@ export class HttpService {
     );
   }
 
-  getTransformation(defaultTransformation: boolean): Observable<any> {
+  getTransformation(defaultTransformation: boolean): Observable<Record<string, string>> {
     return this.http
-      .get<any>('api/testtool/transformation/' + defaultTransformation)
+      .get<Record<string, string>>('api/testtool/transformation/' + defaultTransformation)
       .pipe(catchError(this.handleError()));
   }
 
-  getSettings(): Observable<any> {
-    return this.http.get<any>('api/testtool').pipe(catchError(this.handleError()));
+  getSettings(): Observable<OptionsSettings> {
+    return this.http.get<OptionsSettings>('api/testtool').pipe(catchError(this.handleError()));
   }
 
-  resetSettings(): Observable<any> {
-    return this.http.get('api/testtool/reset').pipe(catchError(this.handleError()));
+  resetSettings(): Observable<OptionsSettings> {
+    return this.http.get<OptionsSettings>('api/testtool/reset').pipe(catchError(this.handleError()));
   }
 
   reset(): Observable<void> {
-    return this.http.post<any>('api/runner/reset', {}).pipe(catchError(this.handleError()));
+    return this.http.post<void>('api/runner/reset', {}).pipe(catchError(this.handleError()));
   }
 
   runReport(storage: string, targetStorage: string, reportId: string): Observable<void> {
     return this.http
-      .post<any>('api/runner/run/' + storage + '/' + targetStorage + '/' + reportId, {
+      .post<void>('api/runner/run/' + storage + '/' + targetStorage + '/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
       .pipe(catchError(this.handleError()));
   }
 
-  runDisplayReport(reportId: string, storage: string): Observable<any> {
+  runDisplayReport(reportId: string, storage: string): Observable<Report> {
     return this.http
-      .put<any>('api/runner/replace/' + storage + '/' + reportId, {
+      .put<Report>('api/runner/replace/' + storage + '/' + reportId, {
         headers: this.headers,
         observe: 'response',
       })
       .pipe(catchError(this.handleError()));
   }
 
-  cloneReport(storage: string, storageId: string, map: any) {
+  cloneReport(storage: string, storageId: string, map: CloneReport): Observable<void> {
     return this.http
       .post('api/report/move/' + storage + '/' + storageId, map)
       .pipe(tap(() => this.handleSuccess('Report cloned!')))

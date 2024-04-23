@@ -13,7 +13,7 @@ describe('Test labels', () => {
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();
     cy.wait(300);
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.checkFileTreeLength(1);
     testTreeView('Message is null', 'Null String');
   });
 
@@ -22,41 +22,32 @@ describe('Test labels', () => {
     cy.initializeApp();
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.checkFileTreeLength(1);
     testTreeView('Message is an empty string', 'Empty String');
   });
 });
 
 function testTreeView(reportName, labelString) {
-  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > div').within(
-    ($node) => {
-    cy.wrap($node).contains(reportName);
-  });
-  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > ul > li > div').within(
-    function ($node) {
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item .item-name').eq(0).within(
+    function($node) {
       cy.wrap($node).should('contain', reportName);
-      cy.wrap($node)
-        .find('img')
-        .invoke('attr', 'src')
-        .should('eq', 'assets/tree-icons/startpoint-even.gif');
     },
   );
-  cy.get(
-    '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > ul > li > ul > li:nth-child(1) > div'
-  ).within(function ($node) {
-    cy.wrap($node).should('have.text', labelString);
-    cy.wrap($node)
-      .find('img')
-      .invoke('attr', 'src')
-      .should('eq', 'assets/tree-icons/infopoint-odd.gif');
-  });
-  cy.get(
-    '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > ul > li > ul > li:nth-child(2) > div'
-  ).within(function ($node) {
-    cy.wrap($node).should('have.text', reportName);
-    cy.wrap($node)
-      .find('img')
-      .invoke('attr', 'src')
-      .should('eq', 'assets/tree-icons/endpoint-odd.gif');
-  });
+
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item > div')
+    .eq(0)
+    .get('div > app-tree-icon img')
+    .as('tree-icons');
+
+  cy.get('@tree-icons').eq(0)
+    .invoke('attr', 'src')
+    .should('eq', 'assets/tree-icons/startpoint-even.gif');
+
+  cy.get('@tree-icons').eq(1)
+    .invoke('attr', 'src')
+    .should('eq', 'assets/tree-icons/infopoint-odd.gif');
+
+  cy.get('@tree-icons').eq(2)
+    .invoke('attr', 'src')
+    .should('equal', 'assets/tree-icons/endpoint-odd.gif');
 }

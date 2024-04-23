@@ -3,7 +3,7 @@ import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../shared/interfaces/table-settings';
-import { catchError, Subscription } from 'rxjs';
+import { catchError, Subject, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { ChangeNodeLinkStrategyService } from '../../shared/services/node-link-strategy.service';
 import { SettingsService } from '../../shared/services/settings.service';
@@ -26,6 +26,8 @@ export class TableComponent implements OnInit, OnDestroy {
     currentView: {},
     currentViewName: '',
   };
+  //Temporary fix, issue has been created (https://github.com/wearefrank/ladybug-frontend/issues/383) to refactor this and the debug component
+  @Output() viewChange: Subject<string> = new Subject<string>();
 
   allRowsSelected: boolean = false;
 
@@ -173,6 +175,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.debugReportService.changeView(this.viewSettings.currentView);
     this.selectedRow = -1;
     this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
+    this.viewChange.next(this.viewSettings.currentViewName);
   }
 
   listenForViewUpdate() {
@@ -222,7 +225,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadMetadataCount() {
-    this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: any) => {
+    this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: number) => {
       this.metadataCount = count;
     });
   }
@@ -559,6 +562,8 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadReportInProgressThreshold() {
-    this.httpService.getReportsInProgressThresholdTime().subscribe((time) => (this.reportsInProgressThreshold = time));
+    this.httpService.getReportsInProgressThresholdTime().subscribe((time: number) => {
+      this.reportsInProgressThreshold = time;
+    });
   }
 }

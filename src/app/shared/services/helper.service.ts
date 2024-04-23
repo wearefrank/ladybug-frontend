@@ -10,7 +10,8 @@ export class HelperService {
 
   constructor() {}
 
-  getImage(type: number, encoding: string, even: boolean): string {
+  getImage(type: number, encoding: string, level: number): string {
+    const even = this.determineEvenCheckpoint(level);
     let img = 'assets/tree-icons/' + this.getCheckpointType(type);
     if (encoding === this.THROWABLE_ENCODER) {
       img += '-error';
@@ -20,6 +21,10 @@ export class HelperService {
       return img + '-even.gif';
     }
     return img + '-odd.gif';
+  }
+
+  private determineEvenCheckpoint(level: number) {
+    return level % 2 == 0;
   }
 
   getCheckpointType(type: number): string {
@@ -162,7 +167,7 @@ export class HelperService {
 
     if (checkpoints && checkpoints.length > 0) {
       for (let checkpoint of checkpoints) {
-        const img: string = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level % 2 == 0);
+        const img: string = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
         let showingId = this.getCheckpointOrStorageId(checkpoint, false);
         const currentNode: any = this.createNode(checkpoint, showingId, img, index++, checkpoint.level);
         this.createHierarchy(previousNode, currentNode, parentMap);

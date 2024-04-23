@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DebugTreeComponent } from './debug-tree.component';
-import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
 
 describe('DebugTreeComponent', () => {
   let component: DebugTreeComponent;
@@ -10,8 +10,8 @@ describe('DebugTreeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DebugTreeComponent, jqxTreeComponent],
-      imports: [HttpClientTestingModule],
+      declarations: [DebugTreeComponent],
+      imports: [HttpClientTestingModule, NgSimpleFileTreeModule],
     }).compileComponents();
   });
 
