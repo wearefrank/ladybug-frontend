@@ -19,10 +19,11 @@ import { animate, style, transition, trigger } from '@angular/animations';
 })
 export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected shouldShowFilter!: boolean;
-  shouldShowFilterSubscriber!: Subscription;
   protected metadataNames!: string[];
-  metadataNamesSubscriber!: Subscription;
   protected filters: Record<string, string> = {};
+
+  shouldShowFilterSubscriber!: Subscription;
+  metadataNamesSubscriber!: Subscription;
   filterSubscriber!: Subscription;
 
   constructor(private filterService: FilterService) {}
