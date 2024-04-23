@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FilterService } from './filter.service';
 import { Subscription } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { auto } from '@popperjs/core';
 
 @Component({
   selector: 'app-filter-side-drawer',
@@ -53,8 +52,6 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   closeFilter() {
     this.filterService.setShowFilter(false);
   }
-
-  protected readonly auto = auto;
 
   updateFilter(filterEvent: any, metadataName: string): void {
     this.filterService.updateFilterContext(metadataName, filterEvent.target.value);
