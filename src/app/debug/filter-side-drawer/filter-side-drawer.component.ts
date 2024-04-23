@@ -29,19 +29,15 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   constructor(private filterService: FilterService) {}
 
   ngOnInit(): void {
-    this.shouldShowFilterSubscriber = this.filterService.showFilterObserver.subscribe((show) => {
+    this.shouldShowFilterSubscriber = this.filterService.showFilter$.subscribe((show) => {
       this.shouldShowFilter = show;
     });
-    this.metadataNamesSubscriber = this.filterService.metadataNamesObserver.subscribe(
-      (metadataNames: string[]): void => {
-        this.metadataNames = metadataNames;
-      },
-    );
-    this.filterSubscriber = this.filterService.filterContextObserver.subscribe(
-      (filterContext: Record<string, string>) => {
-        this.filters = filterContext;
-      },
-    );
+    this.metadataNamesSubscriber = this.filterService.metadataNames$.subscribe((metadataNames: string[]): void => {
+      this.metadataNames = metadataNames;
+    });
+    this.filterSubscriber = this.filterService.filterContext$.subscribe((filterContext: Record<string, string>) => {
+      this.filters = filterContext;
+    });
   }
 
   ngOnDestroy(): void {

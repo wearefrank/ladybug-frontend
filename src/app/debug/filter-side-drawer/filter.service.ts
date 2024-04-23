@@ -6,14 +6,13 @@ import { Observable, Subject } from 'rxjs';
 })
 export class FilterService {
   private showFilterSubject: Subject<boolean> = new Subject();
-  showFilterObserver: Observable<boolean> = this.showFilterSubject.asObservable();
-
   private metadataNamesSubject: Subject<string[]> = new Subject();
-  metadataNamesObserver: Observable<string[]> = this.metadataNamesSubject.asObservable();
-
-  private filters: Record<string, string> = {};
   private filterContextSubject: Subject<Record<string, string>> = new Subject();
-  filterContextObserver: Observable<Record<string, string>> = this.filterContextSubject.asObservable();
+  private filters: Record<string, string> = {};
+
+  showFilter$: Observable<boolean> = this.showFilterSubject.asObservable();
+  metadataNames$: Observable<string[]> = this.metadataNamesSubject.asObservable();
+  filterContext$: Observable<Record<string, string>> = this.filterContextSubject.asObservable();
 
   setShowFilter(show: boolean): void {
     this.showFilterSubject.next(show);

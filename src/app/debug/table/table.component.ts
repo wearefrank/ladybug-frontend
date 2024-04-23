@@ -213,10 +213,10 @@ export class TableComponent implements OnInit, OnDestroy {
       this.retrieveRecords();
       this.getUserHelp();
     });
-    this.showFilterSubscription = this.filterService.showFilterObserver.subscribe((show: boolean): void => {
+    this.showFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
       this.tableSettings.showFilter = show;
     });
-    this.filterContextSubscription = this.filterService.filterContextObserver.subscribe(
+    this.filterContextSubscription = this.filterService.filterContext$.subscribe(
       (context: Record<string, string>): void => {
         this.changeFilter(context);
       },
