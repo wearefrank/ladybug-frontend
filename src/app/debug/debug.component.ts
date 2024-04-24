@@ -5,6 +5,7 @@ import { DebugTreeComponent } from './debug-tree/debug-tree.component';
 import { Subject } from 'rxjs';
 import { DebugReportService } from './debug-report.service';
 import { TabService } from '../shared/services/tab.service';
+import { CurrentTestView } from '../shared/interfaces/current-test-view';
 
 @Component({
   selector: 'app-debug',
@@ -17,7 +18,7 @@ export class DebugComponent implements OnInit, AfterViewInit {
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
   @ViewChild('splitter') splitter: any;
   @ViewChild('bottom') bottom!: ElementRef;
-  currentView: any = {};
+  currentView: CurrentTestView = {} as CurrentTestView;
 
   treeWidth: Subject<void> = new Subject<void>();
   bottomHeight: number = 0;

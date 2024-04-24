@@ -20,6 +20,7 @@ export interface Report {
   transformation: string;
   variableCsv: string;
 
+  checked: boolean;
   stub: number;
   uid: string;
   encoding: string;

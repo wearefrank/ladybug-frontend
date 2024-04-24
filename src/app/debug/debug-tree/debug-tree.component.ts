@@ -6,6 +6,7 @@ import { Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
 import { DebugTreeProperties } from 'src/app/shared/interfaces/debug-tree-properties';
+import { CurrentTestView } from 'src/app/shared/interfaces/current-test-view';
 
 @Component({
   selector: 'app-debug-tree',
@@ -23,7 +24,7 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
 
   private lastReport?: Report;
 
-  @Input() set currentView(value: any) {
+  @Input() set currentView(value: CurrentTestView) {
     if (this.loaded && this._currentView !== value) {
       // TODO: Check if the current reports are part of the view
       this.hideOrShowCheckpointsBasedOnView(value);
@@ -75,17 +76,22 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  hideOrShowCheckpointsBasedOnView(currentView: any): void {
-    this.getTreeReports().forEach((report: any) => {
+  hideOrShowCheckpointsBasedOnView(currentView: CurrentTestView): void {
+    let currentViewName: string = '';
+    if (currentView.name) {
+      currentViewName = currentView.name;
+    }
+
+    this.getTreeReports().forEach((report: DebugTreeProperties) => {
       if (report.value.storageName === currentView.storageName) {
         this.httpService
-          .getUnmatchedCheckpoints(report.value.storageName, String(report.value.storageId), currentView.name)
-          .subscribe((unmatched: any) => {
-            const selectedReport: any = this.treeReference.getSelectedItem();
+          .getUnmatchedCheckpoints(report.value.storageName, String(report.value.storageId), currentViewName)
+          .subscribe((unmatched: string[]) => {
+            const selectedReport: jqwidgets.TreeItem = this.treeReference.getSelectedItem();
             this.prepareNextSelect(unmatched, selectedReport);
 
-            let children = report.element.querySelectorAll('li');
-            children.forEach((node: any) => (node.style.display = ''));
+            let children: NodeListOf<HTMLLIElement> = report.element.querySelectorAll('li');
+            children.forEach((node: HTMLLIElement) => (node.style.display = ''));
             this.hideCheckpoints(unmatched, children);
           });
       }
@@ -98,7 +104,7 @@ export class DebugTreeComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  hideCheckpoints(unmatched: string[], children: any[]): void {
+  hideCheckpoints(unmatched: string[], children: NodeListOf<HTMLLIElement>): void {
     if (unmatched.length > 0) {
       children.forEach((node: any) => {
         let oki: any = this.treeReference.getItem(node);

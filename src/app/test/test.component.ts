@@ -16,8 +16,8 @@ import { View } from '../shared/interfaces/view';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { CurrentTestView } from '../shared/interfaces/current-test-view';
 import { CompareReport } from '../shared/interfaces/compare-report';
-import { UploadEvent } from '../shared/interfaces/upload-event';
 import { OptionsSettings } from '../shared/interfaces/options-settings';
+import { TargetWithFiles } from '../shared/interfaces/target-with-files';
 
 @Component({
   selector: 'app-test',
@@ -26,7 +26,7 @@ import { OptionsSettings } from '../shared/interfaces/options-settings';
 })
 export class TestComponent implements OnInit {
   // TODO: find out type of reports variable
-  reports: any[] = []; //could be TestListItem, but doesnt have property 'variables'. variables needed for test.component.html:67
+  reports: TestListItem[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
   currentFilter: string = '';
@@ -204,9 +204,8 @@ export class TestComponent implements OnInit {
     }
   }
 
-  // TODO: find out what type event is
-  uploadReport(event: any): void {
-    const file: File = event.target.files![0];
+  uploadReport(event: Event): void {
+    const file: File = (event.target as TargetWithFiles)?.files[0];
     if (file) {
       const formData: FormData = new FormData();
       formData.append('file', file);

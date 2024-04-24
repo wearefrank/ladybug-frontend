@@ -90,7 +90,7 @@
                   data-cy-debug="tableFilter"
                   [matAutocomplete]="auto"
                   type="text"
-                  [title]="tableSettings.metadataHeaders[header]"
+                  [title]="header"
                   class="form-control"
                   placeholder="Filter for {{header}}"
                   (keydown.enter)="changeFilter($event, header.toLowerCase())">

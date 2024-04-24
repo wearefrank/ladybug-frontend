@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, Observable, of, OperatorFunction, tap } from 'rxjs';
 import { ToastService } from './toast.service';
 import { View } from '../interfaces/view';
 import { OptionsSettings } from '../interfaces/options-settings';
@@ -11,6 +11,7 @@ import { CloneReport } from '../interfaces/clone-report';
 import { UploadParams } from '../interfaces/upload-params';
 import { UpdatePathSettings } from '../interfaces/update-path-settings';
 import { TestResult } from '../interfaces/test-result';
+import { CurrentTestView } from '../interfaces/current-test-view';
 
 @Injectable({
   providedIn: 'root',
@@ -126,10 +127,9 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  // TODO: figure out the typing of the updateReport function
-  updateReport(reportId: string, params: Report, storage: string): Observable<void> {
+  updateReport(reportId: string, params: Report, storage: string): Observable<CompareReport> {
     return this.http
-      .post('api/report/' + storage + '/' + reportId, params)
+      .post<CompareReport>('api/report/' + storage + '/' + reportId, params)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }
@@ -240,9 +240,9 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  getUnmatchedCheckpoints(storageName: string, storageId: string, viewName: string): Observable<void> {
+  getUnmatchedCheckpoints(storageName: string, storageId: string, viewName: string): Observable<string[]> {
     return this.http
-      .get('api/report/' + storageName + '/' + storageId + '/checkpoints/uids', {
+      .get<string[]>('api/report/' + storageName + '/' + storageId + '/checkpoints/uids', {
         params: { view: viewName, invert: true },
       })
       .pipe(catchError(this.handleError()));

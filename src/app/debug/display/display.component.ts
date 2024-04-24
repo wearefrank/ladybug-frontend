@@ -4,6 +4,7 @@ import { HttpService } from '../../shared/services/http.service';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
+import { CurrentTestView } from 'src/app/shared/interfaces/current-test-view';
 
 @Component({
   selector: 'app-display',
@@ -13,7 +14,7 @@ import { CustomEditorComponent } from '../../custom-editor/custom-editor.compone
 export class DisplayComponent {
   displayReport: boolean = false;
   report: any = {};
-  @Input() currentView: any = {};
+  @Input() currentView: CurrentTestView = {} as CurrentTestView;
   @Output() closeReportEvent = new EventEmitter<any>();
   @ViewChild('editorComponent') editorComponent!: CustomEditorComponent;
   @ViewChild(DisplayTableComponent)

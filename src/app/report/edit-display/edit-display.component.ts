@@ -3,10 +3,11 @@ import { DifferenceModal } from '../../shared/interfaces/difference-modal';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
 // @ts-ignore
-import DiffMatchPatch from 'diff-match-patch';
+import DiffMatchPatch, { Diff } from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 import { Report } from 'src/app/shared/interfaces/report';
+import { CompareReport } from 'src/app/shared/interfaces/compare-report';
 
 @Component({
   selector: 'app-edit-display',
@@ -112,8 +113,8 @@ export class EditDisplayComponent {
   }
 
   addToDifferenceModal(keyword: string, elementValue: string) {
-    const keywordIndex = keyword as keyof Report;
-    const difference = new DiffMatchPatch().diff_main(this.report[keywordIndex] ?? '', elementValue ?? '');
+    const keywordIndex: keyof Report = keyword as keyof Report;
+    const difference: Diff[] = new DiffMatchPatch().diff_main(this.report[keywordIndex] ?? '', elementValue ?? '');
     this.differenceModal.push({
       name: keyword,
       originalValue: this.report[keywordIndex],
@@ -185,10 +186,11 @@ export class EditDisplayComponent {
       ? { stub: stubStrategy, checkpointId: checkpointId }
       : this.getReportValues(checkpointId);
 
-    // TODO: figure out the typing of the updateReport function.
-    this.httpService.updateReport(storageId, params, this.currentView.storageName).subscribe((response: any) => {
-      response.report.xml = response.xml;
-      this.saveReportEvent.next(response.report);
-    });
+    this.httpService
+      .updateReport(storageId, params, this.currentView.storageName)
+      .subscribe((response: CompareReport) => {
+        response.report.xml = response.xml;
+        this.saveReportEvent.next(response.report);
+      });
   }
 }

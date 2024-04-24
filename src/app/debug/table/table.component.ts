@@ -16,7 +16,8 @@ import { OptionsSettings } from 'src/app/shared/interfaces/options-settings';
 import { DebugListItem } from 'src/app/shared/interfaces/debug-list-item';
 import { CompareReport } from 'src/app/shared/interfaces/compare-report';
 import { CompareReports } from 'src/app/shared/interfaces/compare-reports';
-import { UploadEvent } from 'src/app/shared/interfaces/upload-event';
+import { TargetWithFiles } from 'src/app/shared/interfaces/target-with-files';
+import { MetaData } from 'src/app/shared/interfaces/metadata';
 
 @Component({
   selector: 'app-table',
@@ -37,7 +38,7 @@ export class TableComponent implements OnInit, OnDestroy {
       // nodeLinkStrategy: '',
       // storageName: '',
       // name: '',
-    },
+    } as View,
     currentViewName: '',
   };
 
@@ -189,7 +190,7 @@ export class TableComponent implements OnInit, OnDestroy {
       this.httpService.getViews().subscribe((views: Record<string, View>) => {
         this.viewSettings.views = views;
         this.sortFilterList();
-        let viewToUpdate = Object.keys(this.viewSettings.views).find(
+        let viewToUpdate: string | undefined = Object.keys(this.viewSettings.views).find(
           (view: string) => view === this.viewSettings.currentView.name,
         );
         if (viewToUpdate) {
@@ -294,10 +295,11 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  getStatusColor(metadata: string[]): string {
-    let statusName = this.viewSettings.currentView.metadataNames.find((name: string) => {
+  getStatusColor(metadata: MetaData): string {
+    let statusName: string | undefined = this.viewSettings.currentView.metadataNames.find((name: string) => {
       return name.toLowerCase() === 'status';
     });
+
     if (statusName && metadata[statusName]) {
       if (metadata[statusName].toLowerCase() === 'success') {
         return '#c3e6cb';
@@ -311,17 +313,17 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   showCompareButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report: DebugListItem) => report.checked).length == 2;
+    return this.tableSettings.reportMetadata.filter((report: Report) => report.checked).length == 2;
   }
 
   showOpenInTabButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report: DebugListItem) => report.checked).length == 1;
+    return this.tableSettings.reportMetadata.filter((report: Report) => report.checked).length == 1;
   }
 
   openReportInTab(): void {
-    let reportTab: DebugListItem = this.tableSettings.reportMetadata.find((report: DebugListItem) => report.checked);
+    let reportTab: Report | undefined = this.tableSettings.reportMetadata.find((report: Report) => report.checked);
     this.httpService
-      .getReport(reportTab.storageId, this.viewSettings.currentView.storageName)
+      .getReport(String(reportTab?.storageId), this.viewSettings.currentView.storageName)
       .subscribe((data: CompareReport) => {
         let report: Report = data.report;
         report.xml = data.xml;
@@ -335,7 +337,7 @@ export class TableComponent implements OnInit, OnDestroy {
   openSelected(): void {
     for (const report of this.tableSettings.reportMetadata) {
       if (report.checked) {
-        this.openReport(report.storageId);
+        this.openReport(String(report.storageId));
         if (!this.showMultipleFiles) {
           this.toastService.showWarning(
             'Please enable show multiple files in settings to open multiple files in the debug tree',
@@ -354,19 +356,19 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   selectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report: DebugListItem) => (report.checked = true));
+    this.tableSettings.reportMetadata.forEach((report: Report) => (report.checked = true));
   }
 
   deselectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report: DebugListItem) => (report.checked = false));
+    this.tableSettings.reportMetadata.forEach((report: Report) => (report.checked = false));
   }
 
   compareTwoReports(): void {
     let compareReports: Partial<CompareReports> = {};
 
     let selectedReports: string[] = this.tableSettings.reportMetadata
-      .filter((report: DebugListItem) => report.checked)
-      .map((report: DebugListItem) => report.storageId);
+      .filter((report: Report) => report.checked)
+      .map((report: Report) => String(report.storageId));
     this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
       next: (data: Record<string, CompareReport>) => {
         let leftObject: CompareReport = data[selectedReports[0]];
@@ -465,11 +467,10 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  // TODO: find out what type event is
-  uploadReports(event: any): void {
-    const file: File = event.target.files[0];
+  uploadReports(event: Event): void {
+    const file: File = (event.target as TargetWithFiles)?.files[0];
     if (file) {
-      const formData: any = new FormData();
+      const formData: FormData = new FormData();
       formData.append('file', file);
       this.showUploadedReports(formData);
     }

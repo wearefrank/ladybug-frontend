@@ -1,7 +1,7 @@
 import { View } from './view';
 
 export interface ViewSettings {
-  currentView: any;
+  currentView: View;
   currentViewName: string;
   defaultView: string;
   views: Record<string, View>;

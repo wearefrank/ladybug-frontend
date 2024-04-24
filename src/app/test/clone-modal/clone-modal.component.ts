@@ -6,6 +6,7 @@ import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { CloneReport } from 'src/app/shared/interfaces/clone-report';
 import { CompareReport } from 'src/app/shared/interfaces/compare-report';
 import { TestListItem } from 'src/app/shared/interfaces/test-list-item';
+import { CurrentTestView } from 'src/app/shared/interfaces/current-test-view';
 
 @Component({
   selector: 'app-clone-modal',
@@ -16,8 +17,10 @@ export class CloneModalComponent {
   @ViewChild('modal') modal!: any;
   @Output() cloneReportEvent = new EventEmitter<any>();
   report: Report = {} as Report;
-  currentView = {
+  currentView: CurrentTestView = {
+    metadataNames: [],
     storageName: 'Test',
+    targetStorage: '',
   };
   variableForm = new UntypedFormGroup({
     variables: new UntypedFormControl(''),
