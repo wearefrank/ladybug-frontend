@@ -1,3 +1,3 @@
 export interface MetaData {
-    [index: string]: string;
+  [index: string]: string;
 }
