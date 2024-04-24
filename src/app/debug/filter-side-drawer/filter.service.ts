@@ -8,11 +8,13 @@ export class FilterService {
   private showFilterSubject: Subject<boolean> = new Subject();
   private metadataNamesSubject: Subject<string[]> = new Subject();
   private filterContextSubject: Subject<Record<string, string>> = new Subject();
+  private currentRecordsSubject: Subject<Map<string, Array<string>>> = new Subject();
   private filters: Record<string, string> = {};
 
   showFilter$: Observable<boolean> = this.showFilterSubject.asObservable();
   metadataNames$: Observable<string[]> = this.metadataNamesSubject.asObservable();
   filterContext$: Observable<Record<string, string>> = this.filterContextSubject.asObservable();
+  currentRecords$: Observable<Map<string, Array<string>>> = this.currentRecordsSubject.asObservable();
 
   setShowFilter(show: boolean): void {
     this.showFilterSubject.next(show);
@@ -30,5 +32,9 @@ export class FilterService {
 
   resetFilter(): void {
     this.filterContextSubject.next({});
+  }
+
+  setCurrentRecords(records: Map<string, Array<string>>): void {
+    this.currentRecordsSubject.next(records);
   }
 }

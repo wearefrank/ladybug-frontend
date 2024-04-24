@@ -2,19 +2,28 @@
   <label class="filter-label">Filter</label>
   <div class="filter-input-container">
     @for (metadataName of metadataNames; track metadataNames) {
-      <div class="metadata-input-container">
+      <div class="input-container">
         <label class="metadata-input-label">{{ metadataName }}</label>
         <input
           class="metadata-input"
           type="text"
-          [(ngModel)]="filters[metadataName]"
           [title]="metadataName"
-          [placeholder]="'Filter for' + metadataName"
+          [(ngModel)]="filters[metadataName]"
+          [matAutocomplete]="auto"
+          [placeholder]="'Filter for ' + metadataName"
           (keydown.enter)="updateFilter($event, metadataName)"
           data-cy-debug="tableFilter">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="updateFilter($event, metadataName)">
+          <mat-option [value]="''" class="filter-option" data-cy-debug="matAutocompleteEmptyOption"></mat-option>
+          @for (option of currentRecords.get(metadataName.toLocaleLowerCase()); track currentRecords) {
+            <mat-option [value]="option" class="filter-option" data-cy-debug="matAutocompleteOption">{{option}}</mat-option>
+          }
+        </mat-autocomplete>
       </div>
     }
   </div>
-  <button class="close-filter-btn btn btn-info" (click)="closeFilter()" data-cy-debug="close-filter-btn">Close</button>
-  <button class="clear-filter-btn btn btn-info" (click)="resetFilter()" data-cy-debug="clear-filter-btn">Clear</button>
+  <div class="btn-container">
+    <button class="close-filter-btn btn btn-info" (click)="closeFilter()" data-cy-debug="close-filter-btn">Close</button>
+    <button class="clear-filter-btn btn btn-info" (click)="filterService.resetFilter()" data-cy-debug="clear-filter-btn">Clear</button>
+  </div>
 </div>

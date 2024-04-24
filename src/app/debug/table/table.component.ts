@@ -270,6 +270,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
     this.filterService.setShowFilter(this.tableSettings.showFilter);
+    this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
   }
 
   toggleCheck(report: any): void {
@@ -511,18 +512,20 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   setUniqueOptions(data: any): void {
-    for (const headerName of this.viewSettings.currentView.metadataLabels as string[]) {
+    for (const headerName of this.viewSettings.currentView.metadataNames as string[]) {
       const lowerHeaderName = headerName.toLowerCase();
       const upperHeaderName = headerName.toUpperCase();
       let uniqueValues: Set<string> = new Set<string>();
       for (let element of data) {
-        uniqueValues.add(element[lowerHeaderName]);
-        uniqueValues.add(element[upperHeaderName]);
+        if (element[lowerHeaderName] != undefined) uniqueValues.add(element[lowerHeaderName]);
+        if (element[upperHeaderName] != undefined) uniqueValues.add(element[upperHeaderName]);
+        if (element[headerName] != undefined) uniqueValues.add(element[headerName]);
       }
       this.tableSettings.uniqueValues.set(
         lowerHeaderName,
         uniqueValues.size < 15 ? this.sortUniqueValues(uniqueValues) : ([] as string[]),
       );
+      this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
     }
   }
 
