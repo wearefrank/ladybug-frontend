@@ -138,7 +138,7 @@ export class TableComponent implements OnInit, OnDestroy {
         this.viewSettings.currentView.storageName,
       )
       .subscribe({
-        next: (value: Report[]) => {
+        next: (value: MetaData[]) => {
           this.setUniqueOptions(value);
           this.tableSettings.reportMetadata = value;
           this.tableSettings.tableLoaded = true;
@@ -300,10 +300,12 @@ export class TableComponent implements OnInit, OnDestroy {
       return name.toLowerCase() === 'status';
     });
 
-    if (statusName && metadata[statusName]) {
-      if (metadata[statusName].toLowerCase() === 'success') {
+    let statusNameKey: keyof MetaData = statusName as keyof MetaData;
+
+    if (statusName && metadata[statusNameKey]) {
+      if (metadata[statusNameKey].toString().toLowerCase() === 'success') {
         return '#c3e6cb';
-      } else if (metadata[statusName].toLowerCase() === 'null') {
+      } else if (metadata[statusNameKey].toString().toLowerCase() === 'null') {
         return '#A9A9A9FF';
       } else {
         return '#f79c9c';
@@ -313,15 +315,15 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   showCompareButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report: Report) => report.checked).length == 2;
+    return this.tableSettings.reportMetadata.filter((report: MetaData) => report.checked).length == 2;
   }
 
   showOpenInTabButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report: Report) => report.checked).length == 1;
+    return this.tableSettings.reportMetadata.filter((report: MetaData) => report.checked).length == 1;
   }
 
   openReportInTab(): void {
-    let reportTab: Report | undefined = this.tableSettings.reportMetadata.find((report: Report) => report.checked);
+    let reportTab: MetaData | undefined = this.tableSettings.reportMetadata.find((report: MetaData) => report.checked);
     this.httpService
       .getReport(String(reportTab?.storageId), this.viewSettings.currentView.storageName)
       .subscribe((data: CompareReport) => {
@@ -356,19 +358,19 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   selectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report: Report) => (report.checked = true));
+    this.tableSettings.reportMetadata.forEach((report: MetaData) => (report.checked = true));
   }
 
   deselectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report: Report) => (report.checked = false));
+    this.tableSettings.reportMetadata.forEach((report: MetaData) => (report.checked = false));
   }
 
   compareTwoReports(): void {
     let compareReports: Partial<CompareReports> = {};
 
     let selectedReports: string[] = this.tableSettings.reportMetadata
-      .filter((report: Report) => report.checked)
-      .map((report: Report) => String(report.storageId));
+      .filter((report: MetaData) => report.checked)
+      .map((report: MetaData) => String(report.storageId));
     this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
       next: (data: Record<string, CompareReport>) => {
         let leftObject: CompareReport = data[selectedReports[0]];

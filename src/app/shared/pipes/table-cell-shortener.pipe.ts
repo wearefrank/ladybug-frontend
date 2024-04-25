@@ -7,9 +7,15 @@ import { Subscription } from 'rxjs';
   standalone: true,
 })
 export class TableCellShortenerPipe implements PipeTransform {
-  transform(value: string): string {
+  transform(value: string | boolean): string {
     if (value == undefined) {
       return value;
+    }
+    if (typeof value === 'boolean' && value === true) {
+      return 'true';
+    }
+    if (typeof value === 'boolean' && value === false) {
+      return 'false';
     }
     return this.removeMillisecondsFromTimestamp(value);
   }

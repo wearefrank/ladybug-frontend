@@ -12,6 +12,7 @@ import { UploadParams } from '../interfaces/upload-params';
 import { UpdatePathSettings } from '../interfaces/update-path-settings';
 import { TestResult } from '../interfaces/test-result';
 import { CurrentTestView } from '../interfaces/current-test-view';
+import { MetaData } from '../interfaces/metadata';
 
 @Injectable({
   providedIn: 'root',
@@ -51,8 +52,8 @@ export class HttpService {
     filterHeader: string,
     metadataNames: string[],
     storage: string,
-  ): Observable<Report[]> {
-    return this.http.get<Report[]>('api/metadata/' + storage + '/', {
+  ): Observable<MetaData[]> {
+    return this.http.get<MetaData[]>('api/metadata/' + storage + '/', {
       params: {
         limit: limit,
         filterHeader: filterHeader,
