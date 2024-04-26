@@ -3,7 +3,7 @@ import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../shared/interfaces/table-settings';
-import { catchError, Subscription } from 'rxjs';
+import { catchError, Subject, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { ChangeNodeLinkStrategyService } from '../../shared/services/node-link-strategy.service';
 import { SettingsService } from '../../shared/services/settings.service';
@@ -30,17 +30,11 @@ export class TableComponent implements OnInit, OnDestroy {
   viewSettings: ViewSettings = {
     defaultView: '',
     views: {},
-    currentView: {
-      // metadataLabels: [],
-      // defaultView: false,
-      // crudStorage: true,
-      // metadataNames: [],
-      // nodeLinkStrategy: '',
-      // storageName: '',
-      // name: '',
-    } as View,
+    currentView: {} as View,
     currentViewName: '',
   };
+  //Temporary fix, issue has been created (https://github.com/wearefrank/ladybug-frontend/issues/383) to refactor this and the debug component
+  @Output() viewChange: Subject<string> = new Subject<string>();
 
   allRowsSelected: boolean = false;
 
@@ -183,6 +177,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.clearFilters();
     this.debugReportService.changeView(this.viewSettings.currentView);
     this.selectedRow = -1;
+    this.viewChange.next(this.viewSettings.currentViewName);
   }
 
   listenForViewUpdate(): void {
@@ -557,19 +552,9 @@ export class TableComponent implements OnInit, OnDestroy {
     this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
   }
 
-  loadReportInProgressThreshold(): void {
+  loadReportInProgressThreshold() {
     this.httpService.getReportsInProgressThresholdTime().subscribe((time: number) => {
       this.reportsInProgressThreshold = time;
-    });
-  }
-
-  log(...loggable: any) {
-    console.log(...loggable);
-  }
-
-  logForEach(array: any) {
-    array.forEach((element: any) => {
-      console.log(element);
     });
   }
 }

@@ -37,7 +37,7 @@
       </select>
     </div>
 
-    <div class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.numberOfReportsInProgress }}</div>
+    <div data-cy-debug-in-progress-counter class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.numberOfReportsInProgress }}</div>
     <div class="row" *ngIf="tableSettings.numberOfReportsInProgress > 0">
       <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
       <div class="col input-group my-2 mx-1 px-2">

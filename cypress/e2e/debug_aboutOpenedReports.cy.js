@@ -11,24 +11,21 @@ describe('About opened reports', () => {
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();
     // Each of the two reports has three lines.
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 2);
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > div').should(
+    cy.checkFileTreeLength(2)
+    cy.get('[data-cy-debug-tree="root"] app-tree-item > div').should(
       'contain',
       "Simple report"
     );
-    cy.get(
-      '[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > div:contains(Simple report)'
-    )
-      .first()
-      .selectIfNotSelected();
+    cy.get('[data-cy-debug-tree="root"] app-tree-item > div > div:contains(Simple report)')
+      .first().selectIfNotSelected();
     cy.get('[data-cy-debug-editor="close"]').click();
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.checkFileTreeLength(1)
     // nth-child has an 1-based index
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > div')
+    cy.get('[data-cy-debug-tree="root"] > app-tree-item .item-name').eq(0)
       .should('have.text', "Another simple report")
       .click();
     cy.get('[data-cy-debug-editor="close"]').click();
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 0);
+    cy.get('[data-cy-debug-tree="root"] app-tree-item').should('not.exist');
   });
 
   it('Close all', () => {
@@ -36,22 +33,22 @@ describe('About opened reports', () => {
     cy.get('[data-cy-debug="tableBody"] tr td:contains(Simple report)')
       .first()
       .click();
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1);
+    cy.checkFileTreeLength(1)
     cy.get('[data-cy-debug="tableBody"] tr td:contains("Another simple report")')
       .first()
       .click();
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 2);
+    cy.checkFileTreeLength(2)
     // Check sequence of opened reports. We expect "Simple report" first, then "Another simple report".
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root li:nth-child(1) > div').should(
-      'contain',
+    cy.get('[data-cy-debug-tree="root"] > app-tree-item:nth-child(1) > div > .sft-item > .item-name').should(
+      'have.text',
       'Simple report'
     );
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root li:nth-child(2) > div').should(
+    cy.get('[data-cy-debug-tree="root"] > app-tree-item:nth-child(2) > div > .sft-item > .item-name').eq(0).should(
       'have.text',
       'Another simple report'
     );
     cy.get('[data-cy-debug-tree="closeAll"]').click();
-    cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 0);
+    cy.get('[data-cy-debug-tree="root"] app-tree-item').should('not.exist');
   });
 
   // // TODO: This can not be tested easily atm, since only the css is changed on expand and collapse

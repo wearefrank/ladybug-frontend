@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, of, OperatorFunction, tap } from 'rxjs';
+import { catchError, Observable, of, tap } from 'rxjs';
 import { ToastService } from './toast.service';
 import { View } from '../interfaces/view';
 import { OptionsSettings } from '../interfaces/options-settings';
@@ -11,7 +11,6 @@ import { CloneReport } from '../interfaces/clone-report';
 import { UploadParams } from '../interfaces/upload-params';
 import { UpdatePathSettings } from '../interfaces/update-path-settings';
 import { TestResult } from '../interfaces/test-result';
-import { CurrentTestView } from '../interfaces/current-test-view';
 import { MetaData } from '../interfaces/metadata';
 
 @Injectable({
