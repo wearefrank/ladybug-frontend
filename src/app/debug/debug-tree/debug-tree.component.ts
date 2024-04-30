@@ -14,6 +14,7 @@ import {
   OptionalParameters,
   TreeItemComponent,
 } from 'ng-simple-file-tree';
+import { View } from 'src/app/shared/interfaces/view';
 
 @Component({
   selector: 'app-debug-tree',
@@ -31,9 +32,8 @@ export class DebugTreeComponent implements OnDestroy {
   private _currentView: any;
   private lastReport?: Report;
 
-  @Input() set currentView(value: CurrentTestView) {
-    if (this.loaded && this._currentView !== value) {
-      // TODO: Check if the current reports are part of the view
+  @Input() set currentView(value: View) {
+    if (this._currentView !== value) {
       this.hideOrShowCheckpointsBasedOnView(value);
     }
     this._currentView = value;
@@ -42,8 +42,6 @@ export class DebugTreeComponent implements OnDestroy {
   get currentView(): any {
     return this._currentView;
   }
-
-  @Input() adjustWidth: Observable<void> = {} as Observable<void>;
 
   treeOptions: FileTreeOptions = {
     highlightOpenFolders: false,
@@ -63,18 +61,6 @@ export class DebugTreeComponent implements OnDestroy {
     this.showMultipleAtATimeSubscription.unsubscribe();
   }
 
-  @Input() set currentView(value: any) {
-    if (this._currentView !== value) {
-      // TODO: Check if the current reports are part of the view
-      this.hideOrShowCheckpointsBasedOnView(value);
-    }
-    this._currentView = value;
-  }
-
-  get currentView(): any {
-    return this._currentView;
-  }
-          
   hideOrShowCheckpointsBasedOnView(currentView: View): void {
     if (this.tree) {
       this.checkUnmatchedCheckpoints(this.getTreeReports(), currentView);
@@ -82,12 +68,12 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   checkUnmatchedCheckpoints(reports: Report[], currentView: View) {
-    let currentViewName: string = ''
-    if(currentView.name) {
+    let currentViewName: string = '';
+    if (currentView.name) {
       currentViewName = currentView.name;
     }
     for (let report of reports) {
-      if (report.storageName === viewSettings.currentView.storageName) {
+      if (report.storageName === currentView.storageName) {
         this.httpService
           .getUnmatchedCheckpoints(report.storageName, report.storageId.toString(), currentViewName)
           .subscribe((unmatched: string[]) => {

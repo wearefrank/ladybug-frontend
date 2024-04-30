@@ -11,11 +11,8 @@ export class TableCellShortenerPipe implements PipeTransform {
     if (value == undefined) {
       return value;
     }
-    if (typeof value === 'boolean' && value === true) {
-      return 'true';
-    }
-    if (typeof value === 'boolean' && value === false) {
-      return 'false';
+    if (typeof value === 'boolean') {
+      return value.toString();
     }
     return this.removeMillisecondsFromTimestamp(value);
   }

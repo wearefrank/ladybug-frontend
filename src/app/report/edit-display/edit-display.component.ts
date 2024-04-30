@@ -89,7 +89,7 @@ export class EditDisplayComponent {
         break;
       }
       default: {
-        stubStrategy = String(this.report.stub);
+        stubStrategy = `${this.report.stub}`;
       }
     }
     this.saveChanges(true, stubStrategy);
@@ -158,7 +158,7 @@ export class EditDisplayComponent {
 
   saveOrDiscard(type: string): void {
     if (type === 'save') {
-      this.saveChanges(false, String(this.report.stub));
+      this.saveChanges(false, `${this.report.stub}`);
     } else {
       this.discardChanges();
     }
@@ -176,7 +176,7 @@ export class EditDisplayComponent {
     let checkpointId: string = '';
     let storageId: string;
     if (this.report.xml) {
-      storageId = String(this.report.storageId);
+      storageId = `${this.report.storageId}`;
     } else {
       storageId = this.report.uid!.split('#')[0];
       checkpointId = this.report.uid!.split('#')[1];

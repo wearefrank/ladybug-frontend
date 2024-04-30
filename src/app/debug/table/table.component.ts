@@ -30,7 +30,17 @@ export class TableComponent implements OnInit, OnDestroy {
   viewSettings: ViewSettings = {
     defaultView: '',
     views: {},
-    currentView: {} as View,
+    currentView: {
+      crudStorage: true,
+      defaultView: true,
+      // eslint-disable-next-line prettier/prettier
+      metadataLabels: ['Storage Id', 'End time', 'Duration', 'Name', 'Correlation Id', 'Status', 'Number of checkpoints', 'Estimated memory usage', 'Storage size'],
+      // eslint-disable-next-line prettier/prettier
+      metadataNames: ['storageId', 'endTime', 'duration', 'name', 'correlationId', 'status', 'numberOfCheckpoints', 'estimatedMemoryUsage', 'storageSize'],
+      name: 'White box',
+      nodeLinkStrategy: 'PATH',
+      storageName: 'Debug',
+    },
     currentViewName: '',
   };
   //Temporary fix, issue has been created (https://github.com/wearefrank/ladybug-frontend/issues/383) to refactor this and the debug component
@@ -204,7 +214,7 @@ export class TableComponent implements OnInit, OnDestroy {
         this.viewSettings.views = views;
         this.calculateViewDropDownWidth();
         this.viewSettings.currentViewName =
-          Object.keys(this.viewSettings.views).find((view: string) => this.viewSettings.views[view].defaultView) || '';
+          Object.keys(this.viewSettings.views).find((view: string) => this.viewSettings.views[view].defaultView) ?? '';
 
         this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
         this.viewSettings.currentView.name = this.viewSettings.currentViewName;
@@ -320,7 +330,7 @@ export class TableComponent implements OnInit, OnDestroy {
   openReportInTab(): void {
     let reportTab: MetaData | undefined = this.tableSettings.reportMetadata.find((report: MetaData) => report.checked);
     this.httpService
-      .getReport(String(reportTab?.storageId), this.viewSettings.currentView.storageName)
+      .getReport(`${reportTab?.storageId}`, this.viewSettings.currentView.storageName)
       .subscribe((data: CompareReport) => {
         let report: Report = data.report;
         report.xml = data.xml;
@@ -334,7 +344,7 @@ export class TableComponent implements OnInit, OnDestroy {
   openSelected(): void {
     for (const report of this.tableSettings.reportMetadata) {
       if (report.checked) {
-        this.openReport(String(report.storageId));
+        this.openReport(`${report.storageId}`);
         if (!this.showMultipleFiles) {
           this.toastService.showWarning(
             'Please enable show multiple files in settings to open multiple files in the debug tree',
@@ -365,7 +375,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
     let selectedReports: string[] = this.tableSettings.reportMetadata
       .filter((report: MetaData) => report.checked)
-      .map((report: MetaData) => String(report.storageId));
+      .map((report: MetaData) => `${report.storageId}`);
     this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
       next: (data: Record<string, CompareReport>) => {
         let leftObject: CompareReport = data[selectedReports[0]];

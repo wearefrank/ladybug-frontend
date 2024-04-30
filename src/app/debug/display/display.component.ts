@@ -5,6 +5,7 @@ import { DisplayTableComponent } from '../../shared/components/display-table/dis
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 import { CurrentTestView } from 'src/app/shared/interfaces/current-test-view';
+import { View } from 'src/app/shared/interfaces/view';
 
 @Component({
   selector: 'app-display',
@@ -14,7 +15,6 @@ import { CurrentTestView } from 'src/app/shared/interfaces/current-test-view';
 export class DisplayComponent {
   displayReport: boolean = false;
   report: any = {};
-  @Input() currentView: CurrentTestView = {} as CurrentTestView;
   @Output() closeReportEvent = new EventEmitter<any>();
   @ViewChild('editorComponent') editorComponent!: CustomEditorComponent;
   @ViewChild(DisplayTableComponent)
@@ -22,6 +22,14 @@ export class DisplayComponent {
   metadataTableVisible: boolean = false;
   @ViewChild('container') container!: ElementRef;
   @Input() containerHeight!: number;
+  @Input() currentView: View = {
+    metadataLabels: [],
+    defaultView: false,
+    crudStorage: false,
+    metadataNames: [],
+    nodeLinkStrategy: '',
+    storageName: '',
+  };
 
   constructor(
     private httpService: HttpService,

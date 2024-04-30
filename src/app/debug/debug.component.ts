@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { DebugReportService } from './debug-report.service';
 import { TabService } from '../shared/services/tab.service';
 import { CurrentTestView } from '../shared/interfaces/current-test-view';
+import { View } from '../shared/interfaces/view';
 
 @Component({
   selector: 'app-debug',
@@ -18,7 +19,14 @@ export class DebugComponent implements OnInit, AfterViewInit {
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
   @ViewChild('splitter') splitter: any;
   @ViewChild('bottom') bottom!: ElementRef;
-  currentView: CurrentTestView = {} as CurrentTestView;
+  currentView: View = {
+    metadataLabels: [],
+    defaultView: false,
+    crudStorage: false,
+    metadataNames: [],
+    nodeLinkStrategy: '',
+    storageName: '',
+  };
 
   treeWidth: Subject<void> = new Subject<void>();
   bottomHeight: number = 0;
@@ -69,6 +77,6 @@ export class DebugComponent implements OnInit, AfterViewInit {
   }
 
   onViewChange(viewName: string) {
-    this.currentView.currentViewName = viewName;
+    this.currentView.name = viewName;
   }
 }
