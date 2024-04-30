@@ -72,7 +72,7 @@ export class DebugTreeComponent implements OnDestroy {
     if (currentView.name) {
       currentViewName = currentView.name;
     }
-    for (let report of reports) {
+    for (const report of reports) {
       if (report.storageName === currentView.storageName) {
         this.httpService
           .getUnmatchedCheckpoints(report.storageName, report.storageId.toString(), currentViewName)

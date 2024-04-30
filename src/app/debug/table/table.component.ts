@@ -170,7 +170,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   clearFilters(): void {
-    let element: NodeListOf<HTMLInputElement> = document.querySelectorAll('#filter')!;
+    const element: NodeListOf<HTMLInputElement> = document.querySelectorAll('#filter')!;
     element.forEach((element: HTMLInputElement) => {
       element.value = '';
     });
@@ -195,7 +195,7 @@ export class TableComponent implements OnInit, OnDestroy {
       this.httpService.getViews().subscribe((views: Record<string, View>) => {
         this.viewSettings.views = views;
         this.sortFilterList();
-        let viewToUpdate: string | undefined = Object.keys(this.viewSettings.views).find(
+        const viewToUpdate: string | undefined = Object.keys(this.viewSettings.views).find(
           (view: string) => view === this.viewSettings.currentView.name,
         );
         if (viewToUpdate) {
@@ -283,7 +283,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   checkIfAllRowsSelected(): boolean {
-    for (let reportMetadata of this.tableSettings.reportMetadata) {
+    for (const reportMetadata of this.tableSettings.reportMetadata) {
       if (!reportMetadata.checked) {
         return false;
       }
@@ -301,11 +301,11 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   getStatusColor(metadata: MetaData): string {
-    let statusName: string | undefined = this.viewSettings.currentView.metadataNames.find((name: string) => {
+    const statusName: string | undefined = this.viewSettings.currentView.metadataNames.find((name: string) => {
       return name.toLowerCase() === 'status';
     });
 
-    let statusNameKey: keyof MetaData = statusName as keyof MetaData;
+    const statusNameKey: keyof MetaData = statusName as keyof MetaData;
 
     if (statusName && metadata[statusNameKey]) {
       if (metadata[statusNameKey].toString().toLowerCase() === 'success') {
@@ -328,11 +328,13 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReportInTab(): void {
-    let reportTab: MetaData | undefined = this.tableSettings.reportMetadata.find((report: MetaData) => report.checked);
+    const reportTab: MetaData | undefined = this.tableSettings.reportMetadata.find(
+      (report: MetaData) => report.checked,
+    );
     this.httpService
       .getReport(`${reportTab?.storageId}`, this.viewSettings.currentView.storageName)
       .subscribe((data: CompareReport) => {
-        let report: Report = data.report;
+        const report: Report = data.report;
         report.xml = data.xml;
         this.tabService.openNewTab({
           data: report,
@@ -373,17 +375,17 @@ export class TableComponent implements OnInit, OnDestroy {
   compareTwoReports(): void {
     let compareReports: Partial<CompareReports> = {};
 
-    let selectedReports: string[] = this.tableSettings.reportMetadata
+    const selectedReports: string[] = this.tableSettings.reportMetadata
       .filter((report: MetaData) => report.checked)
       .map((report: MetaData) => `${report.storageId}`);
     this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
       next: (data: Record<string, CompareReport>) => {
-        let leftObject: CompareReport = data[selectedReports[0]];
-        let originalReport: Report = leftObject.report;
+        const leftObject: CompareReport = data[selectedReports[0]];
+        const originalReport: Report = leftObject.report;
         originalReport.xml = leftObject.xml;
 
-        let rightObject: CompareReport = data[selectedReports[1]];
-        let runResultReport: Report = rightObject.report;
+        const rightObject: CompareReport = data[selectedReports[1]];
+        const runResultReport: Report = rightObject.report;
         runResultReport.xml = rightObject.xml;
 
         compareReports = {
@@ -430,7 +432,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.httpService
       .getReport(storageId, this.viewSettings.currentView.storageName)
       .subscribe((data: CompareReport) => {
-        let report: Report = data.report;
+        const report: Report = data.report;
         report.xml = data.xml;
         report.storageName = this.viewSettings.currentView.storageName;
         this.openReportEvent.next(report);

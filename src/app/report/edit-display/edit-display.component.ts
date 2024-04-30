@@ -54,9 +54,9 @@ export class EditDisplayComponent {
   }
 
   rerunReport(): void {
-    let reportId: string = String(this.report.storageId);
+    const reportId: string = String(this.report.storageId);
     this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response: Report) => {
-      let element: Element = document.querySelector('#showRerunResult')!;
+      const element: Element = document.querySelector('#showRerunResult')!;
       if (this.report == response) {
         element.setAttribute('style', 'background-color: green');
         this.rerunResult = '[Rerun succeeded]';
@@ -68,7 +68,7 @@ export class EditDisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    let queryString: string = this.report.xml ? this.report.storageId!.toString() : this.report.uid!.split('#')[0];
+    const queryString: string = this.report.xml ? this.report.storageId!.toString() : this.report.uid!.split('#')[0];
     this.helperService.download(queryString + '&', this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
   }

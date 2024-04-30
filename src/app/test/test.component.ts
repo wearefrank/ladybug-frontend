@@ -25,7 +25,6 @@ import { TargetWithFiles } from '../shared/interfaces/target-with-files';
   styleUrls: ['./test.component.css'],
 })
 export class TestComponent implements OnInit {
-  // TODO: find out type of reports variable
   reports: TestListItem[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
@@ -170,7 +169,7 @@ export class TestComponent implements OnInit {
 
   openReport(storageId: string, name: string): void {
     this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data: CompareReport) => {
-      let report: Report = data.report;
+      const report: Report = data.report;
       report.xml = data.xml;
       this.tabService.openNewTab({ data: report, name: name });
     });
@@ -230,9 +229,9 @@ export class TestComponent implements OnInit {
   }
 
   copySelected(): void {
-    let copiedIds: string[] = this.helperService.getSelectedIds(this.reports);
-    let parsedIdCopies: number[] = copiedIds.map(Number);
-    let data: Record<string, number[]> = {};
+    const copiedIds: string[] = this.helperService.getSelectedIds(this.reports);
+    const parsedIdCopies: number[] = copiedIds.map(Number);
+    const data: Record<string, number[]> = {};
     data[this.currentView.storageName] = parsedIdCopies;
     this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
       this.loadData('');
@@ -252,7 +251,7 @@ export class TestComponent implements OnInit {
   }
 
   updatePath(action: string) {
-    let reportIds: string[] = this.helperService.getSelectedIds(this.reports);
+    const reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       let path = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
       if (!path.endsWith('/')) {
@@ -261,7 +260,7 @@ export class TestComponent implements OnInit {
       if (!path.startsWith('/')) {
         path = '/' + path;
       }
-      let map: UpdatePathSettings = { path: path, action: action };
+      const map: UpdatePathSettings = { path: path, action: action };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
     } else {
       this.toastService.showWarning('No Report Selected!');
