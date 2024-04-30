@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { debounceTime, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,7 @@ export class FilterService {
 
   showFilter$: Observable<boolean> = this.showFilterSubject.asObservable();
   metadataNames$: Observable<string[]> = this.metadataNamesSubject.asObservable();
-  filterContext$: Observable<Record<string, string>> = this.filterContextSubject.asObservable();
+  filterContext$: Observable<Record<string, string>> = this.filterContextSubject.pipe(debounceTime(300));
   currentRecords$: Observable<Map<string, Array<string>>> = this.currentRecordsSubject.asObservable();
 
   setShowFilter(show: boolean): void {

@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FilterService } from './filter.service';
 import { Subscription } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-filter-side-drawer',
@@ -61,11 +60,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     this.filterService.setShowFilter(false);
   }
 
-  updateFilter(filterEvent: MatAutocompleteSelectedEvent | Event, metadataName: string): void {
-    if (filterEvent instanceof MatAutocompleteSelectedEvent) {
-      this.filterService.updateFilterContext(metadataName, (filterEvent as MatAutocompleteSelectedEvent).option.value);
-    } else if (filterEvent instanceof KeyboardEvent) {
-      this.filterService.updateFilterContext(metadataName, (filterEvent.target as HTMLInputElement).value);
-    }
+  updateFilter(filter: string, metadataName: string): void {
+    this.filterService.updateFilterContext(metadataName, filter);
   }
 }

@@ -6,6 +6,10 @@ describe('Table size and toggle filter', () => {
     cy.initializeApp();
   });
 
+  afterEach(() => {
+    cy.clearDebugStore();
+  })
+
   it('Typing in a table size and retyping it', () => {
     // We only assume here that the default is two or more.
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 2);

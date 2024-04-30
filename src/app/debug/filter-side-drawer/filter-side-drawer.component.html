@@ -11,9 +11,9 @@
           [(ngModel)]="filters[metadataName]"
           [matAutocomplete]="auto"
           [placeholder]="'Filter for ' + metadataName"
-          (keydown.enter)="updateFilter($event, metadataName)"
+          (ngModelChange)="updateFilter($event, metadataName)"
           data-cy-debug="tableFilter">
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="updateFilter($event, metadataName)">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="updateFilter($event.option.value, metadataName)">
           <mat-option [value]="''" class="filter-option" data-cy-debug="matAutocompleteEmptyOption"></mat-option>
           @for (option of currentRecords.get(metadataName.toLocaleLowerCase()); track currentRecords) {
             <mat-option [value]="option" class="filter-option" data-cy-debug="matAutocompleteOption">{{option}}</mat-option>
