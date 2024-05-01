@@ -1,10 +1,9 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
@@ -12,16 +11,17 @@ import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { ToastService } from '../shared/services/toast.service';
 import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
+import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.css'],
 })
-export class TestComponent implements OnInit {
+export class TestComponent implements AfterViewInit {
   reports: any[] = [];
   reranReports: ReranReport[] = [];
-  generatorStatus: string = 'Disabled';
+  generatorStatus?: string;
   currentFilter: string = '';
   currentView: any = {
     metadataNames: ['storageId', 'name', 'path'],
@@ -30,18 +30,22 @@ export class TestComponent implements OnInit {
   };
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
-  @ViewChild(TestSettingsModalComponent)
-  testSettingsModal!: TestSettingsModalComponent;
-  @ViewChild(TestFolderTreeComponent)
-  testFolderTreeComponent!: TestFolderTreeComponent;
+  @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
+  @ViewChild(TestFolderTreeComponent) testFileTreeComponent!: TestFolderTreeComponent;
 
   constructor(
     private httpService: HttpService,
     private helperService: HelperService,
     private toastService: ToastService,
     private tabService: TabService,
-  ) {}
+  ) {
+    this.getGeneratorStatus();
+  }
+
+  ngAfterViewInit(): void {
+    this.loadData(null);
+  }
 
   openCloneModal(): void {
     if (this.helperService.getSelectedReports(this.reports).length === 1) {
@@ -59,14 +63,10 @@ export class TestComponent implements OnInit {
     return localStorage.getItem('showReportStorageIds') === 'true';
   }
 
-  ngOnInit(): void {
-    this.loadData(null);
-    this.getGeneratorStatus();
-  }
-
   getGeneratorStatus() {
-    if (localStorage.getItem('generatorEnabled')) {
-      this.generatorStatus = localStorage.getItem('generatorEnabled')!;
+    const generatorStatus = localStorage.getItem('generatorEnabled');
+    if (generatorStatus) {
+      this.generatorStatus = generatorStatus;
     } else {
       this.httpService.getSettings().subscribe((response) => {
         this.generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
@@ -103,7 +103,12 @@ export class TestComponent implements OnInit {
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value) => {
         this.reports = value;
-        this.testFolderTreeComponent.updateFolderTree(this.reports, path);
+        this.testFileTreeComponent.setData(this.reports);
+        if (path) {
+          setTimeout(() => {
+            this.testFileTreeComponent.selectItem(path);
+          });
+        }
       },
       error: () => catchError(this.httpService.handleError()),
     });
@@ -246,13 +251,8 @@ export class TestComponent implements OnInit {
   updatePath(action: string) {
     let reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
-      let path = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
-      if (!path.endsWith('/')) {
-        path = path + '/';
-      }
-      if (!path.startsWith('/')) {
-        path = '/' + path;
-      }
+      let path: string = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
+      path = this.addSlashesToPathEnds(path);
       let map: UpdatePathSettings = { path: path, action: action };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
     } else {
@@ -260,11 +260,37 @@ export class TestComponent implements OnInit {
     }
   }
 
+  addSlashesToPathEnds(path: string): string {
+    if (path.length > 0 && !path.startsWith('/')) {
+      path = '/' + path;
+    }
+    if (!path.endsWith('/')) {
+      path = path + '/';
+    }
+    return path;
+  }
+
   changeFilter(filter: string): void {
+    filter = this.transformFilter(filter);
+    if (filter === this.testFileTreeComponent.rootFolder.name) {
+      filter = '';
+    }
     this.currentFilter = filter;
-    this.reports.forEach((report) => {
+    for (const report of this.reports) {
       report.checked = this.matches(report);
-    });
+    }
+  }
+
+  transformFilter(value: string): string {
+    if (value !== '' && value !== 'Reports') {
+      if (!value.startsWith('/')) {
+        value = `/${value}`;
+      }
+      if (!value.endsWith('/')) {
+        value = `${value}/`;
+      }
+    }
+    return value;
   }
 
   matches(report: any): boolean {
