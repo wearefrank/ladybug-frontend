@@ -9,7 +9,7 @@ describe('TestFileTreeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TestFolderTreeComponent, NgSimpleFileTreeModule],
+      imports: [TestFolderTreeComponent, NgSimpleFileTreeModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestFolderTreeComponent);

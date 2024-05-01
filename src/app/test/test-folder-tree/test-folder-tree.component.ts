@@ -10,12 +10,12 @@ import { Subject } from 'rxjs';
   styleUrl: './test-folder-tree.component.css',
 })
 export class TestFolderTreeComponent {
-  public rootFolder: CreateTreeItem = {
+  @ViewChild('tree') tree!: NgSimpleFileTree;
+  @Output() changeFolderEvent: Subject<string> = new Subject<string>();
+  rootFolder: CreateTreeItem = {
     name: 'Reports',
     icon: 'assets/tree-icons/folder.svg',
   };
-  @Output() changeFolderEvent: Subject<string> = new Subject<string>();
-  @ViewChild('tree') tree!: NgSimpleFileTree;
   treeOptions: FileTreeOptions = {
     folderBehaviourOnClick: 'select',
     expandAllFolders: true,
@@ -30,8 +30,7 @@ export class TestFolderTreeComponent {
 
   selectItem(value: string) {
     value = this.removeSlashesFromPathEnds(value);
-    let path;
-    path = value.length > 0 ? `Reports/${value}` : 'Reports';
+    const path = value.length > 0 ? `Reports/${value}` : 'Reports';
     this.tree.selectItem(path);
   }
 

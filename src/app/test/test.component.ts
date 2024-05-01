@@ -108,6 +108,10 @@ export class TestComponent implements AfterViewInit {
           setTimeout(() => {
             this.testFileTreeComponent.selectItem(path);
           });
+        } else {
+          setTimeout(() => {
+            this.testFileTreeComponent.tree.selectItem(this.testFileTreeComponent.rootFolder.name);
+          });
         }
       },
       error: () => catchError(this.httpService.handleError()),
