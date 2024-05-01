@@ -69,5 +69,6 @@ describe('Table size and toggle filter', () => {
     cy.get('[data-cy-debug="tableFilter"]').eq(3).type('test')
     cy.get('[data-cy-debug="matAutocompleteEmptyOption"]').first().click()
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 2);
+    cy.get('[data-cy-debug="filter"]').click()
   })
 })
