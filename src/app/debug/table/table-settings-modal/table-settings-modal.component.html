@@ -113,7 +113,7 @@ Example 3 (only store report when name doesn't start with Hello World):
       <button title="Revert changes" type="button" class="btn btn-info" (click)="loadSettings()"><i
         class="fa fa-undo"></i></button>
       <button data-cy-settings='saveChanges' title="Save changes" type="submit" id="saveTableSettings"
-              class="btn btn-info" (click)="saveSettings(); modal.dimiss()"><i class="fa fa-save"></i></button>
+              class="btn btn-info" (click)="modal.dismiss(); saveSettings()"><i class="fa fa-save"></i></button>
     </div>
   </form>
 </ng-template>
