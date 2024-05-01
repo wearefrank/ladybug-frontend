@@ -9,17 +9,15 @@ describe('Tests about copying', function() {
     cy.get('[data-cy-test="selectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
-    cy.get('[data-cy-nav-tab="debugTab"]').click();
   });
 
   it('Copy report to test tab', () => {
-    cy.visit('');
     cy.get('[data-cy-nav-tab="testTab"]').click();
     cy.checkTestTableNumRows(0);
-    cy.createReport();
     cy.get('[data-cy-nav-tab="debugTab"]').click();
     cy.checkTableNumRows(0);
-    cy.get('[data-cy-debug="refresh"]').click();
+    cy.createReport();
+    cy.refreshApp();
     cy.checkTableNumRows(1);
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();

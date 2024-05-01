@@ -272,3 +272,15 @@ Cypress.Commands.add('clickRowInTable', (index: number) => {
 Cypress.Commands.add('checkFileTreeLength', (n: number) => {
   cy.get('[data-cy-debug-tree="root"] > app-tree-item').should('have.length', n);
 });
+
+Cypress.Commands.add('refreshApp', () => {
+  cy.intercept({
+    method: 'GET',
+    hostname: 'localhost',
+    url: /\/api\/*?/g,
+  }).as('apiCall');
+  cy.get('[data-cy-debug="refresh"]').click();
+  cy.wait('@apiCall').then(() =>
+    cy.log('All api requests have completed'),
+  );
+});

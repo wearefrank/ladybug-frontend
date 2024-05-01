@@ -8,7 +8,7 @@
           class="metadata-input"
           type="text"
           [title]="metadataName"
-          [(ngModel)]="filters[metadataName]"
+          [(ngModel)]="filterService.getCurrentFilterContext()[metadataName]"
           [matAutocomplete]="auto"
           [placeholder]="'Filter for ' + metadataName"
           (ngModelChange)="updateFilter($event, metadataName)"

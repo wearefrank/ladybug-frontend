@@ -30,8 +30,13 @@ export class FilterService {
     this.filterContextSubject.next(this.filters);
   }
 
+  getCurrentFilterContext(): Record<string, string> {
+    return this.filters;
+  }
+
   resetFilter(): void {
-    this.filterContextSubject.next({});
+    this.filters = {};
+    this.filterContextSubject.next(this.filters);
   }
 
   setCurrentRecords(records: Map<string, Array<string>>): void {

@@ -96,6 +96,14 @@ export class TableComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     localStorage.setItem('transformationEnabled', 'true');
+    this.showFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
+      this.tableSettings.showFilter = show;
+    });
+    this.filterContextSubscription = this.filterService.filterContext$.subscribe(
+      (context: Record<string, string>): void => {
+        this.changeFilter(context);
+      },
+    );
     this.loadData();
     this.listenForViewUpdate();
     this.subscribeToSettingsObservables();
@@ -213,14 +221,6 @@ export class TableComponent implements OnInit, OnDestroy {
       this.retrieveRecords();
       this.getUserHelp();
     });
-    this.showFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
-      this.tableSettings.showFilter = show;
-    });
-    this.filterContextSubscription = this.filterService.filterContext$.subscribe(
-      (context: Record<string, string>): void => {
-        this.changeFilter(context);
-      },
-    );
     this.loadReportInProgressSettings();
   }
 
@@ -399,17 +399,16 @@ export class TableComponent implements OnInit, OnDestroy {
       this.tableSettings.filterValues = [];
       this.tableSettings.filterHeaders = [];
       this.currentFilters = new Map<string, string>();
-      this.retrieveRecords();
     } else {
       this.tableSettings.filterValues = Object.values(filters);
       this.tableSettings.filterHeaders = Object.keys(filters);
-      this.retrieveRecords();
       let current: Map<string, string> = new Map<string, string>();
       for (const filtersKey in filters) {
         current.set(filtersKey, filters[filtersKey]);
       }
       this.currentFilters = current;
     }
+    this.retrieveRecords();
   }
 
   changeTableLimit(event: any): void {
@@ -419,12 +418,10 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   refresh(): void {
-    this.tableSettings.showFilter = false;
+    this.filterService.setShowFilter(false);
     this.tableSettings.reportMetadata = [];
     this.tableSettings.tableLoaded = false;
     this.tableSettings.displayAmount = 10;
-    this.filterService.resetFilter();
-    this.changeFilter({});
     this.loadData();
   }
 
