@@ -65,4 +65,5 @@
 
 .filter-option {
   font-size: .9rem;
+  word-break: break-all;
 }
