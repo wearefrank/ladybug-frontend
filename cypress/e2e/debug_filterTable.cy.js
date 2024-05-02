@@ -57,7 +57,6 @@ describe('Table size and toggle filter', () => {
     cy.get('[data-cy-debug="filter"]').click()
     cy.get('[data-cy-debug="tableFilter"]').eq(3).type('test')
     cy.get('[data-cy-debug="matAutocompleteOption"]').should('be.visible')
-    cy.get('[data-cy-debug="matAutocompleteEmptyOption"]').should('be.visible')
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 2);
   })
 
@@ -67,7 +66,7 @@ describe('Table size and toggle filter', () => {
     cy.get('[data-cy-debug="matAutocompleteOption"]').first().click()
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 1);
     cy.get('[data-cy-debug="tableFilter"]').eq(3).type('test')
-    cy.get('[data-cy-debug="matAutocompleteEmptyOption"]').first().click()
+    cy.get('[data-cy-debug="filterClearButton"]').eq(3).click()
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 2);
     cy.get('[data-cy-debug="filter"]').click()
   })

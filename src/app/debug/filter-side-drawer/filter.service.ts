@@ -7,13 +7,13 @@ import { debounceTime, Observable, Subject } from 'rxjs';
 export class FilterService {
   private showFilterSubject: Subject<boolean> = new Subject();
   private metadataNamesSubject: Subject<string[]> = new Subject();
-  private filterContextSubject: Subject<Record<string, string>> = new Subject();
+  private filterContextSubject: Subject<Map<string, string>> = new Subject();
   private currentRecordsSubject: Subject<Map<string, Array<string>>> = new Subject();
-  private filters: Record<string, string> = {};
+  private filters: Map<string, string> = new Map<string, string>();
 
   showFilter$: Observable<boolean> = this.showFilterSubject.asObservable();
   metadataNames$: Observable<string[]> = this.metadataNamesSubject.asObservable();
-  filterContext$: Observable<Record<string, string>> = this.filterContextSubject.pipe(debounceTime(300));
+  filterContext$: Observable<Map<string, string>> = this.filterContextSubject.pipe(debounceTime(300));
   currentRecords$: Observable<Map<string, Array<string>>> = this.currentRecordsSubject.asObservable();
 
   setShowFilter(show: boolean): void {
@@ -25,17 +25,17 @@ export class FilterService {
   }
 
   updateFilterContext(filterName: string, filterContext: string): void {
-    if (filterContext.length > 0) this.filters[filterName] = filterContext;
-    else delete this.filters[filterName];
+    if (filterContext.length > 0) this.filters.set(filterName, filterContext);
+    else this.filters.delete(filterName);
     this.filterContextSubject.next(this.filters);
   }
 
-  getCurrentFilterContext(): Record<string, string> {
+  getCurrentFilterContext(): Map<string, string> {
     return this.filters;
   }
 
   resetFilter(): void {
-    this.filters = {};
+    this.filters = new Map<string, string>();
     this.filterContextSubject.next(this.filters);
   }
 

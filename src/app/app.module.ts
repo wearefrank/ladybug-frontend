@@ -66,7 +66,6 @@ import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
     ActiveFiltersComponent,
     DictionaryPipe,
     ReportDisplayComponent,
-    FilterSideDrawerComponent,
   ],
   imports: [
     BrowserModule,
@@ -87,6 +86,7 @@ import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
     CheckpointTypePipe,
     ClipboardModule,
     NgSimpleFileTreeModule,
+    FilterSideDrawerComponent,
   ],
   providers: [],
   bootstrap: [AppComponent],

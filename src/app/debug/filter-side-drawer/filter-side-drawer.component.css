@@ -25,7 +25,7 @@
 .input-container {
   display: flex;
   flex-direction: column;
-  margin-top: .4rem;
+  margin: .4rem;
 }
 
 .btn-container {
@@ -44,16 +44,25 @@
   font-size: .9rem;
 }
 
+.metadata-input-container {
+  display: flex;
+}
+
 .metadata-input {
   padding: 5px;
-  width: 80%;
+  width: 60%;
   border: 1px solid #ced4da;
-  border-radius: .25rem;
+  border-radius: .25rem 0 0 .25rem;
   background-clip: padding-box;
   height: calc(1.5em + .75rem + 2px);
+  z-index: 3;
 }
 
 .filter-label {
   font-size: 1rem;
   text-decoration: underline;
+}
+
+.filter-option {
+  font-size: .9rem;
 }

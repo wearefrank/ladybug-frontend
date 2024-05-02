@@ -96,22 +96,14 @@ export class TableComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     localStorage.setItem('transformationEnabled', 'true');
-    this.showFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
-      this.tableSettings.showFilter = show;
-    });
-    this.filterContextSubscription = this.filterService.filterContext$.subscribe(
-      (context: Record<string, string>): void => {
-        this.changeFilter(context);
-      },
-    );
     this.loadData();
     this.listenForViewUpdate();
     this.subscribeToSettingsObservables();
+    this.subscribeToFilterObservables();
   }
 
   ngOnDestroy(): void {
-    this.tableSpacingSubscription.unsubscribe();
-    this.filterContextSubscription.unsubscribe();
+    this.unsubscribeFromObservables();
   }
 
   subscribeToSettingsObservables(): void {
@@ -123,6 +115,22 @@ export class TableComponent implements OnInit, OnDestroy {
         this.showMultipleFiles = value;
       },
     );
+  }
+
+  subscribeToFilterObservables(): void {
+    this.showFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
+      this.tableSettings.showFilter = show;
+    });
+    this.filterContextSubscription = this.filterService.filterContext$.subscribe(
+      (context: Map<string, string>): void => {
+        this.changeFilter(context);
+      },
+    );
+  }
+
+  unsubscribeFromObservables(): void {
+    this.filterContextSubscription.unsubscribe();
+    this.tableSpacingSubscription.unsubscribe();
   }
 
   retrieveRecords() {
@@ -394,20 +402,22 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeFilter(filters: Record<string, string>): void {
-    if (Object.keys(filters).length === 0) {
+  changeFilter(filters: Map<string, string>): void {
+    if (filters.size === 0) {
       this.tableSettings.filterValues = [];
       this.tableSettings.filterHeaders = [];
       this.currentFilters = new Map<string, string>();
     } else {
-      this.tableSettings.filterValues = Object.values(filters);
-      this.tableSettings.filterHeaders = Object.keys(filters);
+      this.tableSettings.filterValues = [...filters.values()];
+      this.tableSettings.filterHeaders = [...filters.keys()];
       let current: Map<string, string> = new Map<string, string>();
-      for (const filtersKey in filters) {
-        current.set(filtersKey, filters[filtersKey]);
-      }
+      filters.forEach((filterValue: string, filterKey: string): void => {
+        current.set(filterKey, filterValue ?? '');
+      });
       this.currentFilters = current;
     }
+    console.log(this.tableSettings.filterValues);
+    console.log(this.tableSettings.filterHeaders);
     this.retrieveRecords();
   }
 
@@ -514,13 +524,20 @@ export class TableComponent implements OnInit, OnDestroy {
       const upperHeaderName = headerName.toUpperCase();
       let uniqueValues: Set<string> = new Set<string>();
       for (let element of data) {
-        if (element[lowerHeaderName] != undefined) uniqueValues.add(element[lowerHeaderName]);
-        if (element[upperHeaderName] != undefined) uniqueValues.add(element[upperHeaderName]);
-        if (element[headerName] != undefined) uniqueValues.add(element[headerName]);
+        if (element[lowerHeaderName]) {
+          uniqueValues.add(element[lowerHeaderName]);
+        }
+        if (element[upperHeaderName]) {
+          uniqueValues.add(element[upperHeaderName]);
+        }
+        if (element[headerName]) {
+          uniqueValues.add(element[headerName]);
+        }
       }
+      const MAX_AMOUNT_OF_FILTER_SUGGESTIONS: number = 15;
       this.tableSettings.uniqueValues.set(
         lowerHeaderName,
-        uniqueValues.size < 15 ? this.sortUniqueValues(uniqueValues) : ([] as string[]),
+        uniqueValues.size < MAX_AMOUNT_OF_FILTER_SUGGESTIONS ? this.sortUniqueValues(uniqueValues) : ([] as string[]),
       );
       this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
     }
