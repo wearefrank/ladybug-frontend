@@ -10,8 +10,7 @@ describe('FilterSideDrawerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FilterSideDrawerComponent],
-      imports: [MatAutocompleteModule, FormsModule],
+      imports: [MatAutocompleteModule, FormsModule, FilterSideDrawerComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FilterSideDrawerComponent);
