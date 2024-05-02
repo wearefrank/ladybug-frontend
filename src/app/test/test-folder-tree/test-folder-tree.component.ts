@@ -48,7 +48,7 @@ export class TestFolderTreeComponent {
     this.resetTree();
     this.originalItems = data;
     const tempItems = this.convertToFolders(data);
-    let rootFolder = Object.assign({}, this.rootFolder);
+    const rootFolder = Object.assign({}, this.rootFolder);
     if (tempItems && tempItems.length > 0) {
       rootFolder.children = tempItems;
     }
@@ -73,14 +73,14 @@ export class TestFolderTreeComponent {
       index = path.indexOf('/', 2);
     }
     if (index === -1) {
-      throw new Error('Path had only 1 slash');
+      throw new Error("Path didn't have enough slashes");
     }
     let folderName = path.slice(0, index);
     const remainingPath = path.replace(folderName, '');
     if (folderName.startsWith('/')) {
       folderName = folderName.slice(1);
     }
-    const treeItem = { name: folderName, icon: 'assets/tree-icons/folder.svg' } as CreateTreeItem;
+    const treeItem: CreateTreeItem = { name: folderName, icon: 'assets/tree-icons/folder.svg' };
     if (remainingPath && remainingPath !== '/' && remainingPath !== '') {
       const child = this.createFolderFromPath(remainingPath);
       treeItem.children = [child as Child];

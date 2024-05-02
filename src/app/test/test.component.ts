@@ -257,7 +257,7 @@ export class TestComponent implements AfterViewInit {
     if (reportIds.length > 0) {
       let path: string = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
       path = this.addSlashesToPathEnds(path);
-      let map: UpdatePathSettings = { path: path, action: action };
+      const map: UpdatePathSettings = { path: path, action: action };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
     } else {
       this.toastService.showWarning('No Report Selected!');
@@ -266,10 +266,10 @@ export class TestComponent implements AfterViewInit {
 
   addSlashesToPathEnds(path: string): string {
     if (path.length > 0 && !path.startsWith('/')) {
-      path = '/' + path;
+      path = `/ ${path}`;
     }
     if (!path.endsWith('/')) {
-      path = path + '/';
+      path = `${path}/`;
     }
     return path;
   }
