@@ -64,7 +64,7 @@ export class ReportComponent implements OnInit, AfterViewInit {
     this.editDisplayComponent.showReport(report);
   }
 
-  savingReport(report: any): void {
+  savingReport(report: Report): void {
     let selectedNodeIndex = this.treeReference.getItems().findIndex((item) => item.selected);
     this.treeReference.clear();
     let tree = this.helperService.convertReportToJqxTree(report);
