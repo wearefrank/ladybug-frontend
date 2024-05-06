@@ -16,9 +16,9 @@ describe('Tests about copying', function() {
     cy.visit('');
     cy.get('[data-cy-nav-tab="testTab"]').click();
     cy.checkTestTableNumRows(0);
-    cy.createReport();
     cy.get('[data-cy-nav-tab="debugTab"]').click();
     cy.checkTableNumRows(0);
+    cy.createReport();
     cy.get('[data-cy-debug="refresh"]').click();
     cy.checkTableNumRows(1);
     cy.get('[data-cy-debug="selectAll"]').click();
@@ -29,6 +29,7 @@ describe('Tests about copying', function() {
     cy.checkTestTableReportsAre(['Simple report']);
     cy.get('[data-cy-nav-tab="debugTab"]').click();
     cy.checkTableNumRows(1);
+    cy.clickRowInTable(0);
     cy.checkFileTreeLength(1);
     cy.get('[data-cy-nav-tab="testTab"]').click();
     // Do not refresh. The test tab should have saved its state.

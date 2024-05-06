@@ -67,7 +67,7 @@ export class TestComponent implements OnInit {
     this.getGeneratorStatus();
   }
 
-  getGeneratorStatus() {
+  getGeneratorStatus(): void {
     if (localStorage.getItem('generatorEnabled')) {
       this.generatorStatus = localStorage.getItem('generatorEnabled')!;
     } else {
@@ -165,9 +165,7 @@ export class TestComponent implements OnInit {
   }
 
   openReport(storageId: string, name: string): void {
-    this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data) => {
-      let report: Report = data.report;
-      report.xml = data.xml;
+    this.httpService.getReport(storageId, this.currentView.storageName).subscribe((report: Report): void => {
       const reportData: ReportData = {
         report: report,
         currentView: this.currentView,
@@ -176,7 +174,7 @@ export class TestComponent implements OnInit {
     });
   }
 
-  openDeleteModal() {
+  openDeleteModal(): void {
     let reportsToBeDeleted = this.helperService.getSelectedReports(this.reports);
     if (reportsToBeDeleted.length > 0) {
       this.deleteModal.open(reportsToBeDeleted);
@@ -257,7 +255,7 @@ export class TestComponent implements OnInit {
     this.reports.forEach((report) => (report.checked = false));
   }
 
-  updatePath(action: string) {
+  updatePath(action: string): void {
     let reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       let path = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
@@ -286,7 +284,7 @@ export class TestComponent implements OnInit {
     return name.match('(/)?' + this.currentFilter + '.*') != undefined;
   }
 
-  showRelativePath(path: string) {
+  showRelativePath(path: string): string {
     if (path) {
       return path.replace(this.currentFilter, '');
     }
@@ -307,7 +305,7 @@ export class TestComponent implements OnInit {
     return resultString.slice(0, -2);
   }
 
-  sortByName() {
+  sortByName(): any[] {
     return this.reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
   }
 }

@@ -310,15 +310,15 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openReportInTab(): void {
     let reportTab = this.tableSettings.reportMetadata.find((report) => report.checked);
-    this.httpService.getReport(reportTab.storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
-      let report: Report = data.report;
-      report.xml = data.xml;
-      const reportData: ReportData = {
-        report: report,
-        currentView: this.viewSettings.currentView,
-      };
-      this.tabService.openNewTab(reportData);
-    });
+    this.httpService
+      .getReport(reportTab.storageId, this.viewSettings.currentView.storageName)
+      .subscribe((report: Report): void => {
+        const reportData: ReportData = {
+          report: report,
+          currentView: this.viewSettings.currentView,
+        };
+        this.tabService.openNewTab(reportData);
+      });
   }
 
   openSelected(): void {
@@ -409,11 +409,9 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: string): void {
-    this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
-      let report: Report = data.report;
-      report.xml = data.xml;
-      report.storageName = this.viewSettings.currentView.storageName;
-      this.openReportEvent.next(report);
+    this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data: Report): void => {
+      data.storageName = this.viewSettings.currentView.storageName;
+      this.openReportEvent.next(data);
     });
   }
 
