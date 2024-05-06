@@ -52,7 +52,7 @@ export class CompareComponent implements OnInit, AfterViewInit {
   }
 
   getIdsFromPath() {
-    return <string>this.route.snapshot.paramMap.get('id');
+    return this.route.snapshot.paramMap.get('id') as string;
   }
 
   getData(id: string) {

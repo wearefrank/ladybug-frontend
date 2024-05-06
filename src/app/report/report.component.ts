@@ -22,7 +22,7 @@ export class ReportComponent implements OnInit, AfterViewInit {
   @ViewChild(EditDisplayComponent) editDisplayComponent!: EditDisplayComponent;
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
   currentView?: View;
-  reportData: ReportData | undefined;
+  reportData?: ReportData;
 
   constructor(
     private tabService: TabService,
@@ -51,7 +51,7 @@ export class ReportComponent implements OnInit, AfterViewInit {
   }
 
   getIdFromPath(): string {
-    return <string>this.route.snapshot.paramMap.get('id');
+    return this.route.snapshot.paramMap.get('id') as string;
   }
 
   createTree(report: Report): void {
