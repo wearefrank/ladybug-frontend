@@ -8,6 +8,7 @@ describe('Tests for settings component', () => {
   afterEach(() => {
     cy.clearDebugStore();
     cy.deleteAllTestReports();
+    cy.clearLocalStorage()
   })
 
   it('should alter spacing when spacing setting is altered', () => {
