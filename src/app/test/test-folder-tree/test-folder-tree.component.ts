@@ -85,8 +85,8 @@ export class TestFolderTreeComponent {
     }
     const treeItem: CreateTreeItem = { name: folderName, icon: 'assets/tree-icons/folder.svg' };
     if (remainingPath && remainingPath !== '/' && remainingPath !== '') {
-      const child = this.createFolderFromPath(remainingPath);
-      treeItem.children = [child as Child];
+      const child: Child = this.createFolderFromPath(remainingPath);
+      treeItem.children = [child];
     }
     return treeItem;
   }
