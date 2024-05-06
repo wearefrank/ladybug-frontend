@@ -12,6 +12,8 @@ import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { ToastService } from '../shared/services/toast.service';
 import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
+import { ReportData } from '../shared/interfaces/report-data';
+import { NodeLinkStrategy } from '../shared/enums/compare-method';
 
 @Component({
   selector: 'app-test',
@@ -19,6 +21,7 @@ import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
   styleUrls: ['./test.component.css'],
 })
 export class TestComponent implements OnInit {
+  static readonly ROUTER_PATH: string = 'test';
   reports: any[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
@@ -165,7 +168,11 @@ export class TestComponent implements OnInit {
     this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data) => {
       let report: Report = data.report;
       report.xml = data.xml;
-      this.tabService.openNewTab({ data: report, name: name });
+      const reportData: ReportData = {
+        report: report,
+        currentView: this.currentView,
+      };
+      this.tabService.openNewTab(reportData);
     });
   }
 
@@ -209,7 +216,14 @@ export class TestComponent implements OnInit {
   compareReports(id: string): void {
     const reranReport = this.reranReports.find((report: ReranReport) => report.id == id);
     if (reranReport) {
+      const tabId: string = this.helperService.createCompareTabId(
+        reranReport?.originalReport,
+        reranReport?.runResultReport,
+      );
       this.tabService.openNewCompareTab({
+        id: tabId,
+        nodeLinkStrategy: NodeLinkStrategy.NONE,
+        viewName: 'compare',
         originalReport: reranReport.originalReport,
         runResultReport: reranReport.runResultReport,
       });

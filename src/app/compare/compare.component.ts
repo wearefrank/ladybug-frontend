@@ -3,6 +3,8 @@ import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 import { NodeLinkStrategy } from '../shared/enums/compare-method';
 import { CompareData } from './compare-data';
 import { DiffEditorModel } from 'ngx-monaco-editor-v2';
+import { TabService } from '../shared/services/tab.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-compare',
@@ -10,6 +12,9 @@ import { DiffEditorModel } from 'ngx-monaco-editor-v2';
   styleUrls: ['./compare.component.css'],
 })
 export class CompareComponent implements OnInit, AfterViewInit {
+  static readonly leftReportKey: string = 'leftId';
+  static readonly rightReportKey: string = 'rightId';
+  static readonly ROUTER_PATH: string = 'compare';
   @ViewChild('trees') compareTreeComponent!: CompareTreeComponent;
   diffOptions = { theme: 'vs', language: 'xml', readOnly: true, renderSideBySide: true, automaticLayout: true };
   originalModel: DiffEditorModel = {
@@ -21,11 +26,23 @@ export class CompareComponent implements OnInit, AfterViewInit {
     code: '',
     language: 'xml',
   };
+  id?: string;
 
-  constructor(public compareData: CompareData) {}
+  compareData: CompareData | undefined;
+
+  constructor(
+    public tabService: TabService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
-    this.renderDiffs(this.compareData.originalReport.xml, this.compareData.runResultReport.xml);
+    this.compareData = this.getData(this.getIdsFromPath());
+    if (this.compareData) {
+      this.renderDiffs(this.compareData.originalReport.xml, this.compareData.runResultReport.xml);
+    } else {
+      this.router.navigate(['debug']);
+    }
   }
 
   ngAfterViewInit(): void {
@@ -34,8 +51,16 @@ export class CompareComponent implements OnInit, AfterViewInit {
     }, 100);
   }
 
+  getIdsFromPath() {
+    return <string>this.route.snapshot.paramMap.get('id');
+  }
+
+  getData(id: string) {
+    return this.tabService.activeCompareTabs.get(id);
+  }
+
   showReports(): void {
-    if (this.compareData.originalReport && this.compareData.runResultReport) {
+    if (this.compareData && this.compareData.originalReport && this.compareData.runResultReport) {
       this.compareTreeComponent?.createTrees(
         this.compareData.viewName,
         this.compareData.nodeLinkStrategy,
@@ -52,7 +77,9 @@ export class CompareComponent implements OnInit, AfterViewInit {
   }
 
   changeNodeLinkStrategy(nodeLinkStrategy: NodeLinkStrategy): void {
-    this.compareData.nodeLinkStrategy = nodeLinkStrategy;
+    if (this.compareData) {
+      this.compareData.nodeLinkStrategy = nodeLinkStrategy;
+    }
   }
 
   extractMessage(report: any): string {

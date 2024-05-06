@@ -6,6 +6,7 @@ import { HttpService } from '../../shared/services/http.service';
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
+import { Report } from '../../shared/interfaces/report';
 
 @Component({
   selector: 'app-edit-display',
@@ -38,7 +39,7 @@ export class EditDisplayComponent {
     private helperService: HelperService,
   ) {}
 
-  showReport(report: any): void {
+  showReport(report: Report): void {
     this.report = report;
     report.xml
       ? this.editor.setNewReport(report.xml)

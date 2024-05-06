@@ -220,4 +220,8 @@ export class HelperService {
   getSelectedReports(reports: any[]): any[] {
     return reports.filter((report) => report.checked);
   }
+
+  createCompareTabId(originalReport: Report, runResultReport: Report) {
+    return `${originalReport.storageId}-${runResultReport.storageId}`;
+  }
 }
