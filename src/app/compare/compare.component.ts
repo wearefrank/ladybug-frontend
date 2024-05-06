@@ -51,11 +51,11 @@ export class CompareComponent implements OnInit, AfterViewInit {
     }, 100);
   }
 
-  getIdsFromPath() {
+  getIdsFromPath(): string {
     return this.route.snapshot.paramMap.get('id') as string;
   }
 
-  getData(id: string) {
+  getData(id: string): CompareData | undefined {
     return this.tabService.activeCompareTabs.get(id);
   }
 
