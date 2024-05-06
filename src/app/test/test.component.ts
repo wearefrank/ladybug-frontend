@@ -256,7 +256,7 @@ export class TestComponent implements AfterViewInit {
     let reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       let path: string = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
-      path = this.addSlashesToPathEnds(path);
+      path = this.transformPath(path);
       const map: UpdatePathSettings = { path: path, action: action };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
     } else {
@@ -264,37 +264,22 @@ export class TestComponent implements AfterViewInit {
     }
   }
 
-  addSlashesToPathEnds(path: string): string {
-    if (path.length > 0 && !path.startsWith('/')) {
-      path = `/ ${path}`;
-    }
-    if (!path.endsWith('/')) {
-      path = `${path}/`;
-    }
-    return path;
-  }
-
   changeFilter(filter: string): void {
-    filter = this.transformFilter(filter);
-    if (filter === this.testFileTreeComponent.rootFolder.name) {
-      filter = '';
-    }
+    filter = filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
     this.currentFilter = filter;
     for (const report of this.reports) {
       report.checked = this.matches(report);
     }
   }
 
-  transformFilter(value: string): string {
-    if (value !== '' && value !== 'Reports') {
-      if (!value.startsWith('/')) {
-        value = `/${value}`;
-      }
-      if (!value.endsWith('/')) {
-        value = `${value}/`;
-      }
+  transformPath(path: string): string {
+    if (path.length > 0 && !path.startsWith('/')) {
+      path = `/${path}`;
     }
-    return value;
+    if (!path.endsWith('/')) {
+      path = `${path}/`;
+    }
+    return path;
   }
 
   matches(report: any): boolean {

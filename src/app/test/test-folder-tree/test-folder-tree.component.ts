@@ -28,13 +28,13 @@ export class TestFolderTreeComponent {
     return item.name === this.rootFolder.name;
   }
 
-  selectItem(value: string) {
+  selectItem(value: string): void {
     value = this.removeSlashesFromPathEnds(value);
-    const path = value.length > 0 ? `Reports/${value}` : 'Reports';
+    const path: string = value.length > 0 ? `Reports/${value}` : 'Reports';
     this.tree.selectItem(path);
   }
 
-  removeSlashesFromPathEnds(path: string) {
+  removeSlashesFromPathEnds(path: string): string {
     if (path.startsWith('/')) {
       path = path.slice(1);
     }
@@ -44,36 +44,39 @@ export class TestFolderTreeComponent {
     return path;
   }
 
-  setData(data: CreateTreeItem[]) {
+  setData(data: CreateTreeItem[]): void {
     this.resetTree();
     this.originalItems = data;
-    const tempItems = this.convertToFolders(data);
-    const rootFolder = Object.assign({}, this.rootFolder);
+    const tempItems: CreateTreeItem[] = this.convertToFolders(data);
+    const rootFolder: CreateTreeItem = Object.assign({}, this.rootFolder);
     if (tempItems && tempItems.length > 0) {
       rootFolder.children = tempItems;
     }
     this.tree.addItem(rootFolder);
   }
 
-  convertToFolders(items: CreateTreeItem[]) {
+  convertToFolders(items: CreateTreeItem[]): CreateTreeItem[] {
     const tempItems: CreateTreeItem[] = [];
+    const folderNames: string[] = [];
     for (let item of items) {
       if (item.path) {
-        try {
-          tempItems.push(this.createFolderFromPath(item.path));
-        } catch {}
+        const tempItem: CreateTreeItem | undefined = this.createFolderFromPath(item.path);
+        if (tempItem && !folderNames.includes(tempItem.path!)) {
+          folderNames.push(tempItem.path!);
+          tempItems.push(tempItem);
+        }
       }
     }
     return tempItems;
   }
 
-  createFolderFromPath(path: string): CreateTreeItem {
+  createFolderFromPath(path: string): CreateTreeItem | undefined {
     let index = path.indexOf('/');
     if (index === 0) {
       index = path.indexOf('/', 2);
     }
     if (index === -1) {
-      throw new Error("Path didn't have enough slashes");
+      return undefined;
     }
     let folderName = path.slice(0, index);
     const remainingPath = path.replace(folderName, '');
@@ -88,7 +91,7 @@ export class TestFolderTreeComponent {
     return treeItem;
   }
 
-  resetTree() {
+  resetTree(): void {
     if (this.tree) {
       this.tree.clearItems();
     }
