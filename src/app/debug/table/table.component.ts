@@ -536,7 +536,7 @@ export class TableComponent implements OnInit, OnDestroy {
       const MAX_AMOUNT_OF_FILTER_SUGGESTIONS: number = 15;
       this.tableSettings.uniqueValues.set(
         lowerHeaderName,
-        uniqueValues.size < MAX_AMOUNT_OF_FILTER_SUGGESTIONS ? this.sortUniqueValues(uniqueValues) : ([] as string[]),
+        uniqueValues.size < MAX_AMOUNT_OF_FILTER_SUGGESTIONS ? this.sortUniqueValues(uniqueValues) : [],
       );
       this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
     }
