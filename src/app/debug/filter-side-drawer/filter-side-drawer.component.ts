@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FormsModule } from '@angular/forms';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   standalone: true,
@@ -19,7 +20,7 @@ import { FormsModule } from '@angular/forms';
       transition(':leave', animate('300ms ease-out', style({ transform: 'translateX(100%)' }))),
     ]),
   ],
-  imports: [MatAutocompleteModule, FormsModule],
+  imports: [MatAutocompleteModule, FormsModule, TitleCasePipe],
 })
 export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected shouldShowFilter!: boolean;

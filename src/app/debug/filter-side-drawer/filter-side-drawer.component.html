@@ -1,39 +1,55 @@
 @if (shouldShowFilter) {
   <div @removeTrigger class="filter-vertical-panel" data-cy-debug="filter-side-drawer">
-    <label class="filter-label">Filter</label>
-    <div class="filter-input-container">
-      @for (metadataName of metadataNames; track metadataNames) {
-        <div class="input-container">
-          <label class="metadata-input-label">{{ metadataName }}</label>
-          <div class="metadata-input-container">
-            <input
-              class="metadata-input"
-              type="text"
-              [title]="metadataName"
-              [ngModel]="filterService.getCurrentFilterContext().get(metadataName)"
-              [matAutocomplete]="auto"
-              [placeholder]="'Filter for ' + metadataName"
-              (ngModelChange)="updateFilter($event, metadataName)"
-              data-cy-debug="tableFilter">
-            <div class="input-group-append">
-              <button class="btn btn-sm btn-danger button-clear-text" (click)="removeFilter(metadataName)" data-cy-debug="filterClearButton">Clear</button>
+    <div class="panel-container">
+      <h1 class="h1 filter-label">Filter</h1>
+      <div class="filter-input-container">
+        @for (metadataName of metadataNames; track metadataNames) {
+          <div class="input-container">
+            <label class="metadata-input-label">{{ metadataName | titlecase }}</label>
+            <div class="metadata-input-container">
+              <input
+                class="metadata-input"
+                type="text"
+                [title]="metadataName"
+                [ngModel]="filterService.getCurrentFilterContext().get(metadataName)"
+                [matAutocomplete]="auto"
+                [placeholder]="'Filter for ' + metadataName"
+                (ngModelChange)="updateFilter($event, metadataName)"
+                data-cy-debug="tableFilter">
+              <div class="input-group-append">
+                <button
+                  class="btn btn-sm btn-danger button-clear-text"
+                  (click)="removeFilter(metadataName)"
+                  data-cy-debug="filterClearButton">
+                  Clear
+                </button>
+              </div>
             </div>
+            <mat-autocomplete
+              #auto="matAutocomplete"
+              (optionSelected)="updateFilter($event.option.value, metadataName)">
+              @for (option of currentRecords.get(metadataName.toLocaleLowerCase()); track currentRecords) {
+                <mat-option
+                  [value]="option"
+                  class="filter-option"
+                  data-cy-debug="matAutocompleteOption">
+                  {{ option }}
+                </mat-option>
+              }
+            </mat-autocomplete>
           </div>
-          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="updateFilter($event.option.value, metadataName)">
-            @for (option of currentRecords.get(metadataName.toLocaleLowerCase()); track currentRecords) {
-              <mat-option [value]="option" class="filter-option" data-cy-debug="matAutocompleteOption">{{ option }}
-              </mat-option>
-            }
-          </mat-autocomplete>
-        </div>
-      }
-    </div>
-    <div class="btn-container">
-      <button class="close-filter-btn btn btn-info" (click)="closeFilter()" data-cy-debug="close-filter-btn">Close
-      </button>
-      <button class="clear-filter-btn btn btn-info" (click)="filterService.resetFilter()"
-              data-cy-debug="clear-filter-btn">Clear
-      </button>
+        }
+      </div>
+      <div class="btn-container">
+        <button class="close-filter-btn btn btn-info" (click)="closeFilter()" data-cy-debug="close-filter-btn">Close
+        </button>
+        <button
+          class="clear-filter-btn btn btn-info"
+          (click)="filterService.resetFilter()"
+          data-cy-debug="clear-filter-btn">
+          Clear
+        </button>
+      </div>
     </div>
   </div>
 }

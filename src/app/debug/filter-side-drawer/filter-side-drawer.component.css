@@ -9,33 +9,45 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+}
+
+.panel-container {
+  position: relative;
+  height: 100%;
 }
 
 .filter-input-container {
-  margin: 0 1rem;
+  margin: 1rem 1rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex-grow: 4;
   overflow-y: auto;
+  max-height: 800px;
+  height: 80%;
 }
 
 .input-container {
   display: flex;
   flex-direction: column;
-  margin: .4rem;
+  margin: 0.6rem;
 }
 
 .btn-container {
   display: flex;
+  width: calc(100% - 2rem);
   justify-content: space-between;
   margin: 1rem;
+  position: absolute;
+  bottom: 0;
+  z-index: 5;
 }
 
 .filter-label {
   margin-left: 1rem;
   margin-top: 1rem;
+  font-size: 1.5rem;
+  text-decoration: underline;
 }
 
 .metadata-input-label {
@@ -55,11 +67,6 @@
   background-clip: padding-box;
   height: calc(1.5em + .75rem + 2px);
   z-index: 3;
-}
-
-.filter-label {
-  font-size: 1rem;
-  text-decoration: underline;
 }
 
 .filter-option {
