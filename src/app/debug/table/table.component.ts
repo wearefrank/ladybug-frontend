@@ -129,8 +129,10 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   unsubscribeFromObservables(): void {
+    this.showFilterSubscription.unsubscribe();
     this.filterContextSubscription.unsubscribe();
     this.tableSpacingSubscription.unsubscribe();
+    this.showMultipleFilesSubscription.unsubscribe();
   }
 
   retrieveRecords() {
