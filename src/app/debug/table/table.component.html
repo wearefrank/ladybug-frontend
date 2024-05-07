@@ -1,4 +1,5 @@
 <div data-cy-debug="root" class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
+  <app-filter-side-drawer></app-filter-side-drawer>
   <div class="row d-flex align-items-center">
     <app-button data-cy-debug="refresh" icon="fa fa-refresh" title="Refresh" (click)="refresh()"></app-button>
     <app-button data-cy-debug="openSettings" icon="fa fa-cog" title="Settings" (click)="openSettingsModal()"></app-button>
@@ -77,31 +78,6 @@
               [attr.mat-sort-header]="i"
               [title]="header">
             {{getShortenedTableHeaderNames(header)}}
-          </th>
-        </tr>
-        <tr data-cy-debug="tableFilterRow" id="filterRow" *ngIf="tableSettings.showFilter">
-          <th class="vertical-middle">
-            <app-button icon="fa fa-undo" title="Clear filters" (click)="clearFilters()"></app-button>
-          </th>
-          <th *ngFor="let header of viewSettings.currentView.metadataNames" class="filter-header">
-            <div class="input-group">
-              <div>
-                <input
-                  data-cy-debug="tableFilter"
-                  [matAutocomplete]="auto"
-                  type="text"
-                  [title]="tableSettings.metadataHeaders[header]"
-                  class="form-control"
-                  placeholder="Filter for {{header}}"
-                  (keydown.enter)="changeFilter($event, header.toLowerCase())">
-              </div>
-              <mat-autocomplete #auto=matAutocomplete>
-                <mat-option
-                  *ngFor="let option of tableSettings.uniqueValues.get(header.toLowerCase())"
-                  [value]="option" class="filter-option"
-                  (click)="changeFilter($event, header.toLowerCase(), option)">{{option}}</mat-option>
-              </mat-autocomplete>
-            </div>
           </th>
         </tr>
       </thead>

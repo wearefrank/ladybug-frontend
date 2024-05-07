@@ -37,6 +37,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ActiveFiltersComponent } from './debug/active-filters/active-filters.component';
 import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
 import { ReportDisplayComponent } from './report-display/report-display.component';
+import { FilterSideDrawerComponent } from './debug/filter-side-drawer/filter-side-drawer.component';
 import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
 import { TestFolderTreeComponent } from './test/test-folder-tree/test-folder-tree.component';
 
@@ -83,6 +84,7 @@ import { TestFolderTreeComponent } from './test/test-folder-tree/test-folder-tre
     CheckpointTypePipe,
     ClipboardModule,
     NgSimpleFileTreeModule,
+    FilterSideDrawerComponent,
     TestFolderTreeComponent,
   ],
   providers: [],

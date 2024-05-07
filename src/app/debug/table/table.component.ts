@@ -10,6 +10,7 @@ import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { DebugReportService } from '../debug-report.service';
 import { TabService } from '../../shared/services/tab.service';
+import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
 
 @Component({
@@ -56,8 +57,8 @@ export class TableComponent implements OnInit, OnDestroy {
     tableLoaded: false,
     displayAmount: this.DEFAULT_DISPLAY_AMOUNT,
     showFilter: false,
-    filterValue: '(.*)',
-    filterHeader: '',
+    filterValues: [],
+    filterHeaders: [],
     numberOfReportsInProgress: 0,
     estimatedMemoryUsage: '',
     uniqueValues: new Map<string, Array<string>>(),
@@ -73,6 +74,8 @@ export class TableComponent implements OnInit, OnDestroy {
   showMultipleFilesSubscription!: Subscription;
   viewDropdownBoxWidth!: string;
   currentFilters: Map<string, string> = new Map<string, string>();
+  showFilterSubscription!: Subscription;
+  filterContextSubscription!: Subscription;
 
   defaultCheckBoxSize: number = 13;
   defaultFontSize: number = 8;
@@ -89,6 +92,7 @@ export class TableComponent implements OnInit, OnDestroy {
     private toastService: ToastService,
     private debugReportService: DebugReportService,
     private tabService: TabService,
+    private filterService: FilterService,
   ) {}
 
   ngOnInit(): void {
@@ -96,10 +100,11 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadData();
     this.listenForViewUpdate();
     this.subscribeToSettingsObservables();
+    this.subscribeToFilterObservables();
   }
 
   ngOnDestroy(): void {
-    this.tableSpacingSubscription.unsubscribe();
+    this.unsubscribeFromObservables();
   }
 
   subscribeToSettingsObservables(): void {
@@ -113,14 +118,32 @@ export class TableComponent implements OnInit, OnDestroy {
     );
   }
 
-  retrieveRecords() {
+  subscribeToFilterObservables(): void {
+    this.showFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
+      this.tableSettings.showFilter = show;
+    });
+    this.filterContextSubscription = this.filterService.filterContext$.subscribe(
+      (context: Map<string, string>): void => {
+        this.changeFilter(context);
+      },
+    );
+  }
+
+  unsubscribeFromObservables(): void {
+    this.showFilterSubscription.unsubscribe();
+    this.filterContextSubscription.unsubscribe();
+    this.tableSpacingSubscription.unsubscribe();
+    this.showMultipleFilesSubscription.unsubscribe();
+  }
+
+  retrieveRecords(): void {
     this.doneRetrieving = false;
     this.tableSettings.reportMetadata = [];
     const httpServiceSubscription = this.httpService
       .getMetadataReports(
         this.tableSettings.displayAmount,
-        this.tableSettings.filterValue,
-        this.tableSettings.filterHeader,
+        this.tableSettings.filterValues,
+        this.tableSettings.filterHeaders,
         this.viewSettings.currentView.metadataNames,
         this.viewSettings.currentView.storageName,
       )
@@ -142,7 +165,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadMetadataCount();
   }
 
-  getUserHelp() {
+  getUserHelp(): void {
     this.httpService
       .getUserHelp(this.viewSettings.currentView.storageName, this.viewSettings.currentView.metadataNames)
       .subscribe({
@@ -152,28 +175,24 @@ export class TableComponent implements OnInit, OnDestroy {
       });
   }
 
-  clearFilters() {
-    let element: NodeListOf<HTMLInputElement> = document.querySelectorAll('#filter')!;
-    element.forEach((element: HTMLInputElement) => {
-      element.value = '';
-    });
-
-    this.tableSettings.filterValue = '';
-    this.tableSettings.filterHeader = '';
+  clearFilters(): void {
+    this.tableSettings.filterValues = [];
+    this.tableSettings.filterHeaders = [];
     this.retrieveRecords();
   }
 
-  changeView(event: any) {
+  changeView(event: any): void {
     this.allRowsSelected = false;
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
     this.viewSettings.currentViewName = event.target.value;
     this.clearFilters();
     this.debugReportService.changeView(this.viewSettings.currentView);
     this.selectedRow = -1;
+    this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
     this.viewChange.next(this.viewSettings.currentViewName);
   }
 
-  listenForViewUpdate() {
+  listenForViewUpdate(): void {
     this.changeNodeLinkStrategyService.changeNodeLinkStrategy.subscribe(() => {
       this.httpService.getViews().subscribe((views) => {
         this.viewSettings.views = views;
@@ -208,17 +227,16 @@ export class TableComponent implements OnInit, OnDestroy {
       this.retrieveRecords();
       this.getUserHelp();
     });
-
     this.loadReportInProgressSettings();
   }
 
-  loadMetadataCount() {
+  loadMetadataCount(): void {
     this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: number) => {
       this.metadataCount = count;
     });
   }
 
-  loadReportInProgressSettings() {
+  loadReportInProgressSettings(): void {
     this.httpService.getSettings().subscribe({
       next: (settings) => {
         this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
@@ -228,7 +246,7 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadReportInProgressDates() {
+  loadReportInProgressDates(): void {
     let hasChanged: boolean = false;
     for (let index = 1; index <= this.tableSettings.numberOfReportsInProgress; index++) {
       this.httpService.getReportInProgress(index).subscribe((report: Report) => {
@@ -255,7 +273,10 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   toggleFilter(): void {
+    this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
+    this.filterService.setShowFilter(this.tableSettings.showFilter);
+    this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
   }
 
   toggleCheck(report: any): void {
@@ -266,7 +287,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.allRowsSelected = this.checkIfAllRowsSelected();
   }
 
-  checkIfAllRowsSelected() {
+  checkIfAllRowsSelected(): boolean {
     for (let reportMetada of this.tableSettings.reportMetadata) {
       if (!reportMetada.checked) {
         return false;
@@ -382,16 +403,23 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeFilter(event: any, header: string, value?: string): void {
-    const filterValue: string = value ?? event.target.value;
-    if (this.currentFilters.get(header) !== filterValue) {
-      this.tableSettings.filterValue = filterValue ?? '.*';
-      this.tableSettings.filterHeader = filterValue;
-      this.tableSettings.filterHeader &&= header;
-      this.retrieveRecords();
-      this.currentFilters.set(header, filterValue);
-      this.currentFilters = new Map(this.currentFilters);
+  changeFilter(filters: Map<string, string>): void {
+    if (filters.size === 0) {
+      this.tableSettings.filterValues = [];
+      this.tableSettings.filterHeaders = [];
+      this.currentFilters = new Map<string, string>();
+    } else {
+      this.tableSettings.filterValues = [...filters.values()];
+      this.tableSettings.filterHeaders = [...filters.keys()];
+      let current: Map<string, string> = new Map<string, string>();
+      for (const [key, value] of filters.entries()) {
+        if (key) {
+          current.set(key, value ?? '');
+        }
+      }
+      this.currentFilters = current;
     }
+    this.retrieveRecords();
   }
 
   changeTableLimit(event: any): void {
@@ -401,7 +429,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   refresh(): void {
-    this.tableSettings.showFilter = false;
+    this.filterService.setShowFilter(false);
     this.tableSettings.reportMetadata = [];
     this.tableSettings.tableLoaded = false;
     this.tableSettings.displayAmount = 10;
@@ -490,18 +518,27 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   setUniqueOptions(data: any): void {
-    for (const headerName of this.viewSettings.currentView.metadataLabels as string[]) {
+    for (const headerName of this.viewSettings.currentView.metadataNames as string[]) {
       const lowerHeaderName = headerName.toLowerCase();
       const upperHeaderName = headerName.toUpperCase();
       let uniqueValues: Set<string> = new Set<string>();
       for (let element of data) {
-        uniqueValues.add(element[lowerHeaderName]);
-        uniqueValues.add(element[upperHeaderName]);
+        if (element[lowerHeaderName]) {
+          uniqueValues.add(element[lowerHeaderName]);
+        }
+        if (element[upperHeaderName]) {
+          uniqueValues.add(element[upperHeaderName]);
+        }
+        if (element[headerName]) {
+          uniqueValues.add(element[headerName]);
+        }
       }
+      const MAX_AMOUNT_OF_FILTER_SUGGESTIONS: number = 15;
       this.tableSettings.uniqueValues.set(
         lowerHeaderName,
-        uniqueValues.size < 15 ? this.sortUniqueValues(uniqueValues) : ([] as string[]),
+        uniqueValues.size < MAX_AMOUNT_OF_FILTER_SUGGESTIONS ? this.sortUniqueValues(uniqueValues) : [],
       );
+      this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
     }
   }
 
@@ -540,7 +577,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
   }
 
-  loadReportInProgressThreshold() {
+  loadReportInProgressThreshold(): void {
     this.httpService.getReportsInProgressThresholdTime().subscribe((time: number) => {
       this.reportsInProgressThreshold = time;
     });
