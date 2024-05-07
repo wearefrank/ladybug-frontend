@@ -20,7 +20,6 @@ import { TestSettingsModalComponent } from './test/test-settings-modal/test-sett
 import { CloneModalComponent } from './test/clone-modal/clone-modal.component';
 import { DisplayTableComponent } from './shared/components/display-table/display-table.component';
 import { TableSettingsModalComponent } from './debug/table/table-settings-modal/table-settings-modal.component';
-import { TestFolderTreeComponent } from './test/test-folder-tree/test-folder-tree.component';
 import { jqxTreeModule } from 'jqwidgets-ng/jqxtree';
 import { CompareTreeComponent } from './compare/compare-tree/compare-tree.component';
 import { EditDisplayComponent } from './report/edit-display/edit-display.component';
@@ -40,6 +39,7 @@ import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
 import { ReportDisplayComponent } from './report-display/report-display.component';
 import { FilterSideDrawerComponent } from './debug/filter-side-drawer/filter-side-drawer.component';
 import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
+import { TestFolderTreeComponent } from './test/test-folder-tree/test-folder-tree.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +56,6 @@ import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
     CloneModalComponent,
     DisplayTableComponent,
     TableSettingsModalComponent,
-    TestFolderTreeComponent,
     CompareTreeComponent,
     EditDisplayComponent,
     DebugTreeComponent,
@@ -86,6 +85,7 @@ import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
     ClipboardModule,
     NgSimpleFileTreeModule,
     FilterSideDrawerComponent,
+    TestFolderTreeComponent,
   ],
   providers: [],
   bootstrap: [AppComponent],

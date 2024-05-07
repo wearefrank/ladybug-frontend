@@ -73,7 +73,7 @@
           <th class="table-row-checkbox header-padding">
             <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
           </th>
-          <th class="text-center table-id-cell header-cell header-padding"
+          <th class="table-id-cell header-cell header-padding"
               *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
               [attr.mat-sort-header]="i"
               [title]="header">

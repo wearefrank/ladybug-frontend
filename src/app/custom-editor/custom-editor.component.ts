@@ -208,11 +208,13 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   checkIfFileIsXml(value: string): boolean {
-    for (let i = 0; i < value.length; i++) {
-      if (value.charAt(i) === ' ' || value.charAt(i) === '\t') {
-        continue;
+    if (value) {
+      for (let i = 0; i < value.length; i++) {
+        if (value.charAt(i) === ' ' || value.charAt(i) === '\t') {
+          continue;
+        }
+        return value.charAt(i) === '<';
       }
-      return value.charAt(i) === '<';
     }
     return false;
   }
