@@ -40,7 +40,7 @@ Cypress.Commands.add('resetApp' as keyof Chainable, () => {
   );
   cy.deleteAllTestReports();
   cy.initializeApp();
-})
+});
 
 Cypress.Commands.add('navigateToTestTabAndWait' as keyof Chainable, () => {
   navigateToTabAndWait('test');
@@ -208,8 +208,8 @@ Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
   cy.get('[data-cy-test="selectAll"]').click();
   cy.get('[data-cy-test="deleteSelected"]').click();
   console.log(Cypress.$('[data-cy-delete-modal="confirm"]'));
-  if (Cypress.$('[data-cy-delete-modal="confirm"]').length > 0) {
-    cy.get('[data-cy-delete-modal="confirm"]').should('exist');
+  if (Cypress.$('[data-cy-delete-modal="confirm"]').get('prevObject').length > 0) {
+    cy.get('[data-cy-delete-modal="confirm"]').click();
   }
   cy.visit('');
 });
