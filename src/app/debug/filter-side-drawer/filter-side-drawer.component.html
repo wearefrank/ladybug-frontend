@@ -28,7 +28,7 @@
             <mat-autocomplete
               #auto="matAutocomplete"
               (optionSelected)="updateFilter($event.option.value, metadataName)">
-              @for (option of currentRecords.get(metadataName.toLocaleLowerCase()); track currentRecords) {
+              @for (option of currentRecords.get(metadataName.toLocaleLowerCase()); track option) {
                 <mat-option
                   [value]="option"
                   class="filter-option"
