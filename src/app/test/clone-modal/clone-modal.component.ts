@@ -28,8 +28,8 @@ export class CloneModalComponent {
   ) {}
 
   open(selectedReport: any) {
-    this.httpService.getReport(selectedReport.storageId, this.currentView.storageName).subscribe((response) => {
-      this.report = response.report;
+    this.httpService.getReport(selectedReport.storageId, this.currentView.storageName).subscribe((report: Report) => {
+      this.report = report;
       this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
       this.modalService.open(this.modal);
     });

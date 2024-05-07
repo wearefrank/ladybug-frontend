@@ -1,34 +1,24 @@
-<div class="px-1 pt-1" id="ladybug-tabs">
-  <ul ngbNav #nav="ngbNav" [(activeId)]="active" (navChange)="detectTabChange($event)" class="nav-tabs">
-    <li data-cy-nav-tab='debugTab' [ngbNavItem]="1" [destroyOnHide]="false">
-      <a ngbNavLink>Debug</a>
-      <ng-template ngbNavContent>
-        <app-debug></app-debug>
-      </ng-template>
+<div class="px-1 pt-1 vh-100" id="ladybug-tabs">
+  <ul class="nav nav-tabs">
+    <li data-cy-nav-tab="debugTab" class="nav-item">
+      <a [routerLink]="debugComponentPath" class="nav-link" routerLinkActive="active">Debug</a>
     </li>
-    <li data-cy-nav-tab="testTab" [ngbNavItem]="2" [destroyOnHide]="false">
-      <a ngbNavLink>Test</a>
-      <ng-template ngbNavContent>
-        <app-test></app-test>
-      </ng-template>
+    <li data-cy-nav-tab="testTab" class="nav-item">
+      <a [routerLink]="testComponentPath" class="nav-link" routerLinkActive="active">Test</a>
     </li>
-    <li *ngFor="let tab of tabs; let i = index" [ngbNavItem]="i + 3" attr.data-cy-nav-tab="{{tab.key}}">
-      <a ngbNavLink>{{tab.key}}
-        <span (click)="closeTab($event, i)">×</span>
-      </a>
-      <ng-template ngbNavContent *ngIf="tab.key === 'Compare'">
-        <ng-container *ngComponentOutlet="tab.value; injector: compareInjector"></ng-container>
-      </ng-template>
-      <ng-template ngbNavContent *ngIf="tab.key !== 'Compare'">
-        <ng-container *ngComponentOutlet="tab.value; injector: reportInjector"></ng-container>
-      </ng-template>
-    </li>
-    <li ngbNavItem [disabled]="true" class="ml-auto" id="version">
-      <a ngbNavLink>v{{appVersion}}</a>
-      <ng-template ngbNavContent></ng-template>
-    </li>
+
+    @for (tab of tabs; track tab) {
+      <li class="nav-item" [attr.data-cy-nav-tab]="tab.key">
+        <div class="nav-link" routerLinkActive="active">
+          <a [routerLink]="tab.path">
+            {{ tab.key }}
+          </a>
+          <i class="bi bi-x close-tab" (click)="closeTab(tab)"></i>
+        </div>
+      </li>
+    }
   </ul>
-  <div [ngbNavOutlet]="nav"></div>
+  <router-outlet></router-outlet>
 </div>
 
 <app-toast></app-toast>

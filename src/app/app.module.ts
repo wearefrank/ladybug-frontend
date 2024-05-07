@@ -10,7 +10,7 @@ import { TableComponent } from './debug/table/table.component';
 import { DisplayComponent } from './debug/display/display.component';
 import { ButtonComponent } from './shared/components/button/button.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 import { MatSortModule } from '@angular/material/sort';
 import { ReportComponent } from './report/report.component';
@@ -71,7 +71,6 @@ import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
     AppRoutingModule,
     BrowserAnimationsModule,
     NgbModule,
-    NgbNavModule,
     HttpClientModule,
     MatSortModule,
     ReactiveFormsModule,

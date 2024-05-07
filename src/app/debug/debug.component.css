@@ -1,8 +1,11 @@
+:host{
+  height: 100%;
+}
+
 .box {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   height: 100%;
-  overflow: hidden;
 }
 
 .top {
