@@ -136,7 +136,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.showMultipleFilesSubscription.unsubscribe();
   }
 
-  retrieveRecords() {
+  retrieveRecords(): void {
     this.doneRetrieving = false;
     this.tableSettings.reportMetadata = [];
     const httpServiceSubscription = this.httpService
@@ -165,7 +165,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadMetadataCount();
   }
 
-  getUserHelp() {
+  getUserHelp(): void {
     this.httpService
       .getUserHelp(this.viewSettings.currentView.storageName, this.viewSettings.currentView.metadataNames)
       .subscribe({
@@ -175,18 +175,13 @@ export class TableComponent implements OnInit, OnDestroy {
       });
   }
 
-  clearFilters() {
-    let element: NodeListOf<HTMLInputElement> = document.querySelectorAll('#filter')!;
-    element.forEach((element: HTMLInputElement) => {
-      element.value = '';
-    });
-
+  clearFilters(): void {
     this.tableSettings.filterValues = [];
     this.tableSettings.filterHeaders = [];
     this.retrieveRecords();
   }
 
-  changeView(event: any) {
+  changeView(event: any): void {
     this.allRowsSelected = false;
     this.viewSettings.currentView = this.viewSettings.views[event.target.value];
     this.viewSettings.currentViewName = event.target.value;
@@ -197,7 +192,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.viewChange.next(this.viewSettings.currentViewName);
   }
 
-  listenForViewUpdate() {
+  listenForViewUpdate(): void {
     this.changeNodeLinkStrategyService.changeNodeLinkStrategy.subscribe(() => {
       this.httpService.getViews().subscribe((views) => {
         this.viewSettings.views = views;
@@ -235,13 +230,13 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadReportInProgressSettings();
   }
 
-  loadMetadataCount() {
+  loadMetadataCount(): void {
     this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: number) => {
       this.metadataCount = count;
     });
   }
 
-  loadReportInProgressSettings() {
+  loadReportInProgressSettings(): void {
     this.httpService.getSettings().subscribe({
       next: (settings) => {
         this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
@@ -251,7 +246,7 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadReportInProgressDates() {
+  loadReportInProgressDates(): void {
     let hasChanged: boolean = false;
     for (let index = 1; index <= this.tableSettings.numberOfReportsInProgress; index++) {
       this.httpService.getReportInProgress(index).subscribe((report: Report) => {
@@ -292,7 +287,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.allRowsSelected = this.checkIfAllRowsSelected();
   }
 
-  checkIfAllRowsSelected() {
+  checkIfAllRowsSelected(): boolean {
     for (let reportMetada of this.tableSettings.reportMetadata) {
       if (!reportMetada.checked) {
         return false;
@@ -582,7 +577,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
   }
 
-  loadReportInProgressThreshold() {
+  loadReportInProgressThreshold(): void {
     this.httpService.getReportsInProgressThresholdTime().subscribe((time: number) => {
       this.reportsInProgressThreshold = time;
     });
