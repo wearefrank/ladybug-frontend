@@ -1,19 +1,21 @@
 <div class="flex flex-column" id="container">
-  <app-compare-tree
-    #trees
-    class="trees"
-    (compareEvent)="showDifference($event)"
-    (changeNodeLinkStrategyEvent)="changeNodeLinkStrategy($event)">
-  </app-compare-tree>
-  <div class="text-diff-container pl-3 pb-2">
-    <div class="d-flex flex-row w-100">
-      <app-display-table class="w-50" [report]='compareData.originalReport'></app-display-table>
-      <app-display-table class="w-50" [report]='compareData.runResultReport'></app-display-table>
+  @if (compareData) {
+    <app-compare-tree
+      #trees
+      class="trees"
+      (compareEvent)="showDifference($event)"
+      (changeNodeLinkStrategyEvent)="changeNodeLinkStrategy($event)">
+    </app-compare-tree>
+    <div class="text-diff-container pl-3 pb-2">
+      <div class="d-flex flex-row w-100">
+        <app-display-table class="w-50" [report]="compareData.originalReport"></app-display-table>
+        <app-display-table class="w-50" [report]="compareData.runResultReport"></app-display-table>
+      </div>
+      <ngx-monaco-diff-editor
+        class="diff-editor"
+        [options]="diffOptions"
+        [originalModel]="originalModel"
+        [modifiedModel]="modifiedModel"></ngx-monaco-diff-editor>
     </div>
-    <ngx-monaco-diff-editor
-      class="diff-editor"
-      [options]="diffOptions"
-      [originalModel]="originalModel"
-      [modifiedModel]="modifiedModel"></ngx-monaco-diff-editor>
-  </div>
+  }
 </div>
