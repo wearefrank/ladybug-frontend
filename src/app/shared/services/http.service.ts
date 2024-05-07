@@ -252,4 +252,8 @@ export class HttpService {
       })
       .pipe(catchError(this.handleError()));
   }
+
+  getWarningsAndErrors(storageName: string): Observable<any> {
+    return this.http.get(`api/report/warningsAndErrors/${storageName}`);
+  }
 }
