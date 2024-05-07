@@ -1,6 +1,7 @@
 describe('Report generator', () => {
   beforeEach(() => {
     cy.clearDebugStore();
+    cy.initializeApp();
   });
   afterEach(() => {
     cy.get('[data-cy-debug="openSettings"]').should('be.visible').click();
@@ -10,10 +11,9 @@ describe('Report generator', () => {
   });
 
   it('disable and enable', () => {
-    cy.initializeApp();
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('not.exist');
     cy.createReport();
-    cy.get('[data-cy-debug="refresh"]').click();
+    cy.refreshApp();
     cy.wait(100);
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 1);
     cy.get('[data-cy-debug="openSettings"]').click();
