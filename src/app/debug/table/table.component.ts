@@ -417,13 +417,13 @@ export class TableComponent implements OnInit, OnDestroy {
       this.tableSettings.filterValues = [...filters.values()];
       this.tableSettings.filterHeaders = [...filters.keys()];
       let current: Map<string, string> = new Map<string, string>();
-      filters.forEach((filterValue: string, filterKey: string): void => {
-        current.set(filterKey, filterValue ?? '');
-      });
+      for (const [key, value] of filters.entries()) {
+        if (key) {
+          current.set(key, value ?? '');
+        }
+      }
       this.currentFilters = current;
     }
-    console.log(this.tableSettings.filterValues);
-    console.log(this.tableSettings.filterHeaders);
     this.retrieveRecords();
   }
 
