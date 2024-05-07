@@ -6,9 +6,9 @@
         @for (metadataName of metadataNames; track metadataNames) {
           <div class="input-container">
             <label class="metadata-input-label">{{ metadataName | titlecase }}</label>
-            <div class="metadata-input-container">
+            <div class="metadata-input-container input-group">
               <input
-                class="metadata-input"
+                class="form-control"
                 type="text"
                 [title]="metadataName"
                 [ngModel]="filterService.getCurrentFilterContext().get(metadataName)"
@@ -16,9 +16,9 @@
                 [placeholder]="'Filter for ' + metadataName"
                 (ngModelChange)="updateFilter($event, metadataName)"
                 data-cy-debug="tableFilter">
-              <div class="input-group-append">
+              <div class="input-group-append input-group-append">
                 <button
-                  class="btn btn-sm btn-danger button-clear-text"
+                  class="btn btn-sm btn-danger button-clear-text input-group-text"
                   (click)="removeFilter(metadataName)"
                   data-cy-debug="filterClearButton">
                   Clear
