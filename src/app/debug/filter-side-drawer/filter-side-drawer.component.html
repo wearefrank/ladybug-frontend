@@ -3,7 +3,7 @@
     <div class="panel-container">
       <h1 class="h1 filter-label">Filter</h1>
       <div class="filter-input-container">
-        @for (metadataName of metadataNames; track metadataNames) {
+        @for (metadataName of metadataNames; track metadataName) {
           <div class="input-container">
             <label class="metadata-input-label">{{ metadataName | titlecase }}</label>
             <div class="metadata-input-container input-group">
