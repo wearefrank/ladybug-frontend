@@ -11,6 +11,7 @@ import { ToastService } from '../../shared/services/toast.service';
 import { DebugReportService } from '../debug-report.service';
 import { TabService } from '../../shared/services/tab.service';
 import { FilterService } from '../filter-side-drawer/filter.service';
+import { ReportData } from '../../shared/interfaces/report-data';
 
 @Component({
   selector: 'app-table',
@@ -333,14 +334,15 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openReportInTab(): void {
     let reportTab = this.tableSettings.reportMetadata.find((report) => report.checked);
-    this.httpService.getReport(reportTab.storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
-      let report: Report = data.report;
-      report.xml = data.xml;
-      this.tabService.openNewTab({
-        data: report,
-        name: report.name,
+    this.httpService
+      .getReport(reportTab.storageId, this.viewSettings.currentView.storageName)
+      .subscribe((report: Report): void => {
+        const reportData: ReportData = {
+          report: report,
+          currentView: this.viewSettings.currentView,
+        };
+        this.tabService.openNewTab(reportData);
       });
-    });
   }
 
   openSelected(): void {
@@ -380,15 +382,17 @@ export class TableComponent implements OnInit, OnDestroy {
       .map((report) => report.storageId);
     this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
       next: (data) => {
-        let leftObject = data[selectedReports[0]];
-        let originalReport = leftObject.report;
+        const leftObject = data[selectedReports[0]];
+        const originalReport = leftObject.report;
         originalReport.xml = leftObject.xml;
 
-        let rightObject = data[selectedReports[1]];
-        let runResultReport = rightObject.report;
+        const rightObject = data[selectedReports[1]];
+        const runResultReport = rightObject.report;
         runResultReport.xml = rightObject.xml;
 
+        const id = this.helperService.createCompareTabId(originalReport, runResultReport);
         compareReports = {
+          id: id,
           originalReport: originalReport,
           runResultReport: runResultReport,
           viewName: this.viewSettings.currentView.name,
@@ -436,11 +440,9 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: string): void {
-    this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data) => {
-      let report: Report = data.report;
-      report.xml = data.xml;
-      report.storageName = this.viewSettings.currentView.storageName;
-      this.openReportEvent.next(report);
+    this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data: Report): void => {
+      data.storageName = this.viewSettings.currentView.storageName;
+      this.openReportEvent.next(data);
     });
   }
 

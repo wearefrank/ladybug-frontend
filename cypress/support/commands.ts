@@ -251,7 +251,7 @@ Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes
     times: 1,
   }).as(alias);
   cy.get('[data-cy-debug-editor="copy"]').click();
-  cy.wait(`@${alias}`).then((res) => {
+  cy.wait(`@${alias}`, {timeout: 10000}).then((res) => {
     cy.wrap(res).its('request.url').should('contain', 'Test');
     cy.wrap(res).its('request.body').as('requestBody');
     cy.get('@requestBody').its('Debug').should('have.length', 1);
