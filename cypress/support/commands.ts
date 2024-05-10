@@ -205,7 +205,8 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
 //Clear reports in test tab if any present
 Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
   cy.navigateToTestTabAndWait();
-  cy.get('[data-cy-test="table"]').then((tbody: JQuery) => {
+  cy.get('[data-cy-test="table"]').should('exist');
+  cy.get('[data-cy-test="table"]', { timeout: 5000 }).then((tbody: JQuery) => {
     if (tbody.find('tr').length > 0) {
       cy.get('[data-cy-test="selectAll"]').click();
       cy.get('[data-cy-test="deleteSelected"]').click();
