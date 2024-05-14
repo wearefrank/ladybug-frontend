@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { debounceTime, filter, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,14 +12,37 @@ export class FilterService {
   private metadataTypesSubject: Subject<Map<string, string>> = new Subject();
   private filterErrorSubject: Subject<[boolean, Map<string, string>]> = new Subject();
   private filters: Map<string, string> = new Map<string, string>();
-  private filterErrors: Map<string, string> = new Map<string, string>();
   private metadataTypes: Map<string, string> = new Map<string, string>();
+  private filterErrors: Map<string, string> = new Map<string, string>();
 
   showFilter$: Observable<boolean> = this.showFilterSubject.asObservable();
   metadataLabels$: Observable<string[]> = this.metadataLabelsSubject.asObservable();
   currentRecords$: Observable<Map<string, Array<string>>> = this.currentRecordsSubject.asObservable();
   metadataTypes$: Observable<Map<string, string>> = this.metadataTypesSubject.asObservable();
   filterError$: Observable<[boolean, Map<string, string>]> = this.filterErrorSubject.asObservable();
+  filterContext$: Observable<Map<string, string>> = this.filterContextSubject.pipe(
+    debounceTime(300),
+    filter((context: Map<string, string>): boolean => {
+      if (context.size === 0) {
+        this.disableFilterError();
+        return true;
+      }
+      let errorFound: boolean = false;
+      this.filterErrors.clear();
+      for (let [key, value] of context) {
+        if (!this.filterValidator(key, value)) {
+          this.filterErrors.set(<string>this.metadataTypes.get(key), value);
+          errorFound = true;
+        }
+      }
+      if (errorFound) {
+        this.enableFilterError(this.filterErrors);
+      } else {
+        this.disableFilterError();
+      }
+      return !errorFound;
+    }),
+  );
 
   setShowFilter(show: boolean): void {
     this.showFilterSubject.next(show);
@@ -49,36 +72,30 @@ export class FilterService {
   }
 
   setMetadataTypes(metadataTypes: Map<string, string>): void {
-    this.metadataTypes = metadataTypes;
+    this.metadataTypes = new Map<string, string>(Object.entries(metadataTypes));
     this.metadataTypesSubject.next(this.metadataTypes);
   }
 
   disableFilterError(): void {
-    this.filterErrorSubject.next([false, new Map<string, string>()]);
+    this.filterErrors.clear();
+    this.filterErrorSubject.next([false, this.filterErrors]);
   }
 
-  enableFilterError(inputFilter: Map<string, string>) {
+  enableFilterError(inputFilter: Map<string, string>): void {
     this.filterErrors = inputFilter;
     this.filterErrorSubject.next([true, this.filterErrors]);
   }
 
   filterValidator(metadataName: string, userInput: string): boolean {
     if (this.metadataTypes.get(metadataName) == 'timestamp' && Number.isNaN(Date.parse(userInput))) {
-      this.filterErrors.set(<string>this.metadataTypes.get(metadataName), userInput);
-      this.enableFilterError(this.filterErrors);
       return false;
     }
     if (
-      (this.metadataTypes.get(<string>this.metadataTypes.get(metadataName)) == 'int' ||
-        this.metadataTypes.get(metadataName) == 'long') &&
-      Number.isNaN(Number.parseFloat(userInput))
+      (this.metadataTypes.get(metadataName) == 'int' || this.metadataTypes.get(metadataName) == 'long') &&
+      (Number.isNaN(Number.parseFloat(userInput)) || !/^-?\d+(\.\d+)?$/.test(userInput))
     ) {
-      this.filterErrors.set(<string>this.metadataTypes.get(metadataName), userInput);
-      this.enableFilterError(this.filterErrors);
       return false;
     }
-
-    this.disableFilterError();
     return true;
   }
 }

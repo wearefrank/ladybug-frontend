@@ -31,7 +31,6 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
 
   shouldShowFilterSubscriber!: Subscription;
   metadataLabelsSubscriber!: Subscription;
-  filterSubscriber!: Subscription;
   currentRecordsSubscriber!: Subscription;
   metadataTypesSubscriber!: Subscription;
   filterErrorsSubscriber!: Subscription;
@@ -63,16 +62,20 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
         this.metadataTypes = metadataTypes;
       },
     );
+    this.filterErrorsSubscriber = this.filterService.filterError$.subscribe(
+      (filterErrors: [boolean, Map<string, string>]): void => {
+        this.filters = filterErrors[1];
+      },
+    );
   }
 
   unsubscribeAll(): void {
     this.shouldShowFilterSubscriber.unsubscribe();
     this.metadataLabelsSubscriber.unsubscribe();
-    this.filterSubscriber.unsubscribe();
     this.currentRecordsSubscriber.unsubscribe();
   }
 
-  closeFilter() {
+  closeFilter(): void {
     this.filterService.setShowFilter(false);
   }
 

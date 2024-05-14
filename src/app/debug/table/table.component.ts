@@ -102,15 +102,14 @@ export class TableComponent implements OnInit, OnDestroy {
     localStorage.setItem('transformationEnabled', 'true');
     this.loadData();
     this.listenForViewUpdate();
-    this.subscribeToSettingsObservables();
-    this.subscribeToFilterObservables();
+    this.subscribeToObservables();
   }
 
   ngOnDestroy(): void {
     this.unsubscribeFromObservables();
   }
 
-  subscribeToSettingsObservables(): void {
+  subscribeToObservables(): void {
     this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe((value: number): void => {
       this.tableSpacing = value;
     });
@@ -119,9 +118,6 @@ export class TableComponent implements OnInit, OnDestroy {
         this.showMultipleFiles = value;
       },
     );
-  }
-
-  subscribeToFilterObservables(): void {
     this.showFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
       this.tableSettings.showFilter = show;
     });
@@ -131,6 +127,11 @@ export class TableComponent implements OnInit, OnDestroy {
         this.filterErrorDetails = filterError[1];
       },
     );
+    this.filterContextSubscription = this.filterService.filterContext$.subscribe(
+      (context: Map<string, string>): void => {
+        this.changeFilter(context);
+      },
+    );
   }
 
   unsubscribeFromObservables(): void {
@@ -138,6 +139,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.filterContextSubscription.unsubscribe();
     this.tableSpacingSubscription.unsubscribe();
     this.showMultipleFilesSubscription.unsubscribe();
+    this.filterErrorSubscription.unsubscribe();
   }
 
   retrieveRecords(): void {
@@ -227,9 +229,9 @@ export class TableComponent implements OnInit, OnDestroy {
         this.viewSettings.currentView.name = this.viewSettings.currentViewName;
         this.debugReportService.changeView(this.viewSettings.currentView);
       }
-
       this.retrieveRecords();
       this.getUserHelp();
+      this.filterService.setMetadataTypes(this.viewSettings.currentView.metadataTypes);
     });
     this.loadReportInProgressSettings();
   }
@@ -590,8 +592,12 @@ export class TableComponent implements OnInit, OnDestroy {
 
   handleFilterErrorContext(): string {
     let result: string = '';
-    for (let [key, value] of Object.entries(this.filterErrorDetails)) {
-      result += "Search value '" + value + "' isn't a valid '" + key + "'\n";
+    let moreThanOne: boolean = false;
+    for (let [key, value] of this.filterErrorDetails) {
+      result += moreThanOne
+        ? ", Search value '" + value + "' is not a valid '" + key + "'"
+        : "Search value '" + value + "' is not a valid '" + key + "'";
+      moreThanOne = true;
     }
     return result;
   }

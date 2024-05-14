@@ -1,8 +1,8 @@
 <div data-cy-debug="root" class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
   <app-filter-side-drawer></app-filter-side-drawer>
   @if (this.showFilterError) {
-    <div class="filter-error-container">
-      <label class="filter-error-label">Filter Error: {{ this.handleFilterErrorContext() }}</label>
+    <div class="alert alert-danger" role="alert" data-cy-debug="filter-error-message">
+      Filter Error: {{ this.handleFilterErrorContext() }}
     </div>
   }
   <div class="row d-flex align-items-center">
