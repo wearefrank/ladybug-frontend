@@ -25,7 +25,6 @@ import { TitleCasePipe } from '@angular/common';
 export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected shouldShowFilter!: boolean;
   protected metadataLabels!: string[];
-  protected filters: Map<string, string> = new Map<string, string>();
   protected currentRecords: Map<string, Array<string>> = new Map<string, Array<string>>();
   protected metadataTypes!: Map<string, string>;
 
@@ -33,7 +32,6 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   metadataLabelsSubscriber!: Subscription;
   currentRecordsSubscriber!: Subscription;
   metadataTypesSubscriber!: Subscription;
-  filterErrorsSubscriber!: Subscription;
 
   constructor(protected filterService: FilterService) {}
 
@@ -62,17 +60,13 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
         this.metadataTypes = metadataTypes;
       },
     );
-    this.filterErrorsSubscriber = this.filterService.filterError$.subscribe(
-      (filterErrors: [boolean, Map<string, string>]): void => {
-        this.filters = filterErrors[1];
-      },
-    );
   }
 
   unsubscribeAll(): void {
     this.shouldShowFilterSubscriber.unsubscribe();
     this.metadataLabelsSubscriber.unsubscribe();
     this.currentRecordsSubscriber.unsubscribe();
+    this.metadataTypesSubscriber.unsubscribe();
   }
 
   closeFilter(): void {
