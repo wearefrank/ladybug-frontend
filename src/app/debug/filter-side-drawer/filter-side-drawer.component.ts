@@ -53,9 +53,6 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     this.metadataLabelsSubscriber = this.filterService.metadataLabels$.subscribe((metadataLabels: string[]): void => {
       this.metadataLabels = metadataLabels;
     });
-    this.filterSubscriber = this.filterService.filterContext$.subscribe((filterContext: Map<string, string>): void => {
-      this.filters = filterContext;
-    });
     this.currentRecordsSubscriber = this.filterService.currentRecords$.subscribe(
       (records: Map<string, Array<string>>): void => {
         this.currentRecords = records;

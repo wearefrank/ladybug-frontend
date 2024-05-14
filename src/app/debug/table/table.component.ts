@@ -293,8 +293,8 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   checkIfAllRowsSelected(): boolean {
-    for (let reportMetada of this.tableSettings.reportMetadata) {
-      if (!reportMetada.checked) {
+    for (let reportMetadata of this.tableSettings.reportMetadata) {
+      if (!reportMetadata.checked) {
         return false;
       }
     }
