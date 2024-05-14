@@ -76,6 +76,9 @@ export class TableComponent implements OnInit, OnDestroy {
   currentFilters: Map<string, string> = new Map<string, string>();
   showFilterSubscription!: Subscription;
   filterContextSubscription!: Subscription;
+  filterErrorSubscription!: Subscription;
+  showFilterError: boolean = false;
+  filterErrorDetails: Map<string, string> = new Map<string, string>();
 
   defaultCheckBoxSize: number = 13;
   defaultFontSize: number = 8;
@@ -122,9 +125,10 @@ export class TableComponent implements OnInit, OnDestroy {
     this.showFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
       this.tableSettings.showFilter = show;
     });
-    this.filterContextSubscription = this.filterService.filterContext$.subscribe(
-      (context: Map<string, string>): void => {
-        this.changeFilter(context);
+    this.filterErrorSubscription = this.filterService.filterError$.subscribe(
+      (filterError: [boolean, Map<string, string>]): void => {
+        this.showFilterError = filterError[0];
+        this.filterErrorDetails = filterError[1];
       },
     );
   }
@@ -188,7 +192,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.clearFilters();
     this.debugReportService.changeView(this.viewSettings.currentView);
     this.selectedRow = -1;
-    this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
+    this.filterService.setMetadataLabels(this.viewSettings.currentView.metadataLabels);
     this.viewChange.next(this.viewSettings.currentViewName);
   }
 
@@ -273,7 +277,8 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   toggleFilter(): void {
-    this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
+    this.filterService.setMetadataLabels(this.viewSettings.currentView.metadataNames);
+    this.filterService.setMetadataTypes(this.viewSettings.currentView.metadataTypes);
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
     this.filterService.setShowFilter(this.tableSettings.showFilter);
     this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
@@ -569,7 +574,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   calculateViewDropDownWidth(): void {
     let longestViewName = '';
-    for (let [key, value] of Object.entries(this.viewSettings.views)) {
+    for (let [key] of Object.entries(this.viewSettings.views)) {
       if (key.length > longestViewName.length) {
         longestViewName = key;
       }
@@ -581,5 +586,13 @@ export class TableComponent implements OnInit, OnDestroy {
     this.httpService.getReportsInProgressThresholdTime().subscribe((time: number) => {
       this.reportsInProgressThreshold = time;
     });
+  }
+
+  handleFilterErrorContext(): string {
+    let result: string = '';
+    for (let [key, value] of Object.entries(this.filterErrorDetails)) {
+      result += "Search value '" + value + "' isn't a valid '" + key + "'\n";
+    }
+    return result;
   }
 }

@@ -24,14 +24,17 @@ import { TitleCasePipe } from '@angular/common';
 })
 export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected shouldShowFilter!: boolean;
-  protected metadataNames!: string[];
+  protected metadataLabels!: string[];
   protected filters: Map<string, string> = new Map<string, string>();
   protected currentRecords: Map<string, Array<string>> = new Map<string, Array<string>>();
+  protected metadataTypes!: Map<string, string>;
 
   shouldShowFilterSubscriber!: Subscription;
-  metadataNamesSubscriber!: Subscription;
+  metadataLabelsSubscriber!: Subscription;
   filterSubscriber!: Subscription;
   currentRecordsSubscriber!: Subscription;
+  metadataTypesSubscriber!: Subscription;
+  filterErrorsSubscriber!: Subscription;
 
   constructor(protected filterService: FilterService) {}
 
@@ -47,8 +50,8 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     this.shouldShowFilterSubscriber = this.filterService.showFilter$.subscribe((show: boolean): void => {
       this.shouldShowFilter = show;
     });
-    this.metadataNamesSubscriber = this.filterService.metadataNames$.subscribe((metadataNames: string[]): void => {
-      this.metadataNames = metadataNames;
+    this.metadataLabelsSubscriber = this.filterService.metadataLabels$.subscribe((metadataLabels: string[]): void => {
+      this.metadataLabels = metadataLabels;
     });
     this.filterSubscriber = this.filterService.filterContext$.subscribe((filterContext: Map<string, string>): void => {
       this.filters = filterContext;
@@ -58,11 +61,16 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
         this.currentRecords = records;
       },
     );
+    this.metadataTypesSubscriber = this.filterService.metadataTypes$.subscribe(
+      (metadataTypes: Map<string, string>): void => {
+        this.metadataTypes = metadataTypes;
+      },
+    );
   }
 
   unsubscribeAll(): void {
     this.shouldShowFilterSubscriber.unsubscribe();
-    this.metadataNamesSubscriber.unsubscribe();
+    this.metadataLabelsSubscriber.unsubscribe();
     this.filterSubscriber.unsubscribe();
     this.currentRecordsSubscriber.unsubscribe();
   }

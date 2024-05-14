@@ -1,5 +1,10 @@
 <div data-cy-debug="root" class="row" id="tableContent" *ngIf="tableSettings.tableLoaded">
   <app-filter-side-drawer></app-filter-side-drawer>
+  @if (this.showFilterError) {
+    <div class="filter-error-container">
+      <label class="filter-error-label">Filter Error: {{ this.handleFilterErrorContext() }}</label>
+    </div>
+  }
   <div class="row d-flex align-items-center">
     <app-button data-cy-debug="refresh" icon="fa fa-refresh" title="Refresh" (click)="refresh()"></app-button>
     <app-button data-cy-debug="openSettings" icon="fa fa-cog" title="Settings" (click)="openSettingsModal()"></app-button>
