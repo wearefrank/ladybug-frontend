@@ -11,6 +11,7 @@ import { SettingsService } from './shared/services/settings.service';
 import { DebugReportService } from './debug/debug-report.service';
 import { TabService } from './shared/services/tab.service';
 import { Subscription } from 'rxjs';
+import { Tab } from './shared/interfaces/tab';
 
 declare var require: any;
 const { version: appVersion } = require('../../package.json');
@@ -92,7 +93,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   observeReportSave() {
     this.dynamicService.getObservable().subscribe((report: Report) => {
-      const tabIndex: number = this.tabs.findIndex((tab) => tab.id == report.storageId);
+      const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => Number(tab.id) == report.storageId);
       this.tabs[tabIndex].data = report;
     });
   }

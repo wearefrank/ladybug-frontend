@@ -17,8 +17,9 @@ import { DebugListItem } from 'src/app/shared/interfaces/debug-list-item';
 import { CompareReport } from 'src/app/shared/interfaces/compare-report';
 import { CompareReports } from 'src/app/shared/interfaces/compare-reports';
 import { TargetWithFiles } from 'src/app/shared/interfaces/target-with-files';
-import { MetaData } from 'src/app/shared/interfaces/metadata';
 import { DebugVariables } from 'src/app/shared/interfaces/debug-variables';
+import { FilterService } from '../filter-side-drawer/filter.service';
+import { ReportData } from '../../shared/interfaces/report-data';
 
 @Component({
   selector: 'app-table',
@@ -59,8 +60,8 @@ export class TableComponent implements OnInit, OnDestroy {
     tableLoaded: false,
     displayAmount: this.DEFAULT_DISPLAY_AMOUNT,
     showFilter: false,
-    filterValue: '(.*)',
-    filterHeader: '',
+    filterValues: [],
+    filterHeaders: [],
     numberOfReportsInProgress: 0,
     estimatedMemoryUsage: '',
     uniqueValues: new Map<string, Array<string>>(),
@@ -76,6 +77,8 @@ export class TableComponent implements OnInit, OnDestroy {
   showMultipleFilesSubscription!: Subscription;
   viewDropdownBoxWidth!: string;
   currentFilters: Map<string, string> = new Map<string, string>();
+  showFilterSubscription!: Subscription;
+  filterContextSubscription!: Subscription;
 
   defaultCheckBoxSize: number = 13;
   defaultFontSize: number = 8;
@@ -92,6 +95,7 @@ export class TableComponent implements OnInit, OnDestroy {
     private toastService: ToastService,
     private debugReportService: DebugReportService,
     private tabService: TabService,
+    private filterService: FilterService,
   ) {}
 
   ngOnInit(): void {
@@ -116,6 +120,24 @@ export class TableComponent implements OnInit, OnDestroy {
     );
   }
 
+  subscribeToFilterObservables(): void {
+    this.showFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
+      this.tableSettings.showFilter = show;
+    });
+    this.filterContextSubscription = this.filterService.filterContext$.subscribe(
+      (context: Map<string, string>): void => {
+        this.changeFilter(context);
+      },
+    );
+  }
+
+  unsubscribeFromObservables(): void {
+    this.showFilterSubscription.unsubscribe();
+    this.filterContextSubscription.unsubscribe();
+    this.tableSpacingSubscription.unsubscribe();
+    this.showMultipleFilesSubscription.unsubscribe();
+  }
+
   retrieveRecords(): void {
     this.doneRetrieving = false;
     this.tableSettings.reportMetadata = [];
@@ -123,8 +145,8 @@ export class TableComponent implements OnInit, OnDestroy {
       const httpServiceSubscription = this.httpService
         .getMetadataReports(
           this.tableSettings.displayAmount,
-          this.tableSettings.filterValue,
-          this.tableSettings.filterHeader,
+          this.tableSettings.filterValues,
+          this.tableSettings.filterHeaders,
           this.viewSettings.currentView.metadataNames,
           this.viewSettings.currentView.storageName,
         )
@@ -173,8 +195,8 @@ export class TableComponent implements OnInit, OnDestroy {
       element.value = '';
     });
 
-    this.tableSettings.filterValue = '';
-    this.tableSettings.filterHeader = '';
+    this.tableSettings.filterValues = [];
+    this.tableSettings.filterHeaders = [];
     this.retrieveRecords();
   }
 
@@ -186,7 +208,10 @@ export class TableComponent implements OnInit, OnDestroy {
       this.clearFilters();
       this.debugReportService.changeView(this.viewSettings.currentView);
       this.selectedRow = -1;
-      this.viewChange.next(this.viewSettings.currentViewName ?? '');
+      if (this.viewSettings.currentView.metadataNames) {
+        this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
+        this.viewChange.next(this.viewSettings.currentViewName ?? '');
+      }
     }
   }
 
@@ -409,16 +434,23 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeFilter(event: any, header: string, value?: string): void {
-    const filterValue: string = value ?? event.target.value;
-    if (this.currentFilters.get(header) !== filterValue) {
-      this.tableSettings.filterValue = filterValue ?? '.*';
-      this.tableSettings.filterHeader = filterValue;
-      this.tableSettings.filterHeader &&= header;
-      this.retrieveRecords();
-      this.currentFilters.set(header, filterValue);
-      this.currentFilters = new Map(this.currentFilters);
+  changeFilter(filters: Map<string, string>): void {
+    if (filters.size === 0) {
+      this.tableSettings.filterValues = [];
+      this.tableSettings.filterHeaders = [];
+      this.currentFilters = new Map<string, string>();
+    } else {
+      this.tableSettings.filterValues = [...filters.values()];
+      this.tableSettings.filterHeaders = [...filters.keys()];
+      let current: Map<string, string> = new Map<string, string>();
+      for (const [key, value] of filters.entries()) {
+        if (key) {
+          current.set(key, value ?? '');
+        }
+      }
+      this.currentFilters = current;
     }
+    this.retrieveRecords();
   }
 
   changeTableLimit(event: any): void {

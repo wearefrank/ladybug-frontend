@@ -48,8 +48,8 @@ export class HttpService {
 
   getMetadataReports(
     limit: number,
-    regexFilter: string,
-    filterHeader: string,
+    regexFilter: string[],
+    filterHeader: string[],
     metadataNames: string[],
     storage: string,
   ): Observable<DebugVariables[]> {
