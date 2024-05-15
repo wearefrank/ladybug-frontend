@@ -54,7 +54,7 @@ export class EditDisplayComponent {
   }
 
   rerunReport(): void {
-    const reportId: string = String(this.report.storageId);
+    const reportId: string = this.report.storageId ?? '';
     this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response: Report) => {
       const element: Element = document.querySelector('#showRerunResult')!;
       if (this.report == response) {
@@ -68,7 +68,7 @@ export class EditDisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    const queryString: string = this.report.xml ? this.report.storageId!.toString() : this.report.uid!.split('#')[0];
+    const queryString: string = this.report.xml ? this.report.storageId ?? '' : this.report.uid!.split('#')[0];
     this.helperService.download(queryString + '&', this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
   }
@@ -176,7 +176,7 @@ export class EditDisplayComponent {
     let checkpointId: string = '';
     let storageId: string;
     if (this.report.xml) {
-      storageId = `${this.report.storageId}`;
+      storageId = this.report.storageId ?? '';
     } else {
       storageId = this.report.uid!.split('#')[0];
       checkpointId = this.report.uid!.split('#')[1];

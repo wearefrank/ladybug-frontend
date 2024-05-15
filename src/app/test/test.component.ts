@@ -103,7 +103,9 @@ export class TestComponent implements OnInit {
       const defaultViewKey: string | undefined = Object.keys(views).find((view: string) => views[view].defaultView);
       if (defaultViewKey) {
         const selectedView: View = views[defaultViewKey];
-        this.currentView.targetStorage = selectedView.storageName;
+        if (selectedView.storageName) {
+          this.currentView.targetStorage = selectedView.storageName;
+        }
       }
     });
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
@@ -204,10 +206,11 @@ export class TestComponent implements OnInit {
   }
 
   uploadReport(event: Event): void {
-    const file: File = (event.target as TargetWithFiles)?.files[0];
+    const eventTarget = event.target as HTMLInputElement;
+    const file: FileList | null = eventTarget.files;
     if (file) {
       const formData: FormData = new FormData();
-      formData.append('file', file);
+      formData.append('file', file[0]);
       this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData(''));
     }
   }

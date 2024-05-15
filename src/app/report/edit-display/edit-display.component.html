@@ -68,8 +68,8 @@
     <span *ngIf="this.report.showConverted">and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
   </div>
 
-  <div *ngIf="report.preTruncatedMessageLength && report.preTruncatedMessageLength > 0" id="truncatedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-    Message is truncated ( {{ report.preTruncatedMessageLength - report.message!.length}} characters removed)
+  <div *ngIf="report.message && report.preTruncatedMessageLength && report.preTruncatedMessageLength > 0" id="truncatedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+    Message is truncated ( {{ report.preTruncatedMessageLength - report.message.length}} characters removed)
   </div>
 
   <div *ngIf="null !== report.stubNotFound" id="stubNotFoundLabel" class="btn btn-static my-2 mx-1 px-2">

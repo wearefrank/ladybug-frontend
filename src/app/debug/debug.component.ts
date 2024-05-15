@@ -19,14 +19,7 @@ export class DebugComponent implements OnInit, AfterViewInit {
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
   @ViewChild('splitter') splitter: any;
   @ViewChild('bottom') bottom!: ElementRef;
-  currentView: View = {
-    metadataLabels: [],
-    defaultView: false,
-    crudStorage: false,
-    metadataNames: [],
-    nodeLinkStrategy: '',
-    storageName: '',
-  };
+  currentView: View = {};
 
   treeWidth: Subject<void> = new Subject<void>();
   bottomHeight: number = 0;

@@ -22,14 +22,7 @@ export class DisplayComponent {
   metadataTableVisible: boolean = false;
   @ViewChild('container') container!: ElementRef;
   @Input() containerHeight!: number;
-  @Input() currentView: View = {
-    metadataLabels: [],
-    defaultView: false,
-    crudStorage: false,
-    metadataNames: [],
-    nodeLinkStrategy: '',
-    storageName: '',
-  };
+  @Input() currentView: View = {};
 
   constructor(
     private httpService: HttpService,
@@ -60,13 +53,17 @@ export class DisplayComponent {
   copyReport(): void {
     const storageId: number = this.report.xml ? +this.report.storageId : +this.report.uid.split('#')[0];
     const data: Record<string, number[]> = {};
-    data[this.currentView.storageName] = [storageId];
+    if (this.currentView.storageName) {
+      data[this.currentView.storageName] = [storageId];
+    }
     this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    let queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
-    this.helperService.download('id=' + queryString + '&', this.currentView.storageName, exportBinary, exportXML);
+    const queryString: string = this.report.xml ? this.report.storageId : this.report.uid.split('#')[0];
+    if (this.currentView.storageName) {
+      this.helperService.download('id=' + queryString + '&', this.currentView.storageName, exportBinary, exportXML);
+    }
     this.httpService.handleSuccess('Report Downloaded!');
   }
 

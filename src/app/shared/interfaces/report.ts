@@ -15,7 +15,7 @@ export interface Report {
   path: string;
   reportFilterMatching: boolean;
   startTime: number;
-  storageId: number;
+  storageId: string;
   stubStrategy: string;
   transformation: string;
   variableCsv: string;

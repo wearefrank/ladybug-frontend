@@ -31,7 +31,7 @@
       </form>
     </div>
     <div>
-      <p>Generator is {{ generatorStatus.toLocaleLowerCase() }}</p>
+      <p>Generator is {{ generatorStatus.toLocaleLowerCase() ? "Enabled" : "Disabled" }}</p>
     </div>
 
     <div class="table-responsive" id="testReportTable">

@@ -75,7 +75,7 @@ export class DebugTreeComponent implements OnDestroy {
     for (const report of reports) {
       if (report.storageName === currentView.storageName) {
         this.httpService
-          .getUnmatchedCheckpoints(report.storageName, report.storageId.toString(), currentViewName)
+          .getUnmatchedCheckpoints(report.storageName, report.storageId, currentViewName)
           .subscribe((unmatched: string[]) => {
             this.hideCheckpoints(unmatched, this.tree.elements.toArray());
           });

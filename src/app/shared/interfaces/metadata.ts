@@ -1,22 +1,10 @@
-export interface MetaData {
-  checked: boolean;
-  correlationId: string;
-  duration: string;
-  endTime: string;
-  estimatedMemoryUsage: string;
-  name: string;
-  numberOfCheckpoints: string;
-  status: string;
-  storageId: string;
-  storageSize: string;
+import { DebugListItem } from './debug-list-item';
 
-  COMPONENT: string;
-  'CONVERSATION ID': string;
-  'CORRELATION ID': string;
-  'ENDPOINT NAME': string;
-  'NR OF CHECKPOINTS': string;
-  STATUS: string;
-  TIMESTAMP: string;
+export interface MetaData extends DebugListItem {
+  component: string;
+  conversationId: string;
+  endpointName: string;
+  timestamp: string;
 
-  [key: string]: string | boolean;
+  // [key: string]: string | boolean;
 }
