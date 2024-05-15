@@ -19,7 +19,6 @@ import { CompareReports } from 'src/app/shared/interfaces/compare-reports';
 import { TargetWithFiles } from 'src/app/shared/interfaces/target-with-files';
 import { DebugVariables } from 'src/app/shared/interfaces/debug-variables';
 import { FilterService } from '../filter-side-drawer/filter.service';
-import { ReportData } from '../../shared/interfaces/report-data';
 
 @Component({
   selector: 'app-table',
