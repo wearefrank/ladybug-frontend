@@ -40,7 +40,7 @@ Cypress.Commands.add('resetApp' as keyof Chainable, () => {
   );
   cy.deleteAllTestReports();
   cy.initializeApp();
-})
+});
 
 Cypress.Commands.add('navigateToTestTabAndWait' as keyof Chainable, () => {
   navigateToTabAndWait('test');
@@ -205,15 +205,15 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
 //Clear reports in test tab if any present
 Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
   cy.navigateToTestTabAndWait();
-  cy.get('[data-cy-test="selectAll"]').click();
-  cy.get('[data-cy-test="deleteSelected"]').click();
-  console.log(Cypress.$('[data-cy-delete-modal="confirm"]'));
-  if (Cypress.$('[data-cy-delete-modal="confirm"]').length > 0) {
-    cy.get('[data-cy-delete-modal="confirm"]').should('exist');
-  }
+  cy.get('[data-cy-test="table"]', { timeout: 5000 }).then((tbody: JQuery) => {
+    if (tbody.find('tr').length > 0) {
+      cy.get('[data-cy-test="selectAll"]').click();
+      cy.get('[data-cy-test="deleteSelected"]').click();
+      cy.get('[data-cy-delete-modal="confirm"]').click();
+    }
+  });
   cy.visit('');
 });
-
 
 Cypress.Commands.add('checkTableNumRows', n => {
   if (n === 0) {

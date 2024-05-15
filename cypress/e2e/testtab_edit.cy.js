@@ -1,6 +1,12 @@
 describe('Edit tests', () => {
   beforeEach(() => {
     cy.clearDebugStore();
+    cy.deleteAllTestReports();
+  });
+
+  afterEach(() => {
+    cy.clearDebugStore();
+    cy.deleteAllTestReports();
   });
 
   it('Edit report in test tab', () => {
@@ -36,7 +42,6 @@ describe('Edit tests', () => {
     cy.get('button:contains(Yes)').click();
     cy.get('[data-cy-nav-tab="testTab"]').click();
     cy.get('[data-cy-test="runAll"]').click();
-    cleanup()
   });
 
   it('Editing without pressing Edit produces error', () => {
@@ -47,7 +52,6 @@ describe('Edit tests', () => {
     cy.get('[data-cy-test-editor="save"]').should('have.length', 0);
     cy.get('[data-cy-test-editor="editor"]').click().type('x');
     cy.get('[data-cy-test-editor="readonlyLabel"]').contains('OFF');
-    cleanup()
   });
 
   it('When saving edit cancelled then original text kept and rerun fails', () => {
@@ -75,7 +79,6 @@ describe('Edit tests', () => {
     cy.navigateToTestTabAndWait();
     cy.get('[data-cy-test="runAll"]').click();
     // cy.get('span:contains(0/1 stubbed)').should('have.css', 'color').and('be.colored', 'red');
-    cy.deleteAllTestReports();
   });
 });
 
@@ -96,21 +99,4 @@ function prepareEdit() {
     .should('include.text', 'Simple report');
   // Wait until the tab has been rendered
   cy.get('.report-tab .jqx-tree-dropdown-root > li').should('have.length', 1);
-}
-
-
-function cleanup() {
-  cy.clearDebugStore();
-  cy.get('[data-cy-nav-tab="debugTab"] a').click();
-  // Wait for debug tab to be rendered
-  cy.wait(1000);
-  cy.get('[data-cy-nav-tab="testTab"]').click();
-  // Give UI time to build up the test tab.
-  cy.wait(1000);
-  cy.get('[data-cy-test="selectAll"]').click();
-  cy.get('[data-cy-test="deleteSelected"]').click();
-  cy.get('[data-cy-delete-modal="confirm"]').click();
-  cy.checkTestTableNumRows(0);
-  cy.get('[data-cy-nav-tab="debugTab"]').click();
-  cy.deleteAllTestReports();
 }
