@@ -64,7 +64,7 @@ describe('Table size and toggle filter', () => {
     cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="tableFilter"]').eq(0).type('test');
     cy.get('[data-cy-debug="filter-error-message"]').should('be.visible');
-    cy.contains('Filter Error: Search value \'test\' is not a valid \'int\' ');
+    cy.contains('Filter Error: Search value \'test\' is not a valid \'number\' ');
     cy.get('[data-cy-debug="filter"]').click();
   });
 
