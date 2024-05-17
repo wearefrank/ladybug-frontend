@@ -1,10 +1,7 @@
 describe('Tests about copying', function() {
   beforeEach(() => {
     cy.resetApp();
-  });
-
-  after(() => {
-    cy.resetApp();
+    cy.initializeApp();
   });
 
   it('Copy report to test tab', () => {

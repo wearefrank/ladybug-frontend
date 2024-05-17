@@ -9,6 +9,7 @@ describe('Ladybug simple protractor test', () => {
 
   beforeEach(() => {
     cy.resetApp();
+    cy.initializeApp();
   });
 
   it('Confirm title of ladybug app', () => {

@@ -1,7 +1,11 @@
 describe('Refresh', () => {
   beforeEach(() => {
-    cy.clearDebugStore();
+    cy.resetApp();
     cy.initializeApp();
+  });
+
+  after(() => {
+    cy.resetApp();
   });
 
   it('New reports are only shown on refresh', () => {

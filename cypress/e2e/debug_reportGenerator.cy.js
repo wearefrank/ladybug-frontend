@@ -1,6 +1,6 @@
 describe('Report generator', () => {
   beforeEach(() => {
-    cy.clearDebugStore();
+    cy.resetApp();
     cy.initializeApp();
   });
   afterEach(() => {

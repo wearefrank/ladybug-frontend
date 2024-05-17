@@ -20,10 +20,6 @@ describe('About the Test tab', () => {
     copyTheReportsToTestTab();
   });
 
-  afterEach(() => {
-    cy.clearDebugStore();
-  });
-
   it('Test deleting a report', () => {
     cy.navigateToTestTabAndWait();
     cy.checkTestTableNumRows(2);
@@ -40,7 +36,6 @@ describe('About the Test tab', () => {
   it('Test select all by deleting', () => {
     cy.get('[data-cy-nav-tab="testTab"]').click();
     cy.checkTestTableNumRows(2);
-
     cy.get('[data-cy-test="selectAll"]').click();
     checkTestTabTwoReportsSelected();
     cy.get('[data-cy-test="deleteSelected"]').click();
@@ -173,11 +168,11 @@ function copyTheReportsToTestTab() {
   cy.wait(100);
   cy.checkFileTreeLength(2);
   cy.wait(100);
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item', { timeout: 5000 }).eq(0).find('.item-name').eq(0).click();
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
   cy.wait(100);
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item', { timeout: 5000 }).eq(1).find('.item-name').eq(0).click();
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Another simple report', 3, 'second');
   cy.wait(1000);

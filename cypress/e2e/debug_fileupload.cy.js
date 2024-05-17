@@ -2,7 +2,7 @@ const path = require('path');
 
 describe('Debug file upload', () => {
   beforeEach(() => {
-    cy.clearDebugStore();
+    cy.resetApp();
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
@@ -19,5 +19,5 @@ describe('Debug file upload', () => {
       });
 
     cy.checkFileTreeLength(1);
-  })
+  });
 });

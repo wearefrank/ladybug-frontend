@@ -1,6 +1,6 @@
 describe('Clicking a report', () => {
   beforeEach(() => {
-    cy.clearDebugStore();
+    cy.resetApp();
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();

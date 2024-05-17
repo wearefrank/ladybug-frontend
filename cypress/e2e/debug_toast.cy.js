@@ -1,6 +1,6 @@
 describe('Test toast window', () => {
   beforeEach(() => {
-    cy.clearDebugStore();
+    cy.resetApp();
     cy.initializeApp();
   });
 

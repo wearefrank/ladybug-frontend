@@ -1,6 +1,6 @@
 describe('Test running reports', () => {
   beforeEach(() => {
-    cy.clearDebugStore();
+    cy.resetApp();
   });
 
   it('If no running reports then number of running reports is zero', () => {
@@ -11,6 +11,7 @@ describe('Test running reports', () => {
 
 describe('With running reports', () => {
   beforeEach(() => {
+    cy.resetApp();
     cy.createRunningReport();
     cy.createRunningReport();
     cy.initializeApp();
@@ -32,7 +33,6 @@ describe('With running reports', () => {
     cy.get('.toast-body').should('contain.text', 'Opened report in progress');
     cy.checkFileTreeLength(1);
     cy.get('[data-cy-debug-tree="root"] app-tree-item .item-name').eq(0).should('contain.text', 'Waiting for thread to start');
-
   });
 });
 
