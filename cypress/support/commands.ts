@@ -206,15 +206,10 @@ Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes
   }).as(alias);
   cy.get('[data-cy-debug-editor="copy"]').click();
   cy.wait(`@${alias}`, { timeout: 10_000 }).then((res) => {
-    console.log('test1');
     cy.wrap(res).its('request.url').should('contain', 'Test');
-    console.log('test2');
     cy.wrap(res).its('request.body').as('requestBody');
-    console.log('test3');
     cy.get('@requestBody').its('Debug').should('have.length', 1);
-    console.log('test4');
     cy.wrap(res).its('response.statusCode').should('equal', 200);
-    console.log('test5');
     cy.log('Api call to copy report has been completed');
   });
 });
