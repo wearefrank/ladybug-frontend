@@ -1,14 +1,10 @@
 describe('Tests about copying', function() {
   beforeEach(() => {
-    cy.initializeApp();
+    cy.resetApp();
   });
 
-  afterEach(() => {
-    cy.clearDebugStore();
-    cy.get('[data-cy-nav-tab="testTab"]').click();
-    cy.get('[data-cy-test="selectAll"]').click();
-    cy.get('[data-cy-test="deleteSelected"]').click();
-    cy.get('[data-cy-delete-modal="confirm"]').click();
+  after(() => {
+    cy.resetApp();
   });
 
   it('Copy report to test tab', () => {
