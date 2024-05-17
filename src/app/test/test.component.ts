@@ -4,7 +4,6 @@ import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
@@ -20,6 +19,7 @@ import { OptionsSettings } from '../shared/interfaces/options-settings';
 import { TargetWithFiles } from '../shared/interfaces/target-with-files';
 import { ReportData } from '../shared/interfaces/report-data';
 import { NodeLinkStrategy } from '../shared/enums/compare-method';
+import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 
 @Component({
   selector: 'app-test',
@@ -30,7 +30,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   static readonly ROUTER_PATH: string = 'test';
   reports: TestListItem[] = [];
   reranReports: ReranReport[] = [];
-  generatorStatus: string = 'Disabled';
+  generatorStatus?: string;
   currentFilter: string = '';
   currentView: CurrentTestView = {
     metadataNames: ['storageId', 'name', 'path'],
@@ -39,18 +39,22 @@ export class TestComponent implements OnInit, AfterViewInit {
   };
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
-  @ViewChild(TestSettingsModalComponent)
-  testSettingsModal!: TestSettingsModalComponent;
-  @ViewChild(TestFolderTreeComponent)
-  testFolderTreeComponent!: TestFolderTreeComponent;
+  @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
+  @ViewChild(TestFolderTreeComponent) testFileTreeComponent!: TestFolderTreeComponent;
 
   constructor(
     private httpService: HttpService,
     private helperService: HelperService,
     private toastService: ToastService,
     private tabService: TabService,
-  ) {}
+  ) {
+    this.getGeneratorStatus();
+  }
+
+  ngAfterViewInit(): void {
+    this.loadData(null);
+  }
 
   ngAfterViewInit(): void {
     this.loadData('');
@@ -78,8 +82,9 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   getGeneratorStatus() {
-    if (localStorage.getItem('generatorEnabled')) {
-      this.generatorStatus = localStorage.getItem('generatorEnabled')!;
+    const generatorStatus = localStorage.getItem('generatorEnabled');
+    if (generatorStatus) {
+      this.generatorStatus = generatorStatus;
     } else {
       this.httpService.getSettings().subscribe((response: OptionsSettings) => {
         this.generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
@@ -118,7 +123,16 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value: TestListItem[]) => {
         this.reports = value;
-        this.testFolderTreeComponent.updateFolderTree(this.reports, path);
+        this.testFileTreeComponent.setData(this.reports);
+        if (path) {
+          setTimeout(() => {
+            this.testFileTreeComponent.selectItem(path);
+          });
+        } else {
+          setTimeout(() => {
+            this.testFileTreeComponent.tree.selectItem(this.testFileTreeComponent.rootFolder.name);
+          });
+        }
       },
       error: () => catchError(this.httpService.handleError()),
     });
@@ -177,12 +191,6 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   openReport(storageId: string, name: string): void {
-    // this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data: CompareReport) => {
-    //   const report: Report = data.report;
-    //   report.xml = data.xml;
-    //   this.tabService.openNewTab({ data: report, name: name });
-    // });
-
     this.httpService.getReport(storageId, this.currentView.storageName).subscribe((report: Report): void => {
       const reportData: ReportData = {
         report: report,
@@ -192,7 +200,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     });
   }
 
-  openDeleteModal() {
+  openDeleteModal(): void {
     let reportsToBeDeleted = this.helperService.getSelectedReports(this.reports);
     if (reportsToBeDeleted.length > 0) {
       this.deleteModal.open(reportsToBeDeleted);
@@ -233,7 +241,14 @@ export class TestComponent implements OnInit, AfterViewInit {
   compareReports(id: string): void {
     const reranReport = this.reranReports.find((report: ReranReport) => report.id == id);
     if (reranReport) {
+      const tabId: string = this.helperService.createCompareTabId(
+        reranReport?.originalReport,
+        reranReport?.runResultReport,
+      );
       this.tabService.openNewCompareTab({
+        id: tabId,
+        nodeLinkStrategy: NodeLinkStrategy.NONE,
+        viewName: 'compare',
         originalReport: reranReport.originalReport,
         runResultReport: reranReport.runResultReport,
       });
@@ -281,10 +296,21 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   changeFilter(filter: string): void {
+    filter = filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
     this.currentFilter = filter;
-    this.reports.forEach((report) => {
+    for (const report of this.reports) {
       report.checked = this.matches(report);
-    });
+    }
+  }
+
+  transformPath(path: string): string {
+    if (path.length > 0 && !path.startsWith('/')) {
+      path = `/${path}`;
+    }
+    if (!path.endsWith('/')) {
+      path = `${path}/`;
+    }
+    return path;
   }
 
   transformPath(path: string): string {
@@ -302,7 +328,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     return name.match('(/)?' + this.currentFilter + '.*') != undefined;
   }
 
-  showRelativePath(path: string) {
+  showRelativePath(path: string): string {
     if (path) {
       return path.replace(this.currentFilter, '');
     }
@@ -323,7 +349,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     return resultString.slice(0, -2);
   }
 
-  sortByName() {
+  sortByName(): any[] {
     return this.reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
   }
 }

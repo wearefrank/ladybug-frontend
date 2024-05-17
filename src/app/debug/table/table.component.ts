@@ -103,10 +103,11 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadData();
     this.listenForViewUpdate();
     this.subscribeToSettingsObservables();
+    this.subscribeToFilterObservables();
   }
 
   ngOnDestroy(): void {
-    this.tableSpacingSubscription.unsubscribe();
+    this.unsubscribeFromObservables();
   }
 
   subscribeToSettingsObservables(): void {
@@ -194,7 +195,6 @@ export class TableComponent implements OnInit, OnDestroy {
     element.forEach((element: HTMLInputElement) => {
       element.value = '';
     });
-
     this.tableSettings.filterValues = [];
     this.tableSettings.filterHeaders = [];
     this.retrieveRecords();
@@ -249,7 +249,6 @@ export class TableComponent implements OnInit, OnDestroy {
       this.retrieveRecords();
       this.getUserHelp();
     });
-
     this.loadReportInProgressSettings();
   }
 
@@ -298,7 +297,10 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   toggleFilter(): void {
+    this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
+    this.filterService.setShowFilter(this.tableSettings.showFilter);
+    this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
   }
 
   toggleCheck(report: DebugListItem): void {
@@ -461,7 +463,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   refresh(): void {
-    this.tableSettings.showFilter = false;
+    this.filterService.setShowFilter(false);
     this.tableSettings.reportMetadata = [];
     this.tableSettings.tableLoaded = false;
     this.tableSettings.displayAmount = 10;
@@ -470,7 +472,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openReport(storageId: string | undefined): void {
     if (storageId && this.viewSettings.currentView?.storageName) {
-      this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data: Report) => {
+      this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data: Report): void => {
         data.storageName = this.viewSettings.currentView?.storageName ?? '';
         this.openReportEvent.next(data);
       });
@@ -561,13 +563,22 @@ export class TableComponent implements OnInit, OnDestroy {
       const upperHeaderName = headerName.toUpperCase();
       let uniqueValues: Set<string> = new Set<string>();
       for (let element of data) {
-        uniqueValues.add(element[lowerHeaderName]);
-        uniqueValues.add(element[upperHeaderName]);
+        if (element[lowerHeaderName]) {
+          uniqueValues.add(element[lowerHeaderName]);
+        }
+        if (element[upperHeaderName]) {
+          uniqueValues.add(element[upperHeaderName]);
+        }
+        if (element[headerName]) {
+          uniqueValues.add(element[headerName]);
+        }
       }
+      const MAX_AMOUNT_OF_FILTER_SUGGESTIONS: number = 15;
       this.tableSettings.uniqueValues.set(
         lowerHeaderName,
-        uniqueValues.size < 15 ? this.sortUniqueValues(uniqueValues) : ([] as string[]),
+        uniqueValues.size < MAX_AMOUNT_OF_FILTER_SUGGESTIONS ? this.sortUniqueValues(uniqueValues) : [],
       );
+      this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
     }
   }
 
@@ -610,7 +621,7 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadReportInProgressThreshold() {
+  loadReportInProgressThreshold(): void {
     this.httpService.getReportsInProgressThresholdTime().subscribe((time: number) => {
       this.reportsInProgressThreshold = time;
     });

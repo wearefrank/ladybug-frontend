@@ -1,86 +1,102 @@
-import { AfterViewInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
+import { Component, Output, ViewChild } from '@angular/core';
+import { Child, CreateTreeItem, FileTreeOptions, NgSimpleFileTree, NgSimpleFileTreeModule } from 'ng-simple-file-tree';
+import { Subject } from 'rxjs';
 
 @Component({
+  standalone: true,
+  imports: [NgSimpleFileTreeModule],
   selector: 'app-test-folder-tree',
   templateUrl: './test-folder-tree.component.html',
-  styleUrls: ['./test-folder-tree.component.css'],
+  styleUrl: './test-folder-tree.component.css',
 })
-export class TestFolderTreeComponent implements AfterViewInit {
-  @ViewChild('treeReference') treeReference!: jqxTreeComponent;
-  baseFolder: any = { label: 'Reports', value: '', filter: '', items: [], expanded: true, selected: true };
-  latestAddedFolder: any = this.baseFolder;
-  @Output() changeFolderEvent = new EventEmitter<any>();
+export class TestFolderTreeComponent {
+  @ViewChild('tree') tree!: NgSimpleFileTree;
+  @Output() changeFolderEvent: Subject<string> = new Subject<string>();
+  rootFolder: CreateTreeItem = {
+    name: 'Reports',
+    icon: 'assets/tree-icons/folder.svg',
+  };
+  treeOptions: FileTreeOptions = {
+    folderBehaviourOnClick: 'select',
+    expandAllFolders: true,
+    highlightOpenFolders: false,
+    autoSelectCondition: (item: CreateTreeItem) => this.autoSelectItem(item),
+  };
+  originalItems?: CreateTreeItem[];
 
-  constructor() {}
-
-  ngAfterViewInit(): void {
-    this.treeReference.createComponent({ source: [this.baseFolder], height: '90%', width: '100%', allowDrag: false });
+  autoSelectItem(item: CreateTreeItem): boolean {
+    return item.name === this.rootFolder.name;
   }
 
-  updateFolderTree(reports: any, addedFolderPath: any) {
-    this.resetFolders();
-    reports.forEach((report: any) => {
-      this.addFolder(report.path);
-    });
-    this.treeReference.clear();
-    this.treeReference.addTo(this.baseFolder, null);
-    this.selectNewFolder(addedFolderPath);
+  selectItem(value: string): void {
+    value = this.removeSlashesFromPathEnds(value);
+    const path: string = value.length > 0 ? `Reports/${value}` : 'Reports';
+    this.tree.selectItem(path);
   }
 
-  resetFolders() {
-    this.baseFolder = {
-      label: 'Reports',
-      value: '',
-      items: [],
-      expanded: true,
-      selected: true,
-    };
-  }
-
-  addFolder(path: string): void {
-    if (path) {
-      let folderNames = path.startsWith('/') ? path.slice(1).split('/') : path.split('/');
-      folderNames.pop();
-      this.recursivelyAddFolders(folderNames, this.baseFolder.items, '/');
+  removeSlashesFromPathEnds(path: string): string {
+    if (path.startsWith('/')) {
+      path = path.slice(1);
     }
-  }
-
-  recursivelyAddFolders(folderNames: string[], currentFolders: any[], previousFilter: string): void {
-    if (folderNames.length > 0) {
-      let name = folderNames.shift()!;
-      let currentFolder = currentFolders.find((folder) => folder.label === name);
-
-      if (!currentFolder) {
-        currentFolder = this.createNewFolder(name, previousFilter);
-        currentFolders.push(currentFolder);
-      }
-
-      this.latestAddedFolder = currentFolder;
-      this.recursivelyAddFolders(folderNames, currentFolder.items, currentFolder.value);
+    if (path.endsWith('/')) {
+      path = path.slice(0, -1);
     }
+    return path;
   }
 
-  selectNewFolder(addedFolderPath: string) {
-    if (addedFolderPath) {
-      let item = this.treeReference.getItems().find((item: any) => addedFolderPath === item.value);
-      if (item) {
-        this.treeReference.selectItem(item);
-        this.changeFolderEvent.next(item.value);
+  setData(data: CreateTreeItem[]): void {
+    this.resetTree();
+    this.originalItems = data;
+    const tempItems: CreateTreeItem[] = this.convertToFolders(data);
+    const rootFolder: CreateTreeItem = Object.assign({}, this.rootFolder);
+    if (tempItems && tempItems.length > 0) {
+      rootFolder.children = tempItems;
+    }
+    this.tree.addItem(rootFolder);
+  }
+
+  convertToFolders(items: CreateTreeItem[]): CreateTreeItem[] {
+    const tempItems: CreateTreeItem[] = [];
+    const folderNames: string[] = [];
+    for (let item of items) {
+      if (item.path) {
+        const tempItem: CreateTreeItem | undefined = this.createFolderFromPath(item.path);
+        if (tempItem && !folderNames.includes(tempItem.path!)) {
+          folderNames.push(tempItem.path!);
+          tempItems.push(tempItem);
+        }
       }
     }
+    return tempItems;
   }
 
-  createNewFolder(name: string, previousFilter: string): any {
-    return {
-      label: name,
-      value: previousFilter + name + '/',
-      items: [],
-      expanded: true,
-    };
+  createFolderFromPath(path: string): CreateTreeItem | undefined {
+    let index = path.indexOf('/');
+    if (index === 0) {
+      index = path.indexOf('/', 2);
+    }
+    if (index === -1) {
+      return undefined;
+    }
+    let folderName = path.slice(0, index);
+    const remainingPath = path.replace(folderName, '');
+    if (folderName.startsWith('/')) {
+      folderName = folderName.slice(1);
+    }
+    const treeItem: CreateTreeItem = { name: folderName, icon: 'assets/tree-icons/folder.svg' };
+    if (remainingPath && remainingPath !== '/' && remainingPath !== '') {
+      const child = this.createFolderFromPath(remainingPath);
+      if (child) {
+        treeItem.children = [child];
+      }
+    }
+    return treeItem;
   }
 
-  selectFolder(event: any) {
-    this.changeFolderEvent.next(event.owner.selectedItem.value);
+  resetTree(): void {
+    if (this.tree) {
+      this.tree.clearItems();
+    }
+    this.originalItems = [];
   }
 }

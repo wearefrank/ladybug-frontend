@@ -14,6 +14,7 @@ import { View } from '../shared/interfaces/view';
   styleUrls: ['./debug.component.css'],
 })
 export class DebugComponent implements OnInit, AfterViewInit {
+  static readonly ROUTER_PATH: string = 'debug';
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;

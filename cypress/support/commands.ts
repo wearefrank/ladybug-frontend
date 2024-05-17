@@ -40,7 +40,7 @@ Cypress.Commands.add('resetApp' as keyof Chainable, () => {
   );
   cy.deleteAllTestReports();
   cy.initializeApp();
-})
+});
 
 Cypress.Commands.add('navigateToTestTabAndWait' as keyof Chainable, () => {
   navigateToTabAndWait('test');
@@ -205,15 +205,15 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
 //Clear reports in test tab if any present
 Cypress.Commands.add('deleteAllTestReports' as keyof Chainable, () => {
   cy.navigateToTestTabAndWait();
-  cy.get('[data-cy-test="selectAll"]').click();
-  cy.get('[data-cy-test="deleteSelected"]').click();
-  console.log(Cypress.$('[data-cy-delete-modal="confirm"]'));
-  if (Cypress.$('[data-cy-delete-modal="confirm"]').length > 0) {
-    cy.get('[data-cy-delete-modal="confirm"]').should('exist');
-  }
+  cy.get('[data-cy-test="table"]', { timeout: 5000 }).then((tbody: JQuery) => {
+    if (tbody.find('tr').length > 0) {
+      cy.get('[data-cy-test="selectAll"]').click();
+      cy.get('[data-cy-test="deleteSelected"]').click();
+      cy.get('[data-cy-delete-modal="confirm"]').click();
+    }
+  });
   cy.visit('');
 });
-
 
 Cypress.Commands.add('checkTableNumRows', n => {
   if (n === 0) {
@@ -251,7 +251,7 @@ Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes
     times: 1,
   }).as(alias);
   cy.get('[data-cy-debug-editor="copy"]').click();
-  cy.wait(`@${alias}`).then((res) => {
+  cy.wait(`@${alias}`, {timeout: 10000}).then((res) => {
     cy.wrap(res).its('request.url').should('contain', 'Test');
     cy.wrap(res).its('request.body').as('requestBody');
     cy.get('@requestBody').its('Debug').should('have.length', 1);
@@ -271,4 +271,16 @@ Cypress.Commands.add('clickRowInTable', (index: number) => {
 
 Cypress.Commands.add('checkFileTreeLength', (n: number) => {
   cy.get('[data-cy-debug-tree="root"] > app-tree-item').should('have.length', n);
+});
+
+Cypress.Commands.add('refreshApp', () => {
+  cy.intercept({
+    method: 'GET',
+    hostname: 'localhost',
+    url: /\/api\/*?/g,
+  }).as('apiCall');
+  cy.get('[data-cy-debug="refresh"]').click();
+  cy.wait('@apiCall').then(() =>
+    cy.log('All api requests have completed'),
+  );
 });

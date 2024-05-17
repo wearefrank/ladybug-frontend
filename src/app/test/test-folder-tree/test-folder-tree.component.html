@@ -1,1 +1,2 @@
-<jqxTree id="test-tree" #treeReference (onSelect)="selectFolder($event)" [auto-create]="false"></jqxTree>
+<ng-simple-tree #tree [options]="treeOptions" (itemSelected)="changeFolderEvent.next($event.name)"></ng-simple-tree>
+

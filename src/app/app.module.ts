@@ -10,7 +10,7 @@ import { TableComponent } from './debug/table/table.component';
 import { DisplayComponent } from './debug/display/display.component';
 import { ButtonComponent } from './shared/components/button/button.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 import { MatSortModule } from '@angular/material/sort';
 import { ReportComponent } from './report/report.component';
@@ -20,7 +20,6 @@ import { TestSettingsModalComponent } from './test/test-settings-modal/test-sett
 import { CloneModalComponent } from './test/clone-modal/clone-modal.component';
 import { DisplayTableComponent } from './shared/components/display-table/display-table.component';
 import { TableSettingsModalComponent } from './debug/table/table-settings-modal/table-settings-modal.component';
-import { TestFolderTreeComponent } from './test/test-folder-tree/test-folder-tree.component';
 import { jqxTreeModule } from 'jqwidgets-ng/jqxtree';
 import { CompareTreeComponent } from './compare/compare-tree/compare-tree.component';
 import { EditDisplayComponent } from './report/edit-display/edit-display.component';
@@ -38,8 +37,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ActiveFiltersComponent } from './debug/active-filters/active-filters.component';
 import { DictionaryPipe } from './shared/pipes/dictionary.pipe';
 import { ReportDisplayComponent } from './report-display/report-display.component';
-import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
 import { FilterSideDrawerComponent } from './debug/filter-side-drawer/filter-side-drawer.component';
+import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
+import { TestFolderTreeComponent } from './test/test-folder-tree/test-folder-tree.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +56,6 @@ import { FilterSideDrawerComponent } from './debug/filter-side-drawer/filter-sid
     CloneModalComponent,
     DisplayTableComponent,
     TableSettingsModalComponent,
-    TestFolderTreeComponent,
     CompareTreeComponent,
     EditDisplayComponent,
     DebugTreeComponent,
@@ -74,7 +73,6 @@ import { FilterSideDrawerComponent } from './debug/filter-side-drawer/filter-sid
     AppRoutingModule,
     BrowserAnimationsModule,
     NgbModule,
-    NgbNavModule,
     HttpClientModule,
     MatSortModule,
     ReactiveFormsModule,
@@ -89,6 +87,7 @@ import { FilterSideDrawerComponent } from './debug/filter-side-drawer/filter-sid
     ClipboardModule,
     NgSimpleFileTreeModule,
     FilterSideDrawerComponent,
+    TestFolderTreeComponent,
   ],
 })
 export class AppModule {}

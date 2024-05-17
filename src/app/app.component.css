@@ -1,3 +1,36 @@
 #version:hover {
   background-color: #f3f3f4 !important;
 }
+
+.nav-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.nav-link, .nav-link a {
+  color: #a7b1c2;
+}
+
+.nav-link.active, .nav-link.active a {
+  color: #495057;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.close-tab {
+  font-size: 11pt;
+  margin-left: 0.25rem;
+  margin-right: -0.6375rem;
+
+  &:hover {
+    cursor: pointer;
+    color: red;
+  }
+}

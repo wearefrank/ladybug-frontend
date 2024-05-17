@@ -4262,7 +4262,7 @@ __metadata:
     karma-jasmine: "npm:4.0.1"
     karma-jasmine-html-reporter: "npm:1.7.0"
     monaco-editor: "npm:0.44.0"
-    ng-simple-file-tree: "npm:^0.1.12"
+    ng-simple-file-tree: "npm:^0.1.13"
     ngx-monaco-editor-v2: "npm:17.0.1"
     path: "npm:^0.12.7"
     popper.js: "npm:^1.16.1"
@@ -9619,14 +9619,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ng-simple-file-tree@npm:^0.1.12":
-  version: 0.1.12
-  resolution: "ng-simple-file-tree@npm:0.1.12"
+"ng-simple-file-tree@npm:^0.1.13":
+  version: 0.1.13
+  resolution: "ng-simple-file-tree@npm:0.1.13"
   dependencies:
     tslib: "npm:^2.3.0"
   peerDependencies:
     bootstrap-icons: ^1.11.3
-  checksum: 27a392cdb2e3aadd2c6126919b50ee9f6ee324daa2f85b8b004ec4c0ce18de48b095be2297003cd46752bb3736cf59658c12dc252f4c38cb15e410aab1c76f14
+  checksum: c954a594520ae84d7786c5001f568165890ba0213350cabbbb747db1db45ea0970856cd2b9df0b219f65e30074e72d959200e7a8fed9546d1e978ee847d7c40a
   languageName: node
   linkType: hard
 

@@ -1,11 +1,10 @@
 import { Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
 import { SettingsService } from '../../../shared/services/settings.service';
 import { Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
-import { OptionsSettings } from 'src/app/shared/interfaces/options-settings';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
 import { SettingsForm } from 'src/app/shared/interfaces/settings-form';
 
@@ -47,7 +46,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.subscribeToSettingsServiceObservables();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.showMultipleAtATimeSubscription.unsubscribe();
     this.tableSpacingSubscription.unsubscribe();
     this.showSearchWindowOnLoadSubscription.unsubscribe();
@@ -85,13 +84,18 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.settingsService.setShowSearchWindowOnLoad(!this.showSearchWindowOnLoad);
   }
 
+  onClickSave(modal: NgbActiveModal): void {
+    modal.dismiss();
+    this.saveSettings();
+  }
+
   open(): void {
     this.loadSettings();
     this.modalService.open(this.modal);
     this.detectClosingModal();
   }
 
-  detectClosingModal() {
+  detectClosingModal(): void {
     setTimeout(() => {
       if (this.modalService.hasOpenModals()) {
         this.detectClosingModal();
@@ -143,7 +147,7 @@ export class TableSettingsModalComponent implements OnDestroy {
       );
   }
 
-  saveResponseSetting(response: any) {
+  saveResponseSetting(response: any): void {
     const generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
     localStorage.setItem('generatorEnabled', generatorStatus);
     this.settingsForm.get('generatorEnabled')?.setValue(generatorStatus);
@@ -154,7 +158,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.settingsService.setTableSpacing(Number(value));
   }
 
-  setPrettifyOnLoad() {
+  setPrettifyOnLoad(): void {
     this.settingsService.setPrettifyOnLoad(!this.prettifyOnLoad);
   }
 }

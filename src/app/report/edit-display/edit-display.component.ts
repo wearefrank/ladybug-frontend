@@ -40,7 +40,7 @@ export class EditDisplayComponent {
     private helperService: HelperService,
   ) {}
 
-  showReport(report: any): void {
+  showReport(report: Report): void {
     this.report = report;
     report.xml
       ? this.editor.setNewReport(report.xml)
