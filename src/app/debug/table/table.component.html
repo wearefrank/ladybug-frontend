@@ -9,19 +9,9 @@
         <i class="fa fa-download px-2"></i><span class="caret"></span>
       </button>
       <div ngbDropdownMenu aria-labelledby="dropdownDownloadTable">
-        <button ngbDropdownItem (click)="downloadReports(true, true)">
-          XML & Binary
-        </button>
-        <button ngbDropdownItem (click)="downloadReports(false, true)">
-          XML
-          <i
-            class="fa fa-info-circle"
-            title="Only a binary file can be uploaded again"
-          ></i>
-        </button>
-        <button ngbDropdownItem (click)="downloadReports(true, false)">
-          Binary
-        </button>
+        <button ngbDropdownItem (click)="downloadReports(true, true)"> XML & Binary </button>
+        <button ngbDropdownItem (click)="downloadReports(false, true)"> XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
+        <button ngbDropdownItem (click)="downloadReports(true, false)"> Binary </button>
       </div>
     </div>
     <button type="button" id="UploadButton" class="btn btn-info my-2 mx-1 px-3" title="Upload" (click)="uploadFileTable.click()">
@@ -48,37 +38,25 @@
       </select>
     </div>
 
-    <div data-cy-debug-in-progress-counter class="btn btn-static my-2 mx-1 px-2">
-      Reports in progress: {{ tableSettings.numberOfReportsInProgress }}
-    </div>
+    <div data-cy-debug-in-progress-counter class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.numberOfReportsInProgress }} </div>
     <div class="row" *ngIf="tableSettings.numberOfReportsInProgress > 0">
-      <div class="btn btn-static my-2 mx-1 px-2">
-        Estimated memory usage of reports in progress:
-        {{ tableSettings.estimatedMemoryUsage }} Bytes
-      </div>
+      <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes </div>
       <div class="col input-group my-2 mx-1 px-2">
         <input #openIndex type="number" min="0" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" class="form-control" data-cy-debug="openInProgressNo"/>
         <div class="input-group-append">
-          <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">
-            Open
-          </button>
+          <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)"> Open </button>
         </div>
       </div>
       <div class="col input-group my-2 mx-1 px-2">
         <input #deleteIndex type="number" min="0" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" class="form-control" id="deleteInProgressNo"/>
         <div class="input-group-append">
-          <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+deleteIndex.value)">
-            <i class="fa fa-trash"></i>
-          </button>
+          <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
         </div>
       </div>
     </div>
 
     @if (hasTimedOut) {
-      <h4 class="progress-report-timout">
-        [One or more reports are in progress for more than
-        {{ this.reportsInProgressThreshold / 1000 / 60 }} minutes]
-      </h4>
+      <h4 class="progress-report-timout"> [One or more reports are in progress for more than {{ this.reportsInProgressThreshold / 1000 / 60 }} minutes] </h4>
     }
 
     <app-button text="Compare" title="Compare" *ngIf="showCompareButton()" (click)="compareTwoReports()"></app-button>
@@ -95,8 +73,11 @@
           <th class="table-row-checkbox header-padding">
             <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()"/>
           </th>
-          <th class="text-center table-id-cell header-cell header-padding" *ngFor="let header of viewSettings.currentView?.metadataLabels; let i = index" [attr.mat-sort-header]="i" [title]="header">
-            {{ getShortenedTableHeaderNames(header) }}
+          <th class="text-center table-id-cell header-cell header-padding" 
+              *ngFor="let header of viewSettings.currentView?.metadataLabels; let i = index" 
+              [attr.mat-sort-header]="i" 
+              [title]="header">
+            {{getShortenedTableHeaderNames(header)}}
           </th>
         </tr>
         <tr data-cy-debug="tableFilterRow" id="filterRow" *ngIf="tableSettings.showFilter">

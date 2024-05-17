@@ -33,7 +33,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   title = 'ladybug';
   active = 1;
   previousActive = 1;
-  tabs: { key: string; value: any; id: string; data: any }[] = [];
+  tabs: Tab[] = [];
 
   newTabSubscription!: Subscription;
   newCompareTabSubscription!: Subscription;
@@ -81,9 +81,9 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       this.changingTabs(data.data, 'Report');
       this.tabs.push({
         key: data.name,
-        value: ReportComponent,
         id: data.data.storageId,
         data: data.data,
+        path: `report/${data.report.storageId}`,
       });
       this.active = this.FIXED_TAB_AMOUNT + this.tabs.length; // Active the tab immediately
     } else {
@@ -93,7 +93,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   observeReportSave() {
     this.dynamicService.getObservable().subscribe((report: Report) => {
-      const tabIndex: number = this.tabs.findIndex((tab) => tab.id == report.storageId);
+      const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id == report.storageId);
+      this.tabs.findIndex((tab) => tab.id == report.storageId);
       this.tabs[tabIndex].data = report;
     });
   }
@@ -107,9 +108,9 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       this.changingTabs(data, 'Compare');
       this.tabs.push({
         key: 'Compare',
-        value: CompareComponent,
         id: tabId,
         data: data,
+        path: `compare/${tabId}`,
       });
       this.active = this.FIXED_TAB_AMOUNT + this.tabs.length;
     } else {

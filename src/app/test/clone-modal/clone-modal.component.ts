@@ -33,13 +33,11 @@ export class CloneModalComponent {
   ) {}
 
   open(selectedReport: TestListItem) {
-    this.httpService
-      .getReport(selectedReport.storageId, this.currentView.storageName)
-      .subscribe((response: CompareReport) => {
-        this.report = response.report;
-        this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
-        this.modalService.open(this.modal);
-      });
+    this.httpService.getReport(selectedReport.storageId, this.currentView.storageName).subscribe((response: Report) => {
+      this.report = response;
+      this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
+      this.modalService.open(this.modal);
+    });
   }
 
   generateClones() {

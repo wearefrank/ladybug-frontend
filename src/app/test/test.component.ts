@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
@@ -18,13 +18,16 @@ import { CurrentTestView } from '../shared/interfaces/current-test-view';
 import { CompareReport } from '../shared/interfaces/compare-report';
 import { OptionsSettings } from '../shared/interfaces/options-settings';
 import { TargetWithFiles } from '../shared/interfaces/target-with-files';
+import { ReportData } from '../shared/interfaces/report-data';
+import { NodeLinkStrategy } from '../shared/enums/compare-method';
 
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.css'],
 })
-export class TestComponent implements OnInit {
+export class TestComponent implements OnInit, AfterViewInit {
+  static readonly ROUTER_PATH: string = 'test';
   reports: TestListItem[] = [];
   reranReports: ReranReport[] = [];
   generatorStatus: string = 'Disabled';
@@ -48,6 +51,10 @@ export class TestComponent implements OnInit {
     private toastService: ToastService,
     private tabService: TabService,
   ) {}
+
+  ngAfterViewInit(): void {
+    this.loadData('');
+  }
 
   openCloneModal(): void {
     if (this.helperService.getSelectedReports(this.reports).length === 1) {
@@ -170,10 +177,18 @@ export class TestComponent implements OnInit {
   }
 
   openReport(storageId: string, name: string): void {
-    this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data: CompareReport) => {
-      const report: Report = data.report;
-      report.xml = data.xml;
-      this.tabService.openNewTab({ data: report, name: name });
+    // this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data: CompareReport) => {
+    //   const report: Report = data.report;
+    //   report.xml = data.xml;
+    //   this.tabService.openNewTab({ data: report, name: name });
+    // });
+
+    this.httpService.getReport(storageId, this.currentView.storageName).subscribe((report: Report): void => {
+      const reportData: ReportData = {
+        report: report,
+        currentView: this.currentView,
+      };
+      this.tabService.openNewTab(reportData);
     });
   }
 
@@ -257,12 +272,7 @@ export class TestComponent implements OnInit {
     const reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       let path = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
-      if (!path.endsWith('/')) {
-        path = path + '/';
-      }
-      if (!path.startsWith('/')) {
-        path = '/' + path;
-      }
+      path = this.transformPath(path);
       const map: UpdatePathSettings = { path: path, action: action };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
     } else {
@@ -275,6 +285,16 @@ export class TestComponent implements OnInit {
     this.reports.forEach((report) => {
       report.checked = this.matches(report);
     });
+  }
+
+  transformPath(path: string): string {
+    if (path.length > 0 && !path.startsWith('/')) {
+      path = `/${path}`;
+    }
+    if (!path.endsWith('/')) {
+      path = `${path}/`;
+    }
+    return path;
   }
 
   matches(report: any): boolean {

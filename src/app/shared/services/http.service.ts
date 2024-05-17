@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { ToastService } from './toast.service';
 import { View } from '../interfaces/view';
 import { OptionsSettings } from '../interfaces/options-settings';
@@ -106,9 +106,9 @@ export class HttpService {
     });
   }
 
-  getReport(reportId: string, storage: string): Observable<CompareReport> {
+  getReport(reportId: string, storage: string): Observable<Report> {
     return this.http
-      .get<CompareReport>(
+      .get<Record<string, Report | string>>(
         // eslint-disable-next-line sonarjs/no-duplicate-string
         'api/report/' +
           storage +
@@ -116,6 +116,13 @@ export class HttpService {
           reportId +
           '/?xml=true&globalTransformer=' +
           localStorage.getItem('transformationEnabled'),
+      )
+      .pipe(
+        map((e) => {
+          const report = e['report'] as Report;
+          report.xml = e['xml'] as string;
+          return report;
+        }),
       )
       .pipe(catchError(this.handleError()));
   }

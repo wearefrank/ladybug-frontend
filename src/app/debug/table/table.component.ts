@@ -10,15 +10,16 @@ import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { DebugReportService } from '../debug-report.service';
 import { TabService } from '../../shared/services/tab.service';
-import { View } from 'src/app/shared/interfaces/view';
-import { ViewSettings } from 'src/app/shared/interfaces/view-settings';
-import { OptionsSettings } from 'src/app/shared/interfaces/options-settings';
-import { DebugListItem } from 'src/app/shared/interfaces/debug-list-item';
-import { CompareReport } from 'src/app/shared/interfaces/compare-report';
-import { CompareReports } from 'src/app/shared/interfaces/compare-reports';
-import { TargetWithFiles } from 'src/app/shared/interfaces/target-with-files';
-import { DebugVariables } from 'src/app/shared/interfaces/debug-variables';
+import { View } from '../../shared/interfaces/view';
+import { ViewSettings } from '../../shared/interfaces/view-settings';
+import { OptionsSettings } from '../../shared/interfaces/options-settings';
+import { DebugListItem } from '../../shared/interfaces/debug-list-item';
+import { CompareReport } from '../../shared/interfaces/compare-report';
+import { CompareReports } from '../../shared/interfaces/compare-reports';
+import { TargetWithFiles } from '../../shared/interfaces/target-with-files';
+import { DebugVariables } from '../../shared/interfaces/debug-variables';
 import { FilterService } from '../filter-side-drawer/filter.service';
+import { ReportData } from '../../shared/interfaces/report-data';
 
 @Component({
   selector: 'app-table',
@@ -357,16 +358,16 @@ export class TableComponent implements OnInit, OnDestroy {
     const reportTab: DebugListItem | undefined = this.tableSettings.reportMetadata.find(
       (report: DebugListItem) => report.checked,
     );
+    const currentView: View = this.viewSettings.currentView ?? {};
     if (reportTab && this.viewSettings.currentView?.storageName && reportTab.debugVariables.storageId) {
       this.httpService
         .getReport(reportTab.debugVariables.storageId, this.viewSettings.currentView.storageName)
-        .subscribe((data: CompareReport) => {
-          const report: Report = data.report;
-          report.xml = data.xml;
-          this.tabService.openNewTab({
-            data: report,
-            name: report.name,
-          });
+        .subscribe((report: Report): void => {
+          const reportData: ReportData = {
+            report: report,
+            currentView: currentView,
+          };
+          this.tabService.openNewTab(reportData);
         });
     }
   }
@@ -420,6 +421,7 @@ export class TableComponent implements OnInit, OnDestroy {
           const runResultReport: Report = rightObject.report;
           runResultReport.xml = rightObject.xml;
 
+          compareReports.id = this.helperService.createCompareTabId(originalReport, runResultReport);
           compareReports.originalReport = originalReport;
           compareReports.runResultReport = runResultReport;
           compareReports.viewName = this.viewSettings.currentView?.name;
@@ -468,14 +470,10 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openReport(storageId: string | undefined): void {
     if (storageId && this.viewSettings.currentView?.storageName) {
-      this.httpService
-        .getReport(storageId, this.viewSettings.currentView.storageName)
-        .subscribe((data: CompareReport) => {
-          const report: Report = data.report;
-          report.xml = data.xml;
-          report.storageName = this.viewSettings.currentView?.storageName ?? '';
-          this.openReportEvent.next(report);
-        });
+      this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data: Report) => {
+        data.storageName = this.viewSettings.currentView?.storageName ?? '';
+        this.openReportEvent.next(data);
+      });
     }
   }
 
@@ -558,7 +556,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   setUniqueOptions(data: any): void {
-    for (const headerName of this.viewSettings.currentView?.metadataLabels as string[]) {
+    for (const headerName of this.viewSettings.currentView?.metadataNames as string[]) {
       const lowerHeaderName = headerName.toLowerCase();
       const upperHeaderName = headerName.toUpperCase();
       let uniqueValues: Set<string> = new Set<string>();

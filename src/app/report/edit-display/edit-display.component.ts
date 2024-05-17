@@ -6,8 +6,8 @@ import { HttpService } from '../../shared/services/http.service';
 import DiffMatchPatch, { Diff } from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
-import { Report } from 'src/app/shared/interfaces/report';
-import { CompareReport } from 'src/app/shared/interfaces/compare-report';
+import { Report } from '../../shared/interfaces/report';
+import { CompareReport } from '../../shared/interfaces/compare-report';
 
 @Component({
   selector: 'app-edit-display',
