@@ -2,10 +2,7 @@ const path = require('path');
 
 describe('Debug file upload', () => {
   beforeEach(() => {
-    cy.clearDebugStore();
-    cy.createReport();
-    cy.createOtherReport();
-    cy.initializeApp();
+    cy.resetApp();
   });
 
   it('Upload a file to debug', () => {
@@ -17,7 +14,6 @@ describe('Debug file upload', () => {
           fileName: 'testRerun.ttr',
         });
       });
-
-    cy.checkFileTreeLength(1);
+    cy.get('[data-cy-debug="jqxTree"]').find('li').should('have.length', 3);
   })
 });
