@@ -23,8 +23,8 @@ Cypress.Commands.add('initializeApp' as keyof Chainable, () => {
 });
 
 Cypress.Commands.add('resetApp' as keyof Chainable, () => {
-  cy.clearDebugStore();
   cy.initializeApp();
+  cy.clearDebugStore();
   cy.request('DELETE', 'http://localhost:4200/api/report/all/Test');
   cy.clearReportsInProgress();
   cy.visit('');
