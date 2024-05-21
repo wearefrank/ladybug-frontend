@@ -490,11 +490,15 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   showUploadedReports(formData: any): void {
-    this.httpService.uploadReport(formData).subscribe((data) => {
-      for (let report of data) {
-        this.openReportEvent.next(report);
-      }
-    });
+    // this.httpService.uploadReport(formData).subscribe((data) => {
+    //   for (let report of data) {
+    //     console.log(report);
+    //     this.openReportEvent.next(report);
+    //   }
+    // });
+    this.httpService
+      .uploadReportToStorage(formData, this.viewSettings.currentView.storageName)
+      .subscribe(() => this.loadData());
   }
 
   //TODO: fix on backend
