@@ -25,17 +25,9 @@ Cypress.Commands.add('initializeApp' as keyof Chainable, () => {
 Cypress.Commands.add('resetApp' as keyof Chainable, () => {
   cy.clearDebugStore();
   cy.initializeApp();
-  cy.get('[data-cy-debug="selectAll"]').click();
-  cy.get('[data-cy-debug="delete"]').click();
-  cy.intercept({
-    method: 'GET',
-    hostname: 'localhost',
-    url: /\/api\/*?/g,
-  }).as('deleteAll');
-  cy.visit('');
-  cy.wait('@deleteAll').then(() => cy.log('Successfully removed files'));
   cy.request('DELETE', 'http://localhost:4200/api/report/all/Test');
   cy.clearReportsInProgress();
+  cy.visit('');
 });
 
 Cypress.Commands.add('clearReportsInProgress' as keyof Chainable, () => {
