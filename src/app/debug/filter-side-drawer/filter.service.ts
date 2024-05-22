@@ -30,7 +30,7 @@ export class FilterService {
       let errorFound: boolean = false;
       this.filterErrors.clear();
       for (let [key, value] of context) {
-        if (!this.filterValidator(key, value)) {
+        if (this.isInValidTimestamp(value, key) || this.isInValidNumber(value, key)) {
           this.filterErrors.set(<string>this.metadataTypes.get(key), value);
           errorFound = true;
         }
@@ -86,16 +86,15 @@ export class FilterService {
     this.filterErrorSubject.next([true, this.filterErrors]);
   }
 
-  filterValidator(metadataName: string, userInput: string): boolean {
-    if (this.metadataTypes.get(metadataName) == 'timestamp' && Number.isNaN(Date.parse(userInput))) {
-      return false;
-    }
-    if (
+  isInValidTimestamp(userInput: string, metadataName: string): boolean {
+    return this.metadataTypes.get(metadataName) == 'timestamp' && Number.isNaN(Date.parse(userInput));
+  }
+
+  isInValidNumber(userInput: string, metadataName: string): boolean {
+    const regex: RegExp = /^-?\d+(\.\d+)?$/;
+    return (
       (this.metadataTypes.get(metadataName) == 'int' || this.metadataTypes.get(metadataName) == 'long') &&
-      (Number.isNaN(Number.parseFloat(userInput)) || !/^-?\d+(\.\d+)?$/.test(userInput))
-    ) {
-      return false;
-    }
-    return true;
+      (Number.isNaN(Number.parseFloat(userInput)) || !regex.test(userInput))
+    );
   }
 }

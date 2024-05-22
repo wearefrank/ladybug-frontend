@@ -608,6 +608,10 @@ export class TableComponent implements OnInit, OnDestroy {
           typeLabel = 'date time';
           break;
         }
+        default: {
+          typeLabel = 'text';
+          break;
+        }
       }
       result += moreThanOne
         ? `, Search value '${value}' is not a valid '${typeLabel}'`
