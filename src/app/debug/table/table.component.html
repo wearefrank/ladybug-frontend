@@ -80,21 +80,6 @@
             {{getShortenedTableHeaderNames(header)}}
           </th>
         </tr>
-        <!-- <tr data-cy-debug="tableFilterRow" id="filterRow" *ngIf="tableSettings.showFilter">
-          <th class="vertical-middle">
-            <app-button icon="fa fa-undo" title="Clear filters" (click)="clearFilters()"></app-button>
-          </th>
-          <th *ngFor="let header of viewSettings.currentView?.metadataNames" class="filter-header">
-            <div class="input-group">
-              <div>
-                <input data-cy-debug="tableFilter" [matAutocomplete]="auto" type="text" [title]="header" class="form-control" placeholder="Filter for {{ header }}" (keydown.enter)="changeFilter($event, header.toLowerCase())"/>
-              </div>
-              <mat-autocomplete #auto="matAutocomplete">
-                <mat-option *ngFor="let option of tableSettings.uniqueValues.get(header.toLowerCase())" [value]="option" class="filter-option" (click)="changeFilter($event, header.toLowerCase(), option)">{{ option }}</mat-option>
-              </mat-autocomplete>
-            </div>
-          </th>
-        </tr> -->
       </thead>
       <tbody data-cy-debug="tableBody">
         <tr class="table-row" *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index" (click)="highLightRow(i)" [ngClass]="{ highlight: selectedRow === i }" [style.background-color]="getStatusColor(row)" [attr.data-cy-record-table-index]="i">
