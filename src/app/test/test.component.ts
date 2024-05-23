@@ -53,10 +53,6 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.loadData(null);
-  }
-
-  ngAfterViewInit(): void {
     this.loadData('');
   }
 
@@ -301,16 +297,6 @@ export class TestComponent implements OnInit, AfterViewInit {
     for (const report of this.reports) {
       report.checked = this.matches(report);
     }
-  }
-
-  transformPath(path: string): string {
-    if (path.length > 0 && !path.startsWith('/')) {
-      path = `/${path}`;
-    }
-    if (!path.endsWith('/')) {
-      path = `${path}/`;
-    }
-    return path;
   }
 
   transformPath(path: string): string {

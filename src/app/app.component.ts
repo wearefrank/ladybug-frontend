@@ -91,7 +91,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   observeReportSave(): void {
     this.dynamicService.getObservable().subscribe((report: Report) => {
-      const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => Number(tab.id) == report.storageId);
+      const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id == report.storageId);
       this.tabs[tabIndex].data = report;
     });
   }

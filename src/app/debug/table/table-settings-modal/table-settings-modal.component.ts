@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
 import { SettingsForm } from 'src/app/shared/interfaces/settings-form';
+import { OptionsSettings } from 'src/app/shared/interfaces/options-settings';
 
 @Component({
   selector: 'app-table-settings-modal',

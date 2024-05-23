@@ -20,6 +20,8 @@ import { TargetWithFiles } from '../../shared/interfaces/target-with-files';
 import { DebugVariables } from '../../shared/interfaces/debug-variables';
 import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
+import { CompareData } from 'src/app/compare/compare-data';
+import { NodeLinkStrategy } from 'src/app/shared/enums/compare-method';
 
 @Component({
   selector: 'app-table',
@@ -297,10 +299,12 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   toggleFilter(): void {
-    this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
-    this.tableSettings.showFilter = !this.tableSettings.showFilter;
-    this.filterService.setShowFilter(this.tableSettings.showFilter);
-    this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
+    if (this.viewSettings.currentView?.metadataNames) {
+      this.filterService.setMetadataNames(this.viewSettings.currentView.metadataNames);
+      this.tableSettings.showFilter = !this.tableSettings.showFilter;
+      this.filterService.setShowFilter(this.tableSettings.showFilter);
+      this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
+    }
   }
 
   toggleCheck(report: DebugListItem): void {
@@ -406,7 +410,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   compareTwoReports(): void {
-    const compareReports: Partial<CompareReports> = {};
+    let compareReports: CompareData;
 
     const selectedReports: string[] = this.tableSettings.reportMetadata
       .filter((report: DebugListItem) => report.checked)
@@ -423,11 +427,13 @@ export class TableComponent implements OnInit, OnDestroy {
           const runResultReport: Report = rightObject.report;
           runResultReport.xml = rightObject.xml;
 
-          compareReports.id = this.helperService.createCompareTabId(originalReport, runResultReport);
-          compareReports.originalReport = originalReport;
-          compareReports.runResultReport = runResultReport;
-          compareReports.viewName = this.viewSettings.currentView?.name;
-          compareReports.nodeLinkStrategy = this.viewSettings.currentView?.nodeLinkStrategy;
+          compareReports = {
+            id: this.helperService.createCompareTabId(originalReport, runResultReport),
+            originalReport: originalReport,
+            runResultReport: runResultReport,
+            viewName: this.viewSettings.currentView?.name ?? '',
+            nodeLinkStrategy: this.viewSettings.currentView?.nodeLinkStrategy ?? NodeLinkStrategy.NONE,
+          };
         },
 
         complete: () => {
@@ -472,10 +478,12 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openReport(storageId: string | undefined): void {
     if (storageId && this.viewSettings.currentView?.storageName) {
-      this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data: Report): void => {
-        data.storageName = this.viewSettings.currentView?.storageName ?? '';
-        this.openReportEvent.next(data);
-      });
+      this.httpService
+        .getReport(storageId, this.viewSettings.currentView.storageName)
+        .subscribe((data: Report): void => {
+          data.storageName = this.viewSettings.currentView?.storageName ?? '';
+          this.openReportEvent.next(data);
+        });
     }
   }
 

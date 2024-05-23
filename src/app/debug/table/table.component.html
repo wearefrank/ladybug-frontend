@@ -74,13 +74,13 @@
             <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()"/>
           </th>
           <th class="table-id-cell header-cell header-padding"
-              *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
+              *ngFor="let header of viewSettings.currentView?.metadataLabels; let i = index"
               [attr.mat-sort-header]="i"
               [title]="header">
             {{getShortenedTableHeaderNames(header)}}
           </th>
         </tr>
-        <tr data-cy-debug="tableFilterRow" id="filterRow" *ngIf="tableSettings.showFilter">
+        <!-- <tr data-cy-debug="tableFilterRow" id="filterRow" *ngIf="tableSettings.showFilter">
           <th class="vertical-middle">
             <app-button icon="fa fa-undo" title="Clear filters" (click)="clearFilters()"></app-button>
           </th>
@@ -94,7 +94,7 @@
               </mat-autocomplete>
             </div>
           </th>
-        </tr>
+        </tr> -->
       </thead>
       <tbody data-cy-debug="tableBody">
         <tr class="table-row" *ngFor="let row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = index" (click)="highLightRow(i)" [ngClass]="{ highlight: selectedRow === i }" [style.background-color]="getStatusColor(row)" [attr.data-cy-record-table-index]="i">
