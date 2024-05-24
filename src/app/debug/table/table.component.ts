@@ -69,14 +69,14 @@ export class TableComponent implements OnInit, OnDestroy {
   selectedRow: number = -1;
   doneRetrieving: boolean = false;
   tableSpacing!: number;
-  tableSpacingSubscription!: Subscription;
+  tableSpacingSubscription?: Subscription;
   showMultipleFiles!: boolean;
-  showMultipleFilesSubscription!: Subscription;
+  showMultipleFilesSubscription?: Subscription;
   viewDropdownBoxWidth!: string;
   currentFilters: Map<string, string> = new Map<string, string>();
-  showFilterSubscription!: Subscription;
-  filterContextSubscription!: Subscription;
-  filterErrorSubscription!: Subscription;
+  showFilterSubscription?: Subscription;
+  filterContextSubscription?: Subscription;
+  filterErrorSubscription?: Subscription;
   showFilterError: boolean = false;
   filterErrorDetails: Map<string, string> = new Map<string, string>();
 
@@ -135,11 +135,11 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   unsubscribeFromObservables(): void {
-    this.showFilterSubscription.unsubscribe();
-    this.filterContextSubscription.unsubscribe();
-    this.tableSpacingSubscription.unsubscribe();
-    this.showMultipleFilesSubscription.unsubscribe();
-    this.filterErrorSubscription.unsubscribe();
+    this.showFilterSubscription?.unsubscribe();
+    this.filterContextSubscription?.unsubscribe();
+    this.tableSpacingSubscription?.unsubscribe();
+    this.showMultipleFilesSubscription?.unsubscribe();
+    this.filterErrorSubscription?.unsubscribe();
   }
 
   retrieveRecords(): void {
