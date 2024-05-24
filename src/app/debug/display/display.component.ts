@@ -62,7 +62,7 @@ export class DisplayComponent {
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
     const queryString: string = this.report.xml ? this.report.storageId : this.report.uid.split('#')[0];
     if (this.currentView.storageName) {
-      this.helperService.download('id=' + queryString + '&', this.currentView.storageName, exportBinary, exportXML);
+      this.helperService.download(`id=${queryString}&`, this.currentView.storageName, exportBinary, exportXML);
     }
     this.httpService.handleSuccess('Report Downloaded!');
   }
