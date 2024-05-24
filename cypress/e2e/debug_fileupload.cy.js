@@ -14,6 +14,6 @@ describe('Debug file upload', () => {
           fileName: 'testRerun.ttr',
         });
       });
-    cy.get('[data-cy-debug="jqxTree"]').find('li').should('have.length', 3);
+    cy.get('[data-cy-report="jqxTree"]').find('li').should('have.length', 3);
   })
 });
