@@ -1,16 +1,20 @@
 import { Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
 import { SettingsService } from '../../../shared/services/settings.service';
 import { Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
+import { ToastComponent } from '../../../shared/components/toast/toast.component';
+import { NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-table-settings-modal',
   templateUrl: './table-settings-modal.component.html',
   styleUrls: ['./table-settings-modal.component.css'],
+  standalone: true,
+  imports: [ReactiveFormsModule, NgFor, ToastComponent],
 })
 export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;
@@ -46,9 +50,7 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.showMultipleAtATimeSubscription.unsubscribe();
-    this.tableSpacingSubscription.unsubscribe();
-    this.showSearchWindowOnLoadSubscription.unsubscribe();
+    this.unsubscribeAll();
   }
 
   subscribeToSettingsServiceObservables(): void {
@@ -73,6 +75,18 @@ export class TableSettingsModalComponent implements OnDestroy {
       this.prettifyOnLoad = value;
       this.settingsForm.get('prettifyOnLoad')?.setValue(this.prettifyOnLoad);
     });
+  }
+
+  unsubscribeAll() {
+    if (this.showMultipleAtATimeSubscription) {
+      this.showMultipleAtATimeSubscription.unsubscribe();
+    }
+    if (this.tableSpacingSubscription) {
+      this.tableSpacingSubscription.unsubscribe();
+    }
+    if (this.showSearchWindowOnLoadSubscription) {
+      this.showSearchWindowOnLoadSubscription.unsubscribe();
+    }
   }
 
   setShowMultipleAtATime(): void {
