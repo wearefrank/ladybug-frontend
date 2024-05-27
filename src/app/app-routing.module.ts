@@ -5,7 +5,7 @@ import { TestComponent } from './test/test.component';
 import { CompareComponent } from './compare/compare.component';
 import { ReportComponent } from './report/report.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     component: DebugComponent,
     path: DebugComponent.ROUTER_PATH,

@@ -44,7 +44,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     ClipboardModule,
   ],
 })
-export class EditDisplayComponent implements AfterViewInit {
+export class EditDisplayComponent {
   editingEnabled: boolean = false;
   editingChildNode: boolean = false;
   editingRootNode: boolean = false;
@@ -73,10 +73,6 @@ export class EditDisplayComponent implements AfterViewInit {
     private httpService: HttpService,
     private helperService: HelperService,
   ) {}
-
-  ngAfterViewInit() {
-    console.log(this.newTab);
-  }
 
   showReport(report: Report): void {
     this.disableEditing(); // For switching from editing current report to another
