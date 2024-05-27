@@ -2,13 +2,15 @@ import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CloneReport } from 'src/app/shared/interfaces/clone-report';
 
 @Component({
   selector: 'app-clone-modal',
   templateUrl: './clone-modal.component.html',
   styleUrls: ['./clone-modal.component.css'],
+  standalone: true,
+  imports: [ReactiveFormsModule],
 })
 export class CloneModalComponent {
   @ViewChild('modal') modal!: any;

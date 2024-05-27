@@ -5,11 +5,15 @@ import { DebugTreeComponent } from './debug-tree/debug-tree.component';
 import { Subject } from 'rxjs';
 import { DebugReportService } from './debug-report.service';
 import { TabService } from '../shared/services/tab.service';
+import { AngularSplitModule } from 'angular-split';
+import { TableComponent } from './table/table.component';
 
 @Component({
   selector: 'app-debug',
   templateUrl: './debug.component.html',
   styleUrls: ['./debug.component.css'],
+  standalone: true,
+  imports: [TableComponent, AngularSplitModule, DebugTreeComponent, DisplayComponent],
 })
 export class DebugComponent implements OnInit, AfterViewInit {
   static readonly ROUTER_PATH: string = 'debug';

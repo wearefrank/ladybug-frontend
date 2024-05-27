@@ -1,17 +1,42 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { DifferenceModal } from '../../shared/interfaces/difference-modal';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbModal,
+  NgbDropdown,
+  NgbDropdownToggle,
+  NgbDropdownMenu,
+  NgbDropdownButtonItem,
+  NgbDropdownItem,
+} from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
 // @ts-ignore
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 import { Report } from '../../shared/interfaces/report';
+import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-edit-display',
   templateUrl: './edit-display.component.html',
   styleUrls: ['./edit-display.component.css'],
+  standalone: true,
+  imports: [
+    NgIf,
+    ButtonComponent,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownButtonItem,
+    NgbDropdownItem,
+    ReactiveFormsModule,
+    CustomEditorComponent,
+    DisplayTableComponent,
+    NgFor,
+  ],
 })
 export class EditDisplayComponent {
   editingEnabled: boolean = false;

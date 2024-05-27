@@ -9,7 +9,7 @@ describe('ReportDisplayComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ReportDisplayComponent],
+      imports: [ReportDisplayComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReportDisplayComponent);

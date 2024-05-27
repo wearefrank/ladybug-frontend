@@ -7,8 +7,7 @@ import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule, NgbNavModule],
-      declarations: [AppComponent],
+      imports: [RouterTestingModule, HttpClientTestingModule, NgbNavModule, AppComponent],
     }).compileComponents();
   });
 

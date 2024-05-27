@@ -10,9 +10,8 @@ describe('CompareTreeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CompareTreeComponent],
       providers: [HttpClient, HttpHandler],
-      imports: [jqxTreeModule],
+      imports: [jqxTreeModule, CompareTreeComponent],
     }).compileComponents();
   });
 

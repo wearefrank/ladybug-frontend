@@ -9,7 +9,7 @@ describe('EditDisplayComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [EditDisplayComponent],
+      imports: [EditDisplayComponent],
       providers: [HttpClient, HttpHandler],
     }).compileComponents();
   });

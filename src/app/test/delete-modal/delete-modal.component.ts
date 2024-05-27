@@ -1,10 +1,13 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-delete-modal',
   templateUrl: './delete-modal.component.html',
   styleUrls: ['./delete-modal.component.css'],
+  standalone: true,
+  imports: [NgFor],
 })
 export class DeleteModalComponent {
   @ViewChild('modal') modal!: NgbModal;

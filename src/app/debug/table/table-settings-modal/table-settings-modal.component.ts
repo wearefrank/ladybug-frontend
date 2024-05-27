@@ -1,16 +1,20 @@
 import { Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
 import { SettingsService } from '../../../shared/services/settings.service';
 import { Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
+import { ToastComponent } from '../../../shared/components/toast/toast.component';
+import { NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-table-settings-modal',
   templateUrl: './table-settings-modal.component.html',
   styleUrls: ['./table-settings-modal.component.css'],
+  standalone: true,
+  imports: [ReactiveFormsModule, NgFor, ToastComponent],
 })
 export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;

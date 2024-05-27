@@ -14,11 +14,28 @@ import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
 import { ReportData } from '../shared/interfaces/report-data';
 import { NodeLinkStrategy } from '../shared/enums/compare-method';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
+import { ToastComponent } from '../shared/components/toast/toast.component';
+import { NgIf, NgFor } from '@angular/common';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ButtonComponent } from '../shared/components/button/button.component';
 
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.css'],
+  standalone: true,
+  imports: [
+    TestFolderTreeComponent,
+    ButtonComponent,
+    ReactiveFormsModule,
+    FormsModule,
+    NgIf,
+    NgFor,
+    ToastComponent,
+    TestSettingsModalComponent,
+    CloneModalComponent,
+    DeleteModalComponent,
+  ],
 })
 export class TestComponent implements OnInit, AfterViewInit {
   static readonly ROUTER_PATH: string = 'test';

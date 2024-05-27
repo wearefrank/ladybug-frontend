@@ -5,11 +5,14 @@ import { Subject, Subscription } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { DebugReportService } from '../debug/debug-report.service';
 import { TabService } from '../shared/services/tab.service';
+import { AngularSplitModule } from 'angular-split';
 
 @Component({
   selector: 'app-report-display',
   templateUrl: './report-display.component.html',
   styleUrl: './report-display.component.css',
+  standalone: true,
+  imports: [AngularSplitModule, DebugTreeComponent, DisplayComponent],
 })
 export class ReportDisplayComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() containerHeight!: number;

@@ -1,14 +1,37 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbModal,
+  NgbDropdown,
+  NgbDropdownToggle,
+  NgbDropdownMenu,
+  NgbDropdownButtonItem,
+  NgbDropdownItem,
+} from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-display',
   templateUrl: './display.component.html',
   styleUrls: ['./display.component.css'],
+  standalone: true,
+  imports: [
+    NgIf,
+    ButtonComponent,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownButtonItem,
+    NgbDropdownItem,
+    ClipboardModule,
+    DisplayTableComponent,
+    CustomEditorComponent,
+  ],
 })
 export class DisplayComponent {
   displayReport: boolean = false;
