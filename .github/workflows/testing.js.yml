@@ -194,7 +194,7 @@ jobs:
         with:
           working-directory: ladybug-frontend
           wait-on: "http://localhost:8090"
-          wait-on-timeout: 240
+          wait-on-timeout: 1000
           browser: chrome
           config: baseUrl=http://localhost:8090/ladybug/
       #      - name: Run cypress with firefox browser - real frontend
