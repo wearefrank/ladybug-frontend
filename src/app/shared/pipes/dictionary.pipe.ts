@@ -3,6 +3,7 @@ import { KeyValue } from '@angular/common';
 
 @Pipe({
   name: 'dictionary',
+  standalone: true,
 })
 export class DictionaryPipe implements PipeTransform {
   transform(dict: Map<string, string>): Array<KeyValue<string, string>> | null {
