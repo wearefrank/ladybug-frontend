@@ -47,10 +47,7 @@ export class ReportDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngOnDestroy() {
-    this.changeViewSubscription.unsubscribe();
-    this.addReportSubscription.unsubscribe();
-    this.openReportsInCompareSubscription.unsubscribe();
-    this.openReportInTabSubscription.unsubscribe();
+    this.unsubscribeAll();
   }
 
   subscribeToDebugReportServiceObservables() {
@@ -66,6 +63,21 @@ export class ReportDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
     this.openReportInTabSubscription = this.tabService.openReportInTabObservable.subscribe((value) =>
       this.openReportInSeparateTab(value),
     );
+  }
+
+  unsubscribeAll() {
+    if (this.changeViewSubscription) {
+      this.changeViewSubscription.unsubscribe();
+    }
+    if (this.addReportSubscription) {
+      this.addReportSubscription.unsubscribe();
+    }
+    if (this.openReportInTabSubscription) {
+      this.openReportInTabSubscription.unsubscribe();
+    }
+    if (this.openReportsInCompareSubscription) {
+      this.openReportsInCompareSubscription.unsubscribe();
+    }
   }
 
   addReportToTree(report: Report): void {

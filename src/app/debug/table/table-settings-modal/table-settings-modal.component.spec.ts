@@ -9,7 +9,7 @@ describe('TableSettingsModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, TableSettingsModalComponent],
+      imports: [TableSettingsModalComponent, HttpClientTestingModule],
     }).compileComponents();
   });
 

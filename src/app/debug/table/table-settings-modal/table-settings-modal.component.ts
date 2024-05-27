@@ -50,9 +50,7 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.showMultipleAtATimeSubscription.unsubscribe();
-    this.tableSpacingSubscription.unsubscribe();
-    this.showSearchWindowOnLoadSubscription.unsubscribe();
+    this.unsubscribeAll();
   }
 
   subscribeToSettingsServiceObservables(): void {
@@ -77,6 +75,18 @@ export class TableSettingsModalComponent implements OnDestroy {
       this.prettifyOnLoad = value;
       this.settingsForm.get('prettifyOnLoad')?.setValue(this.prettifyOnLoad);
     });
+  }
+
+  unsubscribeAll() {
+    if (this.showMultipleAtATimeSubscription) {
+      this.showMultipleAtATimeSubscription.unsubscribe();
+    }
+    if (this.tableSpacingSubscription) {
+      this.tableSpacingSubscription.unsubscribe();
+    }
+    if (this.showSearchWindowOnLoadSubscription) {
+      this.showSearchWindowOnLoadSubscription.unsubscribe();
+    }
   }
 
   setShowMultipleAtATime(): void {

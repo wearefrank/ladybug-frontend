@@ -64,8 +64,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.newTabSubscription.unsubscribe();
-    this.newCompareTabSubscription.unsubscribe();
+    this.unsubscribeAll();
   }
 
   subscribeToServices(): void {
@@ -76,6 +75,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this.newCompareTabSubscription = this.tabService.openInCompareObservable.subscribe((value) => {
       this.openNewCompareTab(value);
     });
+  }
+
+  unsubscribeAll(): void {
+    if (this.newTabSubscription) {
+      this.newTabSubscription.unsubscribe();
+    }
+    if (this.newCompareTabSubscription) {
+      this.newCompareTabSubscription.unsubscribe();
+    }
   }
 
   openReportInSeparateTab(data: ReportData): void {
