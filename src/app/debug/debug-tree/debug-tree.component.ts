@@ -11,13 +11,34 @@ import {
   NgSimpleFileTree,
   OptionalParameters,
   TreeItemComponent,
+  NgSimpleFileTreeModule,
 } from 'ng-simple-file-tree';
+import {
+  NgbDropdown,
+  NgbDropdownToggle,
+  NgbDropdownMenu,
+  NgbDropdownButtonItem,
+  NgbDropdownItem,
+} from '@ng-bootstrap/ng-bootstrap';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+import { NgIf } from '@angular/common';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 
 @Component({
   selector: 'app-debug-tree',
   templateUrl: './debug-tree.component.html',
   styleUrls: ['./debug-tree.component.css'],
+  standalone: true,
+  imports: [
+    NgIf,
+    ButtonComponent,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownButtonItem,
+    NgbDropdownItem,
+    NgSimpleFileTreeModule,
+  ],
 })
 export class DebugTreeComponent implements OnDestroy {
   @ViewChild('tree') tree!: NgSimpleFileTree;

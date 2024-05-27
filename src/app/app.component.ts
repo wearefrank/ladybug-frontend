@@ -11,10 +11,11 @@ import { DebugReportService } from './debug/debug-report.service';
 import { TabService } from './shared/services/tab.service';
 import { Subscription } from 'rxjs';
 import { DebugComponent } from './debug/debug.component';
-import { Router } from '@angular/router';
+import { Router, RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 import { Tab } from './shared/interfaces/tab';
 import { ReportData } from './shared/interfaces/report-data';
 import { HelperService } from './shared/services/helper.service';
+import { ToastComponent } from './shared/components/toast/toast.component';
 
 declare var require: any;
 const { version: appVersion } = require('../../package.json');
@@ -23,6 +24,8 @@ const { version: appVersion } = require('../../package.json');
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
+  standalone: true,
+  imports: [RouterLinkActive, RouterLink, RouterOutlet, ToastComponent],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   appVersion: string;
@@ -61,8 +64,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.newTabSubscription.unsubscribe();
-    this.newCompareTabSubscription.unsubscribe();
+    this.unsubscribeAll();
   }
 
   subscribeToServices(): void {
@@ -73,6 +75,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this.newCompareTabSubscription = this.tabService.openInCompareObservable.subscribe((value) => {
       this.openNewCompareTab(value);
     });
+  }
+
+  unsubscribeAll(): void {
+    if (this.newTabSubscription) {
+      this.newTabSubscription.unsubscribe();
+    }
+    if (this.newCompareTabSubscription) {
+      this.newCompareTabSubscription.unsubscribe();
+    }
   }
 
   openReportInSeparateTab(data: ReportData): void {

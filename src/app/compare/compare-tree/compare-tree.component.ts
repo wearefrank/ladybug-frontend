@@ -1,13 +1,16 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { HelperService } from '../../shared/services/helper.service';
-import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
+import { jqxTreeComponent, jqxTreeModule } from 'jqwidgets-ng/jqxtree';
 import { NodeLinkStrategy } from '../../shared/enums/compare-method';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-compare-tree',
   templateUrl: './compare-tree.component.html',
   styleUrls: ['./compare-tree.component.css'],
+  standalone: true,
+  imports: [ReactiveFormsModule, jqxTreeModule],
 })
 export class CompareTreeComponent {
   constructor(private helperService: HelperService) {}

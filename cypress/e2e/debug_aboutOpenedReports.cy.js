@@ -20,7 +20,6 @@ describe('About opened reports', () => {
       .first().selectIfNotSelected();
     cy.get('[data-cy-debug-editor="close"]').click();
     cy.checkFileTreeLength(1)
-    // nth-child has an 1-based index
     cy.get('[data-cy-debug-tree="root"] > app-tree-item .item-name').eq(0)
       .should('have.text', "Another simple report")
       .click();
