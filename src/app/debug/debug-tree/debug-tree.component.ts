@@ -9,16 +9,16 @@ import {
   FileTreeItem,
   FileTreeOptions,
   NgSimpleFileTree,
+  NgSimpleFileTreeModule,
   OptionalParameters,
   TreeItemComponent,
-  NgSimpleFileTreeModule,
 } from 'ng-simple-file-tree';
 import {
   NgbDropdown,
-  NgbDropdownToggle,
-  NgbDropdownMenu,
   NgbDropdownButtonItem,
   NgbDropdownItem,
+  NgbDropdownMenu,
+  NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgIf } from '@angular/common';
@@ -148,7 +148,9 @@ export class DebugTreeComponent implements OnDestroy {
     const optional: OptionalParameters = { childrenKey: 'checkpoints', pathAttribute: 'uid' };
     const path: string = this.tree.addItem(newReport, optional);
     this.tree.selectItem(path);
-    this.hideOrShowCheckpointsBasedOnView(this.currentView);
+    if (this.currentView) {
+      this.hideOrShowCheckpointsBasedOnView(this.currentView);
+    }
   }
 
   //Ladybug reports don't have a parent-child structure for its checkpoints, this function creates that parent-child structure

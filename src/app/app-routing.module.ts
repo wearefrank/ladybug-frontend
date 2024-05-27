@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DebugComponent } from './debug/debug.component';
 import { TestComponent } from './test/test.component';
-import { ReportComponent } from './report/report.component';
 import { CompareComponent } from './compare/compare.component';
+import { ReportComponent } from './report/report.component';
 
 const routes: Routes = [
   {

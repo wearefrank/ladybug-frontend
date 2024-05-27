@@ -1,62 +1,40 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
-import { DisplayComponent } from './display/display.component';
+import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
-import { DebugTreeComponent } from './debug-tree/debug-tree.component';
-import { Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { DebugReportService } from './debug-report.service';
-import { TabService } from '../shared/services/tab.service';
 import { AngularSplitModule } from 'angular-split';
 import { TableComponent } from './table/table.component';
+import { ReportComponent } from '../report/report.component';
 
 @Component({
   selector: 'app-debug',
   templateUrl: './debug.component.html',
   styleUrls: ['./debug.component.css'],
   standalone: true,
-  imports: [TableComponent, AngularSplitModule, DebugTreeComponent, DisplayComponent],
+  imports: [TableComponent, AngularSplitModule, ReportComponent],
 })
-export class DebugComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DebugComponent implements OnInit, OnDestroy {
   static readonly ROUTER_PATH: string = 'debug';
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
-  @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
-  @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
-  @ViewChild('splitter') splitter: any;
-  @ViewChild('bottom') bottom!: ElementRef;
+  @ViewChild('bottom') container!: ElementRef<HTMLElement>;
+  @ViewChild('reportComponent') customReportComponent!: ReportComponent;
   currentView: any = {};
+  loaded: boolean = false;
 
-  treeWidth: Subject<void> = new Subject<void>();
-  bottomHeight: number = 0;
   private viewSubscription!: Subscription;
 
-  constructor(
-    private debugReportService: DebugReportService,
-    private tabService: TabService,
-  ) {}
+  constructor(private debugReportService: DebugReportService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.subscribeToServices();
   }
 
-  ngOnDestroy() {
-    this.unsubscribeAll();
+  ngOnAfterViewInit() {
+    this.loaded = true;
   }
 
-  ngAfterViewInit() {
-    if (this.splitter.dragProgress$) {
-      this.splitter.dragProgress$.subscribe(() => {
-        this.treeWidth.next();
-      });
-    }
-    this.listenToHeight();
+  ngOnDestroy(): void {
+    this.unsubscribeAll();
   }
 
   subscribeToServices(): void {
@@ -69,30 +47,11 @@ export class DebugComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  listenToHeight(): void {
-    const resizeObserver = new ResizeObserver((entries) => {
-      this.bottomHeight = entries[0].target.clientHeight;
-    });
-    resizeObserver.observe(this.bottom.nativeElement);
-  }
-
   addReportToTree(report: Report): void {
-    this.debugTreeComponent.addReportToTree(report);
+    this.customReportComponent.addReportToTree(report);
   }
 
-  selectReport(currentReport: Report): void {
-    this.displayComponent.showReport(currentReport);
-  }
-
-  closeEntireTree(): void {
-    this.displayComponent.closeReport(false);
-  }
-
-  closeReport(currentReport: any): void {
-    this.debugTreeComponent.removeReport(currentReport);
-  }
-
-  onViewChange(viewName: string) {
+  onViewChange(viewName: string): void {
     this.currentView.currentViewName = viewName;
   }
 }
