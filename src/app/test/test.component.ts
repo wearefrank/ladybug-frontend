@@ -345,4 +345,8 @@ export class TestComponent implements OnInit, AfterViewInit {
   sortByName(): any[] {
     return this.reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
   }
+
+  getFullPath(path: string, name: string): string {
+    return this.showRelativePath(path) + name;
+  }
 }

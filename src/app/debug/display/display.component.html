@@ -2,7 +2,7 @@
   <div *ngIf="displayReport" class="d-flex flex-column">
     <div class="d-flex justify-content-between align-items-center">
       <div data-cy-debug-editor="buttons" class="row" id="displayButtons">
-        <app-button data-cy-debug-editor="copy" [icon]="'fa fa-copy'" [title]="'Copy'" (click)="copyReport()"></app-button>
+        <app-button data-cy-debug-editor="copy" icon="fa fa-copy" title="Copy" (click)="copyReport()"></app-button>
         <app-button
           *ngIf="report.encoding === 'Base64'"
           text="Base64"
@@ -23,16 +23,16 @@
           </div>
         </div>
 
-        <app-button data-cy-debug-editor="close" [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
+        <app-button data-cy-debug-editor="close" icon="fa fa-times" title="Close" (click)="closeReport(true)"></app-button>
         <button data-cy-open-metadata-table
                 class="btn btn-info my-2 mx-1 px-3"
                 title="Open metadata table"
                 (click)="toggleMetadataTable()">
-          {{metadataTableVisible ? 'Hide' : 'Show'}} metadata
+          {{ metadataTableVisible ? 'Hide' : 'Show' }} metadata
         </button>
       </div>
       @if (report.name) {
-        <div [cdkCopyToClipboard]="report.name" data-cy-metadata-table="reportname" class="my-auto display-5 report-name">{{report.name}}</div>
+        <div [cdkCopyToClipboard]="report.name" data-cy-metadata-table="reportname" class="my-auto display-5 report-name">{{ report.name }}</div>
       }
       <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor"
            (click)="showEditorPossibilitiesModal(possibilitiesModal)">

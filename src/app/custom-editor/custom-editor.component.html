@@ -1,4 +1,4 @@
-<div style.height="{{height - 30}}px" class='position-relative' *ngIf="rawFile">
+<div style.height="{{height - 30}}px" class="position-relative" *ngIf="rawFile">
   <div>
     <ngx-monaco-editor
       data-cy-element-name="editor"
@@ -12,13 +12,13 @@
   </div>
   <div class="status-bar">
     <div class="left-side">
-      <div *ngIf='!readOnlyMode' class="status"
+      <div *ngIf="!readOnlyMode" class="status"
            [title]="unsavedChanges ? 'This file has unsaved changed, press ctrl + s to save' : 'No unsaved changes'">
           <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" viewBox="0 0 16 16">
             <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z"/>
             <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z"/>
           </svg>
-          <span class="status-text">{{unsavedChanges ? 'Unsaved' : 'Saved'}}</span>
+          <span class="status-text">{{ unsavedChanges ? 'Unsaved' : 'Saved' }}</span>
       </div>
       <div class="status"
            [title]="editorFocused ? 'Editor is in focus, commands can be run: press F1 for options' : 'Editor is not in focus, click on the editor to focus'">
@@ -37,7 +37,7 @@
               d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
           </svg>
         </ng-template>
-        <span class="status-text">{{ editorFocused ? 'Focused' : 'Unfocused' }}</span>
+        <span class="status-text">{{ editorFocused ? "Focused" : "Unfocused" }}</span>
       </div>
     </div>
     <div class="right-side">

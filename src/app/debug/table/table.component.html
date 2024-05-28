@@ -27,14 +27,14 @@
         <input data-cy-debug="displayAmount" type="number" class="form-control input-field"
                  [value]="tableSettings.displayAmount" (blur)="changeTableLimit($event)">
         <div data-cy-debug="amountShown" class="input-group-append">
-          <div class="input-group-text">/{{metadataCount}}</div>
+          <div class="input-group-text">/{{ metadataCount }}</div>
         </div>
       </div>
     </form>
 
     <div class="my-2 mx-1 px-2">
       <select data-cy-change-view-dropdown class="form-control" (change)="changeView($event)">
-        <option [style.width]="viewDropdownBoxWidth" *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView.name" [value]="view.key">{{view.key}}</option>
+        <option [style.width]="viewDropdownBoxWidth" *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView.name" [value]="view.key">{{ view.key }}</option>
       </select>
     </div>
 
@@ -77,7 +77,7 @@
               *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
               [attr.mat-sort-header]="i"
               [title]="header">
-            {{getShortenedTableHeaderNames(header)}}
+            {{ getShortenedTableHeaderNames(header) }}
           </th>
         </tr>
       </thead>
@@ -97,7 +97,7 @@
             class="table-cell"
             (click)="openReport(row.storageId)"
             [title]="row[metadataName]">
-            {{row[metadataName]|tableCellShortener}}</td>
+            {{ row[metadataName]|tableCellShortener }}</td>
         </tr>
       </tbody>
     </table>

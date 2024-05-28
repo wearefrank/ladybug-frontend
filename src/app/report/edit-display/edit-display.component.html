@@ -1,12 +1,12 @@
 <div data-cy-test-editor="root" class="row" id="displayButtons">
-  <app-button *ngIf="report.xml" [icon]="'fa fa-repeat'" [title]="'Rerun'" (click)="rerunReport()"></app-button>
-  <app-button data-cy-test-editor="edit" [icon]="'fa fa-edit'" [title]="'Edit'" *ngIf="!editingChildNode && !editingRootNode"
+  <app-button *ngIf="report.xml" icon="fa fa-repeat" title="Rerun" (click)="rerunReport()"></app-button>
+  <app-button data-cy-test-editor="edit" icon="fa fa-edit" title="Edit" *ngIf="!editingChildNode && !editingRootNode"
               (click)="editReport()"></app-button>
-  <app-button [icon]="'fa fa-trash'" [title]="'Discard Changes'" *ngIf="editingChildNode || editingRootNode"
+  <app-button icon="fa fa-trash" title="Discard Changes" *ngIf="editingChildNode || editingRootNode"
               (click)="openDifferenceModal(saveOrDiscardChanges, 'discard')"></app-button>
-  <app-button data-cy-test-editor="save" [icon]="'fa fa-save'" [title]="'Save'" *ngIf="editingChildNode || editingRootNode"
+  <app-button data-cy-test-editor="save" icon="fa fa-save" title="Save" *ngIf="editingChildNode || editingRootNode"
               (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
-  <app-button *ngIf="report.encoding === 'Base64'" [text]="'Base64'" [title]="'Convert to Base64'" (click)="changeEncoding($event)"></app-button>
+  <app-button *ngIf="report.encoding === 'Base64'" text="Base64" title="Convert to Base64" (click)="changeEncoding($event)"></app-button>
 
   <div class="row my-2">
     <div class="col-2 pl-1" ngbDropdown title="Download">
@@ -48,14 +48,14 @@
   </div>
 
   <div *ngIf="null !== report.streaming && report.streaming" id="waitingForMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-    {{ report.waitingForStream ? 'Waiting for message to be' : 'Message is'}} captured asynchronously from a {{report.streaming.toLowerCase()}} stream
+    {{ report.waitingForStream ? 'Waiting for message to be' : 'Message is' }} captured asynchronously from a {{ report.streaming.toLowerCase() }} stream
   </div>
 
   <div *ngIf="null === report.message" id="nullMessageLabel" class="btn btn-static my-2 mx-1 px-2">
     Message is null
   </div>
 
-  <div *ngIf="'' === report.message" id="emptyMessageLabel" class="btn btn-static my-2 mx-1 px-2">
+  <div *ngIf="!report.message" id="emptyMessageLabel" class="btn btn-static my-2 mx-1 px-2">
     Message is empty string
   </div>
 
@@ -64,16 +64,16 @@
   </div>
 
   <div *ngIf="null !== report.encoding" id="encodedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-    Message of type {{report.messageClassName}} is encoded to string using {{report.encoding}}
+    Message of type {{ report.messageClassName }} is encoded to string using {{ report.encoding }}
     <span *ngIf="this.report.showConverted">and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
   </div>
 
   <div *ngIf="report.preTruncatedMessageLength > 0" id="truncatedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-    Message is truncated ( {{ report.preTruncatedMessageLength - report.message.length}} characters removed)
+    Message is truncated ({{ report.preTruncatedMessageLength - report.message.length }} characters removed)
   </div>
 
   <div *ngIf="null !== report.stubNotFound" id="stubNotFoundLabel" class="btn btn-static my-2 mx-1 px-2">
-    Could not find stub message for {{report.stubNotFound}}
+    Could not find stub message for {{ report.stubNotFound }}
   </div>
 </div>
 
@@ -86,26 +86,26 @@
 <div *ngIf="editingRootNode">
   <div class="form-group">
     <label>Name</label>
-    <input #name type="text" class="form-control" placeholder="Name" value="{{report.name}}">
+    <input #name type="text" class="form-control" placeholder="Name" [value]="report.name">
   </div>
   <div class="form-group">
     <label>Description</label>
-    <input #description class="form-control" placeholder="Description" value="{{report.description}}">
+    <input #description class="form-control" placeholder="Description" [value]="report.description">
   </div>
   <div class="form-group">
     <label>Path</label>
-    <input #path type="text" class="form-control" placeholder="/path/to/report/" value="{{report.path}}">
+    <input #path type="text" class="form-control" placeholder="/path/to/report/" [value]="report.path">
   </div>
   <div class="form-group">
     <label>Transformation</label>
     <div>
-      <textarea #transformation class="form-control transformation" >{{report.transformation}}</textarea>
+      <textarea #transformation class="form-control transformation" >{{ report.transformation }}</textarea>
     </div>
   </div>
   <div class="form-group">
     <label>Variables</label>
     <div>
-      <textarea #variables class="form-control variables">{{report.variableCsv}}</textarea>
+      <textarea #variables class="form-control variables">{{ report.variableCsv }}</textarea>
     </div>
   </div>
 </div>
@@ -130,9 +130,9 @@
           <div class="text-center pt-2">After</div>
           <div class="changeBox text-left p-1 overflow-auto">
             <span *ngFor="let chunk of part.difference">
-              <span *ngIf="+chunk[0] === -1" style="background: #ff7f7f">{{chunk[1]}}</span>
-              <span *ngIf="+chunk[0] === 0">{{chunk[1]}}</span>
-              <span *ngIf="+chunk[0] === 1" style="background: #7cfc00">{{chunk[1]}}</span>
+              <span *ngIf="+chunk[0] === -1" style="background: #ff7f7f">{{ chunk[1] }}</span>
+              <span *ngIf="+chunk[0] === 0">{{ chunk[1] }}</span>
+              <span *ngIf="+chunk[0] === 1" style="background: #7cfc00">{{ chunk[1] }}</span>
             </span>
           </div>
         </div>
