@@ -7,7 +7,7 @@ describe('Debug file upload', () => {
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
-  })
+  });
 
   afterEach(() => cy.resetApp());
 
@@ -20,7 +20,6 @@ describe('Debug file upload', () => {
           fileName: 'testRerun.ttr',
         });
       });
-
-    cy.checkFileTreeLength(1);
+    cy.get('[data-cy-report="jqxTree"]').find('li').should('have.length', 3);
   });
 });
