@@ -1,12 +1,15 @@
 const path = require('path');
 
 describe('Debug file upload', () => {
+  before(() => cy.resetApp());
+
   beforeEach(() => {
-    cy.resetApp();
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
-  });
+  })
+
+  afterEach(() => cy.resetApp());
 
   it('Upload a file to debug', () => {
     cy.fixture('testRerun.ttr', 'binary')

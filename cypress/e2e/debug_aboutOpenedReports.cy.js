@@ -1,10 +1,13 @@
 describe('About opened reports', () => {
+  before(() => cy.resetApp());
+
   beforeEach(() => {
-    cy.resetApp();
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
   });
+
+  afterEach(() => cy.resetApp());
 
   it('Close one', () => {
     cy.enableShowMultipleInDebugTree();

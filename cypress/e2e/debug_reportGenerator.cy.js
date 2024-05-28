@@ -1,14 +1,15 @@
 describe('Report generator', () => {
+  before(() => cy.resetApp());
+
   beforeEach(() => {
-    cy.resetApp();
     cy.initializeApp();
-  });
-  afterEach(() => {
     cy.get('[data-cy-debug="openSettings"]').should('be.visible').click();
     cy.get('[role=dialog]').should('be.visible', { timeout: 10000 });
     cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
     cy.get('[data-cy-settings="saveChanges"]').click();
   });
+
+  afterEach(() => cy.resetApp());
 
   it('disable and enable', () => {
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('not.exist');

@@ -1,6 +1,9 @@
 describe('About the Test tab', () => {
-  beforeEach(() => {
+  before(() => {
     cy.resetApp();
+  });
+
+  beforeEach(() => {
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
@@ -19,6 +22,8 @@ describe('About the Test tab', () => {
     cy.wait(2000);
     copyTheReportsToTestTab();
   });
+
+  afterEach(() => cy.resetApp());
 
   it('Test deleting a report', () => {
     cy.navigateToTestTabAndWait();

@@ -1,11 +1,7 @@
 describe('Report transformation', () => {
-  before(() => {
-    cy.resetApp();
-  });
+  before(() => cy.resetApp());
 
-  beforeEach(() => {
-    cy.clearDebugStore();
-  });
+  afterEach(() => cy.resetApp());
 
   afterEach(() => {
     cy.clearDebugStore();

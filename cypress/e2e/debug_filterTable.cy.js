@@ -1,13 +1,14 @@
 describe('Table size and toggle filter', () => {
+  before(() => cy.resetApp())
+
   beforeEach(() => {
-    cy.resetApp();
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
   });
 
   afterEach(() => {
-    cy.clearDebugStore();
+    cy.resetApp();
   });
 
   it('Typing in a table size and retyping it', () => {

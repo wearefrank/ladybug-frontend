@@ -1,10 +1,13 @@
 describe('Tests for settings component', () => {
+  before(() => cy.resetApp());
+
   beforeEach(() => {
-    cy.resetApp();
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
   });
+
+  afterEach(() => cy.resetApp());
 
   it('should alter spacing when spacing setting is altered', () => {
     cy.get('[data-cy-debug="openSettings"]').as('openSettingsModal').click();

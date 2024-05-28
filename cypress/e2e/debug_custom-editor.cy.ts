@@ -1,13 +1,12 @@
 describe('Tests for custom editor in debug tab', () => {
+  before(() => cy.resetApp());
+
   beforeEach(() => {
-    cy.resetApp();
     cy.createReport();
     cy.initializeApp();
   });
 
-  after(() => {
-    cy.resetApp();
-  });
+  afterEach(() => cy.resetApp());
 
   it('should set xml as available view if editor content is xml file', () => {
     cy.clickRowInTable(0);

@@ -1,7 +1,5 @@
 describe('Test running reports', () => {
-  beforeEach(() => {
-    cy.resetApp();
-  });
+  afterEach(() => cy.resetApp());
 
   it('If no running reports then number of running reports is zero', () => {
     cy.initializeApp();
@@ -10,8 +8,7 @@ describe('Test running reports', () => {
 });
 
 describe('With running reports', () => {
-  beforeEach(() => {
-    cy.resetApp();
+  before(() => {
     cy.createRunningReport();
     cy.createRunningReport();
     cy.initializeApp();
@@ -20,7 +17,15 @@ describe('With running reports', () => {
   afterEach(() => {
     cy.removeReportInProgress();
     cy.removeReportInProgress();
+    cy.resetApp();
+    cy.createRunningReport();
+    cy.createRunningReport();
+    cy.initializeApp();
   });
+
+  after(() => {
+    cy.resetApp();
+  })
 
   it('Open running reports', () => {
     cy.get('[data-cy-debug-in-progress-counter]').should('contain.text', 'Reports in progress: 2');

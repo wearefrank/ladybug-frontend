@@ -1,5 +1,7 @@
 describe('Edit tests', () => {
-  beforeEach(() => {
+  before(() => cy.resetApp());
+
+  afterEach(() => {
     cy.resetApp();
   });
 

@@ -1,13 +1,8 @@
 describe('Test labels', () => {
-  beforeEach(() => {
-    cy.resetApp();
-  });
+  before(() => cy.resetApp());
 
   afterEach(() => {
     cy.get('[data-cy-debug-tree="closeAll"]').click();
-  });
-
-  after(() => {
     cy.resetApp();
   });
 
