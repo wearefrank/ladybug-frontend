@@ -80,7 +80,7 @@
             <td>
                 <span *ngIf="getReranReport(report.storageId)" id="runResult#{{ report.storageId }}"
                       data-cy-test="runResult"
-                      style="color: {{ getReranReport(report.storageId).color }}">
+                      [style.color]="getReranReport(report.storageId).color">
                   {{ getReranReport(report.storageId).resultString }}
                 </span>
             </td>
