@@ -321,13 +321,6 @@ export class TestComponent implements OnInit, AfterViewInit {
     return name.match('(/)?' + this.currentFilter + '.*') != undefined;
   }
 
-  showRelativePath(path: string): string {
-    if (path) {
-      return path.replace(this.currentFilter, '');
-    }
-    return '/';
-  }
-
   extractVariables(variables: string): string {
     if (!variables || variables == 'null') {
       return '';
@@ -347,6 +340,9 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   getFullPath(path: string, name: string): string {
-    return this.showRelativePath(path) + name;
+    if (path) {
+      return path.replace(this.currentFilter, '');
+    }
+    return `${path}/${name}`;
   }
 }
