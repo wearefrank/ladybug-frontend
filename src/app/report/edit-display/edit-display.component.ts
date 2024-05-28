@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, Output, ViewChild } from '@angular/core';
 import { DifferenceModal } from '../../shared/interfaces/difference-modal';
 import {
   NgbDropdown,
@@ -104,6 +104,8 @@ export class EditDisplayComponent {
 
   closeReport(removeReportFromTree: boolean): void {
     this.displayReport = false;
+    this.editingRootNode = false;
+    this.editingRootNode = false;
     if (removeReportFromTree) {
       this.closeReportEvent.next(this.report);
     }

@@ -3,7 +3,7 @@
     <div data-cy-test-editor="root" class="d-flex flex-row justify-content-between align-items-center"
          id="displayButtons">
       <div class="d-flex flex-row align-items-center" data-cy-debug-editor="buttons">
-        <app-button data-cy-debug-editor="close" [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(true)"></app-button>
+        <app-button data-cy-debug-editor="close" [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(false)"></app-button>
         <app-button *ngIf="report.xml" text="Rerun" title="Rerun this report" (click)="rerunReport()"></app-button>
         <app-button data-cy-test-editor="edit" [icon]="'fa fa-edit'" [title]="'Edit'"
                     *ngIf="!editingChildNode && !editingRootNode"
@@ -34,7 +34,7 @@
           </div>
         </div>
 
-        <div class="form-group col-10" *ngIf="report.stub || report.stub === 0">
+        <div class="w-fit mx-1 my-0" *ngIf="report.stub || report.stub === 0">
           <select class="form-control" (change)="selectStubStrategy($event)">
             <option [selected]="report.stub === -1">Use report level stub strategy</option>
             <option [selected]="report.stub === 1">Always stub this checkpoint</option>
@@ -42,7 +42,7 @@
           </select>
         </div>
 
-        <div data-cy-test-editor="readonlyLabel" id="readyOnlyLabel" class="col btn btn-static my-2 mx-1 px-2">
+        <div data-cy-test-editor="readonlyLabel" class="w-fit h-fit btn btn-static my-2 mx-1 px-2">
           Editing code is:
           <span
             [style.color]="editingEnabled ? 'green' : 'red'">{{ editingEnabled|booleanToString:'ON': 'OFF' }}</span>
@@ -55,16 +55,11 @@
         </button>
       </div>
       @if (report.name) {
-        <div [cdkCopyToClipboard]="report.name" data-cy-metadata-table="reportname" class="my-auto display-5 report-name">{{report.name}}</div>
+        <h4 [cdkCopyToClipboard]="report.name" data-cy-metadata-table="reportname" class="my-auto report-name">{{report.name}}</h4>
       }
       <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor"
            (click)="showEditorPossibilitiesModal(possibilitiesModal)">
-        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" color="black"
-             viewBox="0 0 16 16">
-          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-          <path
-            d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
-        </svg>
+        <i class="bi bi-info-circle info-circle-size"></i>
       </div>
     </div>
 
