@@ -341,7 +341,7 @@ export class TestComponent implements OnInit, AfterViewInit {
 
   getFullPath(path: string, name: string): string {
     if (path) {
-      return path.replace(this.currentFilter, '');
+      return `${path.replace(this.currentFilter, '')}/${name}`;
     }
     return `${path}/${name}`;
   }
