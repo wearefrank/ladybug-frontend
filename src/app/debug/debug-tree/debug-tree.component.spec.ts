@@ -10,8 +10,7 @@ describe('DebugTreeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DebugTreeComponent],
-      imports: [HttpClientTestingModule, NgSimpleFileTreeModule],
+      imports: [HttpClientTestingModule, NgSimpleFileTreeModule, DebugTreeComponent],
     }).compileComponents();
   });
 

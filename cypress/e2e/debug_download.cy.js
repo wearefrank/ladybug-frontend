@@ -26,7 +26,7 @@ describe('Debug tab download', function () {
     });
   });
 
-  // Fails because of issue https://github.com/ibissource/ladybug-frontend/issues/249.
+  // Fails because of issue https://github.com/wearefrank/ladybug-frontend/issues/249.
   // TODO: Fix issue and re-enable test.
   xit('Download and upload table', function () {
     const downloadsFolder = Cypress.config('downloadsFolder');
@@ -88,7 +88,7 @@ describe('Debug tab download', function () {
     });
   });
 
-  // Fails because of issue https://github.com/ibissource/ladybug-frontend/issues/249.
+  // Fails because of issue https://github.com/wearefrank/ladybug-frontend/issues/249.
   // TODO: Fix issue and re-enable test.
   xit('Download all open reports', function () {
     const downloadsFolder = Cypress.config('downloadsFolder');
@@ -150,19 +150,19 @@ describe('Debug tab download', function () {
     ).should('have.length', 1);
   });
 
-  // Fails because of issue https://github.com/ibissource/ladybug-frontend/issues/249.
+  // Fails because of issue https://github.com/wearefrank/ladybug-frontend/issues/249.
   // TODO: Fix issue and re-enable test.
   xit('Download displayed report, from root node', function () {
     testDownloadFromNode(0);
   });
 
-  // Fails because of issue https://github.com/ibissource/ladybug-frontend/issues/249.
+  // Fails because of issue https://github.com/wearefrank/ladybug-frontend/issues/249.
   // TODO: Fix issue and re-enable test.
   xit('Download displayed report, from start node', function () {
     testDownloadFromNode(1);
   });
 
-  // Fails because of issue https://github.com/ibissource/ladybug-frontend/issues/249.
+  // Fails because of issue https://github.com/wearefrank/ladybug-frontend/issues/249.
   // TODO: Fix issue and re-enable test.
   xit('Download displayed report, from end node', function () {
     testDownloadFromNode(2);

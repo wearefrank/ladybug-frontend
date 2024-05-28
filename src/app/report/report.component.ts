@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
-import { jqxTreeComponent } from 'jqwidgets-ng/jqxtree';
+import { jqxTreeComponent, jqxTreeModule } from 'jqwidgets-ng/jqxtree';
 import { HelperService } from '../shared/services/helper.service';
 import { EditDisplayComponent } from './edit-display/edit-display.component';
 import { DynamicService } from '../shared/services/dynamic.service';
@@ -10,11 +10,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { View } from '../shared/interfaces/view';
 import { ReportData } from '../shared/interfaces/report-data';
 import { DebugComponent } from '../debug/debug.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-report',
   templateUrl: './report.component.html',
   styleUrls: ['./report.component.css'],
+  standalone: true,
+  imports: [jqxTreeModule, NgIf, EditDisplayComponent],
 })
 export class ReportComponent implements OnInit, AfterViewInit {
   static readonly ROUTER_PATH: string = 'report';

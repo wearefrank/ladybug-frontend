@@ -1,11 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-test-settings-modal',
   templateUrl: './test-settings-modal.component.html',
   styleUrls: ['./test-settings-modal.component.css'],
+  standalone: true,
+  imports: [ReactiveFormsModule],
 })
 export class TestSettingsModalComponent {
   @ViewChild('modal') modal!: any;
