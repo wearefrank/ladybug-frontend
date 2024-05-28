@@ -4,6 +4,9 @@ import * as prettier from 'prettier';
 import { debounceTime, Subject, Subscription } from 'rxjs';
 import { SettingsService } from '../shared/services/settings.service';
 import { editor } from 'monaco-editor';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
+import { NgIf, NgFor, TitleCasePipe } from '@angular/common';
 import IEditor = editor.IEditor;
 
 export const basicContentTypes = ['raw'] as const;
@@ -17,6 +20,8 @@ export type EditorView = (typeof editorViewsConst)[number];
   selector: 'app-custom-editor',
   templateUrl: './custom-editor.component.html',
   styleUrl: './custom-editor.component.css',
+  standalone: true,
+  imports: [NgIf, MonacoEditorModule, ReactiveFormsModule, FormsModule, NgFor, TitleCasePipe],
 })
 export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() height!: number;

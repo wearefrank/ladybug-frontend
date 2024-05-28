@@ -9,8 +9,7 @@ describe('CloneModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CloneModalComponent],
-      imports: [HttpClientTestingModule],
+      imports: [HttpClientTestingModule, CloneModalComponent],
     }).compileComponents();
   });
 

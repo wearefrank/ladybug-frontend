@@ -8,7 +8,7 @@ describe('CustomEditorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CustomEditorComponent],
+      imports: [CustomEditorComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CustomEditorComponent);

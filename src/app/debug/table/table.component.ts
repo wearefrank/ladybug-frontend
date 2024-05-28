@@ -12,11 +12,49 @@ import { DebugReportService } from '../debug-report.service';
 import { TabService } from '../../shared/services/tab.service';
 import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
+import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
+import { ToastComponent } from '../../shared/components/toast/toast.component';
+import { MatSortModule } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import {
+  NgbDropdown,
+  NgbDropdownToggle,
+  NgbDropdownMenu,
+  NgbDropdownButtonItem,
+  NgbDropdownItem,
+} from '@ng-bootstrap/ng-bootstrap';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
+import { NgIf, NgFor, NgClass, KeyValuePipe } from '@angular/common';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css'],
+  standalone: true,
+  imports: [
+    NgIf,
+    FilterSideDrawerComponent,
+    ButtonComponent,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownButtonItem,
+    NgbDropdownItem,
+    ReactiveFormsModule,
+    FormsModule,
+    NgFor,
+    ActiveFiltersComponent,
+    MatProgressSpinnerModule,
+    MatSortModule,
+    NgClass,
+    TableSettingsModalComponent,
+    ToastComponent,
+    KeyValuePipe,
+    TableCellShortenerPipe,
+  ],
 })
 export class TableComponent implements OnInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;

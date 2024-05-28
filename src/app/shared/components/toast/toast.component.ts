@@ -1,13 +1,16 @@
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { Toast } from '../../interfaces/toast';
 import { ToastService } from '../../services/toast.service';
 import { Subscription } from 'rxjs';
+import { NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-toast',
   templateUrl: './toast.component.html',
   styleUrls: ['./toast.component.css'],
+  standalone: true,
+  imports: [NgFor, NgIf, NgbToast],
 })
 export class ToastComponent implements OnInit, OnDestroy {
   toastSubscription!: Subscription;
@@ -27,7 +30,9 @@ export class ToastComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.toastSubscription.unsubscribe();
+    if (this.toastSubscription) {
+      this.toastSubscription.unsubscribe();
+    }
   }
 
   close(alert: Toast): void {
