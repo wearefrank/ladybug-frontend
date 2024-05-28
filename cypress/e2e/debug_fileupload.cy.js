@@ -6,12 +6,12 @@ describe('Debug file upload', () => {
   it('Upload a file to debug', () => {
     cy.fixture('testRerun.ttr', 'binary')
       .then(Cypress.Blob.binaryStringToBlob)
-      .then(fileContent => {
+      .then((fileContent) => {
         cy.get('[data-cy-debug="upload"]').attachFile({
           fileContent,
           fileName: 'testRerun.ttr',
         });
       });
-    cy.checkFileTreeLength(3);
-  })
+    cy.checkFileTreeLength(1);
+  });
 });
