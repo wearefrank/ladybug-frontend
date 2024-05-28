@@ -126,6 +126,30 @@ Cypress.Commands.add(
   createReportWithLabelEmpty,
 );
 
+function createReportWithInfopoint() {
+  // No cy.visit because then the API call can happen multiple times.
+  cy.request(
+    Cypress.env('backendServer') +
+    '/index.jsp?createReport=Hide%20a%20checkpoint%20in%20blackbox%20view',
+  ).then((resp) => {
+    expect(resp.status).equal(200);
+  });
+}
+
+Cypress.Commands.add('createReportWithInfopoint' as keyof Chainable, createReportWithInfopoint);
+
+function createReportWithMutipleStartpoints() {
+  // No cy.visit because then the API call can happen multiple times.
+  cy.request(
+    Cypress.env('backendServer') +
+    '/index.jsp?createReport=Multiple%20startpoints',
+  ).then((resp) => {
+    expect(resp.status).equal(200);
+  });
+}
+
+Cypress.Commands.add('createReportWithMutipleStartpoints' as keyof Chainable, createReportWithMutipleStartpoints);
+
 function clearDebugStore() {
   cy.request(
     Cypress.env('backendServer') + '/index.jsp?clearDebugStorage=true',
