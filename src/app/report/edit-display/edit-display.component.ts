@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, ElementRef, Input, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { DifferenceModal } from '../../shared/interfaces/difference-modal';
 import {
   NgbDropdown,
@@ -9,7 +16,7 @@ import {
   NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
-// @ts-ignore-line
+// @ts-expect-error no default export
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
@@ -85,21 +92,25 @@ export class EditDisplayComponent {
   }
 
   changeEncoding(button: any): void {
-    this.editor.setNewReport(this.helperService.changeEncoding(this.report, button));
+    this.editor.setNewReport(
+      this.helperService.changeEncoding(this.report, button),
+    );
   }
 
   rerunReport(): void {
     let reportId: string = this.report.storageId;
-    this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
-      let element = document.querySelector('#showRerunResult')!;
-      if (this.report == response) {
-        element.setAttribute('style', 'background-color: green');
-        this.rerunResult = '[Rerun succeeded]';
-      } else {
-        element.setAttribute('style', 'background-color: red');
-        this.rerunResult = '[Rerun failed]';
-      }
-    });
+    this.httpService
+      .runDisplayReport(reportId, this.currentView.storageName)
+      .subscribe((response) => {
+        let element = document.querySelector('#showRerunResult')!;
+        if (this.report == response) {
+          element.setAttribute('style', 'background-color: green');
+          this.rerunResult = '[Rerun succeeded]';
+        } else {
+          element.setAttribute('style', 'background-color: red');
+          this.rerunResult = '[Rerun failed]';
+        }
+      });
   }
 
   closeReport(removeReportFromTree: boolean): void {
@@ -111,8 +122,15 @@ export class EditDisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    let queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
-    this.helperService.download(queryString + '&', this.currentView.storageName, exportBinary, exportXML);
+    let queryString: string = this.report.xml
+      ? this.report.storageId.toString()
+      : this.report.uid.split('#')[0];
+    this.helperService.download(
+      queryString + '&',
+      this.currentView.storageName,
+      exportBinary,
+      exportXML,
+    );
     this.httpService.handleSuccess('Report Downloaded!');
   }
 
@@ -142,10 +160,19 @@ export class EditDisplayComponent {
     this.differenceModal = [];
     if (this.report.xml) {
       this.addToDifferenceModal('name', this.name.nativeElement.value);
-      this.addToDifferenceModal('description', this.description.nativeElement.value);
+      this.addToDifferenceModal(
+        'description',
+        this.description.nativeElement.value,
+      );
       this.addToDifferenceModal('path', this.path.nativeElement.value);
-      this.addToDifferenceModal('transformation', this.transformation.nativeElement.value);
-      this.addToDifferenceModal('variables', this.variables.nativeElement.value);
+      this.addToDifferenceModal(
+        'transformation',
+        this.transformation.nativeElement.value,
+      );
+      this.addToDifferenceModal(
+        'variables',
+        this.variables.nativeElement.value,
+      );
     } else {
       this.addToDifferenceModal('message', this.editor?.getValue());
     }
@@ -156,7 +183,10 @@ export class EditDisplayComponent {
   }
 
   addToDifferenceModal(keyword: string, elementValue: string) {
-    const difference = new DiffMatchPatch().diff_main(this.report[keyword] ?? '', elementValue ?? '');
+    const difference = new DiffMatchPatch().diff_main(
+      this.report[keyword] ?? '',
+      elementValue ?? '',
+    );
     this.differenceModal.push({
       name: keyword,
       originalValue: this.report[keyword],
@@ -231,10 +261,12 @@ export class EditDisplayComponent {
       ? { stub: stubStrategy, checkpointId: checkpointId }
       : this.getReportValues(checkpointId);
 
-    this.httpService.updateReport(storageId, params, this.currentView.storageName).subscribe((response: any) => {
-      response.report.xml = response.xml;
-      this.saveReportEvent.next(response.report);
-    });
+    this.httpService
+      .updateReport(storageId, params, this.currentView.storageName)
+      .subscribe((response: any) => {
+        response.report.xml = response.xml;
+        this.saveReportEvent.next(response.report);
+      });
   }
 
   toggleMetadataTable(): void {
@@ -254,7 +286,9 @@ export class EditDisplayComponent {
   }
 
   copyReport(): void {
-    const storageId: number = this.report.xml ? +this.report.storageId : +this.report.uid.split('#')[0];
+    const storageId: number = this.report.xml
+      ? +this.report.storageId
+      : +this.report.uid.split('#')[0];
     const data: any = {};
     data[this.currentView.storageName] = [storageId];
     this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this

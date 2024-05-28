@@ -81,15 +81,15 @@
   <div class="m-1" data-cy-report-edit-form>
     <div class="form-group">
       <label>Name</label>
-      <input #name data-cy-report-edit-form="name" type="text" class="form-control" placeholder="Name" value="{{report.name}}">
+      <input #name data-cy-report-edit-form="name" type="text" class="form-control" placeholder="Name" [value]="report.name">
     </div>
     <div class="form-group">
       <label>Description</label>
-      <input #description class="form-control" placeholder="Description" value="{{report.description}}">
+      <input #description class="form-control" placeholder="Description" [value]="report.description">
     </div>
     <div class="form-group">
       <label>Path</label>
-      <input #path type="text" class="form-control" placeholder="/path/to/report/" value="{{report.path}}">
+      <input #path type="text" class="form-control" placeholder="/path/to/report/" [value]="report.path">
     </div>
     <div class="form-group">
       <label>Transformation</label>
