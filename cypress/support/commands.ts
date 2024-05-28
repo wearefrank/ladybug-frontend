@@ -265,6 +265,10 @@ Cypress.Commands.add('clickFirstFileInFileTree' as keyof Chainable, () => {
   cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('app-tree-item').eq(0).click();
 });
 
+Cypress.Commands.add('clickFirstChildInFileTree' as keyof Chainable, () => {
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item app-tree-item').find('div > div').eq(0).click();
+})
+
 Cypress.Commands.add('clickRowInTable', (index: number) => {
   cy.get('[data-cy-debug="tableBody"]').find('tr').eq(index).click();
 });

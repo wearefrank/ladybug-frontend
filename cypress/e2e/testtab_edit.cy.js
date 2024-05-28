@@ -11,27 +11,22 @@ describe('Edit tests', () => {
 
   it('Edit report in test tab', () => {
     prepareEdit();
-    cy.clickFirstFileInFileTree();
-    cy.wait(1000);
+    cy.clickFirstChildInFileTree();
     cy.get('[data-cy-test-editor="edit"]').click();
-    cy.wait(1000);
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get('[data-cy-report-edit-form="name"]')
+    cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
       .type('Hello Original World!');
     cy.get('[data-cy-test-editor="save"]').click();
     cy.get('.modal-title').should('include.text', 'Are you sure');
-    cy.get('[data-cy-changes-form-before="name"]').contains('Hello World!');
-    cy.get('[data-cy-changes-form-after="name"]').contains('Hello Original World!');
+    cy.get('[data-cy-changes-form-before="message"]').contains('Hello World!');
+    cy.get('[data-cy-changes-form-after="message"]').contains('Hello Original World!');
     cy.get('button:contains(Yes)').click();
-    cy.wait(1000);
-    cy.clickFirstFileInFileTree();
-    cy.wait(1000);
+    cy.clickFirstChildInFileTree();
     cy.get('[data-cy-test-editor="edit"]').click();
-    cy.wait(1000);
-    cy.get('[data-cy-report-edit-form="name"]')
+    cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
@@ -44,8 +39,7 @@ describe('Edit tests', () => {
 
   it('Editing without pressing Edit produces error', () => {
     prepareEdit();
-    cy.clickFirstFileInFileTree();
-    cy.wait(1000);
+    cy.clickFirstChildInFileTree();
     // Do not press Edit button
     cy.get('[data-cy-test-editor="save"]').should('have.length', 0);
     cy.get('[data-cy-test-editor="editor"]').click().type('x');
@@ -54,13 +48,11 @@ describe('Edit tests', () => {
 
   it('When saving edit cancelled then original text kept and rerun fails', () => {
     prepareEdit();
-    cy.clickFirstFileInFileTree();
-    cy.wait(1000);
+    cy.clickFirstChildInFileTree();
     cy.get('[data-cy-test-editor="edit"]').click();
     cy.get('[data-cy-test-editor="readonlyLabel"]').contains('ON');
-    cy.wait(1000);
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get('[data-cy-report-edit-form="name"]')
+    cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
@@ -69,7 +61,6 @@ describe('Edit tests', () => {
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.contains('Hello Original World!');
     // Give dialog time to initialize
-    cy.wait(1000);
     cy.get('button:contains(No)').click();
     cy.get('.modal-title').should('have.length', 0);
     cy.get('[data-cy-test-editor="save"]').should('have.length', 1);
@@ -83,7 +74,6 @@ describe('Edit tests', () => {
 function prepareEdit() {
   cy.createReport();
   cy.initializeApp();
-  cy.wait(100);
   cy.get('[data-cy-debug="selectAll"]').click();
   cy.get('[data-cy-debug="openSelected"]').click();
   cy.debugTreeGuardedCopyReport('Simple report', 3, '');
@@ -91,7 +81,6 @@ function prepareEdit() {
   cy.checkTestTableNumRows(1);
   cy.get('[data-cy-test="openReport"]').click();
   // Martijn hopes this fixes an issue in Firefox.
-  cy.wait(1000);
   cy.get('[data-cy-nav-tab="Simple report"]')
     .find('div.active')
     .should('include.text', 'Simple report');

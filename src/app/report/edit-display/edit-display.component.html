@@ -77,7 +77,7 @@
     }</div>
 }
 
-@if (editingEnabled) {
+@if (editingRootNode) {
   <div class="m-1" data-cy-report-edit-form>
     <div class="form-group">
       <label>Name</label>
@@ -106,7 +106,7 @@
   </div>
 } @else {
   <app-custom-editor
-    [readOnlyMode]="true"
+    [readOnlyMode]="!editingChildNode"
     [height]="containerHeight - 24"
     data-cy-test-editor="editor"
     id="editor"></app-custom-editor>
