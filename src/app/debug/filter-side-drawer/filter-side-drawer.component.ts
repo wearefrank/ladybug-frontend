@@ -28,10 +28,10 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected currentRecords: Map<string, Array<string>> = new Map<string, Array<string>>();
   protected metadataTypes!: Map<string, string>;
 
-  shouldShowFilterSubscriber?: Subscription;
-  metadataLabelsSubscriber?: Subscription;
-  currentRecordsSubscriber?: Subscription;
-  metadataTypesSubscriber?: Subscription;
+  shouldShowFilterSubscription?: Subscription;
+  metadataLabelsSubscription?: Subscription;
+  currentRecordsSubscription?: Subscription;
+  metadataTypesSubscription?: Subscription;
 
   constructor(protected filterService: FilterService) {}
 
@@ -44,18 +44,18 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   setSubscriptions(): void {
-    this.shouldShowFilterSubscriber = this.filterService.showFilter$.subscribe((show: boolean): void => {
+    this.shouldShowFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
       this.shouldShowFilter = show;
     });
-    this.metadataLabelsSubscriber = this.filterService.metadataLabels$.subscribe((metadataLabels: string[]): void => {
+    this.metadataLabelsSubscription = this.filterService.metadataLabels$.subscribe((metadataLabels: string[]): void => {
       this.metadataLabels = metadataLabels;
     });
-    this.currentRecordsSubscriber = this.filterService.currentRecords$.subscribe(
+    this.currentRecordsSubscription = this.filterService.currentRecords$.subscribe(
       (records: Map<string, Array<string>>): void => {
         this.currentRecords = records;
       },
     );
-    this.metadataTypesSubscriber = this.filterService.metadataTypes$.subscribe(
+    this.metadataTypesSubscription = this.filterService.metadataTypes$.subscribe(
       (metadataTypes: Map<string, string>): void => {
         this.metadataTypes = metadataTypes;
       },
@@ -63,10 +63,10 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   unsubscribeAll(): void {
-    this.shouldShowFilterSubscriber?.unsubscribe();
-    this.metadataLabelsSubscriber?.unsubscribe();
-    this.currentRecordsSubscriber?.unsubscribe();
-    this.metadataTypesSubscriber?.unsubscribe();
+    this.shouldShowFilterSubscription?.unsubscribe();
+    this.metadataLabelsSubscription?.unsubscribe();
+    this.currentRecordsSubscription?.unsubscribe();
+    this.metadataTypesSubscription?.unsubscribe();
   }
 
   closeFilter(): void {

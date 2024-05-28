@@ -92,8 +92,9 @@ export class FilterService {
 
   isInValidNumber(userInput: string, metadataName: string): boolean {
     const regex: RegExp = /^-?\d+(\.\d+)?$/;
+    const metadataType = this.metadataTypes.get(metadataName);
     return (
-      (this.metadataTypes.get(metadataName) == 'int' || this.metadataTypes.get(metadataName) == 'long') &&
+      (metadataType == 'int' || metadataType == 'long') &&
       (Number.isNaN(Number.parseFloat(userInput)) || !regex.test(userInput))
     );
   }

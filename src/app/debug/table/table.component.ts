@@ -576,7 +576,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   calculateViewDropDownWidth(): void {
     let longestViewName = '';
-    for (let [key] of Object.entries(this.viewSettings.views)) {
+    for (let key of Object.keys(this.viewSettings.views)) {
       if (key.length > longestViewName.length) {
         longestViewName = key;
       }
