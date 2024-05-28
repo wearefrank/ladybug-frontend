@@ -55,9 +55,9 @@ export class EditDisplayComponent {
   @ViewChild('path') path!: ElementRef;
   @ViewChild('transformation') transformation!: ElementRef;
   @ViewChild('variables') variables!: ElementRef;
-  @ViewChild('showRerunResult') rerunResultElement!: ElementRef;
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
+  rerunBackgroundColor: string = 'background-color: green';
 
   constructor(
     private modalService: NgbModal,
@@ -82,10 +82,10 @@ export class EditDisplayComponent {
     let reportId: string = this.report.storageId;
     this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
       if (this.report == response) {
-        this.rerunResultElement.nativeElement.setAttribute('style', 'background-color: green');
+        this.rerunBackgroundColor = 'background-color: green';
         this.rerunResult = '[Rerun succeeded]';
       } else {
-        this.rerunResultElement.nativeElement.setAttribute('style', 'background-color: red');
+        this.rerunBackgroundColor = 'background-color: red';
         this.rerunResult = '[Rerun failed]';
       }
     });

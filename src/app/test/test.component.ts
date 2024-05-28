@@ -16,7 +16,7 @@ import { NodeLinkStrategy } from '../shared/enums/compare-method';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { NgIf, NgFor } from '@angular/common';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, NgModel } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
 
 @Component({
@@ -53,7 +53,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
   @ViewChild(TestFolderTreeComponent) testFileTreeComponent!: TestFolderTreeComponent;
-  @ViewChild('moveToInput') moveToInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('moveToInput', { read: NgModel }) moveToInputModel!: NgModel;
 
   constructor(
     private httpService: HttpService,
@@ -290,7 +290,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   updatePath(action: string): void {
     let reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
-      let path: string = this.moveToInput.nativeElement.value;
+      let path: string = this.moveToInputModel.value;
       path = this.transformPath(path);
       const map: UpdatePathSettings = { path: path, action: action };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
