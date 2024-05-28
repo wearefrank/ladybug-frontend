@@ -12,7 +12,7 @@ describe('DebugComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DebugComponent, HttpClientTestingModule, RouterTestingModule.withRoutes(routes),],
+      imports: [DebugComponent, HttpClientTestingModule, RouterTestingModule.withRoutes(routes)],
     }).compileComponents();
   });
 
