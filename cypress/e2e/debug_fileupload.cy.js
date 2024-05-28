@@ -1,11 +1,6 @@
-const path = require('path');
-
 describe('Debug file upload', () => {
   beforeEach(() => {
-    cy.clearDebugStore();
-    cy.createReport();
-    cy.createOtherReport();
-    cy.initializeApp();
+    cy.resetApp();
   });
 
   it('Upload a file to debug', () => {
@@ -17,7 +12,6 @@ describe('Debug file upload', () => {
           fileName: 'testRerun.ttr',
         });
       });
-
-    cy.checkFileTreeLength(1);
+    cy.checkFileTreeLength(3);
   })
 });
