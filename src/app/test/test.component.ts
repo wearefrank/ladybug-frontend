@@ -1,4 +1,4 @@
-import { AfterViewInit, OnInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, OnInit, Component, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
@@ -53,6 +53,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
   @ViewChild(TestFolderTreeComponent) testFileTreeComponent!: TestFolderTreeComponent;
+  @ViewChild('moveToInput') moveToInput!: ElementRef<HTMLInputElement>;
 
   constructor(
     private httpService: HttpService,
@@ -289,7 +290,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   updatePath(action: string): void {
     let reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
-      let path: string = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
+      let path: string = this.moveToInput.nativeElement.value;
       path = this.transformPath(path);
       const map: UpdatePathSettings = { path: path, action: action };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));

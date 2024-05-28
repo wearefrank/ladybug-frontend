@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { Toast } from '../../interfaces/toast';
 import { ToastService } from '../../services/toast.service';
@@ -16,6 +16,8 @@ export class ToastComponent implements OnInit, OnDestroy {
   toastSubscription!: Subscription;
   selectedAlert!: Toast;
   @ViewChild('modal') modal!: TemplateRef<Element>;
+  @ViewChild('detailedErrorMessage') detailedErrorMessageElement!: ElementRef;
+  @ViewChild('CopyToClipboard') copyToClipboardElement!: ElementRef<HTMLButtonElement>;
   toasts: Toast[] = [];
 
   constructor(
@@ -45,11 +47,9 @@ export class ToastComponent implements OnInit, OnDestroy {
   }
 
   copyToClipboard(): void {
-    const text = document.querySelector('#detailedErrorMessage')!;
-    navigator.clipboard.writeText(text.innerHTML).then(() => {
-      const button = document.querySelector('#CopyToClipboard')!;
-      button.innerHTML = 'Copied!';
-      button.setAttribute('style', 'background-color: #23c6c8 !important');
+    navigator.clipboard.writeText(this.detailedErrorMessageElement.nativeElement.innerHTML).then(() => {
+      this.copyToClipboardElement.nativeElement.innerHTML = 'Copied!';
+      this.copyToClipboardElement.nativeElement.setAttribute('style', 'background-color: #23c6c8 !important');
     });
   }
 }

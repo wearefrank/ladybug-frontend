@@ -55,6 +55,7 @@ export class EditDisplayComponent {
   @ViewChild('path') path!: ElementRef;
   @ViewChild('transformation') transformation!: ElementRef;
   @ViewChild('variables') variables!: ElementRef;
+  @ViewChild('showRerunResult') rerunResultElement!: ElementRef;
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
 
@@ -80,12 +81,11 @@ export class EditDisplayComponent {
   rerunReport(): void {
     let reportId: string = this.report.storageId;
     this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
-      let element = document.querySelector('#showRerunResult')!;
       if (this.report == response) {
-        element.setAttribute('style', 'background-color: green');
+        this.rerunResultElement.nativeElement.setAttribute('style', 'background-color: green');
         this.rerunResult = '[Rerun succeeded]';
       } else {
-        element.setAttribute('style', 'background-color: red');
+        this.rerunResultElement.nativeElement.setAttribute('style', 'background-color: red');
         this.rerunResult = '[Rerun failed]';
       }
     });
