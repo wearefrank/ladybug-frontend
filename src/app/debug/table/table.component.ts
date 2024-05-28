@@ -655,9 +655,8 @@ export class TableComponent implements OnInit, OnDestroy {
           break;
         }
       }
-      result += moreThanOne
-        ? `, Search value '${value}' is not a valid '${typeLabel}'`
-        : `Search value '${value}' is not a valid '${typeLabel}'`;
+      if (moreThanOne) result += ', ';
+      result += `Search value '${value}' is not a valid '${typeLabel}'`;
       moreThanOne = true;
     }
     return result;
