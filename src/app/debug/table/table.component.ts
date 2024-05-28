@@ -537,7 +537,11 @@ export class TableComponent implements OnInit, OnDestroy {
   showUploadedReports(formData: any): void {
     this.httpService.uploadReport(formData).subscribe((data) => {
       for (let report of data) {
-        this.openReportEvent.next(report);
+        const reportData: ReportData = {
+          report: report,
+          currentView: this.viewSettings.currentView,
+        };
+        this.tabService.openNewTab(reportData);
       }
     });
   }
