@@ -1,6 +1,6 @@
 <div class="report-tab row h-100">
   <div class="resizable-horizontal w-25 p-2 border-right h-100">
-    <jqxTree #treeReference (onItemClick)="selectReport($event)" [auto-create]="false"></jqxTree>
+    <jqxTree #treeReference (onItemClick)="selectReport($event)" [auto-create]="false" data-cy-report="jqxTree"></jqxTree>
   </div>
   <div class="col" *ngIf="reportData">
     <app-edit-display (saveReportEvent)="savingReport($event)"></app-edit-display>
