@@ -8,7 +8,7 @@ describe('ActiveFiltersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ActiveFiltersComponent],
+      imports: [ActiveFiltersComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ActiveFiltersComponent);

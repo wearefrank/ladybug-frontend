@@ -19,8 +19,7 @@ describe('About opened reports', () => {
     cy.get('[data-cy-debug-tree="root"] app-tree-item > div > div:contains(Simple report)')
       .first().selectIfNotSelected();
     cy.get('[data-cy-debug-editor="close"]').click();
-    cy.checkFileTreeLength(1);
-    // nth-child has an 1-based index
+    cy.checkFileTreeLength(1)
     cy.get('[data-cy-debug-tree="root"] > app-tree-item .item-name').eq(0)
       .should('have.text', "Another simple report")
       .click();

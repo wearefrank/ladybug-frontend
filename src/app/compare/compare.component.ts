@@ -2,14 +2,17 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 import { NodeLinkStrategy } from '../shared/enums/compare-method';
 import { CompareData } from './compare-data';
-import { DiffEditorModel } from 'ngx-monaco-editor-v2';
+import { DiffEditorModel, MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TabService } from '../shared/services/tab.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DisplayTableComponent } from '../shared/components/display-table/display-table.component';
 
 @Component({
   selector: 'app-compare',
   templateUrl: './compare.component.html',
   styleUrls: ['./compare.component.css'],
+  standalone: true,
+  imports: [CompareTreeComponent, DisplayTableComponent, MonacoEditorModule],
 })
 export class CompareComponent implements OnInit, AfterViewInit {
   static readonly leftReportKey: string = 'leftId';

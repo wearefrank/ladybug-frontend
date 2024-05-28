@@ -58,7 +58,7 @@ describe('About the Test tab', () => {
     cy.get('[data-cy-delete-modal="confirm"]').click();
   });
 
-  // Fails because of https://github.com/ibissource/ladybug-frontend/issues/249.
+  // Fails because of https://github.com/wearefrank/ladybug-frontend/issues/249.
   // There is also something strange with the beforeEach() here. After the
   // preparation two reports are expected in the test tab, but there is only one.
   xit('Download and upload', () => {

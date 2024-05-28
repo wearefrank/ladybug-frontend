@@ -1,17 +1,30 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { DisplayComponent } from './display/display.component';
 import { Report } from '../shared/interfaces/report';
 import { DebugTreeComponent } from './debug-tree/debug-tree.component';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { DebugReportService } from './debug-report.service';
 import { TabService } from '../shared/services/tab.service';
+import { AngularSplitModule } from 'angular-split';
+import { TableComponent } from './table/table.component';
 
 @Component({
   selector: 'app-debug',
   templateUrl: './debug.component.html',
   styleUrls: ['./debug.component.css'],
+  standalone: true,
+  imports: [TableComponent, AngularSplitModule, DebugTreeComponent, DisplayComponent],
 })
-export class DebugComponent implements OnInit, AfterViewInit {
+export class DebugComponent implements OnInit, AfterViewInit, OnDestroy {
   static readonly ROUTER_PATH: string = 'debug';
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
@@ -22,6 +35,7 @@ export class DebugComponent implements OnInit, AfterViewInit {
 
   treeWidth: Subject<void> = new Subject<void>();
   bottomHeight: number = 0;
+  private viewSubscription!: Subscription;
 
   constructor(
     private debugReportService: DebugReportService,
@@ -30,6 +44,10 @@ export class DebugComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.subscribeToServices();
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
   }
 
   ngAfterViewInit() {
@@ -41,8 +59,14 @@ export class DebugComponent implements OnInit, AfterViewInit {
     this.listenToHeight();
   }
 
-  subscribeToServices() {
-    this.debugReportService.changeViewObservable.subscribe((view) => (this.currentView = view));
+  subscribeToServices(): void {
+    this.viewSubscription = this.debugReportService.changeViewObservable.subscribe((view) => (this.currentView = view));
+  }
+
+  unsubscribeAll(): void {
+    if (this.viewSubscription) {
+      this.viewSubscription.unsubscribe();
+    }
   }
 
   listenToHeight(): void {

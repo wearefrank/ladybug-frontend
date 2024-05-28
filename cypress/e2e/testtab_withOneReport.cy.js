@@ -20,7 +20,7 @@ describe('Tests with one report', () => {
     cy.get('[data-cy-nav-tab="debugTab"]').click();
   });
 
-  // May fail because of issue https://github.com/ibissource/ladybug-frontend/issues/250.
+  // May fail because of issue https://github.com/wearefrank/ladybug-frontend/issues/250.
   // TODO: Fix issue and re-enable test.
   xit('Test copy in testtab', () => {
     // cy.functions.testTabSelectReportNamed('Simple report');
@@ -85,7 +85,7 @@ describe('Tests with one report', () => {
       });
   });
 
-  // May fail because of issue https://github.com/ibissource/ladybug-frontend/issues/250.
+  // May fail because of issue https://github.com/wearefrank/ladybug-frontend/issues/250.
   // TODO: Fix issue and re-enable test.
   xit('Rerun, replace, succeed', () => {
     // cy.functions.testTabSelectReportNamed('Simple report');

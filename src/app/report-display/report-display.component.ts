@@ -5,11 +5,14 @@ import { Subject, Subscription } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { DebugReportService } from '../debug/debug-report.service';
 import { TabService } from '../shared/services/tab.service';
+import { AngularSplitModule } from 'angular-split';
 
 @Component({
   selector: 'app-report-display',
   templateUrl: './report-display.component.html',
   styleUrl: './report-display.component.css',
+  standalone: true,
+  imports: [AngularSplitModule, DebugTreeComponent, DisplayComponent],
 })
 export class ReportDisplayComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() containerHeight!: number;
@@ -44,10 +47,7 @@ export class ReportDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngOnDestroy() {
-    this.changeViewSubscription.unsubscribe();
-    this.addReportSubscription.unsubscribe();
-    this.openReportsInCompareSubscription.unsubscribe();
-    this.openReportInTabSubscription.unsubscribe();
+    this.unsubscribeAll();
   }
 
   subscribeToDebugReportServiceObservables() {
@@ -63,6 +63,21 @@ export class ReportDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
     this.openReportInTabSubscription = this.tabService.openReportInTabObservable.subscribe((value) =>
       this.openReportInSeparateTab(value),
     );
+  }
+
+  unsubscribeAll() {
+    if (this.changeViewSubscription) {
+      this.changeViewSubscription.unsubscribe();
+    }
+    if (this.addReportSubscription) {
+      this.addReportSubscription.unsubscribe();
+    }
+    if (this.openReportInTabSubscription) {
+      this.openReportInTabSubscription.unsubscribe();
+    }
+    if (this.openReportsInCompareSubscription) {
+      this.openReportsInCompareSubscription.unsubscribe();
+    }
   }
 
   addReportToTree(report: Report): void {

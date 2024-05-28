@@ -11,12 +11,34 @@ import {
   NgSimpleFileTree,
   OptionalParameters,
   TreeItemComponent,
+  NgSimpleFileTreeModule,
 } from 'ng-simple-file-tree';
+import {
+  NgbDropdown,
+  NgbDropdownToggle,
+  NgbDropdownMenu,
+  NgbDropdownButtonItem,
+  NgbDropdownItem,
+} from '@ng-bootstrap/ng-bootstrap';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+import { NgIf } from '@angular/common';
+import { Checkpoint } from '../../shared/interfaces/checkpoint';
 
 @Component({
   selector: 'app-debug-tree',
   templateUrl: './debug-tree.component.html',
   styleUrls: ['./debug-tree.component.css'],
+  standalone: true,
+  imports: [
+    NgIf,
+    ButtonComponent,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownButtonItem,
+    NgbDropdownItem,
+    NgSimpleFileTreeModule,
+  ],
 })
 export class DebugTreeComponent implements OnDestroy {
   @ViewChild('tree') tree!: NgSimpleFileTree;
@@ -132,22 +154,39 @@ export class DebugTreeComponent implements OnDestroy {
   //Ladybug reports don't have a parent-child structure for its checkpoints, this function creates that parent-child structure
   transformReportToHierarchyStructure(report: Report): Report {
     const checkpoints = report.checkpoints;
+    let checkpointsTemplate: Checkpoint[] = [];
+    let startpointCounter: number = 0;
+    let startPointList: Checkpoint[] = [checkpoints[0]];
     for (let i = 0; i < checkpoints.length; i++) {
       checkpoints[i].icon = this.helperService.getImage(
         checkpoints[i].type,
         checkpoints[i].encoding,
         checkpoints[i].level,
       );
-      if (i - 1 >= 0 && checkpoints[i].type > 1) {
-        if (!checkpoints[i - 1].checkpoints) {
-          checkpoints[i - 1].checkpoints = [];
+      if (checkpointsTemplate.length === 0) {
+        checkpointsTemplate.push(checkpoints[0]);
+      } else {
+        if (checkpoints[i].type == 2) {
+          if (startpointCounter == 0) {
+            checkpointsTemplate.push(checkpoints[i]);
+            break;
+          }
+          startpointCounter--;
+          startPointList.splice(-1, 1);
         }
-        checkpoints[i - 1].checkpoints!.push(checkpoints[i]);
-        checkpoints.splice(i, 1);
-        i--;
+        let currentStartpoint = startPointList;
+        if (!currentStartpoint[startPointList.length - 1].checkpoints) {
+          currentStartpoint[startPointList.length - 1].checkpoints = [];
+        }
+        currentStartpoint[startPointList.length - 1].checkpoints!.push(checkpoints[i]);
+
+        if (checkpoints[i].type == 1) {
+          startPointList.push(checkpoints[i]);
+          startpointCounter++;
+        }
       }
     }
-    report.checkpoints = checkpoints;
+    report.checkpoints = checkpointsTemplate;
     return report;
   }
 
