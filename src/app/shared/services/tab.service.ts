@@ -9,10 +9,11 @@ import { CloseTab } from '../interfaces/close-tab';
 })
 export class TabService {
   private openReportInTabSubject: Subject<ReportData> = new ReplaySubject();
-  openReportInTab$: Observable<ReportData> = this.openReportInTabSubject.asObservable();
   private openInCompareSubject: Subject<CompareData> = new ReplaySubject();
-  openInCompare$: Observable<CompareData> = this.openInCompareSubject.asObservable();
   private closeTabSubject: Subject<CloseTab> = new ReplaySubject();
+
+  openReportInTab$: Observable<ReportData> = this.openReportInTabSubject.asObservable();
+  openInCompare$: Observable<CompareData> = this.openInCompareSubject.asObservable();
   closeTab$: Observable<CloseTab> = this.closeTabSubject.asObservable();
 
   activeReportTabs: Map<string, ReportData> = new Map();
