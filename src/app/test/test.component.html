@@ -32,8 +32,8 @@
     <div class="form-group mt-2">
       <label for="moveToInput">Move/Copy to:</label>
       <form class="input-group">
-        <input type="text" class="form-control mr-1 my-2 py-0" id="moveToInput" name="filter"
-               value="{{currentFilter}}" />
+        <input #moveToInput type="text" class="form-control mr-1 my-2 py-0" id="moveToInput" name="filter"
+               [ngModel]="currentFilter" />
         <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="updatePath('move')">Move</button>
         <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="updatePath('copy')"><i
           class="fa fa-copy"></i></button>
