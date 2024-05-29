@@ -4,9 +4,9 @@ import * as prettier from 'prettier';
 import { debounceTime, Subject, Subscription } from 'rxjs';
 import { SettingsService } from '../shared/services/settings.service';
 import { editor } from 'monaco-editor';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
-import { NgIf, NgFor, TitleCasePipe } from '@angular/common';
+import { NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import IEditor = editor.IEditor;
 
 export const basicContentTypes = ['raw'] as const;
@@ -27,6 +27,9 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() height!: number;
   @Input() readOnlyMode: boolean = true;
   @Output() saveReport: Subject<string> = new Subject<string>();
+  protected readonly ACTIONS_BAR_HEIGHT: number = 30;
+  protected readonly STATUS_BAR_HEIGHT: number = 43;
+  protected readonly INDENT_TWO_SPACES: string = '  ';
   editor!: IEditor;
   unsavedChanges: boolean = false;
   options: any = {
@@ -47,7 +50,6 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   currentView: EditorView = 'raw';
   editorFocused: boolean = false;
   editorChangesSubject: Subject<string> = new Subject<string>();
-  INDENT_TWO_SPACES: string = '  ';
 
   //Settings attributes
   showPrettifyOnLoad: boolean = true;
@@ -121,7 +123,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
 
       this.checkIfTextIsPretty();
       if (this.showPrettifyOnLoad) {
-        this.onViewChange('xml');
+        this.onViewChange(this.contentType);
       }
     }
   }
