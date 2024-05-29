@@ -107,6 +107,30 @@ function createReportWithLabelEmpty() {
 
 Cypress.Commands.add('createReportWithLabelEmpty' as keyof Chainable, createReportWithLabelEmpty);
 
+function createReportWithInfopoint() {
+  // No cy.visit because then the API call can happen multiple times.
+  cy.request(
+    Cypress.env('backendServer') +
+    '/index.jsp?createReport=Hide%20a%20checkpoint%20in%20blackbox%20view',
+  ).then((resp) => {
+    expect(resp.status).equal(200);
+  });
+}
+
+Cypress.Commands.add('createReportWithInfopoint' as keyof Chainable, createReportWithInfopoint);
+
+function createReportWithMutipleStartpoints() {
+  // No cy.visit because then the API call can happen multiple times.
+  cy.request(
+    Cypress.env('backendServer') +
+    '/index.jsp?createReport=Multiple%20startpoints',
+  ).then((resp) => {
+    expect(resp.status).equal(200);
+  });
+}
+
+Cypress.Commands.add('createReportWithMutipleStartpoints' as keyof Chainable, createReportWithMutipleStartpoints);
+
 function clearDebugStore() {
   cy.request(Cypress.env('backendServer') + '/index.jsp?clearDebugStorage=true');
 }
@@ -209,6 +233,10 @@ Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes
 Cypress.Commands.add('clickFirstFileInFileTree' as keyof Chainable, () => {
   cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('app-tree-item').eq(0).click();
 });
+
+Cypress.Commands.add('clickFirstChildInFileTree' as keyof Chainable, () => {
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item app-tree-item').find('div > div').eq(0).click();
+})
 
 Cypress.Commands.add('clickRowInTable', (index: number) => {
   cy.get('[data-cy-debug="tableBody"]').find('tr').eq(index).click();
