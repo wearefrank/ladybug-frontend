@@ -343,6 +343,6 @@ export class TestComponent implements OnInit, AfterViewInit {
     if (path) {
       return `${path.replace(this.currentFilter, '')}/${name}`;
     }
-    return `${path}/${name}`;
+    return `/${name}`;
   }
 }
