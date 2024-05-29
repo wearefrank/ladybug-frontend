@@ -1,19 +1,9 @@
-<div class="pl-2" *ngIf="tree && tree.getItems().length > 0">
-  <div data-cy-debug-tree="buttons" class="row" id="treeButtons">
-    <app-button icon="fa fa-expand" title="Expand All" (click)="expandAll()"></app-button>
-    <app-button icon="fa fa-compress" title="Collapse All" (click)="collapseAll()"></app-button>
-    <app-button data-cy-debug-tree="closeAll" icon="fa fa-times" title="Close All" (click)="closeEntireTree()"></app-button>
-    <div ngbDropdown title="Download">
-      <button data-cy-debug-tree="download" class="btn btn-info my-2 mx-1" id="dropdownDownloadTree" ngbDropdownToggle>
-        <i class="fa fa-download px-2"></i><span class="caret"></span>
-      </button>
-      <div ngbDropdownMenu aria-labelledby="dropdownDownloadTree">
-        <button ngbDropdownItem (click)="downloadReports(true, true)">XML & Binary</button>
-        <button ngbDropdownItem (click)="downloadReports(false, true)">XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
-        <button ngbDropdownItem (click)="downloadReports(true, false)">Binary</button>
-      </div>
-    </div>
+<div class="pl-2">
+  @if (tree && tree.getItems().length > 0){<div data-cy-debug-tree="buttons" class="row" id="treeButtons">
+    <app-button [icon]="'fa fa-expand'" [title]="'Expand All'" (click)="expandAll()"></app-button>
+    <app-button [icon]="'fa fa-compress'" [title]="'Collapse All'" (click)="collapseAll()"></app-button>
+    <app-button data-cy-debug-tree="closeAll" [icon]="'fa fa-times'" [title]="'Close All'" (click)="closeEntireTree()"></app-button>
     <input class="my-2 mx-1 pl-1" type="text" name="search" placeholder="&#xF002;" (keyup)="changeSearchTerm($event)"/>
-  </div>
+  </div>}
+  <ng-simple-tree data-cy-debug-tree="root" #tree [options]="treeOptions" childrenKey="checkpoints" pathAttribute="uid" (itemSelected)="selectReport($event)"></ng-simple-tree>
 </div>
-<ng-simple-tree data-cy-debug-tree="root" #tree [options]="treeOptions" childrenKey="checkpoints" pathAttribute="uid" (itemSelected)="selectReport($event)"></ng-simple-tree>

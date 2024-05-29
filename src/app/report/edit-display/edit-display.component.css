@@ -1,15 +1,12 @@
 .transformation {
   height: 100px;
 }
-
 .variables {
   height: 100px;
 }
-
-#readyOnlyLabel {
-  height: fit-content;
-}
-
 .changeBox {
   border: solid 1px lightgrey;
+}
+.info-circle-size {
+  font-size: 11pt;
 }

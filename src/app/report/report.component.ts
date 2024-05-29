@@ -1,41 +1,40 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AngularSplitModule, SplitComponent } from 'angular-split';
+import { DebugTreeComponent } from '../debug/debug-tree/debug-tree.component';
+import { Subject } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
-import { jqxTreeComponent, jqxTreeModule } from 'jqwidgets-ng/jqxtree';
-import { HelperService } from '../shared/services/helper.service';
 import { EditDisplayComponent } from './edit-display/edit-display.component';
-import { DynamicService } from '../shared/services/dynamic.service';
-import { DisplayComponent } from '../debug/display/display.component';
+import { DebugComponent } from '../debug/debug.component';
 import { TabService } from '../shared/services/tab.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { View } from '../shared/interfaces/view';
 import { ReportData } from '../shared/interfaces/report-data';
-import { DebugComponent } from '../debug/debug.component';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-report',
-  templateUrl: './report.component.html',
-  styleUrls: ['./report.component.css'],
   standalone: true,
-  imports: [jqxTreeModule, NgIf, EditDisplayComponent],
+  imports: [AngularSplitModule, DebugTreeComponent, EditDisplayComponent],
+  templateUrl: './report.component.html',
+  styleUrl: './report.component.css',
 })
-export class ReportComponent implements OnInit, AfterViewInit {
+export class ReportComponent implements AfterViewInit, OnInit {
   static readonly ROUTER_PATH: string = 'report';
-  @ViewChild('treeReference') treeReference!: jqxTreeComponent;
-  @ViewChild(EditDisplayComponent) editDisplayComponent!: EditDisplayComponent;
-  @ViewChild(DisplayComponent) displayComponent!: DisplayComponent;
-  currentView?: View;
+  @ViewChild(SplitComponent) splitter!: SplitComponent;
+  @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
+  @ViewChild(EditDisplayComponent) displayComponent!: EditDisplayComponent;
+  @Input() currentView?: any;
+  @Input() newTab: boolean = true;
+  calculatedHeight!: number;
+  treeWidth: Subject<void> = new Subject<void>();
   reportData?: ReportData;
 
   constructor(
+    private host: ElementRef,
     private tabService: TabService,
-    private helperService: HelperService,
-    private dynamicService: DynamicService,
     private route: ActivatedRoute,
     private router: Router,
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.reportData = this.tabService.activeReportTabs.get(this.getIdFromPath());
     if (!this.reportData) {
       this.router.navigate([DebugComponent.ROUTER_PATH]);
@@ -43,36 +42,48 @@ export class ReportComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    if (this.splitter.dragProgress$) {
+      this.splitter.dragProgress$.subscribe(() => {
+        this.treeWidth.next();
+      });
+    }
     setTimeout(() => {
       if (this.reportData) {
-        this.createTree(this.reportData.report);
-        this.treeReference.selectItem(this.treeReference.getItems()[0]);
         this.currentView = this.reportData.currentView;
-        this.editDisplayComponent.showReport(this.reportData.report);
+        this.displayComponent.showReport(this.reportData.report);
+        this.debugTreeComponent.addReportToTree(this.reportData.report);
       }
     });
+    this.listenToHeight();
+  }
+
+  listenToHeight() {
+    const resizeObserver: ResizeObserver = new ResizeObserver(
+      (entries) => (this.calculatedHeight = entries[0].target.clientHeight),
+    );
+    resizeObserver.observe(this.host.nativeElement);
+  }
+
+  addReportToTree(report: Report): void {
+    this.debugTreeComponent.addReportToTree(report);
+  }
+
+  selectReport(currentReport: Report): void {
+    this.displayComponent.showReport(currentReport);
+  }
+
+  closeEntireTree(): void {
+    if (this.newTab && this.reportData) {
+      this.tabService.closeTab(this.reportData);
+    }
+    this.displayComponent.closeReport(false);
+  }
+
+  closeReport(currentReport: any): void {
+    this.debugTreeComponent.removeReport(currentReport);
   }
 
   getIdFromPath(): string {
     return this.route.snapshot.paramMap.get('id') as string;
-  }
-
-  createTree(report: Report): void {
-    let tree = this.helperService.convertReportToJqxTree(report);
-    this.treeReference.createComponent({ height: '100%', width: '100%', source: [tree], allowDrag: false });
-  }
-
-  selectReport(currentReport: any): void {
-    let report = currentReport.owner.selectedItem.value;
-    this.editDisplayComponent.showReport(report);
-  }
-
-  savingReport(report: Report): void {
-    let selectedNodeIndex = this.treeReference.getItems().findIndex((item) => item.selected);
-    this.treeReference.clear();
-    let tree = this.helperService.convertReportToJqxTree(report);
-    this.treeReference.addTo(tree, null);
-    this.treeReference.selectItem(this.treeReference.getItems()[selectedNodeIndex]);
-    this.dynamicService.outputFromDynamicComponent(report);
   }
 }

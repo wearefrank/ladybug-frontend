@@ -1,114 +1,113 @@
-<div data-cy-test-editor="root" class="row" id="displayButtons">
-  <app-button *ngIf="report.xml" icon="fa fa-repeat" title="Rerun" (click)="rerunReport()"></app-button>
-  <app-button data-cy-test-editor="edit" icon="fa fa-edit" title="Edit" *ngIf="!editingChildNode && !editingRootNode"
-              (click)="editReport()"></app-button>
-  <app-button icon="fa fa-trash" title="Discard Changes" *ngIf="editingChildNode || editingRootNode"
-              (click)="openDifferenceModal(saveOrDiscardChanges, 'discard')"></app-button>
-  <app-button data-cy-test-editor="save" icon="fa fa-save" title="Save" *ngIf="editingChildNode || editingRootNode"
-              (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
-  <app-button *ngIf="report.encoding === 'Base64'" text="Base64" title="Convert to Base64" (click)="changeEncoding($event)"></app-button>
+@if (displayReport) {
+  <div #top>
+    <div data-cy-test-editor="root" class="d-flex flex-row justify-content-between align-items-center"
+         id="displayButtons">
+      <div class="d-flex flex-row align-items-center" data-cy-debug-editor="buttons">
+        <app-button data-cy-debug-editor="close" [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(false)"></app-button>
+        <app-button *ngIf="report.xml" text="Rerun" title="Rerun this report" (click)="rerunReport()"></app-button>
+        <app-button data-cy-test-editor="edit" [icon]="'fa fa-edit'" [title]="'Edit'"
+                    *ngIf="!editingChildNode && !editingRootNode"
+                    (click)="editReport()"></app-button>
+        <app-button [icon]="'fa fa-trash'" [title]="'Discard Changes'" *ngIf="editingChildNode || editingRootNode"
+                    (click)="openDifferenceModal(saveOrDiscardChanges, 'discard')"></app-button>
+        <app-button data-cy-test-editor="save" [icon]="'fa fa-save'" [title]="'Save'"
+                    *ngIf="editingChildNode || editingRootNode"
+                    (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
+        <app-button *ngIf="report.encoding === 'Base64'" [text]="'Base64'" [title]="'Convert to Base64'"
+                    (click)="changeEncoding($event)"></app-button>
+        @if (!newTab) {
+          <app-button data-cy-debug-editor="copy" [icon]="'fa fa-copy'" [title]="'Copy'"
+                      (click)="copyReport()"></app-button>
+        }
 
-  <div class="row my-2">
-    <div class="col-2 pl-1" ngbDropdown title="Download">
-      <button data-cy-test-editor="download" class="btn btn-info" id="dropdownDownloadDisplay" ngbDropdownToggle>
-        <i class="fa fa-download px-2"></i><span class="caret"></span>
-      </button>
-      <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
-        <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
-        <button ngbDropdownItem (click)="downloadReport(false, true)">XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
-        <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
+
+        <div ngbDropdown title="Download">
+          <button data-cy-test-editor="download" class="btn btn-info" id="dropdownDownloadDisplay" ngbDropdownToggle>
+            <i class="fa fa-download px-2"></i><span class="caret"></span>
+          </button>
+          <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
+            <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
+            <button ngbDropdownItem (click)="downloadReport(false, true)">XML<i class="fa fa-info-circle"
+                                                                                title="Only a binary file can be uploaded again"></i>
+            </button>
+            <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
+          </div>
+        </div>
+
+        <div class="w-fit mx-1 my-0" *ngIf="report.stub || report.stub === 0">
+          <select class="form-control" (change)="selectStubStrategy($event)">
+            <option [selected]="report.stub === -1">Use report level stub strategy</option>
+            <option [selected]="report.stub === 1">Always stub this checkpoint</option>
+            <option [selected]="report.stub === 0">Never stub this checkpoint</option>
+          </select>
+        </div>
+
+        <div data-cy-test-editor="readonlyLabel" class="w-fit h-fit btn btn-static my-2 mx-1 px-2">
+          Editing code is:
+          <span
+            [style.color]="editingEnabled ? 'green' : 'red'">{{ editingEnabled|booleanToString:'ON': 'OFF' }}</span>
+        </div>
+        <button data-cy-open-metadata-table
+                class="btn btn-info my-2 mx-1 px-3 h-fit"
+                title="Open metadata table"
+                (click)="toggleMetadataTable()">
+          {{ metadataTableVisible|booleanToString:'Hide':'Show' }} metadata
+        </button>
+      </div>
+      @if (report.name) {
+        <h4 [cdkCopyToClipboard]="report.name" data-cy-metadata-table="reportname" class="my-auto report-name">{{report.name}}</h4>
+      }
+      <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor"
+           (click)="showEditorPossibilitiesModal(possibilitiesModal)">
+        <i class="bi bi-info-circle info-circle-size"></i>
       </div>
     </div>
 
-    <div class="form-group col-10" *ngIf="report.stub || report.stub === 0">
-      <select class="form-control" (change)="selectStubStrategy($event)">
-        <option [selected]="report.stub === -1">Use report level stub strategy</option>
-        <option [selected]="report.stub === 1">Always stub this checkpoint</option>
-        <option [selected]="report.stub === 0">Never stub this checkpoint</option>
-      </select>
+
+    <div id="showRerunResult">
+      {{ rerunResult }}
+    </div>
+    @if (metadataTableVisible) {
+      <app-display-table [report]="report"></app-display-table>
+    }</div>
+}
+
+@if (editingRootNode) {
+  <div class="m-1" data-cy-report-edit-form>
+    <div class="form-group">
+      <label>Name</label>
+      <input #name data-cy-report-edit-form="name" type="text" class="form-control" placeholder="Name" [value]="report.name">
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <input #description class="form-control" placeholder="Description" [value]="report.description">
+    </div>
+    <div class="form-group">
+      <label>Path</label>
+      <input #path type="text" class="form-control" placeholder="/path/to/report/" [value]="report.path">
+    </div>
+    <div class="form-group">
+      <label>Transformation</label>
+      <div>
+        <textarea #transformation class="form-control transformation">{{ report.transformation }}</textarea>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Variables</label>
+      <div>
+        <textarea #variables class="form-control variables">{{ report.variableCsv }}</textarea>
+      </div>
     </div>
   </div>
+} @else {
+  <app-custom-editor
+    [readOnlyMode]="!editingChildNode"
+    [height]="containerHeight - 24"
+    data-cy-test-editor="editor"
+    id="editor"></app-custom-editor>
+}
 
-  <div class="row">
-    <div data-cy-test-editor="readonlyLabel" id="readyOnlyLabel" class="col btn btn-static my-2 mx-1 px-2">
-      Editing code is:
-      <span *ngIf="!editingChildNode" style="color: red">OFF</span>
-      <span *ngIf="editingChildNode" style="color: green">ON</span>
-    </div>
-  </div>
-</div>
 
-<p id="showRerunResult">
-  {{ rerunResult }}
-</p>
-
-<div *ngIf="!report.xml">
-  <div *ngIf="report.noCloseReceivedForStream" id="noCloseReceivedLabel" class="btn btn-static my-2 mx-1 px-2">
-    No close received for stream
-  </div>
-
-  <div *ngIf="null !== report.streaming && report.streaming" id="waitingForMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-    {{ report.waitingForStream ? 'Waiting for message to be' : 'Message is' }} captured asynchronously from a {{ report.streaming.toLowerCase() }} stream
-  </div>
-
-  <div *ngIf="null === report.message" id="nullMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-    Message is null
-  </div>
-
-  <div *ngIf="'' === report.message" id="emptyMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-    Message is empty string
-  </div>
-
-  <div *ngIf="report.stubbed" id="stubbedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-    Message is stubbed
-  </div>
-
-  <div *ngIf="null !== report.encoding" id="encodedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-    Message of type {{ report.messageClassName }} is encoded to string using {{ report.encoding }}
-    <span *ngIf="this.report.showConverted">and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
-  </div>
-
-  <div *ngIf="report.preTruncatedMessageLength > 0" id="truncatedMessageLabel" class="btn btn-static my-2 mx-1 px-2">
-    Message is truncated ({{ report.preTruncatedMessageLength - report.message.length }} characters removed)
-  </div>
-
-  <div *ngIf="null !== report.stubNotFound" id="stubNotFoundLabel" class="btn btn-static my-2 mx-1 px-2">
-    Could not find stub message for {{ report.stubNotFound }}
-  </div>
-</div>
-
-<app-custom-editor [readOnlyMode]="!editingEnabled" [height]="500" data-cy-test-editor="editor" id="editor"></app-custom-editor>
-
-<div *ngIf="!editingRootNode" class="pt-4">
-  <app-display-table [report]="report"></app-display-table>
-</div>
-
-<div *ngIf="editingRootNode">
-  <div class="form-group">
-    <label>Name</label>
-    <input #name type="text" class="form-control" placeholder="Name" [value]="report.name">
-  </div>
-  <div class="form-group">
-    <label>Description</label>
-    <input #description class="form-control" placeholder="Description" [value]="report.description">
-  </div>
-  <div class="form-group">
-    <label>Path</label>
-    <input #path type="text" class="form-control" placeholder="/path/to/report/" [value]="report.path">
-  </div>
-  <div class="form-group">
-    <label>Transformation</label>
-    <div>
-      <textarea #transformation class="form-control transformation" >{{ report.transformation }}</textarea>
-    </div>
-  </div>
-  <div class="form-group">
-    <label>Variables</label>
-    <div>
-      <textarea #variables class="form-control variables">{{ report.variableCsv }}</textarea>
-    </div>
-  </div>
-</div>
 
 <ng-template #saveOrDiscardChanges let-modal>
   <div class="modal-header">
@@ -118,15 +117,15 @@
     </button>
   </div>
   <div class="modal-content">
-    <div *ngFor="let part of differenceModal" class="pb-3">
-      <div class="text-center">{{ part.name}}</div>
+    <div *ngFor="let part of differenceModal" class="pb-3" data-cy-save-changes-modal>
+      <div class="text-center">{{ part.name }}</div>
       <div class="dropdown-divider"></div>
       <div class="row">
         <div class="col">
           <div class="text-center pt-2">Before</div>
-          <div class="changeBox text-left p-1 overflow-auto">{{ part.originalValue }} </div>
+          <div [attr.data-cy-changes-form-before]="part.name" class="changeBox text-left p-1 overflow-auto">{{ part.originalValue }}</div>
         </div>
-        <div class="col text-right">
+        <div [attr.data-cy-changes-form-after]="part.name" class="col text-right">
           <div class="text-center pt-2">After</div>
           <div class="changeBox text-left p-1 overflow-auto">
             <span *ngFor="let chunk of part.difference">
@@ -143,6 +142,32 @@
     <div class="col-md-12 text-center">
       <button type="button" class="btn btn-info mr-2" (click)="saveOrDiscard(saveOrDiscardType)">Yes</button>
       <button type="button" class="btn btn-info ml-2" (click)="dismissModal()">No</button>
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #possibilitiesModal>
+  <div class="modal-header d-flex align-items-center">
+    <div class="modal-title">Possibilities for editor</div>
+    <button type="button" class="close" (click)="closeModal()">&times;</button>
+  </div>
+  <div class="modal-content pt-3 fs-3">
+    <p class="text-center mx-4 text-danger" style="font-size: 10pt">
+      Please make sure that the editor is focused when running commands, which is shown with the eye
+      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="black" viewBox="0 0 16 16">
+        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+      </svg>
+      icon.
+    </p>
+    <br>
+    <br>
+    <div class="mx-auto text-left">
+      <p><kbd>F1</kbd>: Show all possible commands</p>
+      <p><kbd>Ctrl + F</kbd>: Search document</p>
+      <p><kbd>Ctrl + G</kbd>: Go to line/column</p>
+      <p><kbd>Ctrl + A</kbd>: Select all</p>
     </div>
   </div>
 </ng-template>
