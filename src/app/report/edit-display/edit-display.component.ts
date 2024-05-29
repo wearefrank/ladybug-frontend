@@ -17,7 +17,7 @@ import { Report } from '../../shared/interfaces/report';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
-import { NgIf, NgFor } from '@angular/common';
+import { NgIf, NgFor, NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-edit-display',
@@ -36,13 +36,13 @@ import { NgIf, NgFor } from '@angular/common';
     CustomEditorComponent,
     DisplayTableComponent,
     NgFor,
+    NgStyle,
   ],
 })
 export class EditDisplayComponent {
   editingEnabled: boolean = false;
   editingChildNode: boolean = false;
   editingRootNode: boolean = false;
-  rerunResult: string = '';
   report: any = {};
   @Input() id: string = '';
   currentView: any = {
@@ -57,7 +57,7 @@ export class EditDisplayComponent {
   @ViewChild('variables') variables!: ElementRef;
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
-  rerunBackgroundColor: string = 'background-color: green';
+  rerunSuccess: boolean = false;
 
   constructor(
     private modalService: NgbModal,
@@ -70,7 +70,6 @@ export class EditDisplayComponent {
     report.xml
       ? this.editor.setNewReport(report.xml)
       : this.editor.setNewReport(this.helperService.convertMessage(report));
-    this.rerunResult = '';
     this.disableEditing(); // For switching from editing current report to another
   }
 
@@ -81,13 +80,7 @@ export class EditDisplayComponent {
   rerunReport(): void {
     let reportId: string = this.report.storageId;
     this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
-      if (this.report == response) {
-        this.rerunBackgroundColor = 'background-color: green';
-        this.rerunResult = '[Rerun succeeded]';
-      } else {
-        this.rerunBackgroundColor = 'background-color: red';
-        this.rerunResult = '[Rerun failed]';
-      }
+      this.rerunSuccess = this.report == response;
     });
   }
 

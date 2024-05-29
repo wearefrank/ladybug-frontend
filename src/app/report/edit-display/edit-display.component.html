@@ -38,8 +38,8 @@
   </div>
 </div>
 
-<p id="showRerunResult" [style]="rerunBackgroundColor">
-  {{ rerunResult }}
+<p id="showRerunResult" [ngStyle]="{'background-color': rerunSuccess ? 'green' : 'red'}">
+  {{ rerunSuccess ? '[Rerun succeeded]' : '[Rerun failed]' }}
 </p>
 
 <div *ngIf="!report.xml">

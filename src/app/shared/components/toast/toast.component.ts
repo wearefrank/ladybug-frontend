@@ -17,8 +17,6 @@ export class ToastComponent implements OnInit, OnDestroy {
   toastSubscription!: Subscription;
   selectedAlert!: Toast;
   @ViewChild('modal') modal!: TemplateRef<Element>;
-  @ViewChild('detailedErrorMessage') detailedErrorMessageElement!: ElementRef;
-  @ViewChild('CopyToClipboard') copyToClipboardElement!: ElementRef<HTMLButtonElement>;
   toasts: Toast[] = [];
   justCopied: boolean = false;
 
