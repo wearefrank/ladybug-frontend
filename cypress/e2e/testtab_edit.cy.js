@@ -75,7 +75,7 @@ function prepareEdit() {
   cy.checkTestTableNumRows(1);
   cy.get('[data-cy-test="openReport"]').click();
   // Martijn hopes this fixes an issue in Firefox.
-  cy.get('[data-cy-nav-tab="Simple report"]', { timeout: 5000 });
+  cy.get('[data-cy-nav-tab="Simple report"]', { timeout: 5000 })
     .find('div.active')
     .should('include.text', 'Simple report');
   // Wait until the tab has been rendered
