@@ -130,3 +130,7 @@ html, body {
 .h-fit {
   height: fit-content;
 }
+
+.icon-size {
+  font-size: 8pt;
+}
