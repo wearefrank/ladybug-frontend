@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ReportComponent } from './report/report.component';
 import { Title } from '@angular/platform-browser';
 import { CompareComponent } from './compare/compare.component';
 import { Report } from './shared/interfaces/report';
@@ -11,11 +10,12 @@ import { DebugReportService } from './debug/debug-report.service';
 import { TabService } from './shared/services/tab.service';
 import { Subscription } from 'rxjs';
 import { DebugComponent } from './debug/debug.component';
-import { Router, RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Tab } from './shared/interfaces/tab';
 import { ReportData } from './shared/interfaces/report-data';
 import { HelperService } from './shared/services/helper.service';
 import { ToastComponent } from './shared/components/toast/toast.component';
+import { ReportComponent } from './report/report.component';
 
 declare var require: any;
 const { version: appVersion } = require('../../package.json');
@@ -40,6 +40,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   newTabSubscription!: Subscription;
   newCompareTabSubscription!: Subscription;
+  closeTabSubscription!: Subscription;
 
   constructor(
     private titleService: Title,
@@ -68,12 +69,19 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   subscribeToServices(): void {
-    this.newTabSubscription = this.tabService.openReportInTabObservable.subscribe((value) => {
+    this.newTabSubscription = this.tabService.openReportInTab$.subscribe((value) => {
       this.openReportInSeparateTab(value);
     });
 
-    this.newCompareTabSubscription = this.tabService.openInCompareObservable.subscribe((value) => {
+    this.newCompareTabSubscription = this.tabService.openInCompare$.subscribe((value) => {
       this.openNewCompareTab(value);
+    });
+
+    this.closeTabSubscription = this.tabService.closeTab$.subscribe((value) => {
+      const tab = this.tabs.find((s) => s.id === value.id);
+      if (tab) {
+        this.closeTab(tab);
+      }
     });
   }
 
@@ -83,6 +91,9 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this.newCompareTabSubscription) {
       this.newCompareTabSubscription.unsubscribe();
+    }
+    if (this.closeTabSubscription) {
+      this.closeTabSubscription.unsubscribe();
     }
   }
 

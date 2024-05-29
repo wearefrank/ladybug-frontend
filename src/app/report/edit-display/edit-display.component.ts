@@ -1,15 +1,15 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, Output, ViewChild } from '@angular/core';
 import { DifferenceModal } from '../../shared/interfaces/difference-modal';
 import {
-  NgbModal,
   NgbDropdown,
-  NgbDropdownToggle,
-  NgbDropdownMenu,
   NgbDropdownButtonItem,
   NgbDropdownItem,
+  NgbDropdownMenu,
+  NgbDropdownToggle,
+  NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
-// @ts-ignore
+// @ts-expect-error no default export
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
@@ -17,7 +17,10 @@ import { Report } from '../../shared/interfaces/report';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
-import { NgIf, NgFor, NgStyle } from '@angular/common';
+import { NgFor, NgIf, NgStyle } from '@angular/common';
+import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
+import { Subject } from 'rxjs';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-edit-display',
@@ -36,25 +39,32 @@ import { NgIf, NgFor, NgStyle } from '@angular/common';
     CustomEditorComponent,
     DisplayTableComponent,
     NgFor,
+    BooleanToStringPipe,
     NgStyle,
+    ClipboardModule,
   ],
 })
 export class EditDisplayComponent {
   editingEnabled: boolean = false;
   editingChildNode: boolean = false;
   editingRootNode: boolean = false;
+  metadataTableVisible: boolean = false;
+  rerunResult: string = '';
   report: any = {};
+  displayReport: boolean = false;
   @Input() id: string = '';
-  currentView: any = {
-    storageName: 'Test',
-  };
-  @Output() saveReportEvent = new EventEmitter<any>();
+  @Input() containerHeight!: number;
+  @Input() currentView: any = {};
+  @Input() newTab: boolean = true;
+  @Output() saveReportEvent: Subject<any> = new Subject<any>();
+  @Output() closeReportEvent: Subject<void> = new Subject<void>();
   @ViewChild(CustomEditorComponent) editor!: CustomEditorComponent;
   @ViewChild('name') name!: ElementRef;
   @ViewChild('description') description!: ElementRef;
   @ViewChild('path') path!: ElementRef;
   @ViewChild('transformation') transformation!: ElementRef;
   @ViewChild('variables') variables!: ElementRef;
+  @ViewChild('top') top!: ElementRef;
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
   rerunSuccess: boolean = false;
@@ -66,11 +76,13 @@ export class EditDisplayComponent {
   ) {}
 
   showReport(report: Report): void {
+    this.disableEditing(); // For switching from editing current report to another
     this.report = report;
     report.xml
       ? this.editor.setNewReport(report.xml)
       : this.editor.setNewReport(this.helperService.convertMessage(report));
-    this.disableEditing(); // For switching from editing current report to another
+    this.rerunResult = '';
+    this.displayReport = true;
   }
 
   changeEncoding(button: any): void {
@@ -82,6 +94,16 @@ export class EditDisplayComponent {
     this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
       this.rerunSuccess = this.report == response;
     });
+  }
+
+  closeReport(removeReportFromTree: boolean): void {
+    this.displayReport = false;
+    this.editingRootNode = false;
+    this.editingRootNode = false;
+    if (removeReportFromTree) {
+      this.closeReportEvent.next(this.report);
+    }
+    this.editor.setNewReport('');
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
@@ -180,6 +202,9 @@ export class EditDisplayComponent {
     }
     this.disableEditing();
     this.modalService.dismissAll();
+    setTimeout(() => {
+      this.showReport(this.report);
+    });
   }
 
   discardChanges() {
@@ -206,5 +231,28 @@ export class EditDisplayComponent {
       response.report.xml = response.xml;
       this.saveReportEvent.next(response.report);
     });
+  }
+
+  toggleMetadataTable(): void {
+    this.metadataTableVisible = !this.metadataTableVisible;
+  }
+
+  showEditorPossibilitiesModal(modal: any): void {
+    this.modalService.open(modal, {
+      backdrop: true,
+      backdropClass: 'modal-backdrop',
+      modalDialogClass: 'modal-window',
+    });
+  }
+
+  closeModal(): void {
+    this.modalService.dismissAll();
+  }
+
+  copyReport(): void {
+    const storageId: number = this.report.xml ? +this.report.storageId : +this.report.uid.split('#')[0];
+    const data: any = {};
+    data[this.currentView.storageName] = [storageId];
+    this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this
   }
 }
