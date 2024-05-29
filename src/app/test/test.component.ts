@@ -16,7 +16,7 @@ import { NodeLinkStrategy } from '../shared/enums/compare-method';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { NgIf, NgFor } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, NgModel } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, NgModel, FormControl } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
 
 @Component({
@@ -48,6 +48,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     storageName: 'Test',
     targetStorage: '',
   };
+  actionControl: FormControl<string> = new FormControl();
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
@@ -287,12 +288,12 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.reports.forEach((report) => (report.checked = false));
   }
 
-  updatePath(action: string): void {
+  updatePath(): void {
     let reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       let path: string = this.moveToInputModel.value;
       path = this.transformPath(path);
-      const map: UpdatePathSettings = { path: path, action: action };
+      const map: UpdatePathSettings = { path: path, action: this.actionControl.value };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
     } else {
       this.toastService.showWarning('No Report Selected!');
