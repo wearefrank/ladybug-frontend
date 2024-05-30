@@ -28,6 +28,8 @@ import {
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
 import { NgIf, NgFor, NgClass, KeyValuePipe } from '@angular/common';
+import { DebugVariables } from 'src/app/shared/interfaces/debug-variables';
+import { DebugListItem } from 'src/app/shared/interfaces/debug-list-item';
 
 @Component({
   selector: 'app-table',
@@ -177,40 +179,54 @@ export class TableComponent implements OnInit, OnDestroy {
   retrieveRecords(): void {
     this.doneRetrieving = false;
     this.tableSettings.reportMetadata = [];
-    const httpServiceSubscription = this.httpService
-      .getMetadataReports(
-        this.tableSettings.displayAmount,
-        this.tableSettings.filterValues,
-        this.tableSettings.filterHeaders,
-        this.viewSettings.currentView.metadataNames,
-        this.viewSettings.currentView.storageName,
-      )
-      .subscribe({
-        next: (value) => {
-          this.setUniqueOptions(value);
-          this.tableSettings.reportMetadata = value;
-          this.tableSettings.tableLoaded = true;
-          this.toastService.showSuccess('Data loaded!');
-          this.doneRetrieving = true;
-          httpServiceSubscription.unsubscribe();
-        },
-        error: () => {
-          catchError(this.httpService.handleError());
-        },
-      });
+    this.doneRetrieving = false;
+    this.tableSettings.reportMetadata = [];
+    if (this.viewSettings.currentView?.metadataNames && this.viewSettings.currentView?.storageName) {
+      const httpServiceSubscription = this.httpService
+        .getMetadataReports(
+          this.tableSettings.displayAmount,
+          this.tableSettings.filterValues,
+          this.tableSettings.filterHeaders,
+          this.viewSettings.currentView.metadataNames,
+          this.viewSettings.currentView.storageName,
+        )
+        .subscribe({
+          next: (debugVariablesList: DebugVariables[]) => {
+            this.setUniqueOptions(debugVariablesList);
+
+            for (const debugVariables of debugVariablesList) {
+              const listItem: DebugListItem = {
+                checked: false,
+                debugVariables: debugVariables,
+              };
+              this.tableSettings.reportMetadata.push(listItem);
+            }
+
+            this.tableSettings.tableLoaded = true;
+            this.toastService.showSuccess('Data loaded!');
+            this.doneRetrieving = true;
+            httpServiceSubscription.unsubscribe();
+          },
+          error: () => {
+            catchError(this.httpService.handleError());
+          },
+        });
+    }
 
     this.getUserHelp();
     this.loadMetadataCount();
   }
 
   getUserHelp(): void {
-    this.httpService
-      .getUserHelp(this.viewSettings.currentView.storageName, this.viewSettings.currentView.metadataNames)
-      .subscribe({
-        next: (response) => {
-          this.tableSettings.metadataHeaders = response;
-        },
-      });
+    if (this.viewSettings.currentView?.storageName && this.viewSettings.currentView?.metadataNames) {
+      this.httpService
+        .getUserHelp(this.viewSettings.currentView?.storageName, this.viewSettings.currentView?.metadataNames)
+        .subscribe({
+          next: (response: Report[]) => {
+            this.tableSettings.metadataHeaders = response;
+          },
+        });
+    }
   }
 
   clearFilters(): void {
@@ -269,9 +285,11 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadMetadataCount(): void {
-    this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: number) => {
-      this.metadataCount = count;
-    });
+    if (this.viewSettings.currentView?.storageName) {
+      this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: number) => {
+        this.metadataCount = count;
+      });
+    }
   }
 
   loadReportInProgressSettings(): void {

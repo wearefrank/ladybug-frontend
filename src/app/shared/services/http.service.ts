@@ -10,6 +10,7 @@ import { TestListItem } from '../interfaces/test-list-item';
 import { CloneReport } from '../interfaces/clone-report';
 import { UploadParams } from '../interfaces/upload-params';
 import { UpdatePathSettings } from '../interfaces/update-path-settings';
+import { DebugVariables } from '../interfaces/debug-variables';
 
 @Injectable({
   providedIn: 'root',
@@ -49,8 +50,8 @@ export class HttpService {
     filterHeader: string[],
     metadataNames: string[],
     storage: string,
-  ): Observable<Report[]> {
-    return this.http.get<Report[]>('api/metadata/' + storage + '/', {
+  ): Observable<DebugVariables[]> {
+    return this.http.get<DebugVariables[]>('api/metadata/' + storage + '/', {
       params: {
         limit: limit,
         filterHeader: filterHeader,
