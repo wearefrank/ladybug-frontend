@@ -104,7 +104,8 @@ jobs:
         run: echo "skip.replace.check=true" >> frank-runner/specials/ladybug/build.properties
       - name: Set port where ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
-
+      - name: Prevent Java exception about binding port 443 (for https)
+        run: echo "tomcat.secure.port=8443" > frank-runner/build.properties
       - name: Make script executable that starts backend
         run: chmod a+x frank-runner/specials/ladybug/restart.sh
 
