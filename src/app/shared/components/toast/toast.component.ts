@@ -1,22 +1,24 @@
-import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { Toast } from '../../interfaces/toast';
 import { ToastService } from '../../services/toast.service';
 import { Subscription } from 'rxjs';
 import { NgFor, NgIf } from '@angular/common';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-toast',
   templateUrl: './toast.component.html',
   styleUrls: ['./toast.component.css'],
   standalone: true,
-  imports: [NgFor, NgIf, NgbToast],
+  imports: [NgFor, NgIf, NgbToast, ClipboardModule],
 })
 export class ToastComponent implements OnInit, OnDestroy {
   toastSubscription!: Subscription;
   selectedAlert!: Toast;
   @ViewChild('modal') modal!: TemplateRef<Element>;
   toasts: Toast[] = [];
+  justCopied: boolean = false;
 
   constructor(
     private modalService: NgbModal,
@@ -45,11 +47,9 @@ export class ToastComponent implements OnInit, OnDestroy {
   }
 
   copyToClipboard(): void {
-    const text = document.querySelector('#detailedErrorMessage')!;
-    navigator.clipboard.writeText(text.innerHTML).then(() => {
-      const button = document.querySelector('#CopyToClipboard')!;
-      button.innerHTML = 'Copied!';
-      button.setAttribute('style', 'background-color: #23c6c8 !important');
-    });
+    this.justCopied = true;
+    setTimeout(() => {
+      this.justCopied = false;
+    }, 2000);
   }
 }
