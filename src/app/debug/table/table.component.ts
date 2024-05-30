@@ -28,7 +28,6 @@ import {
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
 import { NgIf, NgFor, NgClass, KeyValuePipe } from '@angular/common';
-import { DebugVariables } from 'src/app/shared/interfaces/debug-variables';
 import { DebugListItem } from 'src/app/shared/interfaces/debug-list-item';
 
 @Component({
@@ -191,7 +190,7 @@ export class TableComponent implements OnInit, OnDestroy {
           this.viewSettings.currentView.storageName,
         )
         .subscribe({
-          next: (debugVariablesList: DebugVariables[]) => {
+          next: (debugVariablesList: Record<string, string>[]) => {
             this.setUniqueOptions(debugVariablesList);
 
             for (const debugVariables of debugVariablesList) {
