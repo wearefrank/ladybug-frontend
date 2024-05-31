@@ -139,12 +139,16 @@ export class TestComponent implements OnInit, AfterViewInit {
             this.testFileTreeComponent.selectItem(path);
           });
         } else {
-          setTimeout(() => {
-            this.testFileTreeComponent.tree.selectItem(this.testFileTreeComponent.rootFolder.name);
-          });
+          this.loadRootData();
         }
       },
       error: () => catchError(this.httpService.handleError()),
+    });
+  }
+
+  loadRootData(): void {
+    setTimeout(() => {
+      this.testFileTreeComponent.tree.selectItem(this.testFileTreeComponent.rootFolder.name);
     });
   }
 
@@ -240,10 +244,10 @@ export class TestComponent implements OnInit, AfterViewInit {
 
   uploadReport(event: Event): void {
     const eventTarget = event.target as HTMLInputElement;
-    const file: FileList | null = eventTarget.files;
+    const file: File | undefined = eventTarget.files?.[0];
     if (file) {
       const formData: FormData = new FormData();
-      formData.append('file', file[0]);
+      formData.append('file', file);
       this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData(''));
     }
   }
@@ -295,7 +299,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   updatePath(action: string): void {
     const reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
-      let path = (document.querySelector('#moveToInput')! as HTMLInputElement).value;
+      let path: string = this.moveToInputModel.value;
       path = this.transformPath(path);
       const map: UpdatePathSettings = { path: path, action: action };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
