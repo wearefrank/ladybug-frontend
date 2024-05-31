@@ -175,12 +175,14 @@ export class TableComponent implements OnInit, OnDestroy {
     this.showMultipleFilesSubscription.unsubscribe();
   }
 
+  doStorageAndMetadataNamesExist(): boolean {
+    return this.viewSettings.currentView?.metadataNames && this.viewSettings.currentView?.storageName ? true : false;
+  }
+
   retrieveRecords(): void {
     this.doneRetrieving = false;
     this.tableSettings.reportMetadata = [];
-    this.doneRetrieving = false;
-    this.tableSettings.reportMetadata = [];
-    if (this.viewSettings.currentView?.metadataNames && this.viewSettings.currentView?.storageName) {
+    if (this.doStorageAndMetadataNamesExist()) {
       const httpServiceSubscription = this.httpService
         .getMetadataReports(
           this.tableSettings.displayAmount,
@@ -192,15 +194,7 @@ export class TableComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (debugVariablesList: Record<string, string>[]) => {
             this.setUniqueOptions(debugVariablesList);
-
-            for (const debugVariables of debugVariablesList) {
-              const listItem: DebugListItem = {
-                checked: false,
-                debugVariables: debugVariables,
-              };
-              this.tableSettings.reportMetadata.push(listItem);
-            }
-
+            this.makeDebugListItemArray(debugVariablesList);
             this.tableSettings.tableLoaded = true;
             this.toastService.showSuccess('Data loaded!');
             this.doneRetrieving = true;
@@ -216,8 +210,18 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadMetadataCount();
   }
 
+  makeDebugListItemArray(listOfItems: Record<string, string>[]) {
+    for (const debugVariables of listOfItems) {
+      const listItem: DebugListItem = {
+        checked: false,
+        debugVariables: debugVariables,
+      };
+      this.tableSettings.reportMetadata.push(listItem);
+    }
+  }
+
   getUserHelp(): void {
-    if (this.viewSettings.currentView?.storageName && this.viewSettings.currentView?.metadataNames) {
+    if (this.doStorageAndMetadataNamesExist()) {
       this.httpService
         .getUserHelp(this.viewSettings.currentView?.storageName, this.viewSettings.currentView?.metadataNames)
         .subscribe({
