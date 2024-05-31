@@ -176,7 +176,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   doStorageAndMetadataNamesExist(): boolean {
-    return this.viewSettings.currentView?.metadataNames && this.viewSettings.currentView?.storageName ? true : false;
+    return !!this.viewSettings.currentView?.metadataNames && !!this.viewSettings.currentView?.storageName;
   }
 
   retrieveRecords(): void {
