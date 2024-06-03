@@ -1,4 +1,4 @@
-import { AfterViewInit, OnInit, Component, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
+import { AfterViewInit, OnInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
@@ -323,13 +323,6 @@ export class TestComponent implements OnInit, AfterViewInit {
     return name.match('(/)?' + this.currentFilter + '.*') != undefined;
   }
 
-  showRelativePath(path: string): string {
-    if (path) {
-      return path.replace(this.currentFilter, '');
-    }
-    return '/';
-  }
-
   extractVariables(variables: string): string {
     if (!variables || variables == 'null') {
       return '';
@@ -346,5 +339,12 @@ export class TestComponent implements OnInit, AfterViewInit {
 
   sortByName(): any[] {
     return this.reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
+  }
+
+  getFullPath(path: string, name: string): string {
+    if (path) {
+      return `${path.replace(this.currentFilter, '')}/${name}`;
+    }
+    return `/${name}`;
   }
 }
