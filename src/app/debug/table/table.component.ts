@@ -366,12 +366,8 @@ export class TableComponent implements OnInit, OnDestroy {
     return 'none';
   }
 
-  showCompareButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 2;
-  }
-
-  showOpenInTabButton(): boolean {
-    return this.tableSettings.reportMetadata.filter((report) => report.checked).length == 1;
+  getAmountOfReportsSelected(): number {
+    return this.tableSettings.reportMetadata.filter((report) => report.checked).length;
   }
 
   openReportInTab(): void {
