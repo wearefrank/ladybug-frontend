@@ -75,8 +75,8 @@
     {{ selectedAlert.detailed }}
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-info" id="CopyToClipboard" (click)="copyToClipboard()"
-            title="Copy to Clipboard">Copy to clipboard
+    <button type="button" class="btn btn-info" id="CopyToClipboard" [cdkCopyToClipboard]="selectedAlert.detailed ?? ''" (click)="copyToClipboard()"
+            title="Copy to Clipboard">{{ this.justCopied ? 'Copied!' : 'Copy to clipboard' }}
     </button>
     <button type="button" class="btn btn-info" (click)="modal.dismiss();">Dismiss</button>
   </div>

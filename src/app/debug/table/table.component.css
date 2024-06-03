@@ -85,3 +85,7 @@ th {
   width: 100%;
   margin-left: 1vw;
 }
+
+.alert-danger {
+  margin-bottom: 0;
+}
