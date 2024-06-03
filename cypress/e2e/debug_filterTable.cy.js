@@ -61,6 +61,14 @@ describe('Table size and toggle filter', () => {
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 2);
   });
 
+  it('Giving a wrong type for the filter field should display an error', () => {
+    cy.get('[data-cy-debug="filter"]').click();
+    cy.get('[data-cy-debug="tableFilter"]').eq(0).type('test');
+    cy.get('[data-cy-debug="filter-error-message"]').should('be.visible');
+    cy.contains('Filter Error: Search value \'test\' is not a valid \'number\' ');
+    cy.get('[data-cy-debug="filter"]').click();
+  });
+
   it('Selecting an option should update the table and selecting the empty option should reset the text field of the selected filter', () => {
     cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="tableFilter"]').eq(3).type('test');

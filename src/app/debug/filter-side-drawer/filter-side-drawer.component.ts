@@ -24,14 +24,14 @@ import { TitleCasePipe } from '@angular/common';
 })
 export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected shouldShowFilter!: boolean;
-  protected metadataNames!: string[];
-  protected filters: Map<string, string> = new Map<string, string>();
+  protected metadataLabels!: string[];
   protected currentRecords: Map<string, Array<string>> = new Map<string, Array<string>>();
+  protected metadataTypes!: Map<string, string>;
 
-  shouldShowFilterSubscriber!: Subscription;
-  metadataNamesSubscriber!: Subscription;
-  filterSubscriber!: Subscription;
-  currentRecordsSubscriber!: Subscription;
+  shouldShowFilterSubscription?: Subscription;
+  metadataLabelsSubscription?: Subscription;
+  currentRecordsSubscription?: Subscription;
+  metadataTypesSubscription?: Subscription;
 
   constructor(protected filterService: FilterService) {}
 
@@ -44,30 +44,32 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   setSubscriptions(): void {
-    this.shouldShowFilterSubscriber = this.filterService.showFilter$.subscribe((show: boolean): void => {
+    this.shouldShowFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
       this.shouldShowFilter = show;
     });
-    this.metadataNamesSubscriber = this.filterService.metadataNames$.subscribe((metadataNames: string[]): void => {
-      this.metadataNames = metadataNames;
+    this.metadataLabelsSubscription = this.filterService.metadataLabels$.subscribe((metadataLabels: string[]): void => {
+      this.metadataLabels = metadataLabels;
     });
-    this.filterSubscriber = this.filterService.filterContext$.subscribe((filterContext: Map<string, string>): void => {
-      this.filters = filterContext;
-    });
-    this.currentRecordsSubscriber = this.filterService.currentRecords$.subscribe(
+    this.currentRecordsSubscription = this.filterService.currentRecords$.subscribe(
       (records: Map<string, Array<string>>): void => {
         this.currentRecords = records;
+      },
+    );
+    this.metadataTypesSubscription = this.filterService.metadataTypes$.subscribe(
+      (metadataTypes: Map<string, string>): void => {
+        this.metadataTypes = metadataTypes;
       },
     );
   }
 
   unsubscribeAll(): void {
-    this.shouldShowFilterSubscriber.unsubscribe();
-    this.metadataNamesSubscriber.unsubscribe();
-    this.filterSubscriber.unsubscribe();
-    this.currentRecordsSubscriber.unsubscribe();
+    this.shouldShowFilterSubscription?.unsubscribe();
+    this.metadataLabelsSubscription?.unsubscribe();
+    this.currentRecordsSubscription?.unsubscribe();
+    this.metadataTypesSubscription?.unsubscribe();
   }
 
-  closeFilter() {
+  closeFilter(): void {
     this.filterService.setShowFilter(false);
   }
 
