@@ -23,22 +23,15 @@ Cypress.Commands.add('initializeApp' as keyof Chainable, () => {
 });
 
 Cypress.Commands.add('resetApp' as keyof Chainable, () => {
-  cy.initializeApp();
   cy.clearDebugStore();
-  cy.request('DELETE', 'http://localhost:4200/api/report/all/Test');
+  cy.clearTestReports();
   cy.clearReportsInProgress();
-  cy.visit('');
+  cy.initializeApp();
 });
 
-Cypress.Commands.add('clearReportsInProgress' as keyof Chainable, () => {
-  cy.get('[data-cy-debug="root"]').then((element: JQuery) => {
-    const amount =
-      element.find('[data-cy-debug="openInProgressNo"]').val() === 'undefined'
-        ? 0
-        : Number.parseInt(element.find('[data-cy-debug="openInProgressNo"]').val());
-    for (let i = 0; i < amount; i++) {
-      cy.removeReportInProgress();
-    }
+Cypress.Commands.add('clearTestReports' as keyof Chainable, () => {
+  cy.request('DELETE', 'http://localhost:4200/api/report/all/Test').then((resp) => {
+    expect(resp.status).equal(200);
   });
 });
 
@@ -132,16 +125,20 @@ function createReportWithMutipleStartpoints() {
 Cypress.Commands.add('createReportWithMutipleStartpoints' as keyof Chainable, createReportWithMutipleStartpoints);
 
 function clearDebugStore() {
-  cy.request(Cypress.env('backendServer') + '/index.jsp?clearDebugStorage=true');
+  cy.request(Cypress.env('backendServer') + '/index.jsp?clearDebugStorage=true').then((resp) => {
+    expect(resp.status).equal(200);
+  });
 }
 
 Cypress.Commands.add('clearDebugStore' as keyof Chainable, clearDebugStore);
 
-function removeReportInProgress() {
-  cy.request(Cypress.env('backendServer') + '/index.jsp?removeReportInProgress=1');
-}
+Cypress.Commands.add('clearReportsInProgress' as keyof Chainable, clearReportsInProgress);
 
-Cypress.Commands.add('removeReportInProgress' as keyof Chainable, removeReportInProgress);
+function clearReportsInProgress() {
+  cy.request(Cypress.env('backendServer') + '/index.jsp?removeReportsInProgress').then((resp) => {
+    expect(resp.status).equal(200);
+  });
+}
 
 function waitForNumFiles(thePath: any, fileCount: number, timeLeft: number) {
   return cy.task('downloads', thePath).then((actualFiles: any) => {

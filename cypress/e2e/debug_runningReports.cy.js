@@ -1,4 +1,6 @@
 describe('Test running reports', () => {
+  before(() => cy.resetApp());
+
   afterEach(() => cy.resetApp());
 
   it('If no running reports then number of running reports is zero', () => {
@@ -9,14 +11,13 @@ describe('Test running reports', () => {
 
 describe('With running reports', () => {
   before(() => {
+    cy.resetApp();
     cy.createRunningReport();
     cy.createRunningReport();
     cy.initializeApp();
   });
 
   afterEach(() => {
-    cy.removeReportInProgress();
-    cy.removeReportInProgress();
     cy.resetApp();
     cy.createRunningReport();
     cy.createRunningReport();
@@ -44,20 +45,20 @@ describe('With running reports', () => {
 describe('Test Reports in progress warning', () => {
   beforeEach(() => {
     cy.createRunningReport();
+    cy.request(Cypress.env('backendServer') + '/index.jsp?setReportInProgressThreshold=1').then((resp) => {
+      expect(resp.status).equal(200);
+    });
     cy.initializeApp();
   });
 
   afterEach(() => {
-    cy.removeReportInProgress();
-    cy.request(
-      Cypress.env('backendServer') + '/index.jsp?setReportInProgressThreshold=300000',
-    );
+    cy.request(Cypress.env('backendServer') + '/index.jsp?setReportInProgressThreshold=300000').then((resp) => {
+      expect(resp.status).equal(200);
+    });
+    cy.resetApp();
   });
 
   it('If threshold time has been met then show warning', () => {
-    cy.request(
-      Cypress.env('backendServer') + '/index.jsp?setReportInProgressThreshold=1',
-    );
     cy.get('[data-cy-debug="refresh"]').click();
     cy.contains(`[One or more reports are in progress for more than ${1 / 1000 / 60} minutes]`);
   });
