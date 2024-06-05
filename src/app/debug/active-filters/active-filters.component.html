@@ -1,5 +1,5 @@
 <div *ngIf="activeFilters" class="d-flex flex-row">
-  <span *ngFor="let filter of activeFilters | dictionary;first as isFirst">
+  <span *ngFor="let filter of activeFilters | keyvalue;first as isFirst">
     <span title="Active filter for {{ filter.key }}"
           [ngClass]="{'ml-1': !isFirst}"
           *ngIf="filter.value !== ''"

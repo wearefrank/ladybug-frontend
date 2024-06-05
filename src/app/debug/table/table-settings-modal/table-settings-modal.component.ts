@@ -54,7 +54,7 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   subscribeToSettingsServiceObservables(): void {
-    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
+    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATime$.subscribe(
       (value: boolean): void => {
         this.showMultipleAtATime = value;
         this.settingsForm.get('showMultipleFilesAtATime')?.setValue(this.showMultipleAtATime);

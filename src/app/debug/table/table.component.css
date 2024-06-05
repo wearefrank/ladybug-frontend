@@ -8,10 +8,6 @@
   filter: brightness(85%);
 }
 
-#uploadFileTable {
-  display: none
-}
-
 #table-header {
   position: sticky;
   top: -1px;
@@ -66,11 +62,6 @@ th {
 .vertical-middle {
   vertical-align: middle;
 }
-.input-field {
-  width: 4rem;
-  padding-left: 0.3rem;
-  padding-right: 0.25rem;
-}
 
 .filter-option {
   height: fit-content;
@@ -78,12 +69,6 @@ th {
   > span {
     font-size: 9pt;
   }
-}
-
-.progress-report-timout {
-  color: red;
-  width: 100%;
-  margin-left: 1vw;
 }
 
 .alert-danger {

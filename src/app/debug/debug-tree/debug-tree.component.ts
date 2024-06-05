@@ -110,14 +110,12 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   subscribeToSettingsServiceObservables(): void {
-    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
-      (value: boolean) => {
-        this.showMultipleAtATime = value;
-        if (!this.showMultipleAtATime) {
-          this.removeAllReportsButOne();
-        }
-      },
-    );
+    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATime$.subscribe((value: boolean) => {
+      this.showMultipleAtATime = value;
+      if (!this.showMultipleAtATime) {
+        this.removeAllReportsButOne();
+      }
+    });
   }
 
   hideCheckpoints(unmatched: string[], items: TreeItemComponent[]): void {

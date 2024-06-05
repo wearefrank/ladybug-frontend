@@ -28,7 +28,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected currentRecords: Map<string, Array<string>> = new Map<string, Array<string>>();
   protected metadataTypes!: Map<string, string>;
 
-  shouldShowFilterSubscription?: Subscription;
+  showFilterSubscription?: Subscription;
   metadataLabelsSubscription?: Subscription;
   currentRecordsSubscription?: Subscription;
   metadataTypesSubscription?: Subscription;
@@ -44,7 +44,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   setSubscriptions(): void {
-    this.shouldShowFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
+    this.showFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
       this.shouldShowFilter = show;
     });
     this.metadataLabelsSubscription = this.filterService.metadataLabels$.subscribe((metadataLabels: string[]): void => {
@@ -63,7 +63,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   unsubscribeAll(): void {
-    this.shouldShowFilterSubscription?.unsubscribe();
+    this.showFilterSubscription?.unsubscribe();
     this.metadataLabelsSubscription?.unsubscribe();
     this.currentRecordsSubscription?.unsubscribe();
     this.metadataTypesSubscription?.unsubscribe();

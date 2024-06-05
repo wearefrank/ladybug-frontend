@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { debounceTime, filter, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, debounceTime, filter, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +8,9 @@ export class FilterService {
   private showFilterSubject: Subject<boolean> = new Subject();
   private metadataLabelsSubject: Subject<string[]> = new Subject();
   private filterContextSubject: Subject<Map<string, string>> = new Subject();
-  private currentRecordsSubject: Subject<Map<string, Array<string>>> = new Subject();
+  private currentRecordsSubject: BehaviorSubject<Map<string, Array<string>>> = new BehaviorSubject<
+    Map<string, Array<string>>
+  >(new Map<string, Array<string>>());
   private metadataTypesSubject: Subject<Map<string, string>> = new Subject();
   private filterErrorSubject: Subject<[boolean, Map<string, string>]> = new Subject();
   private filters: Map<string, string> = new Map<string, string>();

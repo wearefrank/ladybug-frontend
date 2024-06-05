@@ -24,7 +24,7 @@ export class SettingsService {
   private showMultipleAtATimeKey: string = 'showMultipleFilesAtATime';
   private showMultipleAtATime: boolean = false;
   private showMultipleAtATimeSubject: Subject<boolean> = new ReplaySubject(1);
-  public showMultipleAtATimeObservable: Observable<boolean> = this.showMultipleAtATimeSubject.asObservable();
+  public showMultipleAtATime$: Observable<boolean> = this.showMultipleAtATimeSubject.asObservable();
 
   public setShowMultipleAtATime(value: boolean = false): void {
     this.showMultipleAtATime = value;
