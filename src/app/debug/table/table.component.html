@@ -91,8 +91,12 @@
           <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
             <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
           </td>
-          <td *ngFor="let metadataName of viewSettings.currentView?.metadataNames" [style.padding]="getTableSpacing()" class="table-cell" (click)="openReport(row.debugVariables.storageId)" [title]="row.debugVariables[metadataName]">
-            {{ row.debugVariables[metadataName] | tableCellShortener }}
+          <td *ngFor="let metadataName of viewSettings.currentView?.metadataNames" 
+          [style.padding]="getTableSpacing()" 
+          class="table-cell" 
+          (click)="openReport(row.debugVariables.storageId)" 
+          [title]="row.debugVariables[metadataName]">
+          {{ row.debugVariables[metadataName] | tableCellShortener }}
           </td>
         </tr>
       </tbody>
