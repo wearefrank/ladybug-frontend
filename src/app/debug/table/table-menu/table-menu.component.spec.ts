@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TableMenuComponent } from './table-menu.component';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('TableMenuComponent', () => {
   let component: TableMenuComponent;
@@ -8,7 +9,7 @@ describe('TableMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TableMenuComponent],
+      imports: [TableMenuComponent, HttpClientModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TableMenuComponent);
