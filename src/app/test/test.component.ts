@@ -67,7 +67,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.loadData('');
+    this.loadRootData();
   }
 
   openCloneModal(): void {
@@ -87,7 +87,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.loadData('');
+    this.loadRootData();
     this.getGeneratorStatus();
   }
 
@@ -225,7 +225,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.httpService
       .deleteReport(this.helperService.getSelectedIds(this.reports), this.currentView.storageName)
       .subscribe(() => {
-        this.loadData('');
+        this.loadRootData();
       });
   }
 
@@ -248,7 +248,9 @@ export class TestComponent implements OnInit, AfterViewInit {
     if (file) {
       const formData: FormData = new FormData();
       formData.append('file', file);
-      this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData(''));
+      this.httpService
+        .uploadReportToStorage(formData, this.currentView.storageName)
+        .subscribe(() => this.loadRootData());
     }
   }
 
@@ -280,7 +282,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     let data: any = {};
     data[this.currentView.storageName] = copiedIds;
     this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
-      this.loadData('');
+      this.loadRootData();
     });
   }
 
