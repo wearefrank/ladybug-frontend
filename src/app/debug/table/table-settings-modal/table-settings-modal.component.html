@@ -51,7 +51,7 @@
           <select #spacingOptionsDropdown data-cy-settings="spacingDropdown" class="form-control custom-select mr-sm-2"
                   (change)="changeTableSpacing(spacingOptionsDropdown.value)">
             <option [value]="option" *ngFor="let option of spacingOptions"
-                    [selected]="option === tableSpacing"><span>{{option}}x</span></option>
+                    [selected]="option === tableSpacing"><span>{{ option }}x</span></option>
           </select>
         </div>
       </div>
@@ -112,7 +112,7 @@ Example 3 (only store report when name doesn't start with Hello World):
         class="fa fa-refresh"></i></button>
       <button title="Revert changes" type="button" class="btn btn-info" (click)="loadSettings()"><i
         class="fa fa-undo"></i></button>
-      <button data-cy-settings='saveChanges' title="Save changes" type="submit" id="saveTableSettings"
+      <button data-cy-settings="saveChanges" title="Save changes" type="submit" id="saveTableSettings"
               class="btn btn-info" (click)="onClickSave(modal)"><i class="fa fa-save"></i></button>
     </div>
   </form>

@@ -333,13 +333,6 @@ export class TestComponent implements OnInit, AfterViewInit {
     return name.match('(/)?' + this.currentFilter + '.*') != undefined;
   }
 
-  showRelativePath(path: string): string {
-    if (path) {
-      return path.replace(this.currentFilter, '');
-    }
-    return '/';
-  }
-
   extractVariables(variables: string): string {
     if (!variables || variables == 'null') {
       return '';
@@ -356,5 +349,12 @@ export class TestComponent implements OnInit, AfterViewInit {
 
   sortByName(): any[] {
     return this.reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
+  }
+
+  getFullPath(path: string, name: string): string {
+    if (path) {
+      return `${path.replace(this.currentFilter, '')}/${name}`;
+    }
+    return `/${name}`;
   }
 }
