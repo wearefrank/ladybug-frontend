@@ -67,6 +67,7 @@ export class EditDisplayComponent {
   @ViewChild('top') top!: ElementRef;
   saveOrDiscardType: string = '';
   differenceModal: DifferenceModal[] = [];
+  rerunSuccess: boolean = false;
 
   constructor(
     private modalService: NgbModal,
@@ -91,14 +92,7 @@ export class EditDisplayComponent {
   rerunReport(): void {
     let reportId: string = this.report.storageId;
     this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
-      let element = document.querySelector('#showRerunResult')!;
-      if (this.report == response) {
-        element.setAttribute('style', 'background-color: green');
-        this.rerunResult = '[Rerun succeeded]';
-      } else {
-        element.setAttribute('style', 'background-color: red');
-        this.rerunResult = '[Rerun failed]';
-      }
+      this.rerunSuccess = this.report == response;
     });
   }
 
