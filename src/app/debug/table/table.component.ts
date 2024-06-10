@@ -488,6 +488,11 @@ export class TableComponent implements OnInit, OnDestroy {
     this.selectedRow = event;
   }
 
+  openSelectedReport(storageId: string, index: number) {
+    this.openReport(storageId);
+    this.highLightRow(index);
+  }
+
   openLatestReports(amount: number): void {
     this.httpService.getLatestReports(amount, this.viewSettings.currentView.storageName).subscribe((data) => {
       data.forEach((report: any) => {

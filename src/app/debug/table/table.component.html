@@ -20,23 +20,21 @@
           <button ngbDropdownItem (click)="downloadReports(true, false)">Binary</button>
         </div>
       </div>
-      <button type="button" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
+      <button data-cy-debug="upload" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
               title="Upload" (click)="uploadFileTable.click()">
         <i class="fa fa-upload"></i>
-        <input data-cy-debug="upload" #uploadFileTable (change)="uploadReports($event)" type="file" id="uploadFileTable">
+        <input #uploadFileTable (change)="uploadReports($event)" type="file" id="uploadFileTable">
       </button>
       <app-button data-cy-debug="openSelected" title="Open Selected Reports" text="Open Selected" (click)="openSelected()"></app-button>
       <app-button data-cy-debug="delete" title="Delete" icon="fa fa-trash" (click)="deleteSelected()"></app-button>
 
-      <form (keydown.enter)="$event.preventDefault();" (keyup.enter)="changeTableLimit($event)">
-        <div class="input-group">
-          <input data-cy-debug="displayAmount" type="number" class="form-control input-field"
-                   [value]="tableSettings.displayAmount" (blur)="changeTableLimit($event)">
-          <div data-cy-debug="amountShown" class="input-group-append">
-            <div class="input-group-text">/{{ metadataCount }}</div>
-          </div>
+      <div class="input-group">
+        <input data-cy-debug="displayAmount" type="number" class="form-control input-field"
+               [ngModel]="tableSettings.displayAmount" (keydown.enter)="changeTableLimit($event)" (blur)="changeTableLimit($event)">
+        <div data-cy-debug="amountShown" class="input-group-append">
+          <div class="input-group-text">/{{ metadataCount }}</div>
         </div>
-      </form>
+      </div>
 
       <div class="my-2 mx-1 px-2">
         <select data-cy-change-view-dropdown class="form-control" (change)="changeView($event)">
@@ -84,7 +82,7 @@
         <mat-spinner mode="indeterminate" [diameter]="30"></mat-spinner>
       </div>
     }
-    @if (doneRetrieving) {
+    @else {
       <div data-cy-debug="table" class="table-responsive" id="metadataTable">
         <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)" [style.font-size]="getFontSize()">
           <thead id="table-header">
@@ -92,9 +90,9 @@
               <th class="table-row-checkbox header-padding">
                 <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
               </th>
-              @for (header of viewSettings.currentView.metadataLabels; let i = $index; track header) {
+              @for (header of viewSettings.currentView.metadataLabels; let index = $index; track header) {
                 <th class="table-id-cell header-cell header-padding"
-                    [attr.mat-sort-header]="i"
+                    [attr.mat-sort-header]="index"
                     [title]="header">
                   {{ getShortenedTableHeaderNames(header) }}
                 </th>
@@ -102,12 +100,12 @@
             </tr>
           </thead>
           <tbody data-cy-debug="tableBody">
-            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let i = $index; track row) {
+            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row) {
               <tr class="table-row"
-                  (click)="highLightRow(i);"
-                  [ngClass]="{'highlight': selectedRow === i}"
+                  (click)="openSelectedReport(row.storageId, index);"
+                  [ngClass]="{'highlight': selectedRow === index}"
                   [style.background-color]="getStatusColor(row)"
-                  [attr.data-cy-record-table-index]=i
+                  [attr.data-cy-record-table-index]=index
               >
                 <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
                   <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
@@ -116,7 +114,6 @@
                   <td
                     [style.padding]="getTableSpacing()"
                     class="table-cell"
-                    (click)="openReport(row.storageId)"
                     [title]="row[metadataName]">
                     {{ row[metadataName]|tableCellShortener }}</td>
                 }

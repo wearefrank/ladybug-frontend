@@ -7,7 +7,7 @@ describe('Debug file upload', () => {
     cy.fixture('testRerun.ttr', 'binary')
       .then(Cypress.Blob.binaryStringToBlob)
       .then((fileContent) => {
-        cy.get('[data-cy-debug="upload"]').attachFile({
+        cy.get('[data-cy-debug="upload"] > input').attachFile({
           fileContent,
           fileName: 'testRerun.ttr',
         });
