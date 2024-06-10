@@ -1,13 +1,7 @@
 describe('Edit tests', () => {
-  beforeEach(() => {
-    cy.clearDebugStore();
-    cy.deleteAllTestReports();
-  });
+  before(() => cy.resetApp());
 
-  after(() => {
-    cy.clearDebugStore();
-    cy.deleteAllTestReports();
-  });
+  afterEach(() => cy.resetApp());
 
   it('Edit report in test tab', () => {
     prepareEdit();
