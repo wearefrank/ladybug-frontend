@@ -144,9 +144,7 @@ export class TestComponent implements OnInit, AfterViewInit {
 
   loadDataAndSelectRoot(): void {
     this.loadData();
-    setTimeout(() => {
-      this.testFileTreeComponent.tree.selectItem(this.testFileTreeComponent.rootFolder.name);
-    });
+    this.testFileTreeComponent.selectItem('');
   }
 
   resetRunner(): void {
