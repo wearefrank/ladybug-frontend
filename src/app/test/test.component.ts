@@ -16,7 +16,7 @@ import { NodeLinkStrategy } from '../shared/enums/compare-method';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { NgIf, NgFor } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, NgModel, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, NgModel } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
 
 @Component({
@@ -48,7 +48,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     storageName: 'Test',
     targetStorage: '',
   };
-  actionControl: FormControl<string> = new FormControl();
+  updatePathAction: UpdatePathAction = 'move';
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
@@ -293,11 +293,15 @@ export class TestComponent implements OnInit, AfterViewInit {
     if (reportIds.length > 0) {
       let path: string = this.moveToInputModel.value;
       path = this.transformPath(path);
-      const map: UpdatePathSettings = { path: path, action: this.actionControl.value };
+      const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
     } else {
       this.toastService.showWarning('No Report Selected!');
     }
+  }
+
+  setUpdatePathAction(value: UpdatePathAction): void {
+    this.updatePathAction = value;
   }
 
   changeFilter(filter: string): void {
@@ -348,3 +352,6 @@ export class TestComponent implements OnInit, AfterViewInit {
     return `/${name}`;
   }
 }
+
+export const updatePathActionConst = ['move', 'copy'] as const;
+export type UpdatePathAction = (typeof updatePathActionConst)[number];

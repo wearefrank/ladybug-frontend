@@ -33,8 +33,8 @@
       <form class="input-group" (ngSubmit)="updatePath()">
         <input #moveToInput type="text" class="form-control mr-1 my-2 py-0" id="moveToInput" name="filter"
                [ngModel]="currentFilter" />
-        <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="actionControl.setValue('move')">Move</button>
-        <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="actionControl.setValue('copy')"><i
+        <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="setUpdatePathAction('move')">Move</button>
+        <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="setUpdatePathAction('copy')"><i
           class="fa fa-copy"></i></button>
       </form>
     </div>
