@@ -19,6 +19,9 @@ import { NgIf, NgFor } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, NgModel } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
 
+export const updatePathActionConst = ['move', 'copy'] as const;
+export type UpdatePathAction = (typeof updatePathActionConst)[number];
+
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
@@ -352,6 +355,3 @@ export class TestComponent implements OnInit, AfterViewInit {
     return `/${name}`;
   }
 }
-
-export const updatePathActionConst = ['move', 'copy'] as const;
-export type UpdatePathAction = (typeof updatePathActionConst)[number];
