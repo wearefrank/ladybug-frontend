@@ -1,7 +1,7 @@
 describe('Report transformation', () => {
-  beforeEach(() => {
-    cy.clearDebugStore();
-  });
+  before(() => cy.resetApp());
+
+  afterEach(() => cy.resetApp());
 
   afterEach(() => {
     cy.clearDebugStore();
@@ -27,7 +27,6 @@ describe('Report transformation', () => {
     cy.get('[data-cy-settings="saveChanges"]').click();
     cy.createOtherReport();
     cy.get('[data-cy-debug="refresh"]').click();
-
     cy.wait(100);
     cy.get('[data-cy-debug="tableBody"]')
       .find('tr')

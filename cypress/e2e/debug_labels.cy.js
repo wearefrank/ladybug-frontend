@@ -1,10 +1,9 @@
 describe('Test labels', () => {
-  beforeEach(() => {
-    cy.clearDebugStore();
-  });
+  before(() => cy.resetApp());
 
   afterEach(() => {
     cy.get('[data-cy-debug-tree="closeAll"]').click();
+    cy.resetApp();
   });
 
   it('Test label null', () => {

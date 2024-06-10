@@ -9,7 +9,10 @@ describe('Ladybug simple protractor test', () => {
 
   beforeEach(() => {
     cy.resetApp();
+    cy.initializeApp();
   });
+
+  after(() => cy.resetApp());
 
   it('Confirm title of ladybug app', () => {
     cy.title().should('match', /Ladybug - v[0-9]+.[0-9]+.[0-9]+/);
