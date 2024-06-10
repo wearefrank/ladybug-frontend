@@ -1,164 +1,93 @@
 @if (displayReport) {
-  <div #top>
-    <div data-cy-test-editor="root" class="d-flex flex-row justify-content-between align-items-center"
-         id="displayButtons">
-      <div class="d-flex flex-row align-items-center" data-cy-debug-editor="buttons">
-        <app-button data-cy-debug-editor="close" [icon]="'fa fa-times'" [title]="'Close'" (click)="closeReport(false)"></app-button>
-        <app-button *ngIf="report.xml" text="Rerun" title="Rerun this report" (click)="rerunReport()"></app-button>
-        <app-button data-cy-test-editor="edit" [icon]="'fa fa-edit'" [title]="'Edit'"
-                    *ngIf="!editingChildNode && !editingRootNode"
-                    (click)="editReport()"></app-button>
-        <app-button [icon]="'fa fa-trash'" [title]="'Discard Changes'" *ngIf="editingChildNode || editingRootNode"
-                    (click)="openDifferenceModal(saveOrDiscardChanges, 'discard')"></app-button>
-        <app-button data-cy-test-editor="save" [icon]="'fa fa-save'" [title]="'Save'"
-                    *ngIf="editingChildNode || editingRootNode"
-                    (click)="openDifferenceModal(saveOrDiscardChanges, 'save')"></app-button>
-        <app-button *ngIf="report.encoding === 'Base64'" [text]="'Base64'" [title]="'Convert to Base64'"
-                    (click)="changeEncoding($event)"></app-button>
-        @if (!newTab) {
-          <app-button data-cy-debug-editor="copy" [icon]="'fa fa-copy'" [title]="'Copy'"
-                      (click)="copyReport()"></app-button>
-        }
+  <div data-cy-test-editor="root" class="d-flex flex-row justify-content-between align-items-center" id="displayButtons">
+    <div class="d-flex flex-row align-items-center" data-cy-debug-editor="buttons">
+      <app-button data-cy-debug-editor="close" icon="fa fa-times" title="Close" (click)="closeReport(false)"/>
+      <app-button *ngIf="report.xml" text="Rerun" title="Rerun this report" (click)="rerunReport()"/>
+      @if (!editingRootNode && !editingChildNode) {
+        <app-button data-cy-test-editor="edit" icon="fa fa-edit" title="Edit" (click)="editReport()"/>
+      } @else if (editingChildNode || editingRootNode) {
+        <app-button icon="fa fa-trash" title="Discard Changes" (click)="openDifferenceModal('discard')"/>
+        <app-button data-cy-test-editor="save" icon="fa fa-save" title="Save" (click)="openDifferenceModal('save')"/>
+      }
+      @if (report.encoding === 'Base64') {
+        <app-button text="Base64" title="Convert to Base64" (click)="changeEncoding($event)"/>
+      }
+      @if (!newTab) {
+        <app-button data-cy-debug-editor="copy" icon="fa fa-copy" title="Copy" (click)="copyReport()"/>
+      }
 
-
-        <div ngbDropdown title="Download">
-          <button data-cy-test-editor="download" class="btn btn-info" id="dropdownDownloadDisplay" ngbDropdownToggle>
-            <i class="fa fa-download px-2"></i><span class="caret"></span>
+      <div ngbDropdown title="Download">
+        <button ngbDropdownToggle data-cy-test-editor="download" class="btn btn-info">
+          <i class="fa fa-download px-2"></i><span class="caret"></span>
+        </button>
+        <div ngbDropdownMenu>
+          <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
+          <button ngbDropdownItem (click)="downloadReport(false, true)">
+            XML
+            <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i>
           </button>
-          <div ngbDropdownMenu aria-labelledby="dropdownDownloadDisplay">
-            <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
-            <button ngbDropdownItem (click)="downloadReport(false, true)">XML<i class="fa fa-info-circle"
-                                                                                title="Only a binary file can be uploaded again"></i>
-            </button>
-            <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
-          </div>
+          <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
         </div>
+      </div>
 
-        <div class="w-fit mx-1 my-0" *ngIf="report.stub || report.stub === 0">
+      @if (report.stub) {
+        <div class="w-fit mx-1 my-0">
           <select class="form-control" (change)="selectStubStrategy($event)">
-            <option [selected]="report.stub === -1">Use report level stub strategy</option>
-            <option [selected]="report.stub === 1">Always stub this checkpoint</option>
-            <option [selected]="report.stub === 0">Never stub this checkpoint</option>
+            <option [value]="-1" [selected]="report.stub === -1">Use report level stub strategy</option>
+            <option [value]="0" [selected]="report.stub === 0">Always stub this checkpoint</option>
+            <option [value]="1" [selected]="report.stub === 1">Never stub this checkpoint</option>
           </select>
         </div>
-
-        <div data-cy-test-editor="readonlyLabel" class="w-fit h-fit btn btn-static my-2 mx-1 px-2">
-          Editing code is:
-          <span
-            [style.color]="editingEnabled ? 'green' : 'red'">{{ editingEnabled|booleanToString:'ON': 'OFF' }}</span>
-        </div>
-        <button data-cy-open-metadata-table
-                class="btn btn-info my-2 mx-1 px-3 h-fit"
-                title="Open metadata table"
-                (click)="toggleMetadataTable()">
-          {{ metadataTableVisible|booleanToString:'Hide':'Show' }} metadata
-        </button>
-      </div>
-      @if (report.name) {
-        <h4 [cdkCopyToClipboard]="report.name" data-cy-metadata-table="reportname" class="my-auto report-name">{{report.name}}</h4>
       }
-      <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor"
-           (click)="showEditorPossibilitiesModal(possibilitiesModal)">
-        <i class="bi bi-info-circle info-circle-size"></i>
+
+      <div data-cy-test-editor="readonlyLabel" class="w-fit h-fit btn btn-static my-2 mx-1 px-2">
+        Editing code is:
+        <span [style.color]="editingEnabled ? 'green' : 'red'">{{ editingEnabled|booleanToString:'ON': 'OFF' }}</span>
       </div>
+      <button data-cy-open-metadata-table
+              class="btn btn-info my-2 mx-1 px-3 h-fit"
+              title="Open metadata table"
+              (click)="toggleMetadataTable()">
+        {{ metadataTableVisible|booleanToString:'Hide':'Show' }} metadata
+      </button>
     </div>
+    @if (report.name) {
+      <h4 [cdkCopyToClipboard]="report.name" data-cy-metadata-table="reportname" class="my-auto report-name">{{ report.name }}</h4>
+    }
+    <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor" (click)="showEditorPossibilitiesModal(possibilitiesModal)">
+      <i class="bi bi-info-circle info-circle-size"></i>
+    </div>
+  </div>
 
 
-    <div id="showRerunResult">
-      {{ rerunResult }}
-    </div>
-    @if (metadataTableVisible) {
-      <app-display-table [report]="report"></app-display-table>
-    }</div>
+  <div>
+    {{ rerunResult }}
+  </div>
+  @if (metadataTableVisible) {
+    <app-display-table [report]="report"/>
+  }
 }
 
 @if (editingRootNode) {
-  <div class="m-1" data-cy-report-edit-form>
-    <div class="form-group">
-      <label>Name</label>
-      <input #name data-cy-report-edit-form="name" type="text" class="form-control" placeholder="Name" [value]="report.name">
-    </div>
-    <div class="form-group">
-      <label>Description</label>
-      <input #description class="form-control" placeholder="Description" [value]="report.description">
-    </div>
-    <div class="form-group">
-      <label>Path</label>
-      <input #path type="text" class="form-control" placeholder="/path/to/report/" [value]="report.path">
-    </div>
-    <div class="form-group">
-      <label>Transformation</label>
-      <div>
-        <textarea #transformation class="form-control transformation">{{ report.transformation }}</textarea>
-      </div>
-    </div>
-    <div class="form-group">
-      <label>Variables</label>
-      <div>
-        <textarea #variables class="form-control variables">{{ report.variableCsv }}</textarea>
-      </div>
-    </div>
-  </div>
+  <app-edit-form [report]="report"/>
 } @else {
   <app-custom-editor
     [readOnlyMode]="!editingChildNode"
     [height]="containerHeight - 24"
-    data-cy-test-editor="editor"
-    id="editor"></app-custom-editor>
+    data-cy-test-editor="editor"/>
 }
 
+<app-difference-modal/>
 
-
-<ng-template #saveOrDiscardChanges let-modal>
-  <div class="modal-header">
-    <h3 class="modal-title">Are you sure you want to {{ saveOrDiscardType }} changes?</h3>
-    <button type="button" class="close" (click)="dismissModal()">
-      <span>&times;</span>
-    </button>
-  </div>
-  <div class="modal-content">
-    <div *ngFor="let part of differenceModal" class="pb-3" data-cy-save-changes-modal>
-      <div class="text-center">{{ part.name }}</div>
-      <div class="dropdown-divider"></div>
-      <div class="row">
-        <div class="col">
-          <div class="text-center pt-2">Before</div>
-          <div [attr.data-cy-changes-form-before]="part.name" class="changeBox text-left p-1 overflow-auto">{{ part.originalValue }}</div>
-        </div>
-        <div [attr.data-cy-changes-form-after]="part.name" class="col text-right">
-          <div class="text-center pt-2">After</div>
-          <div class="changeBox text-left p-1 overflow-auto">
-            <span *ngFor="let chunk of part.difference">
-              <span *ngIf="+chunk[0] === -1" style="background: #ff7f7f">{{ chunk[1] }}</span>
-              <span *ngIf="+chunk[0] === 0">{{ chunk[1] }}</span>
-              <span *ngIf="+chunk[0] === 1" style="background: #7cfc00">{{ chunk[1] }}</span>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="modal-footer">
-    <div class="col-md-12 text-center">
-      <button type="button" class="btn btn-info mr-2" (click)="saveOrDiscard(saveOrDiscardType)">Yes</button>
-      <button type="button" class="btn btn-info ml-2" (click)="dismissModal()">No</button>
-    </div>
-  </div>
-</ng-template>
-
-
-<ng-template #possibilitiesModal>
+<ng-template #possibilitiesModal let-modal>
   <div class="modal-header d-flex align-items-center">
-    <div class="modal-title">Possibilities for editor</div>
-    <button type="button" class="close" (click)="closeModal()">&times;</button>
+    <div class="modal-title h5">Possibilities for editor</div>
+    <button type="button" class="close" (click)="modal.dismiss()">&times;</button>
   </div>
   <div class="modal-content pt-3 fs-3">
-    <p class="text-center mx-4 text-danger" style="font-size: 10pt">
+    <p class="text-center mx-4 text-danger h6">
       Please make sure that the editor is focused when running commands, which is shown with the eye
-      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="black" viewBox="0 0 16 16">
-        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
-        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
-      </svg>
+      <i class="bi bi-eye-fill text-dark"></i>
       icon.
     </p>
     <br>
