@@ -4,7 +4,7 @@ describe('Report generator', () => {
   beforeEach(() => {
     cy.initializeApp();
     cy.get('[data-cy-debug="openSettings"]').should('be.visible').click();
-    cy.get('[role=dialog]').should('be.visible', { timeout: 10000 });
+    cy.get('[role=dialog]').should('be.visible');
     cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
     cy.get('[data-cy-settings="saveChanges"]').click();
   });
@@ -18,10 +18,10 @@ describe('Report generator', () => {
     cy.wait(100);
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 1);
     cy.get('[data-cy-debug="openSettings"]').click();
-    cy.get('[role=dialog]').should('be.visible', { timeout: 10000 });
+    cy.get('[role=dialog]').should('be.visible');
     cy.get('select[formcontrolname=generatorEnabled]').select('Disabled').should('have.value', 'Disabled');
     cy.get('[data-cy-settings="saveChanges"]').click();
-    cy.contains('Settings saved', { timeout: 10000 });
+    cy.contains('Settings saved');
     cy.createOtherReport();
     // If we do not wait here, we do not test properly that no report is created.
     // Without waiting, the test could succeed because we would count the number of reports
@@ -30,10 +30,10 @@ describe('Report generator', () => {
     cy.wait(100);
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', 1);
     cy.get('[data-cy-debug="openSettings"]').click();
-    cy.get('[role=dialog]').should('be.visible', { timeout: 10000 });
+    cy.get('[role=dialog]').should('be.visible');
     cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
     cy.get('[data-cy-settings="saveChanges"]').click();
-    cy.contains('Settings saved', { timeout: 10000 });
+    cy.contains('Settings saved');
     cy.createOtherReport();
     cy.get('[data-cy-debug="refresh"]').click();
     cy.wait(100);

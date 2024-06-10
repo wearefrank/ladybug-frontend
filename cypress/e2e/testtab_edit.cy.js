@@ -6,9 +6,9 @@ describe('Edit tests', () => {
   it('Edit report in test tab', () => {
     prepareEdit();
     cy.clickFirstChildInFileTree();
-    cy.get('[data-cy-test-editor="edit"]', { timeout: 5000 }).click();
+    cy.get('[data-cy-test-editor="edit"]').click();
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get('[data-cy-test-editor="editor"]', { timeout: 5000 })
+    cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
@@ -19,8 +19,8 @@ describe('Edit tests', () => {
     cy.get('[data-cy-changes-form-after="message"]').contains('Hello Original World!');
     cy.get('button:contains(Yes)').click();
     cy.clickFirstChildInFileTree();
-    cy.get('[data-cy-test-editor="edit"]', { timeout: 5000 }).click();
-    cy.get('[data-cy-test-editor="editor"]', { timeout: 5000 })
+    cy.get('[data-cy-test-editor="edit"]').click();
+    cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
@@ -35,7 +35,7 @@ describe('Edit tests', () => {
     prepareEdit();
     cy.clickFirstChildInFileTree();
     // Do not press Edit button
-    cy.get('[data-cy-test-editor="save"]', { timeout: 5000 }).should('have.length', 0);
+    cy.get('[data-cy-test-editor="save"]').should('have.length', 0);
     cy.get('[data-cy-test-editor="editor"]').click().type('x');
     cy.get('[data-cy-test-editor="readonlyLabel"]').contains('OFF');
   });
@@ -43,10 +43,10 @@ describe('Edit tests', () => {
   it('When saving edit cancelled then original text kept and rerun fails', () => {
     prepareEdit();
     cy.clickFirstChildInFileTree();
-    cy.get('[data-cy-test-editor="edit"]', { timeout: 5000 }).click();
+    cy.get('[data-cy-test-editor="edit"]').click();
     cy.get('[data-cy-test-editor="readonlyLabel"]').contains('ON');
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get('[data-cy-test-editor="editor"]', { timeout: 5000 })
+    cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
@@ -55,7 +55,7 @@ describe('Edit tests', () => {
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.contains('Hello Original World!');
     // Give dialog time to initialize
-    cy.get('button:contains(No)', { timeout: 5000 }).click();
+    cy.get('button:contains(No)').click();
     cy.get('.modal-title').should('have.length', 0);
     cy.get('[data-cy-test-editor="save"]').should('have.length', 1);
     cy.contains('Hello Original World!');
@@ -68,14 +68,14 @@ describe('Edit tests', () => {
 function prepareEdit() {
   cy.createReport();
   cy.initializeApp();
-  cy.get('[data-cy-debug="selectAll"]', { timeout: 5000 }).click();
+  cy.get('[data-cy-debug="selectAll"]').click();
   cy.get('[data-cy-debug="openSelected"]').click();
   cy.debugTreeGuardedCopyReport('Simple report', 3, '');
   cy.get('[data-cy-nav-tab="testTab"]').click();
   cy.checkTestTableNumRows(1);
   cy.get('[data-cy-test="openReport"]').click();
   // Martijn hopes this fixes an issue in Firefox.
-  cy.get('[data-cy-nav-tab="Simple report"]', { timeout: 5000 })
+  cy.get('[data-cy-nav-tab="Simple report"]')
     .find('div.active')
     .should('include.text', 'Simple report');
   // Wait until the tab has been rendered

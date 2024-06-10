@@ -45,16 +45,13 @@ describe('Debug tab download', function () {
         )[0];
         expect(newFile).to.contain('Ladybug Debug');
         expect(newFile).to.contain('2 reports');
-        cy.readFile(cy.functions.downloadPath(newFile), 'binary', {
-          timeout: 15000,
-        })
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary')
           .should((buffer) => expect(buffer.length).to.be.gt(10))
           .then((buffer) => {
             cy.log(`Number of read bytes: ${buffer.length}`);
           });
         cy.clearDebugStore();
         cy.get('[data-cy-debug="refresh"]').click();
-        cy.wait(100);
         cy.get('[data-cy-debug="tableBody"]').find('tr').should('not.exist');
         cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should(
           'have.length',
@@ -119,9 +116,7 @@ describe('Debug tab download', function () {
           )[0];
           expect(newFile).to.contain('Ladybug Debug');
           expect(newFile).to.contain('2 reports');
-          cy.readFile(cy.functions.downloadPath(newFile), 'binary', {
-            timeout: 15000,
-          })
+          cy.readFile(cy.functions.downloadPath(newFile), 'binary')
             .should((buffer) => expect(buffer.length).to.be.gt(10))
             .then((buffer) => {
               cy.log(`Number of read bytes: ${buffer.length}`);
@@ -212,9 +207,7 @@ function testDownloadFromNode(nodeNum) {
         )[0];
         expect(newFile).to.contain('Simple report.ttr');
         expect(newFile).not.to.contain('other');
-        cy.readFile(cy.functions.downloadPath(newFile), 'binary', {
-          timeout: 15000,
-        })
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary')
           .should((buffer) => expect(buffer.length).to.be.gt(10))
           .then((buffer) => {
             cy.log(`Number of read bytes: ${buffer.length}`);
@@ -234,7 +227,7 @@ function testDownloadFromNode(nodeNum) {
           });
       });
     });
-  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li', { timeout: 10000 }).should(
+  cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should(
     'have.length',
     1
   );

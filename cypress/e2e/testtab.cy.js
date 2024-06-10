@@ -80,9 +80,7 @@ describe('About the Test tab', () => {
         )[0];
         expect(newFile).to.contain('Ladybug Test');
         expect(newFile).to.contain('2 reports');
-        cy.readFile(cy.functions.downloadPath(newFile), 'binary', {
-          timeout: 15000,
-        })
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary')
           .should((buffer) => expect(buffer.length).to.be.gt(10))
           .then((buffer) => {
             cy.log(`Number of read bytes: ${buffer.length}`);
@@ -135,7 +133,7 @@ describe('About the Test tab', () => {
   //       cy.log('After download, downloads folder contains files: ' + filesAfter.toString());
   //       const newFile = filesAfter.filter(file => !filesBefore.includes(file))[0];
   //       expect(newFile).to.contain('Simple report.ttr');
-  //       cy.readFile(cy.functions.downloadPath(newFile), 'binary', {timeout: 15000})
+  //       cy.readFile(cy.functions.downloadPath(newFile), 'binary')
   //       .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
   //         cy.log(`Number of read bytes: ${buffer.length}`);
   //       });
@@ -173,11 +171,11 @@ function copyTheReportsToTestTab() {
   cy.wait(100);
   cy.checkFileTreeLength(2);
   cy.wait(100);
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item', { timeout: 5000 }).eq(0).find('.item-name').eq(0).click();
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
   cy.wait(100);
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item', { timeout: 5000 }).eq(1).find('.item-name').eq(0).click();
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Another simple report', 3, 'second');
   cy.wait(1000);

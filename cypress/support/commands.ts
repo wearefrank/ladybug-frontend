@@ -185,14 +185,14 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
 
 Cypress.Commands.add('checkTableNumRows', (n) => {
   if (n === 0) {
-    cy.get('[data-cy-debug="tableBody"]').find('tr', { timeout: 10_000 }).should('not.exist');
+    cy.get('[data-cy-debug="tableBody"]').find('tr').should('not.exist');
   } else {
-    cy.get('[data-cy-debug="tableBody"]', { timeout: 10_000 }).find('tr', { timeout: 10_000 }).should('have.length', n);
+    cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', n);
   }
 });
 
 Cypress.Commands.add('checkTestTableNumRows', (n) => {
-  cy.get('[data-cy-test="table"] tr', { timeout: 10_000 }).should('have.length', n);
+  cy.get('[data-cy-test="table"] tr').should('have.length', n);
 });
 
 Cypress.Commands.add('checkTestTableReportsAre', (reportNames) => {
@@ -218,7 +218,7 @@ Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes
     times: 1,
   }).as(alias);
   cy.get('[data-cy-debug-editor="copy"]').click();
-  cy.wait(`@${alias}`, { timeout: 10_000 }).then((res) => {
+  cy.wait(`@${alias}`).then((res) => {
     cy.wrap(res).its('request.url').should('contain', 'Test');
     cy.wrap(res).its('request.body').as('requestBody');
     cy.get('@requestBody').its('Debug').should('have.length', 1);
