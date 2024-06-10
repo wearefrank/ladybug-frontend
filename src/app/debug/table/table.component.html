@@ -39,7 +39,7 @@
 
     <div class="my-2 mx-1 px-2">
       <select data-cy-change-view-dropdown class="form-control" (change)="changeView($event)">
-        <option [style.width]="viewDropdownBoxWidth" *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView.name" [value]="view.key">{{ view.key }}</option>
+        <option [style.width]="viewDropdownBoxWidth" *ngFor="let view of viewSettings.views | keyvalue" [selected]="view.key === viewSettings.currentView?.name" [value]="view.key">{{ view.key }}</option>
       </select>
     </div>
 
@@ -79,7 +79,7 @@
             <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
           </th>
           <th class="table-id-cell header-cell header-padding"
-              *ngFor="let header of viewSettings.currentView.metadataLabels; let i = index"
+              *ngFor="let header of viewSettings.currentView?.metadataLabels; let i = index"
               [attr.mat-sort-header]="i"
               [title]="header">
             {{ getShortenedTableHeaderNames(header) }}
