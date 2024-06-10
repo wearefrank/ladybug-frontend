@@ -28,7 +28,7 @@
       <app-button data-cy-debug="openSelected" title="Open Selected Reports" text="Open Selected" (click)="openSelected()"></app-button>
       <app-button data-cy-debug="delete" title="Delete" icon="fa fa-trash" (click)="deleteSelected()"></app-button>
 
-      <div class="input-group">
+      <div class="input-group input-group-container">
         <input data-cy-debug="displayAmount" type="number" class="form-control input-field"
                [ngModel]="tableSettings.displayAmount" (keydown.enter)="changeTableLimit($event)" (blur)="changeTableLimit($event)">
         <div data-cy-debug="amountShown" class="input-group-append">
@@ -100,12 +100,12 @@
             </tr>
           </thead>
           <tbody data-cy-debug="tableBody">
-            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row) {
+            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {
               <tr class="table-row"
                   (click)="openSelectedReport(row.storageId, index);"
                   [ngClass]="{'highlight': selectedRow === index}"
                   [style.background-color]="getStatusColor(row)"
-                  [attr.data-cy-record-table-index]=index
+                  [attr.data-cy-record-table-index]="index"
               >
                 <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
                   <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
