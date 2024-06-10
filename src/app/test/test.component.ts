@@ -67,7 +67,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.loadRootData();
+    this.loadDataAndSelectRoot();
   }
 
   openCloneModal(): void {
@@ -87,7 +87,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.loadRootData();
+    this.loadDataAndSelectRoot();
     this.getGeneratorStatus();
   }
 
@@ -120,33 +120,30 @@ export class TestComponent implements OnInit, AfterViewInit {
     });
   }
 
-  loadData(path: string): void {
+  loadData(): void {
     this.httpService.getViews().subscribe((views: Record<string, View>) => {
-      const defaultViewKey: string | undefined = Object.keys(views).find((view: string) => views[view].defaultView);
-      if (defaultViewKey) {
-        const selectedView: View = views[defaultViewKey];
-        if (selectedView.storageName) {
-          this.currentView.targetStorage = selectedView.storageName;
-        }
+      const selectedView: View | undefined = Object.values(views).find((value) => value.defaultView);
+      if (selectedView?.storageName) {
+        this.currentView.targetStorage = selectedView.storageName;
       }
     });
+  }
+
+  selectTreeItemByPath(path: string): void {
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value: TestListItem[]) => {
         this.reports = value;
         this.testFileTreeComponent.setData(this.reports);
-        if (path) {
-          setTimeout(() => {
-            this.testFileTreeComponent.selectItem(path);
-          });
-        } else {
-          this.loadRootData();
-        }
+        setTimeout(() => {
+          this.testFileTreeComponent.selectItem(path);
+        });
       },
       error: () => catchError(this.httpService.handleError()),
     });
   }
 
-  loadRootData(): void {
+  loadDataAndSelectRoot(): void {
+    this.loadData();
     setTimeout(() => {
       this.testFileTreeComponent.tree.selectItem(this.testFileTreeComponent.rootFolder.name);
     });
@@ -225,7 +222,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.httpService
       .deleteReport(this.helperService.getSelectedIds(this.reports), this.currentView.storageName)
       .subscribe(() => {
-        this.loadRootData();
+        this.loadDataAndSelectRoot();
       });
   }
 
@@ -250,7 +247,7 @@ export class TestComponent implements OnInit, AfterViewInit {
       formData.append('file', file);
       this.httpService
         .uploadReportToStorage(formData, this.currentView.storageName)
-        .subscribe(() => this.loadRootData());
+        .subscribe(() => this.loadDataAndSelectRoot());
     }
   }
 
@@ -282,7 +279,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     let data: any = {};
     data[this.currentView.storageName] = copiedIds;
     this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
-      this.loadRootData();
+      this.loadDataAndSelectRoot();
     });
   }
 
@@ -304,7 +301,10 @@ export class TestComponent implements OnInit, AfterViewInit {
       let path: string = this.moveToInputModel.value;
       path = this.transformPath(path);
       const map: UpdatePathSettings = { path: path, action: action };
-      this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
+      this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => {
+        this.loadData();
+        this.selectTreeItemByPath(path);
+      });
     } else {
       this.toastService.showWarning('No Report Selected!');
     }
