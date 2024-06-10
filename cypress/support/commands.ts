@@ -207,10 +207,9 @@ Cypress.Commands.add('checkTestTableReportsAre', (reportNames) => {
 
 Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes, aliasSuffix) => {
   const alias = `debugTreeGuardedCopyReport_${aliasSuffix}`;
-  cy.get(`[data-cy-debug-tree="root"] > app-tree-item .item-name:contains(${reportName})`).should(
-    'have.length',
-    numExpandedNodes,
-  );
+  cy.get('[data-cy-debug-tree="root"]')
+    .find(`app-tree-item .item-name:contains(${reportName})`)
+    .should('have.length', numExpandedNodes);
   cy.intercept({
     method: 'PUT',
     hostname: 'localhost',

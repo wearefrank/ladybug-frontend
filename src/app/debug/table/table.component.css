@@ -68,8 +68,11 @@ th {
 }
 .input-field {
   width: 4rem;
+}
+
+.input-group-container {
+  width: auto;
   padding-left: 0.3rem;
-  padding-right: 0.25rem;
 }
 
 .filter-option {
