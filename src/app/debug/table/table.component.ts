@@ -101,7 +101,7 @@ export class TableComponent implements OnInit, OnDestroy {
     estimatedMemoryUsage: '',
     uniqueValues: new Map<string, Array<string>>(),
   };
-  sortedReportMetadata?: Report[];
+  sortedReportMetadata: Report[] = [];
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
@@ -673,7 +673,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   sortData(sort: Sort): any {
-    if (!sort.active || sort.direction === '' || !this.sortedReportMetadata) {
+    if (!sort.active || sort.direction === '') {
       this.sortedReportMetadata = [...this.tableSettings.reportMetadata];
       return;
     }
