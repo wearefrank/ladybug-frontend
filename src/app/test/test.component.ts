@@ -166,7 +166,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   runSelected(): void {
-    this.helperService.getSelectedReports(this.reports).forEach((report) => this.run(report.storageId));
+    this.helperService.getSelectedReports(this.reports).forEach((report) => this.run(String(report.storageId)));
   }
 
   removeReranReportIfExists(id: string): void {

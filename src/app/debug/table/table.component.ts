@@ -14,7 +14,7 @@ import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
 import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
-import { MatSortModule } from '@angular/material/sort';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -101,6 +101,7 @@ export class TableComponent implements OnInit, OnDestroy {
     estimatedMemoryUsage: '',
     uniqueValues: new Map<string, Array<string>>(),
   };
+  sortedReportMetadata?: Report[];
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
@@ -195,6 +196,7 @@ export class TableComponent implements OnInit, OnDestroy {
         next: (value) => {
           this.setUniqueOptions(value);
           this.tableSettings.reportMetadata = value;
+          this.sortedReportMetadata = [...value];
           this.tableSettings.tableLoaded = true;
           this.toastService.showSuccess('Data loaded!');
           this.doneRetrieving = true;
@@ -371,9 +373,13 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReportInTab(): void {
-    let reportTab = this.tableSettings.reportMetadata.find((report) => report.checked);
+    let reportTab: Report | undefined = this.tableSettings.reportMetadata.find((report) => report.checked);
+    if (!reportTab) {
+      this.toastService.showDanger('Could not find report', 'No report found that was selected.');
+      return;
+    }
     this.httpService
-      .getReport(reportTab.storageId, this.viewSettings.currentView.storageName)
+      .getReport(String(reportTab.storageId), this.viewSettings.currentView.storageName)
       .subscribe((report: Report): void => {
         const reportData: ReportData = {
           report: report,
@@ -386,7 +392,7 @@ export class TableComponent implements OnInit, OnDestroy {
   openSelected(): void {
     for (const report of this.tableSettings.reportMetadata) {
       if (report.checked) {
-        this.openReport(report.storageId);
+        this.openReport(String(report.storageId));
         if (!this.showMultipleFiles) {
           this.toastService.showWarning(
             'Please enable show multiple files in settings to open multiple files in the debug tree',
@@ -414,10 +420,9 @@ export class TableComponent implements OnInit, OnDestroy {
 
   compareTwoReports(): void {
     let compareReports: any = {};
-
     let selectedReports: string[] = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
-      .map((report) => report.storageId);
+      .map((report) => String(report.storageId));
     this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
       next: (data) => {
         const leftObject = data[selectedReports[0]];
@@ -662,4 +667,34 @@ export class TableComponent implements OnInit, OnDestroy {
     }
     return result;
   }
+
+  getMetadata(report: Report, field: string): string {
+    return report[field as keyof Report];
+  }
+
+  sortData(sort: Sort): any {
+    if (!sort.active || sort.direction === '') {
+      console.log(this.tableSettings.reportMetadata);
+      this.sortedReportMetadata = [...this.tableSettings.reportMetadata];
+      return;
+    }
+    this.sortedReportMetadata?.sort((a: Report, b: Report): number => {
+      const isAsc: boolean = sort.direction === 'asc';
+      const headersA: [string, string][] = Object.entries(a);
+      const headersB: [string, string][] = Object.entries(b);
+      for (const [index, element] of headersA.entries()) {
+        if (Number(sort.active) === index) {
+          console.log(element[1]);
+          return compare(element[1], headersB[index][1], isAsc);
+        }
+      }
+      return 0;
+    });
+  }
+
+  protected readonly String = String;
+}
+
+function compare(a: number | string, b: number | string, isAsc: boolean) {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
