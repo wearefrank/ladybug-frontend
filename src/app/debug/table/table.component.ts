@@ -673,18 +673,16 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   sortData(sort: Sort): any {
-    if (!sort.active || sort.direction === '') {
-      console.log(this.tableSettings.reportMetadata);
+    if (!sort.active || sort.direction === '' || !this.sortedReportMetadata) {
       this.sortedReportMetadata = [...this.tableSettings.reportMetadata];
       return;
     }
-    this.sortedReportMetadata?.sort((a: Report, b: Report): number => {
+    this.sortedReportMetadata.sort((a: Report, b: Report): number => {
       const isAsc: boolean = sort.direction === 'asc';
       const headersA: [string, string][] = Object.entries(a);
       const headersB: [string, string][] = Object.entries(b);
       for (const [index, element] of headersA.entries()) {
         if (Number(sort.active) === index) {
-          console.log(element[1]);
           return compare(element[1], headersB[index][1], isAsc);
         }
       }
@@ -695,6 +693,6 @@ export class TableComponent implements OnInit, OnDestroy {
   protected readonly String = String;
 }
 
-function compare(a: number | string, b: number | string, isAsc: boolean) {
+function compare(a: number | string, b: number | string, isAsc: boolean): number {
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
