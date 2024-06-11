@@ -205,7 +205,7 @@ export class HttpService {
 
   runReport(storage: string, reportId: string): Observable<TestResult> {
     return this.http
-      .post<void>('api/runner/run/' + storage + '/' + reportId, {
+      .post<void>(`api/runner/run/${storage}/${reportId}`, {
         headers: this.headers,
         observe: 'response',
       })
