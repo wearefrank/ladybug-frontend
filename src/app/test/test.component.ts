@@ -149,17 +149,14 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   resetRunner(): void {
-    this.httpService.reset().subscribe();
     this.reranReports = [];
   }
 
   run(reportId: string): void {
     if (this.generatorStatus === 'Enabled') {
-      this.httpService
-        .runReport(this.currentView.storageName, this.currentView.targetStorage, reportId)
-        .subscribe((response: any) => {
-          this.showResult(response);
-        });
+      this.httpService.runReport(this.currentView.targetStorage, reportId).subscribe((response: TestResult): void => {
+        this.showResult(response);
+      });
     } else {
       this.toastService.showWarning('Generator is disabled!');
     }

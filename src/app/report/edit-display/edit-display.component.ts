@@ -91,9 +91,10 @@ export class EditDisplayComponent {
 
   rerunReport(): void {
     let reportId: string = this.report.storageId;
-    this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
-      this.rerunSuccess = this.report == response;
-    });
+    // TODO: Fix the run report for debug tab after PR 433 of frontend project
+    // this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
+    //   this.rerunSuccess = this.report == response;
+    // });
   }
 
   closeReport(removeReportFromTree: boolean): void {
