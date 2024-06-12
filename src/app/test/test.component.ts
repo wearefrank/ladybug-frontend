@@ -154,7 +154,7 @@ export class TestComponent implements OnInit, AfterViewInit {
 
   run(reportId: string): void {
     if (this.generatorStatus === 'Enabled') {
-      this.httpService.runReport(this.currentView.targetStorage, reportId).subscribe((response: TestResult): void => {
+      this.httpService.runReport(this.currentView.storageName, reportId).subscribe((response: TestResult): void => {
         this.showResult(response);
       });
     } else {
