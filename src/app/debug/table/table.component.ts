@@ -417,7 +417,7 @@ export class TableComponent implements OnInit, OnDestroy {
   openSelected(): void {
     for (const report of this.tableSettings.reportMetadata) {
       if (report.checked) {
-        this.openReport(report.storageId);
+        this.openReport(report.debugVariables.storageId);
         if (!this.showMultipleFiles) {
           this.toastService.showWarning(
             'Please enable show multiple files in settings to open multiple files in the debug tree',
