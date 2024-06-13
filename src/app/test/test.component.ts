@@ -49,7 +49,6 @@ export class TestComponent implements OnInit, AfterViewInit {
   currentView: any = {
     metadataNames: ['storageId', 'name', 'path'],
     storageName: 'Test',
-    targetStorage: '',
   };
   updatePathAction: UpdatePathAction = 'move';
   @Output() openCompareReportsEvent = new EventEmitter<any>();
@@ -123,13 +122,6 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   loadData(path: any): void {
-    this.httpService.getViews().subscribe((views) => {
-      const defaultViewKey = Object.keys(views).find((view) => views[view].defaultView);
-      if (defaultViewKey) {
-        const selectedView = views[defaultViewKey];
-        this.currentView.targetStorage = selectedView.storageName;
-      }
-    });
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value) => {
         this.reports = value;
@@ -154,7 +146,7 @@ export class TestComponent implements OnInit, AfterViewInit {
 
   run(reportId: string): void {
     if (this.generatorStatus === 'Enabled') {
-      this.httpService.runReport(this.currentView.targetStorage, reportId).subscribe((response: TestResult): void => {
+      this.httpService.runReport(this.currentView.storageName, reportId).subscribe((response: TestResult): void => {
         this.showResult(response);
       });
     } else {
@@ -262,7 +254,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   replaceReport(reportId: string): void {
-    this.httpService.replaceReport(reportId, this.currentView.targetStorage).subscribe(() => {
+    this.httpService.replaceReport(reportId, this.currentView.storageName).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.id != reportId);
     });
   }
