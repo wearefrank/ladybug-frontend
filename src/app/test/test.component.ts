@@ -122,13 +122,6 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   loadData(path: any): void {
-    this.httpService.getViews().subscribe((views) => {
-      const defaultViewKey = Object.keys(views).find((view) => views[view].defaultView);
-      if (defaultViewKey) {
-        const selectedView = views[defaultViewKey];
-        this.currentView.storageName = selectedView.storageName;
-      }
-    });
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value) => {
         this.reports = value;
