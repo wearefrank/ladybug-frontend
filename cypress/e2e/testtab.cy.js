@@ -176,7 +176,7 @@ function copyTheReportsToTestTab(testSequence) {
   if(testSequence) {
     cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
   } else {
-    cy.contains('Simple report').parents('.item-name').click()
+    cy.get('[data-cy-debug-tree="root"] > app-tree-item').contains('Simple report').click()
   }
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
@@ -184,7 +184,7 @@ function copyTheReportsToTestTab(testSequence) {
   if(testSequence) {
     cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
   } else {
-    cy.contains('Another simple report').parents('.item-name').click()
+    cy.get('[data-cy-debug-tree="root"] > app-tree-item').contains('Another simple report').click()
   }
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Another simple report', 3, 'second');
