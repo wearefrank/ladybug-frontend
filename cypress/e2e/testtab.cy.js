@@ -28,8 +28,8 @@ describe('About the Test tab', () => {
   it('Test deleting a report', () => {
     cy.navigateToTestTabAndWait();
     cy.checkTestTableNumRows(2);
-    cy.get('#DeselectAllButton').click();
-    cy.get('#testReports').contains('Simple report').parent('tr').find('[data-cy-test="reportChecked"]').click();
+    cy.get('[data-cy-test="deselectAll"]').click();
+    cy.get('[data-cy-test="table"]').contains('Simple report').parent('tr').find('[data-cy-test="reportChecked"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
     cy.checkTestTableReportsAre(['Another simple report']);
