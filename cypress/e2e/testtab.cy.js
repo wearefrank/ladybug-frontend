@@ -20,7 +20,9 @@ describe('About the Test tab', () => {
     // When making videos is enabled, the number of frames is limited.
     // We want to see these storage ids. This is the reason for this wait.
     cy.wait(2000);
-    copyTheReportsToTestTab();
+    // When https://github.com/wearefrank/ladybug-frontend/issues/439 will have been fixed,
+    // make the argument true. Then this function can be refactored to have no argument again.
+    copyTheReportsToTestTab(false);
   });
 
   afterEach(() => cy.resetApp());
@@ -159,7 +161,7 @@ describe('About the Test tab', () => {
   // });
 });
 
-function copyTheReportsToTestTab() {
+function copyTheReportsToTestTab(testSequence) {
   cy.enableShowMultipleInDebugTree();
   cy.get('[data-cy-debug="selectAll"]').click();
   cy.get('[data-cy-debug="openSelected"]').click();
@@ -171,11 +173,19 @@ function copyTheReportsToTestTab() {
   cy.wait(100);
   cy.checkFileTreeLength(2);
   cy.wait(100);
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
+  if(testSequence) {
+    cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
+  } else {
+    cy.contains('Simple report').parents('.item-name').click()
+  }
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
   cy.wait(100);
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
+  if(testSequence) {
+    cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
+  } else {
+    cy.contains('Another simple report').parents('.item-name').click()
+  }
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Another simple report', 3, 'second');
   cy.wait(1000);
