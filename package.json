@@ -1,6 +1,6 @@
 {
   "name": "@wearefrank/ladybug",
-  "version": "0.0.56",
+  "version": "0.0.58",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config src/proxy.conf.json",

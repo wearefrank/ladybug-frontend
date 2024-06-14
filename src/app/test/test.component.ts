@@ -1,4 +1,4 @@
-import { AfterViewInit, OnInit, Component, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
+import { AfterViewInit, OnInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
@@ -18,6 +18,9 @@ import { ToastComponent } from '../shared/components/toast/toast.component';
 import { NgIf, NgFor } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, NgModel } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
+
+export const updatePathActionConst = ['move', 'copy'] as const;
+export type UpdatePathAction = (typeof updatePathActionConst)[number];
 
 @Component({
   selector: 'app-test',
@@ -46,8 +49,8 @@ export class TestComponent implements OnInit, AfterViewInit {
   currentView: any = {
     metadataNames: ['storageId', 'name', 'path'],
     storageName: 'Test',
-    targetStorage: '',
   };
+  updatePathAction: UpdatePathAction = 'move';
   @Output() openCompareReportsEvent = new EventEmitter<any>();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
@@ -119,13 +122,6 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   loadData(path: any): void {
-    this.httpService.getViews().subscribe((views) => {
-      const defaultViewKey = Object.keys(views).find((view) => views[view].defaultView);
-      if (defaultViewKey) {
-        const selectedView = views[defaultViewKey];
-        this.currentView.targetStorage = selectedView.storageName;
-      }
-    });
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value) => {
         this.reports = value;
@@ -145,17 +141,14 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   resetRunner(): void {
-    this.httpService.reset().subscribe();
     this.reranReports = [];
   }
 
   run(reportId: string): void {
     if (this.generatorStatus === 'Enabled') {
-      this.httpService
-        .runReport(this.currentView.storageName, this.currentView.targetStorage, reportId)
-        .subscribe((response: any) => {
-          this.showResult(response);
-        });
+      this.httpService.runReport(this.currentView.storageName, reportId).subscribe((response: TestResult): void => {
+        this.showResult(response);
+      });
     } else {
       this.toastService.showWarning('Generator is disabled!');
     }
@@ -261,7 +254,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   replaceReport(reportId: string): void {
-    this.httpService.replaceReport(reportId, this.currentView.targetStorage).subscribe(() => {
+    this.httpService.replaceReport(reportId, this.currentView.storageName).subscribe(() => {
       this.reranReports = this.reranReports.filter((report) => report.id != reportId);
     });
   }
@@ -287,16 +280,20 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.reports.forEach((report) => (report.checked = false));
   }
 
-  updatePath(action: string): void {
+  updatePath(): void {
     let reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       let path: string = this.moveToInputModel.value;
       path = this.transformPath(path);
-      const map: UpdatePathSettings = { path: path, action: action };
+      const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
     } else {
       this.toastService.showWarning('No Report Selected!');
     }
+  }
+
+  setUpdatePathAction(value: UpdatePathAction): void {
+    this.updatePathAction = value;
   }
 
   changeFilter(filter: string): void {
@@ -342,7 +339,7 @@ export class TestComponent implements OnInit, AfterViewInit {
 
   getFullPath(path: string, name: string): string {
     if (path) {
-      return `${path.replace(this.currentFilter, '')}/${name}`;
+      return `${path.replace(this.currentFilter, '')}${name}`;
     }
     return `/${name}`;
   }

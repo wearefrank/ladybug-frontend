@@ -1,9 +1,11 @@
 describe('Tests about copying', function() {
-  beforeEach(() => {
+  before(() => {
     cy.resetApp();
   });
 
-  after(() => {
+  beforeEach(() => cy.initializeApp());
+
+  afterEach(() => {
     cy.resetApp();
   });
 

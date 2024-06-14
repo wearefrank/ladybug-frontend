@@ -10,6 +10,7 @@ import { TestListItem } from '../interfaces/test-list-item';
 import { CloneReport } from '../interfaces/clone-report';
 import { UploadParams } from '../interfaces/upload-params';
 import { UpdatePathSettings } from '../interfaces/update-path-settings';
+import { TestResult } from '../interfaces/test-result';
 
 @Injectable({
   providedIn: 'root',
@@ -202,13 +203,9 @@ export class HttpService {
     return this.http.get<OptionsSettings>('api/testtool/reset').pipe(catchError(this.handleError()));
   }
 
-  reset(): Observable<void> {
-    return this.http.post<void>('api/runner/reset', {}).pipe(catchError(this.handleError()));
-  }
-
-  runReport(storage: string, targetStorage: string, reportId: string): Observable<void> {
+  runReport(storage: string, reportId: string): Observable<TestResult> {
     return this.http
-      .post<void>('api/runner/run/' + storage + '/' + targetStorage + '/' + reportId, {
+      .post<void>(`api/runner/run/${storage}/${reportId}`, {
         headers: this.headers,
         observe: 'response',
       })
