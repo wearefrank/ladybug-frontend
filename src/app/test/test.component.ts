@@ -166,7 +166,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   runSelected(): void {
-    this.helperService.getSelectedReports(this.reports).forEach((report) => this.run(String(report.storageId)));
+    this.helperService.getSelectedReports(this.reports).forEach((report) => this.run(report.storageId));
   }
 
   removeReranReportIfExists(id: string): void {
@@ -190,7 +190,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   showResult(result: TestResult): void {
-    const id: string = result.originalReport.storageId.toString();
+    const id: string = result.originalReport.storageId;
     this.removeReranReportIfExists(id);
     const reranReport: ReranReport = this.createReranReport(result, id);
     this.reranReports.push(reranReport);

@@ -181,7 +181,7 @@ export class HelperService {
 
   getSelectedIds(reports: any[]): string[] {
     let copiedIds: string[] = [];
-    this.getSelectedReports(reports).forEach((report) => copiedIds.push(String(report.storageId)));
+    this.getSelectedReports(reports).forEach((report: Report) => copiedIds.push(report.storageId));
     return copiedIds;
   }
 
