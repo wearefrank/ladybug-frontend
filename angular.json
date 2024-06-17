@@ -15,7 +15,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "outputPath": "dist/ladybug",
             "index": "src/index.html",
@@ -58,7 +58,10 @@
               "node_modules/font-awesome/css/font-awesome.css",
               "./node_modules/jqwidgets-ng/jqwidgets/styles/jqx.base.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "customWebpackConfig": {
+              "path": "webpack.config.js"
+            }
           },
           "configurations": {
             "production": {
