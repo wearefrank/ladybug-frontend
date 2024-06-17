@@ -30,7 +30,7 @@ Cypress.Commands.add('resetApp' as keyof Chainable, () => {
 });
 
 Cypress.Commands.add('clearTestReports' as keyof Chainable, () => {
-  cy.request('DELETE', 'http://localhost:4200/api/report/all/Test').then((resp) => {
+  cy.request('DELETE', '/api/report/all/Test').then((resp) => {
     expect(resp.status).equal(200);
   });
 });
