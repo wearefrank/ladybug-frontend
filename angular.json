@@ -59,9 +59,7 @@
               "./node_modules/jqwidgets-ng/jqwidgets/styles/jqx.base.css"
             ],
             "scripts": [],
-            "customWebpackConfig": {
-              "path": "webpack.config.js"
-            }
+            "indexTransform": "./index-html-transform.ts"
           },
           "configurations": {
             "production": {
