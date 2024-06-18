@@ -373,13 +373,13 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReportInTab(): void {
-    let reportTab: Report | undefined = this.tableSettings.reportMetadata.find((report) => report.checked);
+    const reportTab: Report | undefined = this.tableSettings.reportMetadata.find((report) => report.checked);
     if (!reportTab) {
       this.toastService.showDanger('Could not find report', 'No report found that was selected.');
       return;
     }
     this.httpService
-      .getReport(String(reportTab.storageId), this.viewSettings.currentView.storageName)
+      .getReport(reportTab.storageId, this.viewSettings.currentView.storageName)
       .subscribe((report: Report): void => {
         const reportData: ReportData = {
           report: report,
@@ -392,7 +392,7 @@ export class TableComponent implements OnInit, OnDestroy {
   openSelected(): void {
     for (const report of this.tableSettings.reportMetadata) {
       if (report.checked) {
-        this.openReport(String(report.storageId));
+        this.openReport(report.storageId);
         if (!this.showMultipleFiles) {
           this.toastService.showWarning(
             'Please enable show multiple files in settings to open multiple files in the debug tree',
@@ -422,7 +422,7 @@ export class TableComponent implements OnInit, OnDestroy {
     let compareReports: any = {};
     let selectedReports: string[] = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
-      .map((report) => String(report.storageId));
+      .map((report) => report.storageId);
     this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
       next: (data) => {
         const leftObject = data[selectedReports[0]];
@@ -612,7 +612,7 @@ export class TableComponent implements OnInit, OnDestroy {
       } else if (!isANumber && isBNumber) {
         return 1;
       }
-      return String(a).localeCompare(String(b));
+      return a.localeCompare(b);
     });
   }
 
@@ -682,17 +682,25 @@ export class TableComponent implements OnInit, OnDestroy {
       const headersA: [string, string][] = Object.entries(a);
       const headersB: [string, string][] = Object.entries(b);
       for (const [index, element] of headersA.entries()) {
-        if (Number(sort.active) === index) {
-          return compare(element[1], headersB[index][1], isAsc);
+        if (this.getMetadataNameFromHeader(sort.active) === element[0]) {
+          return this.compare(element[1], headersB[index][1], isAsc);
         }
       }
       return 0;
     });
   }
 
-  protected readonly String = String;
-}
+  getMetadataNameFromHeader(header: string) {
+    const index = this.viewSettings.currentView.metadataLabels.indexOf(header);
+    return this.viewSettings.currentView.metadataNames[index];
+  }
 
-function compare(a: number | string, b: number | string, isAsc: boolean): number {
-  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  compare(a: string, b: string, isAsc: boolean): number {
+    if (Number.isNaN(Number(a)) || Number.isNaN(b)) {
+      return (a < b ? -1 : a > b ? 1 : 0) * (isAsc ? 1 : -1);
+    }
+    const numberA: number = Number(a);
+    const numberB: number = Number(b);
+    return (numberA < numberB ? -1 : numberA > numberB ? 1 : 0) * (isAsc ? 1 : -1);
+  }
 }

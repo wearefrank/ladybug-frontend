@@ -104,10 +104,10 @@
               <th class="table-row-checkbox header-padding">
                 <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
               </th>
-              @for (header of viewSettings.currentView.metadataLabels; let index = $index; track header) {
+              @for (header of viewSettings.currentView.metadataLabels; track header) {
                 <th data-cy-debug="metadataLabel"
                     class="table-id-cell header-cell header-padding"
-                    [mat-sort-header]="String(index)"
+                    [mat-sort-header]="header"
                     [title]="header">
                   {{ getShortenedTableHeaderNames(header) }}
                 </th>

@@ -108,7 +108,7 @@ export class EditDisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    let queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
+    let queryString: string = this.report.xml ? this.report.storageId : this.report.uid.split('#')[0];
     this.helperService.download(queryString + '&', this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
   }

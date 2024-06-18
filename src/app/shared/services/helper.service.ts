@@ -96,17 +96,14 @@ export class HelperService {
     let index: number = 0;
     let parentMap: any[] = [];
 
-    let showingId: string = this.getCheckpointOrStorageId(report, true);
+    const showingId: string = this.getCheckpointOrStorageId(report, true);
     let rootNode = this.createNode(report, showingId, '', index++, -1);
     this.createChildNodes(rootNode, index, parentMap);
     return rootNode;
   }
 
   createNode(report: Report, showingId: string, icon: string, index: number, level: number) {
-    let expanded: boolean = true;
-    if (level > 0) {
-      expanded = false;
-    }
+    const expanded: boolean = level <= 0;
     return {
       label: showingId + report.name,
       icon: icon,
