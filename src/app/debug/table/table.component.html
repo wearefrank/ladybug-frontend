@@ -7,9 +7,15 @@
       </div>
     }
     <div class="row d-flex align-items-center">
-      <app-button data-cy-debug="refresh" icon="fa fa-refresh" title="Refresh" (click)="refresh()"></app-button>
-      <app-button data-cy-debug="openSettings" icon="fa fa-cog" title="Settings" (click)="openSettingsModal()"></app-button>
-      <app-button data-cy-debug="filter" icon="fa fa-filter" title="Filter" (click)="toggleFilter()"></app-button>
+      <button data-cy-debug="refresh" class="btn btn-info btn-table" title="Refresh" (click)="refresh()">
+        <i class="fa fa-refresh"></i>
+      </button>
+      <button data-cy-debug="openSettings" class="btn btn-info btn-table" title="Settings" (click)="openSettingsModal()">
+        <i class="fa fa-cog"></i>
+      </button>
+      <button data-cy-debug="filter" class="btn btn-info btn-table" title="Filter" (click)="toggleFilter()">
+        <i class="fa fa-filter"></i>
+      </button>
       <div ngbDropdown title="Download">
         <button data-cy-debug="download" class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
           <i class="fa fa-download px-2"></i><span class="caret"></span>
@@ -25,8 +31,12 @@
         <i class="fa fa-upload"></i>
         <input #uploadFileTable (change)="uploadReports($event)" type="file" id="uploadFileTable">
       </button>
-      <app-button data-cy-debug="openSelected" title="Open Selected Reports" text="Open Selected" (click)="openSelected()"></app-button>
-      <app-button data-cy-debug="delete" title="Delete" icon="fa fa-trash" (click)="deleteSelected()"></app-button>
+      <button data-cy-debug="openSelected" class="btn btn-info btn-table" title="Open Selected Reports" (click)="openSelected()">
+        Open Selected
+      </button>
+      <button data-cy-debug="delete" class="btn btn-info btn-table" title="Refresh" (click)="deleteSelected()">
+        <i class="fa fa-trash"></i>
+      </button>
 
       <div class="input-group input-group-container">
         <input data-cy-debug="displayAmount" type="number" class="form-control input-field"
@@ -69,10 +79,14 @@
 
       @switch (getAmountOfReportsSelected()) {
         @case (1) {
-          <app-button text="Open In New Tab" (click)="openReportInTab()"></app-button>
+          <button class="btn btn-info btn-table" title="Open In New Tab" (click)="openReportInTab()">
+            Open In New Tab
+          </button>
         }
         @case (2) {
-          <app-button text="Compare" title="Compare" (click)="compareTwoReports()"></app-button>
+          <button class="btn btn-info btn-table" title="Compare" (click)="compareTwoReports()">
+            Compare
+          </button>
         }
       }
       <app-active-filters class="ml-2" [activeFilters]="currentFilters" (click)="toggleFilter()"></app-active-filters>
