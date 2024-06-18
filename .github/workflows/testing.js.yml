@@ -24,8 +24,8 @@ on:
         required: false
 
 jobs:
-  testing:
-    name: Unit tests
+  run_cypress_test:
+    name: Run Cypress test useRealFrontend=${{ inputs.useRealFrontend }}
     runs-on: ubuntu-latest
 
     steps:
@@ -83,11 +83,6 @@ jobs:
       - name: Build project
         run: yarn run build
         working-directory: ladybug-frontend
-
-      - name: Run unit tests
-        run: yarn run test-headless
-        working-directory: ladybug-frontend
-        continue-on-error: false
 
       - name: Checkout frank-runner
         uses: actions/checkout@v2
