@@ -92,3 +92,8 @@ th {
 .alert-danger {
   margin-bottom: 0;
 }
+
+.btn-table {
+  margin: .5rem .25rem;
+  padding: 0.375rem 1rem;
+}
