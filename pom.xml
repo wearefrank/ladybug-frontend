@@ -10,7 +10,7 @@
 		<meta-inf.maven.output>${project.build.outputDirectory}/META-INF/maven/${project.groupId}/${project.artifactId}</meta-inf.maven.output>
 		<!-- For pom.properties -->
 		<version>${project.version}</version>
-    <frontend.source.location>${basedir}/dist</frontend.source.location>
+		<compiled.frontend.location>${basedir}/dist</compiled.frontend.location>
 	</properties>
 	<build>
 		<plugins>
@@ -24,47 +24,47 @@
 							<directory>${project.build.directory}</directory>
 						</fileset>
 						<fileset>
-							<directory>${frontend.source.location}</directory>
+							<directory>${compiled.frontend.location}</directory>
 						</fileset>
 					</filesets>
 				</configuration>
 			</plugin>
 			<plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.3.0</version>
-        <configuration>
-          <workingDirectory>${frontend.source.location}</workingDirectory>
-        </configuration>
-        <executions>
-          <execution>
-            <id>yarn install</id>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <executable>yarn</executable>
-              <arguments>
-                <argument>install</argument>
-                <argument>--immutable</argument>
-              </arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>ng build</id>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <executable>yarn</executable>
-              <arguments>
-                <argument>build</argument>
-              </arguments>
-            </configuration>
-          </execution>
-        </executions>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<workingDirectory>${project.basedir}</workingDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>yarn install</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<executable>yarn</executable>
+								<arguments>
+									<argument>install</argument>
+									<argument>--immutable</argument>
+								</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>ng build</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<executable>yarn</executable>
+							<arguments>
+								<argument>build</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -96,7 +96,7 @@
 							<outputDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}/</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${project.basedir}/dist/ladybug</directory>
+									<directory>${compiled.frontend.location}/ladybug</directory>
 									<filtering>false</filtering>
 								</resource>
 							</resources>
