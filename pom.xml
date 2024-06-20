@@ -10,6 +10,7 @@
 		<meta-inf.maven.output>${project.build.outputDirectory}/META-INF/maven/${project.groupId}/${project.artifactId}</meta-inf.maven.output>
 		<!-- For pom.properties -->
 		<version>${project.version}</version>
+    <frontend.source.location>${basedir}/dist</frontend.source.location>
 	</properties>
 	<build>
 		<plugins>
@@ -23,37 +24,47 @@
 							<directory>${project.build.directory}</directory>
 						</fileset>
 						<fileset>
-							<directory>${basedir}/dist</directory>
+							<directory>${frontend.source.location}</directory>
 						</fileset>
 					</filesets>
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-					<execution>
-						<id>build frontend code into folder dist</id>
-						<!-- Must happen before copying from dist to target -->
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<target>
-								<exec executable="npm" failonerror="true">
-									<arg value="install" />
-									<arg value="--immutable" />
-								</exec>
-								<exec executable="yarn" failonerror="true">
-									<arg value="ng" />
-									<arg value="build" />
-								</exec>
-							</target>
-						</configuration>
-					</execution>
-				</executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <workingDirectory>${frontend.source.location}</workingDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>yarn install</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <executable>yarn</executable>
+              <arguments>
+                <argument>install</argument>
+                <argument>--immutable</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>ng build</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <executable>yarn</executable>
+              <arguments>
+                <argument>build</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
