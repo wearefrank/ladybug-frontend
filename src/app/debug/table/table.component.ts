@@ -664,7 +664,7 @@ export class TableComponent implements OnInit, OnDestroy {
           longestViewName = key;
         }
       }
-      this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
+      this.viewDropdownBoxWidth = `{longestViewName.length / 2}rem`;
     }
   }
 
