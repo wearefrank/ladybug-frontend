@@ -8,6 +8,8 @@
 
 	<properties>
 		<meta-inf.maven.output>${project.build.outputDirectory}/META-INF/maven/${project.groupId}/${project.artifactId}</meta-inf.maven.output>
+		<!-- For pom.properties -->
+		<version>${project.version}</version>
 	</properties>
 	<build>
 		<plugins>
