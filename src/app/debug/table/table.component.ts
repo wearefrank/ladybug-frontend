@@ -555,7 +555,7 @@ export class TableComponent implements OnInit, OnDestroy {
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
     const queryString: string = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
-      .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '');
+      .reduce((totalQuery: string, selectedReport: any) => `${totalQuery}id=${selectedReport.storageId}&`, '');
     if (queryString === '') {
       this.toastService.showWarning('No reports selected to download');
     } else if (this.viewSettings.currentView) {
