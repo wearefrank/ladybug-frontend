@@ -67,7 +67,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.loadRootData();
+    this.loadData('');
   }
 
   openCloneModal(): void {
@@ -87,7 +87,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.loadRootData();
+    this.loadData('');
     this.getGeneratorStatus();
   }
 
@@ -139,16 +139,12 @@ export class TestComponent implements OnInit, AfterViewInit {
             this.testFileTreeComponent.selectItem(path);
           });
         } else {
-          this.loadRootData();
+          setTimeout(() => {
+            this.testFileTreeComponent.tree.selectItem(this.testFileTreeComponent.rootFolder.name);
+          });
         }
       },
       error: () => catchError(this.httpService.handleError()),
-    });
-  }
-
-  loadRootData(): void {
-    setTimeout(() => {
-      this.testFileTreeComponent.tree.selectItem(this.testFileTreeComponent.rootFolder.name);
     });
   }
 
@@ -225,7 +221,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.httpService
       .deleteReport(this.helperService.getSelectedIds(this.reports), this.currentView.storageName)
       .subscribe(() => {
-        this.loadRootData();
+        this.loadData('');
       });
   }
 
@@ -248,9 +244,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     if (file) {
       const formData: FormData = new FormData();
       formData.append('file', file);
-      this.httpService
-        .uploadReportToStorage(formData, this.currentView.storageName)
-        .subscribe(() => this.loadRootData());
+      this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData(''));
     }
   }
 
@@ -282,7 +276,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     let data: any = {};
     data[this.currentView.storageName] = copiedIds;
     this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
-      this.loadRootData();
+      this.loadData('');
     });
   }
 
