@@ -1,6 +1,9 @@
 describe('About the Test tab', () => {
-  beforeEach(() => {
+  before(() => {
     cy.resetApp();
+  });
+
+  beforeEach(() => {
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
@@ -20,15 +23,13 @@ describe('About the Test tab', () => {
     copyTheReportsToTestTab();
   });
 
-  afterEach(() => {
-    cy.clearDebugStore();
-  });
+  afterEach(() => cy.resetApp());
 
   it('Test deleting a report', () => {
     cy.navigateToTestTabAndWait();
     cy.checkTestTableNumRows(2);
-    cy.get('#DeselectAllButton').click();
-    cy.get('#testReports tr').eq(1).find('[data-cy-test="reportChecked"]').click();
+    cy.get('[data-cy-test="deselectAll"]').click();
+    cy.get('[data-cy-test="table"]').contains('Simple report').parent('tr').find('[data-cy-test="reportChecked"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
     cy.checkTestTableReportsAre(['Another simple report']);
@@ -40,7 +41,6 @@ describe('About the Test tab', () => {
   it('Test select all by deleting', () => {
     cy.get('[data-cy-nav-tab="testTab"]').click();
     cy.checkTestTableNumRows(2);
-
     cy.get('[data-cy-test="selectAll"]').click();
     checkTestTabTwoReportsSelected();
     cy.get('[data-cy-test="deleteSelected"]').click();
@@ -80,9 +80,7 @@ describe('About the Test tab', () => {
         )[0];
         expect(newFile).to.contain('Ladybug Test');
         expect(newFile).to.contain('2 reports');
-        cy.readFile(cy.functions.downloadPath(newFile), 'binary', {
-          timeout: 15000,
-        })
+        cy.readFile(cy.functions.downloadPath(newFile), 'binary')
           .should((buffer) => expect(buffer.length).to.be.gt(10))
           .then((buffer) => {
             cy.log(`Number of read bytes: ${buffer.length}`);
@@ -135,7 +133,7 @@ describe('About the Test tab', () => {
   //       cy.log('After download, downloads folder contains files: ' + filesAfter.toString());
   //       const newFile = filesAfter.filter(file => !filesBefore.includes(file))[0];
   //       expect(newFile).to.contain('Simple report.ttr');
-  //       cy.readFile(cy.functions.downloadPath(newFile), 'binary', {timeout: 15000})
+  //       cy.readFile(cy.functions.downloadPath(newFile), 'binary')
   //       .should(buffer => expect(buffer.length).to.be.gt(10)).then(buffer => {
   //         cy.log(`Number of read bytes: ${buffer.length}`);
   //       });

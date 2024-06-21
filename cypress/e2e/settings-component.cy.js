@@ -1,15 +1,13 @@
 describe('Tests for settings component', () => {
+  before(() => cy.resetApp());
+
   beforeEach(() => {
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
   });
 
-  afterEach(() => {
-    cy.clearDebugStore();
-    cy.deleteAllTestReports();
-    cy.clearLocalStorage()
-  })
+  afterEach(() => cy.resetApp());
 
   it('should alter spacing when spacing setting is altered', () => {
     cy.get('[data-cy-debug="openSettings"]').as('openSettingsModal').click();
@@ -44,7 +42,7 @@ describe('Tests for settings component', () => {
     cy.get('[data-cy-settings="close"]').click();
     cy.get('[data-cy-record-table-index="0"]').click();
     cy.get('[data-cy-record-table-index="1"]').click();
-    cy.checkFileTreeLength(1)
+    cy.checkFileTreeLength(1);
     cy.get('@openSettingsModal').click();
     cy.get('[data-cy-settings="showAmount"]').click();
     cy.get('[data-cy-settings="showAmount"]').should('have.attr', 'value', 'true');
@@ -54,6 +52,6 @@ describe('Tests for settings component', () => {
     cy.get('[data-cy-debug="openSettings"]').as('openSettingsModal').click();
     cy.get('[data-cy-settings="showAmount"]').click();
     cy.get('[data-cy-settings="close"]').click();
-    cy.checkFileTreeLength(1)
+    cy.checkFileTreeLength(1);
   });
 });

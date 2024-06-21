@@ -1,8 +1,11 @@
 describe('Refresh', () => {
-  beforeEach(() => {
-    cy.clearDebugStore();
-    cy.initializeApp();
+  before(() => {
+    cy.resetApp();
   });
+
+  beforeEach(() => cy.initializeApp());
+
+  afterEach(() => cy.resetApp());
 
   it('New reports are only shown on refresh', () => {
     cy.get('[data-cy-debug="tableBody"]').find('tr').should('not.exist');

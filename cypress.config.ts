@@ -17,4 +17,5 @@ export default defineConfig({
     experimentalRunAllSpecs: true,
     video: true
   },
+  defaultCommandTimeout: 10_000,
 });

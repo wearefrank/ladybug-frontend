@@ -1,13 +1,7 @@
 describe('Edit tests', () => {
-  beforeEach(() => {
-    cy.clearDebugStore();
-    cy.deleteAllTestReports();
-  });
+  before(() => cy.resetApp());
 
-  after(() => {
-    cy.clearDebugStore();
-    cy.deleteAllTestReports();
-  });
+  afterEach(() => cy.resetApp());
 
   it('Edit report in test tab', () => {
     prepareEdit();
@@ -17,8 +11,8 @@ describe('Edit tests', () => {
     cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
-      .type('{ctrl}a')
-      .type('Hello Original World!');
+      .type('{selectAll}Hello Original World!')
+    cy.wait(100)
     cy.get('[data-cy-test-editor="save"]').click();
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.get('[data-cy-changes-form-before="message"]').contains('Hello World!');
@@ -29,8 +23,8 @@ describe('Edit tests', () => {
     cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
-      .type('{ctrl}a')
-      .type('Goodbye Original World!');
+      .type('{selectAll}Goodbye Original World!');
+    cy.wait(100)
     cy.get('[data-cy-test-editor="save"]').click();
     cy.get('button:contains(Yes)').click();
     cy.get('[data-cy-nav-tab="testTab"]').click();
@@ -55,8 +49,8 @@ describe('Edit tests', () => {
     cy.get('[data-cy-test-editor="editor"]')
       .click()
       .focused()
-      .type('{ctrl}a')
-      .type('Hello Original World!');
+      .type('{selectAll}Hello Original World!')
+    cy.wait(100)
     cy.get('[data-cy-test-editor="save"]').click();
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.contains('Hello Original World!');

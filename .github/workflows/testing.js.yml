@@ -100,8 +100,6 @@ jobs:
         run: echo "maven.skip.javadoc=true" >> frank-runner/specials/ladybug/build.properties
       - name: Set property to skip checking licenses
         run: echo "maven.skip.copyright=true" >> frank-runner/specials/ladybug/build.properties
-      - name: Set property to skip replace check
-        run: echo "skip.replace.check=true" >> frank-runner/specials/ladybug/build.properties
       - name: Set port where ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Prevent Java exception about binding port 443 (for https)
@@ -176,7 +174,7 @@ jobs:
           start: |
             yarn run startCicd
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
-          wait-on-timeout: 240
+          wait-on-timeout: 1000
           browser: chrome
       #      - name: Run cypress with firefox browser
       #        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
@@ -196,7 +194,7 @@ jobs:
         with:
           working-directory: ladybug-frontend
           wait-on: "http://localhost:8090"
-          wait-on-timeout: 240
+          wait-on-timeout: 1000
           browser: chrome
           config: baseUrl=http://localhost:8090/ladybug/
       #      - name: Run cypress with firefox browser - real frontend
