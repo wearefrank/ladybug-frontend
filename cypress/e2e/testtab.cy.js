@@ -22,7 +22,7 @@ describe('About the Test tab', () => {
     cy.wait(2000);
     // When https://github.com/wearefrank/ladybug-frontend/issues/439 will have been fixed,
     // make the argument true. Then this function can be refactored to have no argument again.
-    copyTheReportsToTestTab(false);
+    copyTheReportsToTestTab();
   });
 
   afterEach(() => cy.resetApp());
@@ -161,7 +161,7 @@ describe('About the Test tab', () => {
   // });
 });
 
-function copyTheReportsToTestTab(testSequence) {
+function copyTheReportsToTestTab() {
   cy.enableShowMultipleInDebugTree();
   cy.get('[data-cy-debug="selectAll"]').click();
   cy.get('[data-cy-debug="openSelected"]').click();
@@ -173,11 +173,10 @@ function copyTheReportsToTestTab(testSequence) {
   cy.wait(100);
   cy.checkFileTreeLength(2);
   cy.wait(100);
-  if(testSequence) {
-    cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
-  } else {
-    cy.get('[data-cy-debug-tree="root"] > app-tree-item').contains('Simple report').click()
-  }
+  // TODO: Uncomment this line when the sequence in the debug tree has been fixed.
+  // cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
+  // TODO: And at that time also remove the line below.
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').contains('Simple report').click()
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
   cy.wait(100);
