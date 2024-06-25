@@ -268,6 +268,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   replaceReport(reportId: string): void {
     this.httpService.replaceReport(reportId, this.currentView.targetStorage).subscribe(() => {
       this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
+    });
     this.httpService.replaceReport(reportId, this.currentView.storageName).subscribe(() => {
       this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
     });
