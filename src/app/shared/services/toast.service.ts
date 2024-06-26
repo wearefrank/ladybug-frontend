@@ -1,4 +1,4 @@
-import { Injectable, TemplateRef } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { Toast } from '../interfaces/toast';
 
@@ -8,6 +8,7 @@ import { Toast } from '../interfaces/toast';
 export class ToastService {
   private toastSubject: Subject<Toast> = new ReplaySubject(1);
   toastObservable: Observable<Toast> = this.toastSubject.asObservable();
+  readonly TOASTER_LINE_LENGTH: number = 37;
 
   constructor() {}
 

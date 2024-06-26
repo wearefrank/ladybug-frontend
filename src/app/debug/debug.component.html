@@ -1,7 +1,4 @@
 <div class="box">
-  @if (errors) {
-    <div class="text-danger h4 my-2 mx-1">{{ errors }}</div>
-  }
   <div class="row top">
     <div class="w-100 h-100">
       <app-table (openReportEvent)="addReportToTree($event)" (viewChange)="onViewChange($event)"></app-table>

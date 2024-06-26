@@ -5,6 +5,7 @@ import { DebugTreeComponent } from './debug-tree/debug-tree.component';
 import { Subject } from 'rxjs';
 import { DebugReportService } from './debug-report.service';
 import { HttpService } from '../shared/services/http.service';
+import { ToastService } from '../shared/services/toast.service';
 
 @Component({
   selector: 'app-debug',
@@ -22,16 +23,16 @@ export class DebugComponent implements OnInit, AfterViewInit {
 
   treeWidth: Subject<void> = new Subject<void>();
   bottomHeight: number = 0;
-  errors: string | undefined;
 
   constructor(
     private debugReportService: DebugReportService,
     private httpService: HttpService,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
     this.subscribeToServices();
-    this.retrieveAndSetErrorsAndWarnings();
+    this.retrieveErrorsAndWarnings();
   }
 
   ngAfterViewInit(): void {
@@ -47,11 +48,24 @@ export class DebugComponent implements OnInit, AfterViewInit {
     this.debugReportService.changeViewObservable.subscribe((view) => (this.currentView = view));
   }
 
-  retrieveAndSetErrorsAndWarnings(): void {
+  retrieveErrorsAndWarnings(): void {
     if (this.currentView.currentViewName) {
       this.httpService
-        .getWarningsAndErrors(this.currentView.currentViewName)
-        .subscribe((value: string | undefined) => (this.errors = value));
+        .getWarningsAndErrors(this.currentView.storageName)
+        .subscribe((value: string | undefined): void => {
+          if (value) {
+            this.showErrorsAndWarnings(value);
+          }
+        });
+    }
+  }
+
+  showErrorsAndWarnings(value: string): void {
+    if (value.length > this.toastService.TOASTER_LINE_LENGTH) {
+      const errorSnippet: string = value.slice(0, Math.max(0, this.toastService.TOASTER_LINE_LENGTH)).trim() + '...';
+      this.toastService.showDanger(errorSnippet, value);
+    } else {
+      this.toastService.showDanger(value, value);
     }
   }
 
@@ -80,6 +94,6 @@ export class DebugComponent implements OnInit, AfterViewInit {
 
   onViewChange(viewName: string) {
     this.currentView.currentViewName = viewName;
-    this.retrieveAndSetErrorsAndWarnings();
+    this.retrieveErrorsAndWarnings();
   }
 }

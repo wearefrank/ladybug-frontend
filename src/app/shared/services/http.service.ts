@@ -254,7 +254,9 @@ export class HttpService {
   }
 
   getWarningsAndErrors(storageName: string): Observable<string | undefined> {
-    const cleanStorageName = storageName.replace(' ', '');
-    return this.http.get(`api/report/warningsAndErrors/${cleanStorageName}`).pipe(catchError(this.handleError()));
+    const cleanStorageName = storageName.replaceAll(' ', '');
+    return this.http
+      .get(`api/report/warningsAndErrors/${cleanStorageName}`, { responseType: 'text' })
+      .pipe(catchError(this.handleError()));
   }
 }
