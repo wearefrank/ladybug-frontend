@@ -4,7 +4,6 @@ import { Report } from '../shared/interfaces/report';
 import { DebugTreeComponent } from './debug-tree/debug-tree.component';
 import { Subject } from 'rxjs';
 import { DebugReportService } from './debug-report.service';
-import { TabService } from '../shared/services/tab.service';
 import { HttpService } from '../shared/services/http.service';
 
 @Component({
@@ -23,17 +22,16 @@ export class DebugComponent implements OnInit, AfterViewInit {
 
   treeWidth: Subject<void> = new Subject<void>();
   bottomHeight: number = 0;
-  errors?: string;
+  errors: string | undefined;
 
   constructor(
     private debugReportService: DebugReportService,
-    private tabService: TabService,
     private httpService: HttpService,
   ) {}
 
   ngOnInit(): void {
     this.subscribeToServices();
-    this.getErrorsAndWarnings();
+    this.retrieveAndSetErrorsAndWarnings();
   }
 
   ngAfterViewInit(): void {
@@ -49,12 +47,12 @@ export class DebugComponent implements OnInit, AfterViewInit {
     this.debugReportService.changeViewObservable.subscribe((view) => (this.currentView = view));
   }
 
-  getErrorsAndWarnings(): void {
-    this.httpService.getWarningsAndErrors(this.currentView.currentViewName).subscribe((value): void => {
-      if (value) {
-        this.errors = value;
-      }
-    });
+  retrieveAndSetErrorsAndWarnings(): void {
+    if (this.currentView.currentViewName) {
+      this.httpService
+        .getWarningsAndErrors(this.currentView.currentViewName)
+        .subscribe((value: string | undefined) => (this.errors = value));
+    }
   }
 
   listenToHeight(): void {
@@ -82,6 +80,6 @@ export class DebugComponent implements OnInit, AfterViewInit {
 
   onViewChange(viewName: string) {
     this.currentView.currentViewName = viewName;
-    this.getErrorsAndWarnings();
+    this.retrieveAndSetErrorsAndWarnings();
   }
 }
