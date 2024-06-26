@@ -5,6 +5,8 @@ import { DebugReportService } from './debug-report.service';
 import { AngularSplitModule } from 'angular-split';
 import { TableComponent } from './table/table.component';
 import { ReportComponent } from '../report/report.component';
+import { ToastService } from '../shared/services/toast.service';
+import { HttpService } from '../shared/services/http.service';
 
 @Component({
   selector: 'app-debug',
@@ -23,10 +25,15 @@ export class DebugComponent implements OnInit, OnDestroy {
 
   private viewSubscription!: Subscription;
 
-  constructor(private debugReportService: DebugReportService) {}
+  constructor(
+    private debugReportService: DebugReportService,
+    private httpService: HttpService,
+    private toastService: ToastService,
+  ) {}
 
   ngOnInit(): void {
     this.subscribeToServices();
+    this.retrieveErrorsAndWarnings();
   }
 
   ngOnAfterViewInit() {
@@ -53,5 +60,27 @@ export class DebugComponent implements OnInit, OnDestroy {
 
   onViewChange(viewName: string): void {
     this.currentView.currentViewName = viewName;
+    this.retrieveErrorsAndWarnings();
+  }
+
+  retrieveErrorsAndWarnings(): void {
+    if (this.currentView.currentViewName) {
+      this.httpService
+        .getWarningsAndErrors(this.currentView.storageName)
+        .subscribe((value: string | undefined): void => {
+          if (value) {
+            this.showErrorsAndWarnings(value);
+          }
+        });
+    }
+  }
+
+  showErrorsAndWarnings(value: string): void {
+    if (value.length > this.toastService.TOASTER_LINE_LENGTH) {
+      const errorSnippet: string = value.slice(0, Math.max(0, this.toastService.TOASTER_LINE_LENGTH)).trim() + '...';
+      this.toastService.showDanger(errorSnippet, value);
+    } else {
+      this.toastService.showDanger(value, value);
+    }
   }
 }
