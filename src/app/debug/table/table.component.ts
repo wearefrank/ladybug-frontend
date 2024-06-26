@@ -63,6 +63,7 @@ export class TableComponent implements OnInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
   metadataCount = 0;
   viewSettings: ViewSettings = {};
+  selectedView?: View;
   //Temporary fix, issue has been created (https://github.com/wearefrank/ladybug-frontend/issues/383) to refactor this and the debug component
   @Output() viewChange: Subject<string> = new Subject<string>();
 
@@ -178,8 +179,16 @@ export class TableComponent implements OnInit, OnDestroy {
     this.filterErrorSubscription?.unsubscribe();
   }
 
+  checkMetadataAndStorageNames(): boolean {
+    return this.viewSettings.currentView &&
+      this.viewSettings.currentView.metadataNames &&
+      this.viewSettings.currentView.storageName
+      ? true
+      : false;
+  }
+
   retrieveRecords(): void {
-    if (this.viewSettings.currentView?.metadataNames && this.viewSettings.currentView?.storageName) {
+    if (this.checkMetadataAndStorageNames()) {
       this.doneRetrieving = false;
       this.tableSettings.reportMetadata = [];
       const httpServiceSubscription = this.httpService
@@ -187,8 +196,8 @@ export class TableComponent implements OnInit, OnDestroy {
           this.tableSettings.displayAmount,
           this.tableSettings.filterValues,
           this.tableSettings.filterHeaders,
-          this.viewSettings.currentView.metadataNames,
-          this.viewSettings.currentView.storageName,
+          this.viewSettings.currentView!.metadataNames,
+          this.viewSettings.currentView!.storageName,
         )
         .subscribe({
           next: (debugVariablesList: Record<string, string>[]) => {
@@ -220,9 +229,9 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   getUserHelp(): void {
-    if (this.viewSettings.currentView?.metadataNames && this.viewSettings.currentView?.storageName) {
+    if (this.checkMetadataAndStorageNames()) {
       this.httpService
-        .getUserHelp(this.viewSettings.currentView?.storageName, this.viewSettings.currentView?.metadataNames)
+        .getUserHelp(this.viewSettings.currentView!.storageName, this.viewSettings.currentView!.metadataNames)
         .subscribe({
           next: (response: Report[]) => {
             this.tableSettings.metadataHeaders = response;
@@ -237,17 +246,16 @@ export class TableComponent implements OnInit, OnDestroy {
     this.retrieveRecords();
   }
 
-  changeView(event: any): void {
-    if (this.viewSettings.views) {
+  changeView(): void {
+    if (this.viewSettings.views && this.selectedView) {
       this.allRowsSelected = false;
-      this.viewSettings.currentView = this.viewSettings.views[event.target.value];
-      this.viewSettings.currentViewName = event.target.value;
+      this.viewSettings.currentView = this.viewSettings.views[this.selectedView.name];
       this.clearFilters();
       this.debugReportService.changeView(this.viewSettings.currentView);
       this.selectedRow = -1;
       if (this.viewSettings.currentView.metadataNames) {
         this.filterService.setMetadataLabels(this.viewSettings.currentView.metadataNames);
-        this.viewChange.next(this.viewSettings.currentViewName ?? '');
+        this.viewChange.next(this.viewSettings.currentView.name);
       }
     }
   }
@@ -269,29 +277,32 @@ export class TableComponent implements OnInit, OnDestroy {
 
   loadData(): void {
     this.loadReportInProgressThreshold();
-    this.httpService.getViews().subscribe((views) => {
-      if (this.viewSettings.currentView && Object.keys(this.viewSettings.currentView).length > 0) {
-        this.debugReportService.changeView(this.viewSettings.currentView);
-      } else {
-        this.viewSettings.views = views;
-        this.calculateViewDropDownWidth();
-        this.viewSettings.currentViewName = Object.keys(this.viewSettings.views).find(
-          (view) => this.viewSettings.views?.[view].defaultView,
-        );
+    this.httpService.getViews().subscribe((views: Record<string, View>) => {
+      this.viewSettings.views = views;
+      this.calculateViewDropDownWidth();
 
-        if (this.viewSettings.currentViewName) {
-          this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
-          this.viewSettings.currentView.name = this.viewSettings.currentViewName;
-          this.debugReportService.changeView(this.viewSettings.currentView);
-        }
+      this.setCurrentView(views);
+      if (this.viewSettings.currentView) {
+        this.debugReportService.changeView(this.viewSettings.currentView);
       }
+
       this.retrieveRecords();
       this.getUserHelp();
+
       if (this.viewSettings.currentView?.metadataTypes) {
         this.filterService.setMetadataTypes(this.viewSettings.currentView.metadataTypes);
       }
     });
     this.loadReportInProgressSettings();
+  }
+
+  setCurrentView(views: Record<string, View>): void {
+    Object.keys(views).forEach((view) => {
+      if (this.viewSettings.views?.[view].defaultView) {
+        this.viewSettings.currentView = this.viewSettings.views?.[view];
+        this.viewSettings.currentView.name = view;
+      }
+    });
   }
 
   loadMetadataCount(): void {
@@ -396,14 +407,18 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openReportInTab(): void {
     const reportTab: DebugListItem = this.tableSettings.reportMetadata.find((report: DebugListItem) => report.checked);
-    const currentView: View = this.viewSettings.currentView ?? ({} as View);
-    if (reportTab && currentView.storageName && reportTab.debugVariables.storageId) {
+    if (
+      reportTab &&
+      this.viewSettings.currentView &&
+      this.viewSettings.currentView.storageName &&
+      reportTab.debugVariables.storageId
+    ) {
       this.httpService
-        .getReport(reportTab.debugVariables.storageId, currentView.storageName)
+        .getReport(reportTab.debugVariables.storageId, this.viewSettings.currentView.storageName)
         .subscribe((report: Report): void => {
           const reportData: ReportData = {
             report: report,
-            currentView: currentView,
+            currentView: this.viewSettings.currentView!,
           };
           this.tabService.openNewTab(reportData);
         });
@@ -553,9 +568,13 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
-    const queryString: string = this.tableSettings.reportMetadata
-      .filter((report) => report.checked)
-      .reduce((totalQuery: string, selectedReport: any) => `${totalQuery}id=${selectedReport.storageId}&`, '');
+    const selectedReports: any = this.tableSettings.reportMetadata.filter((report) => report.checked);
+    let queryString = '';
+
+    for (const report of selectedReports) {
+      queryString += `id=${report.storageId}`;
+    }
+
     if (queryString === '') {
       this.toastService.showWarning('No reports selected to download');
     } else if (this.viewSettings.currentView) {
