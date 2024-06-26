@@ -18,6 +18,8 @@ import { ToastComponent } from '../shared/components/toast/toast.component';
 import { NgIf, NgFor } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, NgModel } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
+import { TestListItem } from '../shared/interfaces/test-list-item';
+import { View } from '../shared/interfaces/view';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -68,7 +70,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.loadData(null);
+    this.loadData('');
   }
 
   openCloneModal(): void {
@@ -88,7 +90,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.loadData(null);
+    this.loadData('');
     this.getGeneratorStatus();
   }
 
@@ -116,14 +118,23 @@ export class TestComponent implements OnInit, AfterViewInit {
 
   getCopiedReports(): void {
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
-      next: (response) => this.addCopiedReports(response),
+      next: (response: TestListItem[]) => this.addCopiedReports(response),
       error: () => catchError(this.httpService.handleError()),
     });
   }
 
-  loadData(path: any): void {
+  loadData(path: string): void {
+    this.httpService.getViews().subscribe((views: Record<string, View>) => {
+      const defaultViewKey: string | undefined = Object.keys(views).find((view: string) => views[view].defaultView);
+      if (defaultViewKey) {
+        const selectedView: View = views[defaultViewKey];
+        if (selectedView.storageName) {
+          this.currentView.targetStorage = selectedView.storageName;
+        }
+      }
+    });
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
-      next: (value) => {
+      next: (value: TestListItem[]) => {
         this.reports = value;
         this.testFileTreeComponent.setData(this.reports);
         if (path) {
@@ -227,8 +238,9 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
   }
 
-  uploadReport(event: any): void {
-    const file: File = event.target.files[0];
+  uploadReport(event: Event): void {
+    const eventTarget = event.target as HTMLInputElement;
+    const file: File | undefined = eventTarget.files?.[0];
     if (file) {
       const formData: FormData = new FormData();
       formData.append('file', file);
@@ -254,8 +266,11 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   replaceReport(reportId: string): void {
+    this.httpService.replaceReport(reportId, this.currentView.targetStorage).subscribe(() => {
+      this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
+    });
     this.httpService.replaceReport(reportId, this.currentView.storageName).subscribe(() => {
-      this.reranReports = this.reranReports.filter((report) => report.id != reportId);
+      this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
     });
   }
 
@@ -264,7 +279,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     let data: any = {};
     data[this.currentView.storageName] = copiedIds;
     this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
-      this.loadData(null);
+      this.loadData('');
     });
   }
 
@@ -281,7 +296,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   updatePath(): void {
-    let reportIds: string[] = this.helperService.getSelectedIds(this.reports);
+    const reportIds: string[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       let path: string = this.moveToInputModel.value;
       path = this.transformPath(path);
