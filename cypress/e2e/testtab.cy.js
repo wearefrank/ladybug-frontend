@@ -180,11 +180,9 @@ function copyTheReportsToTestTab() {
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
   cy.wait(100);
-  if(testSequence) {
-    cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
-  } else {
-    cy.get('[data-cy-debug-tree="root"] > app-tree-item').contains('Another simple report').click()
-  }
+  // TODO: Same as above.
+  // cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').contains('Another simple report').click()
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Another simple report', 3, 'second');
   cy.wait(1000);
