@@ -17,6 +17,10 @@
         </div>
       </li>
     }
+    <li ngbNavItem class="ml-auto my-auto mr-1" id="version">
+      <a ngbNavLink>v{{ appVersion }}</a>
+      <ng-template ngbNavContent></ng-template>
+    </li>
   </ul>
   <router-outlet></router-outlet>
 </div>
