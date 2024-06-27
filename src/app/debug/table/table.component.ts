@@ -386,7 +386,7 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  getStatusColor(metadata: any): string {
+  getStatusColor(metadata: DebugListItem): string {
     let statusName = this.viewSettings.currentView?.metadataNames.find((name: string) => {
       return name.toLowerCase() === 'status';
     });
