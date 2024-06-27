@@ -116,7 +116,7 @@
           <tbody data-cy-debug="tableBody">
             @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {
               <tr class="table-row"
-                  (click)="openSelectedReport(row.storageId, index);"
+                  (click)="openSelectedReport(row.storageId);"
                   [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"
                   [style.background-color]="getStatusColor(row)"
                   [attr.data-cy-record-table-index]="index"

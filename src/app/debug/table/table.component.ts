@@ -104,7 +104,6 @@ export class TableComponent implements OnInit, OnDestroy {
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
-  selectedRow: number = -1;
   doneRetrieving: boolean = false;
   tableSpacing!: number;
   tableSpacingSubscription?: Subscription;
@@ -232,7 +231,6 @@ export class TableComponent implements OnInit, OnDestroy {
     this.viewSettings.currentViewName = event.target.value;
     this.clearFilters();
     this.debugReportService.changeView(this.viewSettings.currentView);
-    this.selectedRow = -1;
     this.filterService.setMetadataLabels(this.viewSettings.currentView.metadataLabels);
     this.viewChange.next(this.viewSettings.currentViewName);
   }
@@ -485,14 +483,9 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  highLightRow(event: any): void {
-    this.selectedRow = event;
-  }
-
-  openSelectedReport(storageId: string, index: number) {
+  openSelectedReport(storageId: string) {
     this.selectedReportStorageId = storageId;
     this.openReport(storageId);
-    this.highLightRow(index);
   }
 
   openLatestReports(amount: number): void {
