@@ -4,17 +4,17 @@
         Compare method:
       </label>
       <select class="form-control w-fit" (change)="changeNodeLinkStrategy($event)">
-        <option [selected]="nodeLinkStrategy === NodeLinkStrategy.PATH" value="PATH">Path</option>
-        <option [selected]="nodeLinkStrategy === NodeLinkStrategy.CHECKPOINT_NUMBER.toString()" value="CHECKPOINT_NUMBER">Checkpoint number</option>
-        <option [selected]="nodeLinkStrategy === NodeLinkStrategy.NONE.toString()" value="NONE">None</option>
+        <option value="PATH" [selected]="nodeLinkStrategy === NodeLinkStrategy.PATH">Path</option>
+        <option value="CHECKPOINT_NUMBER" [selected]="nodeLinkStrategy === NodeLinkStrategy.CHECKPOINT_NUMBER.toString()">Checkpoint number</option>
+        <option value="NONE" [selected]="nodeLinkStrategy === NodeLinkStrategy.NONE.toString()">None</option>
       </select>
   </div>
   <div class="trees-container row col-12 p-2">
     <div class="col-6 h-100">
-      <jqxTree #leftTreeReference (onItemClick)="nodeSelected($event, true)" [auto-create]="false"></jqxTree>
+      <jqxTree #leftTreeReference [auto-create]="false" (onItemClick)="nodeSelected($event, true)"></jqxTree>
     </div>
     <div class="col-6 h-100">
-      <jqxTree #rightTreeReference (onItemClick)="nodeSelected($event, false)" [auto-create]="false"></jqxTree>
+      <jqxTree #rightTreeReference [auto-create]="false" (onItemClick)="nodeSelected($event, false)"></jqxTree>
     </div>
   </div>
 </div>

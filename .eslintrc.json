@@ -47,15 +47,24 @@
             "style": "kebab-case"
           }
         ],
-        "prettier/prettier": ["error", {
-          "endOfLine": "auto",
-          "printWidth": 120
-        }],
+        "prettier/prettier": [
+          "error",
+          {
+            "endOfLine": "auto",
+            "printWidth": 120
+          }
+        ],
         "unicorn/no-array-for-each": "off",
         "unicorn/no-null": "off",
         "unicorn/prevent-abbreviations": "off",
-        "sonarjs/cognitive-complexity": ["error", 18],
-        "sonarjs/no-duplicate-string": ["error", 5]
+        "sonarjs/cognitive-complexity": [
+          "error",
+          18
+        ],
+        "sonarjs/no-duplicate-string": [
+          "error",
+          5
+        ]
       }
     },
     {
@@ -66,6 +75,33 @@
         "plugin:@angular-eslint/template/recommended"
       ],
       "rules": {}
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended"
+      ],
+      "rules": {
+        "@angular-eslint/template/attributes-order": [
+          "error",
+          {
+            "alphabetical": false,
+            "order": [
+              "TEMPLATE_REFERENCE",
+              "ATTRIBUTE_BINDING",
+              "STRUCTURAL_DIRECTIVE",
+              "INPUT_BINDING",
+              "TWO_WAY_BINDING",
+              "OUTPUT_BINDING"
+            ]
+          }
+        ],
+        "@angular-eslint/template/no-interpolation-in-attributes": [
+          "error"
+        ]
+      }
     }
   ]
 }
