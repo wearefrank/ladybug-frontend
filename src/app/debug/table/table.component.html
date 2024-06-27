@@ -39,7 +39,7 @@
       <div class="my-2 mx-1 px-2">
         <select data-cy-change-view-dropdown class="form-control" (ngModelChange)="changeView()" [(ngModel)]="selectedView">
           @for (view of viewSettings.views | keyvalue; track view) {
-            <option [style.width]="viewDropdownBoxWidth" [selected]="view.key === viewSettings.currentView?.name" [value]="view">{{ view.key }}</option>
+            <option [style.width]="viewDropdownBoxWidth" [selected]="view.key === viewSettings.currentView?.name" [ngValue]="view.value">{{ view.key }}</option>
           }
         </select>
       </div>

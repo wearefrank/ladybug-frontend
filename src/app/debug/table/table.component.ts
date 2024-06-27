@@ -281,7 +281,7 @@ export class TableComponent implements OnInit, OnDestroy {
       this.viewSettings.views = views;
       this.calculateViewDropDownWidth();
 
-      this.setCurrentView(views);
+      this.setCurrentAndSelectedView(views);
       if (this.viewSettings.currentView) {
         this.debugReportService.changeView(this.viewSettings.currentView);
       }
@@ -296,11 +296,12 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadReportInProgressSettings();
   }
 
-  setCurrentView(views: Record<string, View>): void {
+  setCurrentAndSelectedView(views: Record<string, View>): void {
     Object.keys(views).forEach((view) => {
       if (this.viewSettings.views?.[view].defaultView) {
         this.viewSettings.currentView = this.viewSettings.views?.[view];
         this.viewSettings.currentView.name = view;
+        this.selectedView = this.viewSettings.views?.[view];
       }
     });
   }
