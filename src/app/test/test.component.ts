@@ -190,7 +190,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   showResult(result: TestResult): void {
-    const id: string = result.originalReport.storageId.toString();
+    const id: string = result.originalReport.storageId;
     this.removeReranReportIfExists(id);
     const reranReport: ReranReport = this.createReranReport(result, id);
     this.reranReports.push(reranReport);

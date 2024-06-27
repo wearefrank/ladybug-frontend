@@ -1,5 +1,7 @@
+import { Report } from './report';
+
 export interface TableSettings {
-  reportMetadata: any[];
+  reportMetadata: Report[];
   metadataHeaders: any[];
   displayAmount: number;
   showFilter: boolean;

@@ -98,15 +98,16 @@
     }
     @else {
       <div data-cy-debug="table" class="table-responsive" id="metadataTable">
-        <table class="table mb-0" matSort (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)" [style.font-size]="getFontSize()">
+        <table class="table mb-0" matSort (matSortChange)="sortData($event)" [style.font-size]="getFontSize()">
           <thead id="table-header">
             <tr>
               <th class="table-row-checkbox header-padding">
                 <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
               </th>
-              @for (header of viewSettings.currentView.metadataLabels; let index = $index; track header) {
-                <th class="table-id-cell header-cell header-padding"
-                    [attr.mat-sort-header]="index"
+              @for (header of viewSettings.currentView.metadataLabels; track header) {
+                <th data-cy-debug="metadataLabel"
+                    class="table-id-cell header-cell header-padding"
+                    [mat-sort-header]="header"
                     [title]="header">
                   {{ getShortenedTableHeaderNames(header) }}
                 </th>
@@ -114,7 +115,7 @@
             </tr>
           </thead>
           <tbody data-cy-debug="tableBody">
-            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {
+            @for (row of sortedReportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {
               <tr class="table-row"
                   (click)="openSelectedReport(row.storageId, index);"
                   [ngClass]="{'highlight': selectedRow === index}"
@@ -128,8 +129,8 @@
                   <td
                     [style.padding]="getTableSpacing()"
                     class="table-cell"
-                    [title]="row[metadataName]">
-                    {{ row[metadataName]|tableCellShortener }}</td>
+                    [title]="metadataName">
+                    {{ getMetadata(row, metadataName)|tableCellShortener }}</td>
                 }
               </tr>
             }
