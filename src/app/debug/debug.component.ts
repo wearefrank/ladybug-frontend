@@ -77,8 +77,8 @@ export class DebugComponent implements OnInit, OnDestroy {
 
   showErrorsAndWarnings(value: string): void {
     if (value.length > this.toastService.TOASTER_LINE_LENGTH) {
-      const errorSnippet: string = value.slice(0, Math.max(0, this.toastService.TOASTER_LINE_LENGTH)).trim() + '...';
-      this.toastService.showDanger(errorSnippet, value);
+      const errorSnippet: string = value.slice(0, Math.max(0, this.toastService.TOASTER_LINE_LENGTH)).trim();
+      this.toastService.showDanger(`${errorSnippet}...`, value);
     } else {
       this.toastService.showDanger(value, value);
     }
