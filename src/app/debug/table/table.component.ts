@@ -390,10 +390,10 @@ export class TableComponent implements OnInit, OnDestroy {
     let statusName = this.viewSettings.currentView?.metadataNames.find((name: string) => {
       return name.toLowerCase() === 'status';
     });
-    if (statusName && metadata[statusName]) {
-      if (metadata[statusName].toLowerCase() === 'success') {
+    if (statusName && metadata.debugVariables[statusName]) {
+      if (metadata.debugVariables[statusName].toLowerCase() === 'success') {
         return '#c3e6cb';
-      } else if (metadata[statusName].toLowerCase() === 'null') {
+      } else if (metadata.debugVariables[statusName].toLowerCase() === 'null') {
         return '#A9A9A9FF';
       } else {
         return '#f79c9c';
