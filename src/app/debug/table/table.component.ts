@@ -180,11 +180,9 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   checkMetadataAndStorageNames(): boolean {
-    return this.viewSettings.currentView &&
+    return !!(this.viewSettings.currentView &&
       this.viewSettings.currentView.metadataNames &&
-      this.viewSettings.currentView.storageName
-      ? true
-      : false;
+      this.viewSettings.currentView.storageName);
   }
 
   retrieveRecords(): void {
