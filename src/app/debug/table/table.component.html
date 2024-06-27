@@ -117,7 +117,7 @@
             @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {
               <tr class="table-row"
                   (click)="openSelectedReport(row.storageId, index);"
-                  [ngClass]="{'highlight': selectedRow === index}"
+                  [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"
                   [style.background-color]="getStatusColor(row)"
                   [attr.data-cy-record-table-index]="index"
               >

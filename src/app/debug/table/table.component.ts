@@ -17,17 +17,17 @@ import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { MatSortModule } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   NgbDropdown,
-  NgbDropdownToggle,
-  NgbDropdownMenu,
   NgbDropdownButtonItem,
   NgbDropdownItem,
+  NgbDropdownMenu,
+  NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
-import { NgIf, NgFor, NgClass, KeyValuePipe } from '@angular/common';
+import { KeyValuePipe, NgClass, NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-table',
@@ -124,6 +124,7 @@ export class TableComponent implements OnInit, OnDestroy {
   hasTimedOut: boolean = false;
   reportsInProgress: Record<string, number> = {};
   reportsInProgressThreshold!: number;
+  protected selectedReportStorageId?: string;
 
   constructor(
     private httpService: HttpService,
@@ -489,6 +490,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openSelectedReport(storageId: string, index: number) {
+    this.selectedReportStorageId = storageId;
     this.openReport(storageId);
     this.highLightRow(index);
   }
