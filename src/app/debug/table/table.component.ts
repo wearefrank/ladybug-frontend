@@ -196,7 +196,7 @@ export class TableComponent implements OnInit, OnDestroy {
           this.currentView!.storageName,
         )
         .subscribe({
-          next: (debugVariablesList: Record<string, string>[]) => {
+          next: (debugVariablesList: Report[]) => {
             this.setUniqueOptions(debugVariablesList);
             this.makeDebugListItemArray(debugVariablesList);
             this.tableSettings.tableLoaded = true;
@@ -214,7 +214,7 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  makeDebugListItemArray(listOfItems: Record<string, string>[]) {
+  makeDebugListItemArray(listOfItems: Report[]) {
     for (const debugVariables of listOfItems) {
       const listItem: DebugListItem = {
         checked: false,
@@ -510,7 +510,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadData();
   }
 
-  openReport(storageId: string): void {
+  openReport(storageId: number): void {
     if (this.currentView && this.currentView.storageName) {
       this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data: Report): void => {
         data.storageName = this.currentView?.storageName ?? '';
@@ -523,7 +523,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.selectedRow = event;
   }
 
-  openSelectedReport(storageId: string, index: number) {
+  openSelectedReport(storageId: number, index: number) {
     this.openReport(storageId);
     this.highLightRow(index);
   }
@@ -610,12 +610,17 @@ export class TableComponent implements OnInit, OnDestroy {
     return `${this.defaultCheckBoxSize + this.tableSpacing}px`;
   }
 
-  setUniqueOptions(data: Record<string, string>[]): void {
+  setUniqueOptions(data: Report[]): void {
     if (this.currentView) {
       for (const headerName of this.currentView.metadataNames as string[]) {
-        const lowerHeaderName: string = headerName.toLowerCase();
-        const upperHeaderName: string = headerName.toUpperCase();
-        const uniqueValues: Set<string> = this.getUniqueValues(data, headerName, lowerHeaderName, upperHeaderName);
+        const lowerHeaderName: keyof Report = headerName.toLowerCase() as keyof Report;
+        const upperHeaderName: keyof Report = headerName.toUpperCase() as keyof Report;
+        const uniqueValues: Set<string> = this.getUniqueValues(
+          data,
+          headerName as keyof Report,
+          lowerHeaderName,
+          upperHeaderName,
+        );
         const MAX_AMOUNT_OF_FILTER_SUGGESTIONS: number = 15;
         this.tableSettings.uniqueValues.set(
           lowerHeaderName,
@@ -627,10 +632,10 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   getUniqueValues(
-    data: Record<string, string>[],
-    headerName: string,
-    lowerHeaderName: string,
-    upperHeaderName: string,
+    data: Report[],
+    headerName: keyof Report,
+    lowerHeaderName: keyof Report,
+    upperHeaderName: keyof Report,
   ): Set<string> {
     let uniqueValues: Set<string> = new Set<string>();
     for (let element of data) {
