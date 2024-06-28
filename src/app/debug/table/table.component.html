@@ -37,9 +37,9 @@
       </div>
 
       <div class="my-2 mx-1 px-2">
-        <select data-cy-change-view-dropdown class="form-control" (ngModelChange)="changeView()" [(ngModel)]="selectedView">
-          @for (view of viewSettings.views | keyvalue; track view) {
-            <option [style.width]="viewDropdownBoxWidth" [selected]="view.key === viewSettings.currentView?.name" [ngValue]="view.value">{{ view.key }}</option>
+        <select data-cy-change-view-dropdown class="form-control" (ngModelChange)="changeView()" [(ngModel)]="currentView">
+          @for (view of views | keyvalue; track view) {
+            <option [style.width]="viewDropdownBoxWidth" [selected]="view.key === currentView?.name" [ngValue]="view.value">{{ view.key }}</option>
           }
         </select>
       </div>
@@ -90,7 +90,7 @@
               <th class="table-row-checkbox header-padding">
                 <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
               </th>
-              @for (header of viewSettings.currentView?.metadataLabels; let index = $index; track header) {
+              @for (header of currentView?.metadataLabels; let index = $index; track header) {
                 <th class="table-id-cell header-cell header-padding"
                     [attr.mat-sort-header]="index"
                     [title]="header">
@@ -110,7 +110,7 @@
                 <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
                   <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
                 </td>
-                @for (metadataName of viewSettings.currentView?.metadataNames; track metadataName) {
+                @for (metadataName of currentView?.metadataNames; track metadataName) {
                   <td
                     [style.padding]="getTableSpacing()"
                     class="table-cell"
