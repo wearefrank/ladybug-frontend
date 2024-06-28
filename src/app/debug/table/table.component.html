@@ -102,18 +102,18 @@
           <tbody data-cy-debug="tableBody">
             @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.debugVariables.storageId) {
               <tr class="table-row"
-                  (click)="openSelectedReport(row.debugVariables.storageId, index);"
                   [ngClass]="{'highlight': selectedRow === index}"
                   [style.background-color]="getStatusColor(row)"
                   [attr.data-cy-record-table-index]="index"
+                  (click)="openSelectedReport(row.debugVariables.storageId, index);"
               >
                 <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
                   <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
                 </td>
                 @for (metadataName of currentView?.metadataNames; track metadataName) {
                   <td
-                    [style.padding]="getTableSpacing()"
                     class="table-cell"
+                    [style.padding]="getTableSpacing()"
                     [title]="row.debugVariables[metadataName]">
                     {{ row.debugVariables[metadataName]|tableCellShortener }}</td>
                 }
