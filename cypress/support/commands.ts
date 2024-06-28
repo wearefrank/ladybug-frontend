@@ -30,7 +30,7 @@ Cypress.Commands.add('resetApp' as keyof Chainable, () => {
 });
 
 Cypress.Commands.add('clearTestReports' as keyof Chainable, () => {
-  cy.request('DELETE', 'http://localhost:4200/api/report/all/Test').then((resp) => {
+  cy.request('DELETE', '/api/report/all/Test').then((resp) => {
     expect(resp.status).equal(200);
   });
 });
@@ -207,10 +207,9 @@ Cypress.Commands.add('checkTestTableReportsAre', (reportNames) => {
 
 Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes, aliasSuffix) => {
   const alias = `debugTreeGuardedCopyReport_${aliasSuffix}`;
-  cy.get(`[data-cy-debug-tree="root"] > app-tree-item .item-name:contains(${reportName})`).should(
-    'have.length',
-    numExpandedNodes,
-  );
+  cy.get('[data-cy-debug-tree="root"]')
+    .find(`app-tree-item .item-name:contains(${reportName})`)
+    .should('have.length', numExpandedNodes);
   cy.intercept({
     method: 'PUT',
     hostname: 'localhost',

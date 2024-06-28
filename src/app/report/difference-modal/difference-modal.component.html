@@ -14,9 +14,9 @@
           <div class="row">
             <div class="col">
               <div class="text-center pt-2">Before</div>
-              <div [attr.data-cy-changes-form-before]="part.name" class="changeBox text-left p-1 overflow-auto">{{ part.originalValue }}</div>
+              <div class="changeBox text-left p-1 overflow-auto" [attr.data-cy-changes-form-before]="part.name">{{ part.originalValue }}</div>
             </div>
-            <div [attr.data-cy-changes-form-after]="part.name" class="col text-right">
+            <div class="col text-right" [attr.data-cy-changes-form-after]="part.name">
               <div class="text-center pt-2">After</div>
               <div class="changeBox text-left p-1 overflow-auto">
                 @for (chunk of part.difference; track chunk[1]) {

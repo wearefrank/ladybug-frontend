@@ -68,8 +68,11 @@ th {
 }
 .input-field {
   width: 4rem;
+}
+
+.input-group-container {
+  width: auto;
   padding-left: 0.3rem;
-  padding-right: 0.25rem;
 }
 
 .filter-option {
@@ -88,4 +91,9 @@ th {
 
 .alert-danger {
   margin-bottom: 0;
+}
+
+.btn-table {
+  margin: .5rem .25rem;
+  padding: 0.375rem 1rem;
 }

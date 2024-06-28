@@ -15,8 +15,8 @@
         <div class="checkbox " title="When checked, file tree shows multiple files">
           <label for="show-multiple">Show multiple files in debug file-tree</label>
           <input class="btn btn-info my-2 p-1 w-fit" data-cy-settings="showAmount" id="show-multiple"
-                 [checked]="showMultipleAtATime" type="checkbox"
-                 formControlName="showMultipleFilesAtATime"
+                 type="checkbox" formControlName="showMultipleFilesAtATime"
+                 [checked]="showMultipleAtATime"
                  [value]="showMultipleAtATime"
                  (change)="setShowMultipleAtATime()">
         </div>
@@ -27,8 +27,8 @@
         <div class="checkbox " title="When checked, search window is shown when editor is loaded">
           <label for="show-search-on-load">Show search window in editor on load</label>
           <input class="btn btn-info my-2 p-1 w-fit" data-cy-settings="showSearchOnLoad" id="show-search-on-load"
-                 [checked]="showSearchWindowOnLoad" type="checkbox"
-                 formControlName="showSearchWindowOnLoad"
+                 type="checkbox" formControlName="showSearchWindowOnLoad"
+                 [checked]="showSearchWindowOnLoad"
                  [value]="showSearchWindowOnLoad"
                  (change)="setShowSearchWindowOnload()">
         </div>
@@ -50,7 +50,7 @@
           <label for="show-multiple">Spacing for report table</label>
           <select #spacingOptionsDropdown data-cy-settings="spacingDropdown" class="form-control custom-select mr-sm-2"
                   (change)="changeTableSpacing(spacingOptionsDropdown.value)">
-            <option [value]="option" *ngFor="let option of spacingOptions"
+            <option *ngFor="let option of spacingOptions" [value]="option"
                     [selected]="option === tableSpacing"><span>{{ option }}x</span></option>
           </select>
         </div>

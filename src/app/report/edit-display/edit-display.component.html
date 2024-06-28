@@ -2,7 +2,7 @@
   <div data-cy-test-editor="root" class="d-flex flex-row justify-content-between align-items-center" id="displayButtons">
     <div class="d-flex flex-row align-items-center" data-cy-debug-editor="buttons">
       <app-button data-cy-debug-editor="close" icon="fa fa-times" title="Close" (click)="closeReport(false)"/>
-      <app-button *ngIf="report.xml" text="Rerun" title="Rerun this report" (click)="rerunReport()"/>
+      <app-button text="Rerun" title="Rerun this report" *ngIf="report.xml" (click)="rerunReport()"/>
       @if (!editingRootNode && !editingChildNode) {
         <app-button data-cy-test-editor="edit" icon="fa fa-edit" title="Edit" (click)="editReport()"/>
       } @else if (editingChildNode || editingRootNode) {
@@ -52,7 +52,7 @@
       </button>
     </div>
     @if (report.name) {
-      <h4 [cdkCopyToClipboard]="report.name" data-cy-metadata-table="reportname" class="my-auto report-name">{{ report.name }}</h4>
+      <h4 data-cy-metadata-table="reportname" class="my-auto report-name" [cdkCopyToClipboard]="report.name">{{ report.name }}</h4>
     }
     <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor" (click)="showEditorPossibilitiesModal(possibilitiesModal)">
       <i class="bi bi-info-circle info-circle-size"></i>
@@ -72,9 +72,9 @@
   <app-edit-form [report]="report"/>
 } @else {
   <app-custom-editor
+    data-cy-test-editor="editor"
     [readOnlyMode]="!editingChildNode"
-    [height]="containerHeight - 24"
-    data-cy-test-editor="editor"/>
+    [height]="containerHeight - 24"/>
 }
 
 <app-difference-modal/>

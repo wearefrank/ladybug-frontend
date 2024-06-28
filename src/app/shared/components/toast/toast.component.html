@@ -1,8 +1,8 @@
 <div class="toast-body">
-  <div *ngFor="let toast of toasts" class="my-2" data-cy-toast>
+  <div class="my-2" data-cy-toast *ngFor="let toast of toasts">
     <div *ngIf="toast.type === 'info'">
-      <ngb-toast [autohide]="true" [delay]="5000" (hidden)="close(toast)"
-                 class="fade animate-show animate-hide">
+      <ngb-toast class="fade animate-show animate-hide" [autohide]="true" [delay]="5000"
+                 (hidden)="close(toast)">
         <div class="d-flex flex-row justify-content-between align-items-center">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" color="white"
@@ -21,8 +21,8 @@
     </div>
 
     <div *ngIf="toast.type === 'success'">
-      <ngb-toast [autohide]="true" [delay]="5000" (hidden)="close(toast)"
-                 class="fade animate-show animate-hide bg-success">
+      <ngb-toast class="fade animate-show animate-hide bg-success" [autohide]="true" [delay]="5000"
+                 (hidden)="close(toast)">
         <div class="d-flex flex-row justify-content-between align-items-center">
           <i class="fa fa-check"></i>
           <div class="ml-2 mr-4">{{ toast.message }}</div>
@@ -32,8 +32,8 @@
     </div>
 
     <div *ngIf="toast.type === 'warning'">
-      <ngb-toast [autohide]="true" [delay]="8000" (hidden)="close(toast)" (click)="close(toast)"
-                 class="fade animate-show animate-hide bg-warning">
+      <ngb-toast class="fade animate-show animate-hide bg-warning" [autohide]="true" [delay]="8000" (hidden)="close(toast)"
+                 (click)="close(toast)">
         <div class="d-flex flex-row justify-content-between align-items-center">
           <i class="fa fa-warning"></i>
           <div class="ml-2 mr-4">{{ toast.message }}</div>
@@ -43,8 +43,8 @@
     </div>
 
     <div *ngIf="toast.type === 'danger'">
-      <ngb-toast [autohide]="false" (click)="showDetailedErrorMessages(toast)"
-                 class="fade animate-show animate-hide bg-danger">
+      <ngb-toast class="fade animate-show animate-hide bg-danger" [autohide]="false"
+                 (click)="showDetailedErrorMessages(toast)">
         <div class="d-flex flex-row justify-content-between align-items-center">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle"
@@ -75,8 +75,8 @@
     {{ selectedAlert.detailed }}
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-info" id="CopyToClipboard" [cdkCopyToClipboard]="selectedAlert.detailed ?? ''" (click)="copyToClipboard()"
-            title="Copy to Clipboard">{{ this.justCopied ? 'Copied!' : 'Copy to clipboard' }}
+    <button type="button" class="btn btn-info" id="CopyToClipboard" title="Copy to Clipboard" [cdkCopyToClipboard]="selectedAlert.detailed ?? ''"
+            (click)="copyToClipboard()">{{ this.justCopied ? 'Copied!' : 'Copy to clipboard' }}
     </button>
     <button type="button" class="btn btn-info" (click)="modal.dismiss();">Dismiss</button>
   </div>

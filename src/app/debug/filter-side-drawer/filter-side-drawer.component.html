@@ -1,5 +1,5 @@
 @if (shouldShowFilter) {
-  <div @removeTrigger class="filter-vertical-panel" data-cy-debug="filter-side-drawer">
+  <div class="filter-vertical-panel" data-cy-debug="filter-side-drawer" @removeTrigger>
     <div class="panel-container">
       <h1 class="h1 filter-label">Filter</h1>
       <div class="filter-input-container">
@@ -10,17 +10,17 @@
               <input
                 class="form-control"
                 type="text"
+                data-cy-debug="tableFilter"
                 [title]="metadataName"
                 [ngModel]="filterService.getCurrentFilterContext().get(metadataName)"
                 [matAutocomplete]="auto"
                 [placeholder]="'Filter for ' + metadataName"
-                (ngModelChange)="updateFilter($event, metadataName)"
-                data-cy-debug="tableFilter">
+                (ngModelChange)="updateFilter($event, metadataName)">
               <div class="input-group-append input-group-append">
                 <button
                   class="btn btn-sm btn-danger button-clear-text input-group-text"
-                  (click)="removeFilter(metadataName)"
-                  data-cy-debug="filterClearButton">
+                  data-cy-debug="filterClearButton"
+                  (click)="removeFilter(metadataName)">
                   Clear
                 </button>
               </div>
@@ -30,9 +30,9 @@
               (optionSelected)="updateFilter($event.option.value, metadataName)">
               @for (option of currentRecords.get(metadataName.toLocaleLowerCase()); track option) {
                 <mat-option
-                  [value]="option"
                   class="filter-option"
-                  data-cy-debug="matAutocompleteOption">
+                  data-cy-debug="matAutocompleteOption"
+                  [value]="option">
                   {{ option }}
                 </mat-option>
               }
@@ -41,12 +41,12 @@
         }
       </div>
       <div class="btn-container">
-        <button class="close-filter-btn btn btn-info" (click)="closeFilter()" data-cy-debug="close-filter-btn">Close
+        <button class="close-filter-btn btn btn-info" data-cy-debug="close-filter-btn" (click)="closeFilter()">Close
         </button>
         <button
           class="clear-filter-btn btn btn-info"
-          (click)="filterService.resetFilter()"
-          data-cy-debug="clear-filter-btn">
+          data-cy-debug="clear-filter-btn"
+          (click)="filterService.resetFilter()">
           Clear
         </button>
       </div>
