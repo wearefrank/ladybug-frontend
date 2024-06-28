@@ -7,7 +7,7 @@
   </div>
   <div class="modal-content">
     @for (part of reportDifferences; track part.name) {
-      @if (part.originalValue && (part.difference)) {
+      @if (part.originalValue && part.difference) {
         <div class="pb-3" data-cy-save-changes-modal>
           <div class="text-center">{{ part.name | titlecase }}</div>
           <hr class="text-dark w-50">

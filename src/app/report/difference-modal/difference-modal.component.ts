@@ -17,7 +17,7 @@ export type ChangesAction = (typeof changesActionConst)[number];
 export class DifferenceModalComponent {
   protected saveOrDiscardType!: ChangesAction;
   protected reportDifferences?: ReportDifference[];
-  protected activeModal?: NgbModalRef | undefined;
+  protected activeModal?: NgbModalRef;
   @Output() saveChangesEvent: Subject<void> = new Subject<void>();
   @ViewChild('modal') protected modal!: TemplateRef<DifferenceModalComponent>;
 

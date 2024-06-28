@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, Output, ViewChild } from '@angular/core';
+import { Component, Input, Output, ViewChild } from '@angular/core';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
 import {
   NgbDropdown,
@@ -203,8 +203,8 @@ export class EditDisplayComponent {
   }
 
   copyReport(): void {
-    const storageId: number = this.report.storageId ?? +this.report.uid.split('#')[0];
-    const data: any = {
+    const storageId = this.report.storageId ?? this.report.uid.split('#')[0];
+    const data: Record<string, string[]> = {
       [this.currentView.storageName]: [storageId],
     };
     this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this

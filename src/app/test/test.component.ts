@@ -271,9 +271,10 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   copySelected(): void {
-    let copiedIds: string[] = this.helperService.getSelectedIds(this.reports);
-    let data: any = {};
-    data[this.currentView.storageName] = copiedIds;
+    const copiedIds: string[] = this.helperService.getSelectedIds(this.reports);
+    const data: Record<string, string[]> = {
+      [this.currentView.storageName]: copiedIds,
+    };
     this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
       this.loadData(null);
     });
