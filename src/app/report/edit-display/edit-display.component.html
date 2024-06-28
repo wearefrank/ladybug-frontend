@@ -77,7 +77,7 @@
     [height]="containerHeight - 24"/>
 }
 
-<app-difference-modal/>
+<app-difference-modal (saveChangesEvent)="saveChanges(true, report.stub)"/>
 
 <ng-template #possibilitiesModal let-modal>
   <div class="modal-header d-flex align-items-center">

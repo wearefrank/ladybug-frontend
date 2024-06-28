@@ -7,7 +7,7 @@
   </div>
   <div class="modal-content">
     @for (part of reportDifferences; track part.name) {
-      @if (part.originalValue && part.difference) {
+      @if (part.originalValue || part.difference.length > 0) {
         <div class="pb-3" data-cy-save-changes-modal>
           <div class="text-center">{{ part.name | titlecase }}</div>
           <hr class="text-dark w-50">
@@ -31,8 +31,8 @@
   </div>
   <div class="modal-footer">
     <div class="col-md-12 text-center">
-      <button type="button" class="btn btn-info mr-2" (click)="saveChangesEvent.next()">Yes</button>
-      <button type="button" class="btn btn-info ml-2" (click)="activeModal?.dismiss()">No</button>
+      <button type="button" class="btn btn-info mr-2" (click)="onClickYes()">Yes</button>
+      <button type="button" class="btn btn-info ml-2" (click)="closeModal()">No</button>
     </div>
   </div>
 </ng-template>

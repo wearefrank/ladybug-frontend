@@ -1,4 +1,4 @@
-import { Component, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
 import { TitleCasePipe } from '@angular/common';
 import { Subject } from 'rxjs';
@@ -32,7 +32,7 @@ export class DifferenceModalComponent {
     });
   }
 
-  close(): void {
+  closeModal(): void {
     if (this.activeModal) {
       this.activeModal.close();
     }
@@ -50,5 +50,10 @@ export class DifferenceModalComponent {
         return '';
       }
     }
+  }
+
+  onClickYes(): void {
+    this.saveChangesEvent.next();
+    this.closeModal();
   }
 }
