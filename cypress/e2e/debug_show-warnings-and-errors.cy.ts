@@ -7,8 +7,8 @@ describe('Tests for showing errors and warnings', () => {
       hostname: 'localhost',
       url: /\/warningsAndErrors\/*?/g,
     }).as(apiCallAlias);
-    cy.get('[data-cy-change-view-dropdown]').select('Low level error demo view')
+    cy.get('[data-cy-change-view-dropdown]').select('Low level error demo view');
     cy.wait(`@${apiCallAlias}`);
-    cy.get('[data-cy-toast="danger"]').should('contain', 'A simulated error').click();
+    cy.get('[data-cy-toast="danger"]').should('contain', 'A simulated error').should('contain', '...');
   });
 });
