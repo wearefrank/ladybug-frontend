@@ -378,9 +378,10 @@ export class TableComponent implements OnInit, OnDestroy {
 
   getStatusColor(metadata: DebugListItem): string {
     if (metadata.debugVariables.status) {
-      if (metadata.debugVariables.status.toLowerCase() === 'success') {
+      const status: string = metadata.debugVariables.status;
+      if (status.toLowerCase() === 'success') {
         return '#c3e6cb';
-      } else if (metadata.debugVariables.status.toLowerCase() === 'null') {
+      } else if (status.toLowerCase() === 'null') {
         return '#A9A9A9FF';
       } else {
         return '#f79c9c';
