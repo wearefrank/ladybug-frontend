@@ -116,11 +116,10 @@
           <tbody data-cy-debug="tableBody">
             @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.debugVariables.storageId) {
               <tr class="table-row"
-                  [ngClass]="{'highlight': selectedRow === index}"
+                  [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"
                   [style.background-color]="getStatusColor(row)"
                   [attr.data-cy-record-table-index]="index"
                   (click)="openSelectedReport(row.debugVariables.storageId, index);"
-
               >
                 <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
                   <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row)">

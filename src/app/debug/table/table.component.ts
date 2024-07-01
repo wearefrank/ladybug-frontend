@@ -17,13 +17,13 @@ import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { MatSortModule } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   NgbDropdown,
-  NgbDropdownToggle,
-  NgbDropdownMenu,
   NgbDropdownButtonItem,
   NgbDropdownItem,
+  NgbDropdownMenu,
+  NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
@@ -103,7 +103,6 @@ export class TableComponent implements OnInit, OnDestroy {
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
-  selectedRow: number = -1;
   doneRetrieving: boolean = false;
   tableSpacing!: number;
   tableSpacingSubscription?: Subscription;
@@ -123,6 +122,7 @@ export class TableComponent implements OnInit, OnDestroy {
   hasTimedOut: boolean = false;
   reportsInProgress: Record<string, number> = {};
   reportsInProgressThreshold!: number;
+  protected selectedReportStorageId?: number;
 
   constructor(
     private httpService: HttpService,
@@ -245,7 +245,6 @@ export class TableComponent implements OnInit, OnDestroy {
       this.allRowsSelected = false;
       this.clearFilters();
       this.debugReportService.changeView(this.currentView);
-      this.selectedRow = -1;
       if (this.currentView.metadataNames) {
         this.filterService.setMetadataLabels(this.currentView.metadataNames);
         this.viewChange.next(this.currentView.name);
@@ -519,13 +518,10 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  highLightRow(event: any): void {
-    this.selectedRow = event;
-  }
 
   openSelectedReport(storageId: number, index: number) {
+    this.selectedReportStorageId = storageId;
     this.openReport(storageId);
-    this.highLightRow(index);
   }
 
   openLatestReports(amount: number): void {
