@@ -205,6 +205,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular-eslint/bundled-angular-compiler@npm:18.0.1":
+  version: 18.0.1
+  resolution: "@angular-eslint/bundled-angular-compiler@npm:18.0.1"
+  checksum: c4d265a565b052fe598b54fd30460f8f579dbd4e7b255e50a9b147af7258e4b2c2d7add41909b12c8e9b0f95e8eb70dd4e714284b99f5952d0e23a05b14e7bfe
+  languageName: node
+  linkType: hard
+
 "@angular-eslint/eslint-plugin-template@npm:17.2.0":
   version: 17.2.0
   resolution: "@angular-eslint/eslint-plugin-template@npm:17.2.0"
@@ -219,6 +226,22 @@ __metadata:
     eslint: ^7.20.0 || ^8.0.0
     typescript: "*"
   checksum: 44421e9959d3614a015c10f45abf658ab46af1b957eb57aebf07f3db311412f8fdecf52454ad3ea2cb88c87fde698386c297a63be913e6e986964e15492362c3
+  languageName: node
+  linkType: hard
+
+"@angular-eslint/eslint-plugin-template@npm:^18.0.1":
+  version: 18.0.1
+  resolution: "@angular-eslint/eslint-plugin-template@npm:18.0.1"
+  dependencies:
+    "@angular-eslint/bundled-angular-compiler": "npm:18.0.1"
+    "@angular-eslint/utils": "npm:18.0.1"
+    aria-query: "npm:5.3.0"
+    axobject-query: "npm:4.0.0"
+  peerDependencies:
+    "@typescript-eslint/utils": ^7.11.0 || ^8.0.0-alpha.20
+    eslint: ^8.57.0 || ^9.0.0
+    typescript: "*"
+  checksum: a248336f5454703fa5ec6b22a401a538e1dc1d041f24ade148ae0017213c0756f0bb6ae2a02e60fdcecd36c9ac11d313a216667c7c24ada37cb177d4821a562f
   languageName: node
   linkType: hard
 
@@ -275,6 +298,19 @@ __metadata:
     eslint: ^7.20.0 || ^8.0.0
     typescript: "*"
   checksum: d95c7fcf500d316ff47e6b8e16d54e7dea17587f1b1c6d03ca51bfc01357e1ea5897b2571aac4b611374d9e661ab40503abefbe66193b6f702881a63da8b03fb
+  languageName: node
+  linkType: hard
+
+"@angular-eslint/utils@npm:18.0.1":
+  version: 18.0.1
+  resolution: "@angular-eslint/utils@npm:18.0.1"
+  dependencies:
+    "@angular-eslint/bundled-angular-compiler": "npm:18.0.1"
+  peerDependencies:
+    "@typescript-eslint/utils": ^7.11.0 || ^8.0.0-alpha.20
+    eslint: ^8.57.0 || ^9.0.0
+    typescript: "*"
+  checksum: 3b283b506a00bae0b62c487866108e6520a24ba13ad00795fa343557765204bd199cc417008cd1ba9825d820ec923ef83e4cbd3bd147f396d5ebaa34d7b505a5
   languageName: node
   linkType: hard
 
@@ -4210,7 +4246,7 @@ __metadata:
     "@angular-devkit/build-angular": "npm:^17.0.9"
     "@angular-eslint/builder": "npm:17.2.0"
     "@angular-eslint/eslint-plugin": "npm:17.2.0"
-    "@angular-eslint/eslint-plugin-template": "npm:17.2.0"
+    "@angular-eslint/eslint-plugin-template": "npm:^18.0.1"
     "@angular-eslint/schematics": "npm:17.2.0"
     "@angular-eslint/template-parser": "npm:17.2.0"
     "@angular/animations": "npm:17.0.8"

@@ -23,8 +23,8 @@
       <button data-cy-test="upload" type="button" class="btn btn-info my-2 mx-1 px-3"
               title="Upload" (click)="uploadFileTest.click()">
         <i class="fa fa-upload"></i>
-        <input data-cy-test="uploadFile" #uploadFileTest (change)="uploadReport($event)" type="file"
-               id="uploadFileTest">
+        <input #uploadFileTest data-cy-test="uploadFile" type="file" id="uploadFileTest"
+               (change)="uploadReport($event)">
       </button>
     </div>
 
@@ -61,14 +61,17 @@
         <ng-container *ngFor="let report of sortByName()" class="form-inline">
           <tr *ngIf="matches(report)">
             <td>
-              <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
+              <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked"
+                     (click)="toggleCheck(report)">
             </td>
             <td *ngIf="showStorageIds()">
               {{ report.storageId }}
             </td>
             <td>
-              <app-button data-cy-test="runReport" icon="fa fa-play" title="Run report" (click)="run(report.storageId)"></app-button>
-              <app-button data-cy-test="openReport" icon="fa fa-folder-open" title="Open report" (click)="openReport(report.storageId, report.name)"></app-button>
+              <app-button data-cy-test="runReport" icon="fa fa-play" title="Run report"
+                          (click)="run(report.storageId)"></app-button>
+              <app-button data-cy-test="openReport" icon="fa fa-folder-open" title="Open report"
+                          (click)="openReport(report.storageId, report.name)"></app-button>
             </td>
             <td>
               {{ getFullPath(report.path, report.name) }}
@@ -77,8 +80,8 @@
               <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
             </td>
             <td>
-                <span *ngIf="getReranReport(report.storageId)" id="runResult#{{ report.storageId }}"
-                      data-cy-test="runResult"
+                <span *ngIf="getReranReport(report.storageId)" data-cy-test="runResult"
+                      [id]="'runResult#' + report.storageId"
                       [style.color]="getReranReport(report.storageId).color">
                   {{ getReranReport(report.storageId).resultString }}
                 </span>

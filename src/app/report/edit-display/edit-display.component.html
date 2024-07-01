@@ -55,7 +55,7 @@
         </button>
       </div>
       @if (report.name) {
-        <h4 [cdkCopyToClipboard]="report.name" data-cy-metadata-table="reportname" class="my-auto report-name">{{report.name}}</h4>
+        <h4 data-cy-metadata-table="reportname" class="my-auto report-name" [cdkCopyToClipboard]="report.name">{{report.name}}</h4>
       }
       <div class="mr-2" style="cursor: pointer;" title="Show possibilities with editor"
            (click)="showEditorPossibilitiesModal(possibilitiesModal)">
@@ -101,10 +101,10 @@
   </div>
 } @else {
   <app-custom-editor
-    [readOnlyMode]="!editingChildNode"
-    [height]="containerHeight - 24"
     data-cy-test-editor="editor"
-    id="editor"></app-custom-editor>
+    id="editor"
+    [readOnlyMode]="!editingChildNode"
+    [height]="containerHeight - 24"></app-custom-editor>
 }
 
 
@@ -123,9 +123,9 @@
       <div class="row">
         <div class="col">
           <div class="text-center pt-2">Before</div>
-          <div [attr.data-cy-changes-form-before]="part.name" class="changeBox text-left p-1 overflow-auto">{{ part.originalValue }}</div>
+          <div class="changeBox text-left p-1 overflow-auto" [attr.data-cy-changes-form-before]="part.name">{{ part.originalValue }}</div>
         </div>
-        <div [attr.data-cy-changes-form-after]="part.name" class="col text-right">
+        <div class="col text-right" [attr.data-cy-changes-form-after]="part.name">
           <div class="text-center pt-2">After</div>
           <div class="changeBox text-left p-1 overflow-auto">
             <span *ngFor="let chunk of part.difference">
