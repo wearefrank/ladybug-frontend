@@ -12,6 +12,7 @@
 		<version>${project.version}</version>
 		<compiled.frontend.location>${basedir}/dist</compiled.frontend.location>
 	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -98,7 +99,17 @@
 								<resource>
 									<directory>${compiled.frontend.location}/ladybug</directory>
 									<filtering>false</filtering>
+                  <excludes>
+                    <exclude>package.json</exclude>
+                  </excludes>
 								</resource>
+                <resource>
+                  <directory>${compiled.frontend.location}/ladybug</directory>
+                  <filtering>true</filtering>
+                  <includes>
+                    <include>package.json</include>
+                  </includes>
+                </resource>
 							</resources>
 						</configuration>
 					</execution>
