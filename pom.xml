@@ -41,16 +41,16 @@
         </configuration>
         <executions>
           <execution>
-            <id>yarn install</id>
+            <id>pnpm install</id>
             <goals>
               <goal>exec</goal>
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <executable>yarn</executable>
+              <executable>pnpm</executable>
               <arguments>
                 <argument>install</argument>
-                <argument>--immutable</argument>
+                <argument>--frozen-lockfile</argument>
               </arguments>
             </configuration>
           </execution>
@@ -61,8 +61,9 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <executable>yarn</executable>
+              <executable>pnpm</executable>
               <arguments>
+                <argument>run</argument>
                 <argument>build</argument>
               </arguments>
             </configuration>
@@ -90,7 +91,7 @@
         <version>3.3.1</version>
         <executions>
           <execution>
-            <id>copy yarn dist to Maven build folder</id>
+            <id>copy pnpm dist to Maven build folder</id>
             <phase>process-resources</phase>
             <goals>
               <goal>copy-resources</goal>

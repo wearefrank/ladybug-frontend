@@ -96,5 +96,5 @@
   "repository": {
     "url": "https://github.com/wearefrank/ladybug-frontend"
   },
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "pnpm@9.4.0"
 }
