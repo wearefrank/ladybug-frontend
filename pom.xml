@@ -1,108 +1,112 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.wearefrank</groupId>
-	<artifactId>ladybug-frontend</artifactId>
-	<version>0.0.60</version>
-	<name>Angular Frontend of Ladybug</name>
+  <groupId>org.wearefrank</groupId>
+  <artifactId>ladybug-frontend</artifactId>
+  <version>0.0.60</version>
+  <name>Angular Frontend of Ladybug</name>
 
-	<properties>
-		<meta-inf.maven.output>${project.build.outputDirectory}/META-INF/maven/${project.groupId}/${project.artifactId}</meta-inf.maven.output>
-		<!-- For pom.properties -->
-		<version>${project.version}</version>
-		<compiled.frontend.location>${basedir}/dist</compiled.frontend.location>
-	</properties>
+  <properties>
+    <meta-inf.maven.output>${project.build.outputDirectory}/META-INF/maven/${project.groupId}/${project.artifactId}
+    </meta-inf.maven.output>
+    <!-- For pom.properties -->
+    <version>${project.version}</version>
+    <compiled.frontend.location>${basedir}/dist</compiled.frontend.location>
+  </properties>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.4.0</version>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>${project.build.directory}</directory>
-						</fileset>
-						<fileset>
-							<directory>${compiled.frontend.location}</directory>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>3.3.0</version>
-				<configuration>
-					<workingDirectory>${project.basedir}</workingDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>yarn install</id>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<phase>generate-resources</phase>
-						<configuration>
-							<executable>yarn</executable>
-								<arguments>
-									<argument>install</argument>
-									<argument>--immutable</argument>
-								</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>ng build</id>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<phase>generate-resources</phase>
-						<configuration>
-							<executable>yarn</executable>
-							<arguments>
-								<argument>build</argument>
-							</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>properties-maven-plugin</artifactId>
-				<version>1.0.0</version>
-				<executions>
-					<execution>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>write-project-properties</goal>
-						</goals>
-						<configuration>
-							<outputFile>${meta-inf.maven.output}/pom.properties</outputFile>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.3.1</version>
-				<executions>
-					<execution>
-						<id>copy yarn dist to Maven build folder</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${compiled.frontend.location}/ladybug</directory>
-									<filtering>false</filtering>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.4.0</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${project.build.directory}</directory>
+            </fileset>
+            <fileset>
+              <directory>${compiled.frontend.location}</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <workingDirectory>${project.basedir}</workingDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>yarn install</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <executable>yarn</executable>
+              <arguments>
+                <argument>install</argument>
+                <argument>--immutable</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>ng build</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <executable>yarn</executable>
+              <arguments>
+                <argument>build</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>write-project-properties</goal>
+            </goals>
+            <configuration>
+              <outputFile>${meta-inf.maven.output}/pom.properties</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>copy yarn dist to Maven build folder</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>
+                ${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}/
+              </outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${compiled.frontend.location}/ladybug</directory>
+                  <filtering>false</filtering>
                   <excludes>
                     <exclude>package.json</exclude>
                   </excludes>
-								</resource>
+                </resource>
                 <resource>
                   <directory>${compiled.frontend.location}/ladybug</directory>
                   <filtering>true</filtering>
@@ -110,30 +114,30 @@
                     <include>package.json</include>
                   </includes>
                 </resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy pom.xml</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${meta-inf.maven.output}</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.basedir}</directory>
-									<filtering>false</filtering>
-									<includes>
-										<include>pom.xml</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy pom.xml</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${meta-inf.maven.output}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}</directory>
+                  <filtering>false</filtering>
+                  <includes>
+                    <include>pom.xml</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
