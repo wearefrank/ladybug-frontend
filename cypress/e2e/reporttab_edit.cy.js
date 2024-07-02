@@ -9,7 +9,6 @@ describe('Edit tests', () => {
     cy.get('[data-cy-report="toggleEdit"]').click();
     cy.get('[data-cy-report="editor"]')
       .click()
-      .focused()
       .type('{selectAll}Hello Original World!')
     cy.wait(100)
     cy.get('[data-cy-report="save"]').click();
