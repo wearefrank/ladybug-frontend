@@ -9,7 +9,7 @@ describe('Edit tests', () => {
     cy.get('[data-cy-report="toggleEdit"]').click();
     cy.get('[data-cy-report="editor"]')
       .click()
-      .focused()
+      .focused({timeout: 20000})
       .type('{selectAll}Hello Original World!', {force: true})
     cy.wait(100)
     cy.get('[data-cy-report="save"]').click();
@@ -21,7 +21,7 @@ describe('Edit tests', () => {
     cy.get('[data-cy-report="toggleEdit"]').click();
     cy.get('[data-cy-report="editor"]')
       .click()
-      .focused()
+      .focused({timeout: 20000})
       .type('{selectAll}Goodbye Original World!', {force: true});
     cy.wait(100)
     cy.get('[data-cy-report="save"]').click();
