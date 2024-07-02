@@ -1,0 +1,12 @@
+<div class="d-flex flex-row justify-content-center align-items-center">
+  @if (labels) {
+    <span class="mr-1">{{ labels.off }}</span>
+  }
+  <label class="switch">
+    <input type="checkbox" [checked]="value" [value]="value" (change)="onChange()">
+    <span class="slider round"></span>
+  </label>
+  @if (labels) {
+    <span class="ml-1">{{ labels.on }}</span>
+  }
+</div>

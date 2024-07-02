@@ -38,14 +38,14 @@ describe('Tests with one report', () => {
     cy.wait(1000);
     cy.get('.report-tab .jqx-tree-dropdown-root > li > ul > li > div').click();
     cy.wait(1000);
-    cy.get('[data-cy-test-editor="edit"]').click();
+    cy.get('[data-cy-report="toggleEdit"]').click();
     // According to https://stackoverflow.com/questions/56617522/testing-monaco-editor-with-cypress
-    cy.get('[data-cy-test-editor="editor"]')
+    cy.get('[data-cy-report="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
       .type('Hello Original World!');
-    cy.get('[data-cy-test-editor="save"]').click();
+    cy.get('[data-cy-report="save"]').click();
     cy.get('.modal-title').should('include.text', 'Are you sure');
     cy.get('.col:not(.text-right)').contains('Hello World!');
     cy.get('.col.text-right').contains('Hello Original World!');
@@ -54,14 +54,14 @@ describe('Tests with one report', () => {
       '.report-tab .jqx-tree-dropdown-root > li > ul > li > ul > li > div',
     ).click();
     cy.wait(1000);
-    cy.get('[data-cy-test-editor="edit"]').click();
+    cy.get('[data-cy-report="toggleEdit"]').click();
     cy.wait(1000);
-    cy.get('[data-cy-test-editor="editor"]')
+    cy.get('[data-cy-report="editor"]')
       .click()
       .focused()
       .type('{ctrl}a')
       .type('Goodbye Original World!');
-    cy.get('[data-cy-test-editor="save"]').click();
+    cy.get('[data-cy-report="save"]').click();
     cy.get('button:contains(Yes)').click();
     cy.get('[data-cy-nav-tab="testTab"]').click();
     cy.checkTestTableNumRows(2);

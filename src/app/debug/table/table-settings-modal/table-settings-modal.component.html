@@ -50,7 +50,7 @@
           <label for="show-multiple">Spacing for report table</label>
           <select #spacingOptionsDropdown data-cy-settings="spacingDropdown" class="form-control custom-select mr-sm-2"
                   (change)="changeTableSpacing(spacingOptionsDropdown.value)">
-            <option [value]="option" *ngFor="let option of spacingOptions"
+            <option *ngFor="let option of spacingOptions" [value]="option"
                     [selected]="option === tableSpacing"><span>{{ option }}x</span></option>
           </select>
         </div>

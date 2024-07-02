@@ -58,7 +58,7 @@
         </tr>
         </thead>
         <tbody data-cy-test="table" id="testReports">
-        <ng-container *ngFor="let report of sortByName()" class="form-inline">
+        <ng-container class="form-inline" *ngFor="let report of sortByName()">
           <tr *ngIf="matches(report)">
             <td>
               <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked"
@@ -80,7 +80,7 @@
               <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
             </td>
             <td>
-                <span *ngIf="getReranReport(report.storageId)" data-cy-test="runResult"
+                <span data-cy-test="runResult" *ngIf="getReranReport(report.storageId)"
                       [id]="'runResult#' + report.storageId"
                       [style.color]="getReranReport(report.storageId).color">
                   {{ getReranReport(report.storageId).resultString }}

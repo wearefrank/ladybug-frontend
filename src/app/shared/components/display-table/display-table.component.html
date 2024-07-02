@@ -1,38 +1,38 @@
 <div class="d-flex flex-column mb-2">
-  <div *ngIf="anyMessagesPresent" class="my-2 mx-1">
-    <div *ngIf="report.noCloseReceivedForStream" id="noCloseReceivedLabel" class="btn btn-static px-2">
+  <div class="my-2 mx-1" *ngIf="anyMessagesPresent">
+    <div id="noCloseReceivedLabel" class="btn btn-static px-2" *ngIf="report.noCloseReceivedForStream">
       No close received for stream
     </div>
-    <div *ngIf="report.streaming" id="waitingForMessageLabel"
-         class="btn btn-static  px-2">
+    <div id="waitingForMessageLabel" class="btn btn-static  px-2"
+         *ngIf="report.streaming">
       {{ report.waitingForStream ? 'Waiting for message to be' : 'Message is' }} captured asynchronously from
       a {{report.streaming.toLowerCase()}} stream
     </div>
 
-    <div *ngIf="null === report.message" id="nullMessageLabel" class="btn btn-static  px-2">
+    <div id="nullMessageLabel" class="btn btn-static  px-2" *ngIf="null === report.message">
       Message is null
     </div>
 
-    <div *ngIf="'' === report.message" id="emptyMessageLabel" class="btn btn-static  px-2">
+    <div id="emptyMessageLabel" class="btn btn-static  px-2" *ngIf="'' === report.message">
       Message is empty string
     </div>
 
-    <div *ngIf="report.stubbed" id="stubbedMessageLabel" class="btn btn-static  px-2">
+    <div id="stubbedMessageLabel" class="btn btn-static  px-2" *ngIf="report.stubbed">
       Message is stubbed
     </div>
 
-    <div *ngIf="null !== report.encoding" id="encodedMessageLabel" class="btn btn-static px-2">
+    <div id="encodedMessageLabel" class="btn btn-static px-2" *ngIf="null !== report.encoding">
       Message of type {{ report.messageClassName }} is encoded to string using {{ report.encoding}}
       <span *ngIf="this.report.showConverted">and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
     </div>
 
-    <div *ngIf="report.preTruncatedMessageLength > 0"
-         id="truncatedMessageLabel"
-         class="btn btn-static  px-2">
+    <div id="truncatedMessageLabel"
+         class="btn btn-static  px-2"
+         *ngIf="report.preTruncatedMessageLength > 0">
       Message is truncated ({{ report.preTruncatedMessageLength -report.message.length }} characters removed)
     </div>
 
-    <div *ngIf="null !==report.stubNotFound" id="stubNotFoundLabel" class="btn btn-static px-2">
+    <div id="stubNotFoundLabel" class="btn btn-static px-2" *ngIf="null !==report.stubNotFound">
       Could not find stub message for {{ report.stubNotFound }}
     </div>
   </div>
