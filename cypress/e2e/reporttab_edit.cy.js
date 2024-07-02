@@ -9,8 +9,8 @@ describe('Edit tests', () => {
     cy.get('[data-cy-report="toggleEdit"]').click();
     cy.get('[data-cy-report="editor"]')
       .click()
-      .focus()
-      .type('{selectAll}Hello Original World!',)
+      .focused()
+      .type('{selectAll}Hello Original World!', {force: true})
     cy.wait(100)
     cy.get('[data-cy-report="save"]').click();
     cy.get('.modal-title').should('include.text', 'Are you sure');
@@ -21,8 +21,8 @@ describe('Edit tests', () => {
     cy.get('[data-cy-report="toggleEdit"]').click();
     cy.get('[data-cy-report="editor"]')
       .click()
-      .focus()
-      .type('{selectAll}Goodbye Original World!',);
+      .focused()
+      .type('{selectAll}Goodbye Original World!', {force: true});
     cy.wait(100)
     cy.get('[data-cy-report="save"]').click();
     cy.get('[data-cy-difference-modal="confirm"]').click();
