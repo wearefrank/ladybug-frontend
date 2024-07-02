@@ -4,7 +4,7 @@
 
   <groupId>org.wearefrank</groupId>
   <artifactId>ladybug-frontend</artifactId>
-  <version>0.0.60</version>
+  <version>0.1.0-SNAPSHOT</version>
   <name>Angular Frontend of Ladybug</name>
 
   <properties>
