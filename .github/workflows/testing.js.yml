@@ -55,6 +55,7 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+          cache-dependency-path: 'ladybug-frontend/pnpm-lock.yaml'
 
       - name: Get pnpm store directory
         shell: bash
@@ -70,7 +71,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
         working-directory: ladybug-frontend
 
       - name: Set Cypress environment variables
