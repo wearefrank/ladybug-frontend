@@ -1,5 +1,5 @@
 <div class="toast-body">
-  <div *ngFor="let toast of toasts" class="my-2" [attr.data-cy-toast]="toast.type">
+  <div class="my-2" *ngFor="let toast of toasts" [attr.data-cy-toast]="toast.type">
     <div *ngIf="toast.type === 'info'">
       <ngb-toast class="fade animate-show animate-hide" [autohide]="true" [delay]="5000"
                  (hidden)="close(toast)">

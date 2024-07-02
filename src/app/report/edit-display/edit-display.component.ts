@@ -126,9 +126,9 @@ export class EditDisplayComponent {
   }
 
   openDifferenceModal(type: ChangesAction): void {
-    const reportDifferences: ReportDifference[] = [];
+    let reportDifferences: ReportDifference[] = [];
     if (this.report.xml && this.editFormComponent) {
-      reportDifferences.push(...this.getDifferences());
+      reportDifferences = this.getDifferences();
     } else if (this.report.message) {
       reportDifferences.push(this.getDifference('message', this.report.message, this.editor?.getValue()));
     }
