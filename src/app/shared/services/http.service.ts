@@ -51,7 +51,7 @@ export class HttpService {
     metadataNames: string[],
     storage: string,
   ): Observable<Report[]> {
-    return this.http.get<Report[]>('api/metadata/' + storage + '/', {
+    return this.http.get<Report[]>(`api/metadata/${storage}/`, {
       params: {
         limit: limit,
         filterHeader: filterHeader,
@@ -104,16 +104,10 @@ export class HttpService {
     });
   }
 
-  getReport(reportId: string, storage: string): Observable<Report> {
+  getReport(reportId: number, storage: string): Observable<Report> {
     return this.http
       .get<Record<string, Report | string>>(
-        // eslint-disable-next-line sonarjs/no-duplicate-string
-        'api/report/' +
-          storage +
-          '/' +
-          reportId +
-          '/?xml=true&globalTransformer=' +
-          localStorage.getItem('transformationEnabled'),
+        `api/report/${storage}/${reportId}/?xml=true&globalTransformer=${localStorage.getItem('transformationEnabled')}`,
       )
       .pipe(
         map((e) => {

@@ -200,7 +200,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     return <ReranReport>this.reranReports.find((report) => report.id == id);
   }
 
-  openReport(storageId: string, name: string): void {
+  openReport(storageId: number, name: string): void {
     this.httpService.getReport(storageId, this.currentView.storageName).subscribe((report: Report): void => {
       const reportData: ReportData = {
         report: report,

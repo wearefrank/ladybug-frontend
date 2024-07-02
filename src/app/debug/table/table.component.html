@@ -47,9 +47,9 @@
       </div>
 
       <div class="my-2 mx-1 px-2">
-        <select data-cy-change-view-dropdown class="form-control" (change)="changeView($event)">
-          @for (view of viewSettings.views | keyvalue; track view) {
-            <option [style.width]="viewDropdownBoxWidth" [selected]="view.key === viewSettings.currentView.name" [value]="view.key">{{ view.key }}</option>
+        <select data-cy-change-view-dropdown class="form-control" [(ngModel)]="currentView" (ngModelChange)="changeView()">
+          @for (view of views | keyvalue; track view) {
+            <option [style.width]="viewDropdownBoxWidth" [selected]="view.key === currentView?.name" [ngValue]="view.value">{{ view.key }}</option>
           }
         </select>
       </div>
@@ -104,7 +104,7 @@
               <th class="table-row-checkbox header-padding">
                 <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="allRowsSelected" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="selectAllRows()">
               </th>
-              @for (header of viewSettings.currentView.metadataLabels; let index = $index; track header) {
+              @for (header of currentView?.metadataLabels; let index = $index; track header) {
                 <th class="table-id-cell header-cell header-padding"
                     [attr.mat-sort-header]="index"
                     [title]="header">
@@ -114,22 +114,22 @@
             </tr>
           </thead>
           <tbody data-cy-debug="tableBody">
-            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {
+            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.debugVariables.storageId) {
               <tr class="table-row"
                   [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"
                   [style.background-color]="getStatusColor(row)"
                   [attr.data-cy-record-table-index]="index"
-                  (click)="openSelectedReport(row.storageId);"
+                  (click)="openSelectedReport(row.debugVariables.storageId, index);"
               >
                 <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
                   <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row)">
                 </td>
-                @for (metadataName of viewSettings.currentView.metadataNames; track metadataName) {
+                @for (metadataName of currentView?.metadataNames; track metadataName) {
                   <td
                     class="table-cell"
                     [style.padding]="getTableSpacing()"
-                    [title]="row[metadataName]">
-                    {{ row[metadataName]|tableCellShortener }}</td>
+                    [title]="row.debugVariables[metadataName]">
+                    {{ row.debugVariables[metadataName]|tableCellShortener }}</td>
                 }
               </tr>
             }

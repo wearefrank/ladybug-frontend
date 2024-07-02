@@ -27,7 +27,10 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
-import { KeyValuePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { NgIf, NgFor, NgClass, KeyValuePipe } from '@angular/common';
+import { DebugListItem } from 'src/app/shared/interfaces/debug-list-item';
+import { View } from 'src/app/shared/interfaces/view';
+import { CompareReport } from 'src/app/shared/interfaces/compare-reports';
 
 @Component({
   selector: 'app-table',
@@ -59,12 +62,8 @@ import { KeyValuePipe, NgClass, NgFor, NgIf } from '@angular/common';
 export class TableComponent implements OnInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
   metadataCount = 0;
-  viewSettings: any = {
-    defaultView: '',
-    views: [],
-    currentView: {},
-    currentViewName: '',
-  };
+  currentView?: View;
+  views?: Record<string, View>;
   //Temporary fix, issue has been created (https://github.com/wearefrank/ladybug-frontend/issues/383) to refactor this and the debug component
   @Output() viewChange: Subject<string> = new Subject<string>();
 
@@ -123,7 +122,7 @@ export class TableComponent implements OnInit, OnDestroy {
   hasTimedOut: boolean = false;
   reportsInProgress: Record<string, number> = {};
   reportsInProgressThreshold!: number;
-  protected selectedReportStorageId?: string;
+  protected selectedReportStorageId?: number;
 
   constructor(
     private httpService: HttpService,
@@ -180,43 +179,59 @@ export class TableComponent implements OnInit, OnDestroy {
     this.filterErrorSubscription?.unsubscribe();
   }
 
-  retrieveRecords(): void {
-    this.doneRetrieving = false;
-    this.tableSettings.reportMetadata = [];
-    const httpServiceSubscription = this.httpService
-      .getMetadataReports(
-        this.tableSettings.displayAmount,
-        this.tableSettings.filterValues,
-        this.tableSettings.filterHeaders,
-        this.viewSettings.currentView.metadataNames,
-        this.viewSettings.currentView.storageName,
-      )
-      .subscribe({
-        next: (value) => {
-          this.setUniqueOptions(value);
-          this.tableSettings.reportMetadata = value;
-          this.tableSettings.tableLoaded = true;
-          this.toastService.showSuccess('Data loaded!');
-          this.doneRetrieving = true;
-          httpServiceSubscription.unsubscribe();
-        },
-        error: () => {
-          catchError(this.httpService.handleError());
-        },
-      });
+  checkMetadataAndStorageNames(): boolean {
+    return !!(this.currentView && this.currentView.metadataNames && this.currentView.storageName);
+  }
 
-    this.getUserHelp();
-    this.loadMetadataCount();
+  retrieveRecords(): void {
+    if (this.checkMetadataAndStorageNames()) {
+      this.doneRetrieving = false;
+      this.tableSettings.reportMetadata = [];
+      const httpServiceSubscription = this.httpService
+        .getMetadataReports(
+          this.tableSettings.displayAmount,
+          this.tableSettings.filterValues,
+          this.tableSettings.filterHeaders,
+          this.currentView!.metadataNames,
+          this.currentView!.storageName,
+        )
+        .subscribe({
+          next: (debugVariablesList: Report[]) => {
+            this.setUniqueOptions(debugVariablesList);
+            this.makeDebugListItemArray(debugVariablesList);
+            this.tableSettings.tableLoaded = true;
+            this.toastService.showSuccess('Data loaded!');
+            this.doneRetrieving = true;
+            httpServiceSubscription.unsubscribe();
+          },
+          error: () => {
+            catchError(this.httpService.handleError());
+          },
+        });
+
+      this.getUserHelp();
+      this.loadMetadataCount();
+    }
+  }
+
+  makeDebugListItemArray(listOfItems: Report[]) {
+    for (const debugVariables of listOfItems) {
+      const listItem: DebugListItem = {
+        checked: false,
+        debugVariables: debugVariables,
+      };
+      this.tableSettings.reportMetadata.push(listItem);
+    }
   }
 
   getUserHelp(): void {
-    this.httpService
-      .getUserHelp(this.viewSettings.currentView.storageName, this.viewSettings.currentView.metadataNames)
-      .subscribe({
-        next: (response) => {
+    if (this.checkMetadataAndStorageNames()) {
+      this.httpService.getUserHelp(this.currentView!.storageName, this.currentView!.metadataNames).subscribe({
+        next: (response: Report[]) => {
           this.tableSettings.metadataHeaders = response;
         },
       });
+    }
   }
 
   clearFilters(): void {
@@ -225,26 +240,26 @@ export class TableComponent implements OnInit, OnDestroy {
     this.retrieveRecords();
   }
 
-  changeView(event: any): void {
-    this.allRowsSelected = false;
-    this.viewSettings.currentView = this.viewSettings.views[event.target.value];
-    this.viewSettings.currentViewName = event.target.value;
-    this.clearFilters();
-    this.debugReportService.changeView(this.viewSettings.currentView);
-    this.filterService.setMetadataLabels(this.viewSettings.currentView.metadataLabels);
-    this.viewChange.next(this.viewSettings.currentViewName);
+  changeView(): void {
+    if (this.views && this.currentView) {
+      this.allRowsSelected = false;
+      this.clearFilters();
+      this.debugReportService.changeView(this.currentView);
+      if (this.currentView.metadataNames) {
+        this.filterService.setMetadataLabels(this.currentView.metadataNames);
+        this.viewChange.next(this.currentView.name);
+      }
+    }
   }
 
   listenForViewUpdate(): void {
     this.changeNodeLinkStrategyService.changeNodeLinkStrategy.subscribe(() => {
       this.httpService.getViews().subscribe((views) => {
-        this.viewSettings.views = views;
+        this.views = views;
         this.sortFilterList();
-        let viewToUpdate = Object.keys(this.viewSettings.views).find(
-          (view) => view === this.viewSettings.currentView.name,
-        );
-        if (viewToUpdate) {
-          this.viewSettings.currentView.nodeLinkStrategy = views[viewToUpdate].nodeLinkStrategy;
+        let viewToUpdate = Object.keys(this.views).find((view) => view === this.currentView?.name);
+        if (viewToUpdate && this.currentView) {
+          this.currentView.nodeLinkStrategy = views[viewToUpdate].nodeLinkStrategy;
         }
       });
     });
@@ -252,31 +267,40 @@ export class TableComponent implements OnInit, OnDestroy {
 
   loadData(): void {
     this.loadReportInProgressThreshold();
-    this.httpService.getViews().subscribe((views) => {
-      if (Object.keys(this.viewSettings.currentView).length > 0) {
-        this.debugReportService.changeView(this.viewSettings.currentView);
-      } else {
-        this.viewSettings.views = views;
-        this.calculateViewDropDownWidth();
-        this.viewSettings.currentViewName = Object.keys(this.viewSettings.views).find(
-          (view) => this.viewSettings.views[view].defaultView,
-        );
+    this.httpService.getViews().subscribe((views: Record<string, View>) => {
+      this.views = views;
+      this.calculateViewDropDownWidth();
 
-        this.viewSettings.currentView = this.viewSettings.views[this.viewSettings.currentViewName];
-        this.viewSettings.currentView.name = this.viewSettings.currentViewName;
-        this.debugReportService.changeView(this.viewSettings.currentView);
+      this.setCurrentAndSelectedView(views);
+      if (this.currentView) {
+        this.debugReportService.changeView(this.currentView);
       }
+
       this.retrieveRecords();
       this.getUserHelp();
-      this.filterService.setMetadataTypes(this.viewSettings.currentView.metadataTypes);
+
+      if (this.currentView?.metadataTypes) {
+        this.filterService.setMetadataTypes(this.currentView.metadataTypes);
+      }
     });
     this.loadReportInProgressSettings();
   }
 
-  loadMetadataCount(): void {
-    this.httpService.getMetadataCount(this.viewSettings.currentView.storageName).subscribe((count: number) => {
-      this.metadataCount = count;
+  setCurrentAndSelectedView(views: Record<string, View>): void {
+    Object.keys(views).forEach((view) => {
+      if (this.views?.[view].defaultView) {
+        this.currentView = this.views?.[view];
+        this.currentView.name = view;
+      }
     });
+  }
+
+  loadMetadataCount(): void {
+    if (this.currentView?.storageName) {
+      this.httpService.getMetadataCount(this.currentView.storageName).subscribe((count: number) => {
+        this.metadataCount = count;
+      });
+    }
   }
 
   loadReportInProgressSettings(): void {
@@ -316,11 +340,13 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   toggleFilter(): void {
-    this.filterService.setMetadataLabels(this.viewSettings.currentView.metadataNames);
-    this.filterService.setMetadataTypes(this.viewSettings.currentView.metadataTypes);
-    this.tableSettings.showFilter = !this.tableSettings.showFilter;
-    this.filterService.setShowFilter(this.tableSettings.showFilter);
-    this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
+    if (this.currentView?.metadataNames) {
+      this.filterService.setMetadataLabels(this.currentView.metadataNames);
+      this.filterService.setMetadataTypes(this.currentView.metadataTypes);
+      this.tableSettings.showFilter = !this.tableSettings.showFilter;
+      this.filterService.setShowFilter(this.tableSettings.showFilter);
+      this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
+    }
   }
 
   toggleCheck(report: any): void {
@@ -349,14 +375,12 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  getStatusColor(metadata: any): string {
-    let statusName = this.viewSettings.currentView.metadataNames.find((name: string) => {
-      return name.toLowerCase() === 'status';
-    });
-    if (statusName && metadata[statusName]) {
-      if (metadata[statusName].toLowerCase() === 'success') {
+  getStatusColor(metadata: DebugListItem): string {
+    if (metadata.debugVariables.status) {
+      const status: string = metadata.debugVariables.status;
+      if (status.toLowerCase() === 'success') {
         return '#c3e6cb';
-      } else if (metadata[statusName].toLowerCase() === 'null') {
+      } else if (status.toLowerCase() === 'null') {
         return '#A9A9A9FF';
       } else {
         return '#f79c9c';
@@ -370,22 +394,24 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReportInTab(): void {
-    let reportTab = this.tableSettings.reportMetadata.find((report) => report.checked);
-    this.httpService
-      .getReport(reportTab.storageId, this.viewSettings.currentView.storageName)
-      .subscribe((report: Report): void => {
-        const reportData: ReportData = {
-          report: report,
-          currentView: this.viewSettings.currentView,
-        };
-        this.tabService.openNewTab(reportData);
-      });
+    const reportTab: DebugListItem = this.tableSettings.reportMetadata.find((report: DebugListItem) => report.checked);
+    if (reportTab && this.currentView && this.currentView.storageName && reportTab.debugVariables.storageId) {
+      this.httpService
+        .getReport(reportTab.debugVariables.storageId, this.currentView.storageName)
+        .subscribe((report: Report): void => {
+          const reportData: ReportData = {
+            report: report,
+            currentView: this.currentView!,
+          };
+          this.tabService.openNewTab(reportData);
+        });
+    }
   }
 
   openSelected(): void {
     for (const report of this.tableSettings.reportMetadata) {
       if (report.checked) {
-        this.openReport(report.storageId);
+        this.openReport(report.debugVariables.storageId);
         if (!this.showMultipleFiles) {
           this.toastService.showWarning(
             'Please enable show multiple files in settings to open multiple files in the debug tree',
@@ -397,10 +423,12 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   deleteSelected(): void {
-    const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
-    this.httpService.deleteReport(reportIds, this.viewSettings.currentView.storageName).subscribe(() => {
-      this.retrieveRecords();
-    });
+    if (this.currentView) {
+      const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
+      this.httpService.deleteReport(reportIds, this.currentView.storageName).subscribe(() => {
+        this.retrieveRecords();
+      });
+    }
   }
 
   selectAll(): void {
@@ -412,35 +440,40 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   compareTwoReports(): void {
-    let compareReports: any = {};
-
     let selectedReports: string[] = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .map((report) => report.storageId);
-    this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
-      next: (data) => {
-        const leftObject = data[selectedReports[0]];
-        const originalReport = leftObject.report;
-        originalReport.xml = leftObject.xml;
 
-        const rightObject = data[selectedReports[1]];
-        const runResultReport = rightObject.report;
-        runResultReport.xml = rightObject.xml;
+    if (this.currentView?.storageName) {
+      this.httpService.getReports(selectedReports, this.currentView.storageName).subscribe({
+        next: (data: Record<string, CompareReport>) => {
+          this.openNewCompareTab(data, selectedReports);
+        },
+      });
+    }
+  }
 
-        const id = this.helperService.createCompareTabId(originalReport, runResultReport);
-        compareReports = {
-          id: id,
-          originalReport: originalReport,
-          runResultReport: runResultReport,
-          viewName: this.viewSettings.currentView.name,
-          nodeLinkStrategy: this.viewSettings.currentView.nodeLinkStrategy,
-        };
-      },
+  openNewCompareTab(data: Record<string, CompareReport>, selectedReports: string[]): void {
+    let compareReports: any;
+    const leftObject = data[selectedReports[0]];
+    const originalReport = leftObject.report;
+    originalReport.xml = leftObject.xml;
 
-      complete: () => {
-        this.tabService.openNewCompareTab(compareReports);
-      },
-    });
+    const rightObject = data[selectedReports[1]];
+    const runResultReport = rightObject.report;
+    runResultReport.xml = rightObject.xml;
+
+    const id = this.helperService.createCompareTabId(originalReport, runResultReport);
+    if (this.currentView) {
+      compareReports = {
+        id: id,
+        originalReport: originalReport,
+        runResultReport: runResultReport,
+        viewName: this.currentView.name,
+        nodeLinkStrategy: this.currentView.nodeLinkStrategy,
+      };
+    }
+    this.tabService.openNewCompareTab(compareReports);
   }
 
   changeFilter(filters: Map<string, string>): void {
@@ -476,24 +509,29 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadData();
   }
 
-  openReport(storageId: string): void {
-    this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data: Report): void => {
-      data.storageName = this.viewSettings.currentView.storageName;
-      this.openReportEvent.next(data);
-    });
+  openReport(storageId: number): void {
+    if (this.currentView && this.currentView.storageName) {
+      this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data: Report): void => {
+        data.storageName = this.currentView?.storageName ?? '';
+        this.openReportEvent.next(data);
+      });
+    }
   }
 
-  openSelectedReport(storageId: string) {
+
+  openSelectedReport(storageId: number, index: number) {
     this.selectedReportStorageId = storageId;
     this.openReport(storageId);
   }
 
   openLatestReports(amount: number): void {
-    this.httpService.getLatestReports(amount, this.viewSettings.currentView.storageName).subscribe((data) => {
-      data.forEach((report: any) => {
-        this.openReportEvent.next(report);
+    if (this.currentView) {
+      this.httpService.getLatestReports(amount, this.currentView.storageName).subscribe((data) => {
+        data.forEach((report: any) => {
+          this.openReportEvent.next(report);
+        });
       });
-    });
+    }
   }
 
   openReportInProgress(index: number): void {
@@ -511,13 +549,17 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
-    const queryString: string = this.tableSettings.reportMetadata
-      .filter((report) => report.checked)
-      .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '');
+    const selectedReports: any = this.tableSettings.reportMetadata.filter((report) => report.checked);
+    let queryString = '';
+
+    for (const report of selectedReports) {
+      queryString += `id=${report.storageId}`;
+    }
+
     if (queryString === '') {
       this.toastService.showWarning('No reports selected to download');
-    } else {
-      this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
+    } else if (this.currentView) {
+      this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
     }
   }
 
@@ -531,13 +573,15 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   showUploadedReports(formData: any): void {
-    this.httpService.uploadReport(formData).subscribe((data) => {
-      for (let report of data) {
-        const reportData: ReportData = {
-          report: report,
-          currentView: this.viewSettings.currentView,
-        };
-        this.tabService.openNewTab(reportData);
+    this.httpService.uploadReport(formData).subscribe((data: Report[]) => {
+      if (this.currentView) {
+        for (let report of data) {
+          const reportData: ReportData = {
+            report: report,
+            currentView: this.currentView,
+          };
+          this.tabService.openNewTab(reportData);
+        }
       }
     });
   }
@@ -562,29 +606,46 @@ export class TableComponent implements OnInit, OnDestroy {
     return `${this.defaultCheckBoxSize + this.tableSpacing}px`;
   }
 
-  setUniqueOptions(data: any): void {
-    for (const headerName of this.viewSettings.currentView.metadataNames as string[]) {
-      const lowerHeaderName = headerName.toLowerCase();
-      const upperHeaderName = headerName.toUpperCase();
-      let uniqueValues: Set<string> = new Set<string>();
-      for (let element of data) {
-        if (element[lowerHeaderName]) {
-          uniqueValues.add(element[lowerHeaderName]);
-        }
-        if (element[upperHeaderName]) {
-          uniqueValues.add(element[upperHeaderName]);
-        }
-        if (element[headerName]) {
-          uniqueValues.add(element[headerName]);
-        }
+  setUniqueOptions(data: Report[]): void {
+    if (this.currentView) {
+      for (const headerName of this.currentView.metadataNames as string[]) {
+        const lowerHeaderName: keyof Report = headerName.toLowerCase() as keyof Report;
+        const upperHeaderName: keyof Report = headerName.toUpperCase() as keyof Report;
+        const uniqueValues: Set<string> = this.getUniqueValues(
+          data,
+          headerName as keyof Report,
+          lowerHeaderName,
+          upperHeaderName,
+        );
+        const MAX_AMOUNT_OF_FILTER_SUGGESTIONS: number = 15;
+        this.tableSettings.uniqueValues.set(
+          lowerHeaderName,
+          uniqueValues.size < MAX_AMOUNT_OF_FILTER_SUGGESTIONS ? this.sortUniqueValues(uniqueValues) : [],
+        );
+        this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
       }
-      const MAX_AMOUNT_OF_FILTER_SUGGESTIONS: number = 15;
-      this.tableSettings.uniqueValues.set(
-        lowerHeaderName,
-        uniqueValues.size < MAX_AMOUNT_OF_FILTER_SUGGESTIONS ? this.sortUniqueValues(uniqueValues) : [],
-      );
-      this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
     }
+  }
+
+  getUniqueValues(
+    data: Report[],
+    headerName: keyof Report,
+    lowerHeaderName: keyof Report,
+    upperHeaderName: keyof Report,
+  ): Set<string> {
+    let uniqueValues: Set<string> = new Set<string>();
+    for (let element of data) {
+      if (element[lowerHeaderName]) {
+        uniqueValues.add(element[lowerHeaderName]);
+      }
+      if (element[upperHeaderName]) {
+        uniqueValues.add(element[upperHeaderName]);
+      }
+      if (element[headerName]) {
+        uniqueValues.add(element[headerName]);
+      }
+    }
+    return uniqueValues;
   }
 
   sortUniqueValues(values: Set<string>): string[] {
@@ -607,19 +668,23 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   sortFilterList(): void {
-    for (let metadataLabel of this.viewSettings.currentView.metadataNames) {
-      this.currentFilters.set(metadataLabel.toLowerCase().replaceAll(' ', ''), '');
+    if (this.currentView) {
+      for (let metadataLabel of this.currentView.metadataNames) {
+        this.currentFilters.set(metadataLabel.toLowerCase().replaceAll(' ', ''), '');
+      }
     }
   }
 
   calculateViewDropDownWidth(): void {
-    let longestViewName = '';
-    for (let key of Object.keys(this.viewSettings.views)) {
-      if (key.length > longestViewName.length) {
-        longestViewName = key;
+    if (this.views) {
+      let longestViewName = '';
+      for (let key of Object.keys(this.views)) {
+        if (key.length > longestViewName.length) {
+          longestViewName = key;
+        }
       }
+      this.viewDropdownBoxWidth = `{longestViewName.length / 2}rem`;
     }
-    this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
   }
 
   loadReportInProgressThreshold(): void {
