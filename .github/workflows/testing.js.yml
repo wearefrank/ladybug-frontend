@@ -16,9 +16,6 @@ on:
         type: boolean
         default: false
         required: true
-      frontendCommitToCheckout:
-        description: Tag or branch of ladybug-frontend to check out
-        required: false
       backendCommitToCheckout:
         description: Tag or branch of the backend to test against
         required: false
@@ -30,19 +27,11 @@ jobs:
 
     steps:
       - name: Echo inputs
-        run: echo "useRealFrontend=${{ github.event.inputs.useRealFrontend}}, mergeMasterToBranch=${{ github.event.inputs.mergeMasterToBranch}}, frontendCommitToCheckout=${{ github.event.inputs.frontendCommitToCheckout}}, backendCommitToCheckout=${{ github.event.inputs.backendCommitToCheckout }}"
+        run: echo "useRealFrontend=${{ github.event.inputs.useRealFrontend}}, mergeMasterToBranch=${{ github.event.inputs.mergeMasterToBranch}}, backendCommitToCheckout=${{ github.event.inputs.backendCommitToCheckout }}"
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           path: ladybug-frontend
-      - name: Fetch all tags
-        if: ${{ github.event.inputs.frontendCommitToCheckout }}
-        run: git fetch --all --tags
-        working-directory: "ladybug-frontend"
-      - name: Checkout required version
-        if: ${{ github.event.inputs.frontendCommitToCheckout }}
-        run: git checkout ${{ github.event.inputs.frontendCommitToCheckout }}
-        working-directory: "ladybug-frontend"
 
       - uses: pnpm/action-setup@v4
         name: Install pnpm
