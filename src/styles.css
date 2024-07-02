@@ -134,3 +134,7 @@ html, body {
 .icon-size {
   font-size: 8pt;
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}

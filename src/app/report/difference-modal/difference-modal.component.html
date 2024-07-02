@@ -14,7 +14,9 @@
           <div class="row">
             <div class="col">
               <div class="text-center pt-2">Before</div>
-              <div class="changeBox text-left p-1 overflow-auto" [attr.data-cy-changes-form-before]="part.name">{{ part.originalValue }}</div>
+              <div class="changeBox text-left p-1 overflow-auto" [attr.data-cy-changes-form-before]="part.name"
+              >{{ part.originalValue }}
+              </div>
             </div>
             <div class="col text-right" [attr.data-cy-changes-form-after]="part.name">
               <div class="text-center pt-2">After</div>
@@ -31,7 +33,15 @@
   </div>
   <div class="modal-footer">
     <div class="col-md-12 text-center">
-      <button type="button" class="btn btn-info mr-2" (click)="onClickYes()">Yes</button>
+      @if (saveOrDiscardType === 'saveRerun') {
+        <button type="button" class="btn btn-info mr-2" (click)="onClickRerun()"
+        >Save and rerun
+        </button>
+      } @else {
+        <button data-cy-difference-modal="confirm" type="button" class="btn btn-info mr-2" (click)="onClickSave()"
+        >{{ saveOrDiscardType|titlecase }}
+        </button>
+      }
       <button type="button" class="btn btn-info ml-2" (click)="closeModal()">No</button>
     </div>
   </div>

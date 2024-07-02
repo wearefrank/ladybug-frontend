@@ -4,7 +4,7 @@ import { TitleCasePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
-export const changesActionConst = ['save', 'discard'] as const;
+export const changesActionConst = ['save', 'discard', 'saveRerun'] as const;
 export type ChangesAction = (typeof changesActionConst)[number];
 
 @Component({
@@ -19,6 +19,7 @@ export class DifferenceModalComponent {
   protected reportDifferences?: ReportDifference[];
   protected activeModal?: NgbModalRef;
   @Output() saveChangesEvent: Subject<void> = new Subject<void>();
+  @Output() rerunEvent: Subject<void> = new Subject<void>();
   @ViewChild('modal') protected modal!: TemplateRef<DifferenceModalComponent>;
 
   constructor(private modalService: NgbModal) {}
@@ -52,8 +53,15 @@ export class DifferenceModalComponent {
     }
   }
 
-  onClickYes(): void {
-    this.saveChangesEvent.next();
+  onClickSave(): void {
+    if (this.saveOrDiscardType === 'save') {
+      this.saveChangesEvent.next();
+    }
+    this.closeModal();
+  }
+
+  onClickRerun(): void {
+    this.rerunEvent.next();
     this.closeModal();
   }
 }
