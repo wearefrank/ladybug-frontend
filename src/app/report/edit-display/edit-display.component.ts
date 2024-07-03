@@ -97,7 +97,6 @@ export class EditDisplayComponent {
 
   rerunReport(): void {
     const reportId: string = this.report.storageId;
-    console.log(this.report);
     this.httpService.runReport(this.currentView.storageName, reportId).subscribe((response: TestResult): void => {
       this.toastService.showSuccess('Report rerun successful');
       this.rerunResult = response;
@@ -208,7 +207,6 @@ export class EditDisplayComponent {
     }
 
     const body = { stub: stubStrategy, ...this.getReportValues(checkpointId) };
-    console.log(this.currentView.storageName);
 
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe((response: any) => {
       response.report.xml = response.xml;
