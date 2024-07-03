@@ -1,4 +1,4 @@
-<div class="position-relative" [style.height]="height - ACTIONS_BAR_HEIGHT + 'px'" *ngIf="rawFile">
+<div class="position-relative" *ngIf="rawFile" [style.height]="height - ACTIONS_BAR_HEIGHT + 'px'">
   <ngx-monaco-editor
     data-cy-element-name="editor"
     class="editor"
@@ -10,7 +10,7 @@
   </ngx-monaco-editor>
   <div class="status-bar">
     <div class="left-side">
-      <div *ngIf="!readOnlyMode" class="status"
+      <div class="status" *ngIf="!readOnlyMode"
            [title]="unsavedChanges ? 'This file has unsaved changed, press ctrl + s to save' : 'No unsaved changes'">
         <i class="bi bi-floppy"></i>
         <span class="status-text">{{ unsavedChanges ? 'Unsaved' : 'Saved' }}</span>
@@ -28,8 +28,8 @@
     <div class="right-side">
       <select
         class="drop-down"
-        *ngIf="availableViews"
         data-cy-editor="viewDropDown"
+        *ngIf="availableViews"
         [title]="'Current view: ' + currentView"
         [disabled]="availableViews.length <= 1"
         [(ngModel)]="currentView"
