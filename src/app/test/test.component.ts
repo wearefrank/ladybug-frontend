@@ -229,7 +229,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     const selectedReports: Report[] = this.helperService.getSelectedReports(this.reports);
     if (selectedReports.length > 0) {
       let queryString: string = '';
-      for (let report of selectedReportsreport) {
+      for (let report of selectedReports) {
         queryString += `id=${report.storageId}&`;
       }
       this.helperService.download(queryString, this.currentView.storageName, true, false);
