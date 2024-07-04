@@ -55,6 +55,22 @@
             </configuration>
           </execution>
           <execution>
+            <id>set version</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <executable>pnpm</executable>
+              <arguments>
+                <argument>version</argument>
+                <argument>${project.version}</argument>
+                <argument>--no-git-tag-version</argument>
+                <argument>--no-commit-hooks</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
             <id>ng build</id>
             <goals>
               <goal>exec</goal>
@@ -104,16 +120,6 @@
                 <resource>
                   <directory>${compiled.frontend.location}/ladybug</directory>
                   <filtering>false</filtering>
-                  <excludes>
-                    <exclude>package.json</exclude>
-                  </excludes>
-                </resource>
-                <resource>
-                  <directory>${compiled.frontend.location}/ladybug</directory>
-                  <filtering>true</filtering>
-                  <includes>
-                    <include>package.json</include>
-                  </includes>
                 </resource>
               </resources>
             </configuration>
