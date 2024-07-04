@@ -332,7 +332,7 @@ export class TestComponent implements OnInit, AfterViewInit {
 
   matches(report: any): boolean {
     let name = report.path + report.name;
-    return name.match(`(/)?${this.currentFilter}.*'`) != undefined;
+    return name.match(`(/)?${this.currentFilter}.*`) != undefined;
   }
 
   extractVariables(variables: string): string {
