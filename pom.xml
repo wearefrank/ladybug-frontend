@@ -4,12 +4,12 @@
 
   <groupId>org.wearefrank</groupId>
   <artifactId>ladybug-frontend</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>${revision}</version>
   <name>Angular Frontend of Ladybug</name>
 
   <properties>
-    <meta-inf.maven.output>${project.build.outputDirectory}/META-INF/maven/${project.groupId}/${project.artifactId}
-    </meta-inf.maven.output>
+    <meta-inf.maven.output>${project.build.outputDirectory}/META-INF/maven/${project.groupId}/${project.artifactId}</meta-inf.maven.output>
+    <revision>0.1.0-SNAPSHOT</revision>
     <!-- For pom.properties -->
     <version>${project.version}</version>
     <compiled.frontend.location>${basedir}/dist</compiled.frontend.location>
