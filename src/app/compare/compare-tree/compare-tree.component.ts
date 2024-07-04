@@ -172,7 +172,7 @@ export class CompareTreeComponent {
   }
 
   redLabel(item: any) {
-    item.label = "<span style='color: red;'>" + item.label + '</span>';
+    item.label = `<span style='color: red;'>${item.label}</span>`;
   }
 
   iterateToMakeLabelsRed(leftItem: any, rightItem: any) {
