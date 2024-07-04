@@ -515,9 +515,9 @@ export class TableComponent implements OnInit, OnDestroy {
 
     if (selectedReports.length > 0) {
       let queryString: string = '';
-      selectedReports.forEach((report) => {
+      for (let report of selectedReport) {
         queryString += `id=${report.storageId}&`;
-      });
+      }
       this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
     } else {
       this.toastService.showWarning('No reports selected to download');
