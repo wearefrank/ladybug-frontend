@@ -23,6 +23,7 @@ import {
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgIf } from '@angular/common';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
+import { CheckpointType } from '../../shared/enums/checkpoint-type';
 
 @Component({
   selector: 'app-debug-tree',
@@ -155,35 +156,23 @@ export class DebugTreeComponent implements OnDestroy {
 
   //Ladybug reports don't have a parent-child structure for its checkpoints, this function creates that parent-child structure
   transformReportToHierarchyStructure(report: Report): Report {
-    const checkpoints = report.checkpoints;
-    let checkpointsTemplate: Checkpoint[] = [];
+    const checkpoints: Checkpoint[] = report.checkpoints;
+    const checkpointsTemplate: Checkpoint[] = [];
     let startpointCounter: number = 0;
-    let startPointList: Checkpoint[] = [checkpoints[0]];
+    const startPointList: Checkpoint[] = [checkpoints[0]];
     for (let i = 0; i < checkpoints.length; i++) {
-      checkpoints[i].icon = this.helperService.getImage(
-        checkpoints[i].type,
-        checkpoints[i].encoding,
-        checkpoints[i].level,
-      );
+      const checkpoint: Checkpoint = checkpoints[i];
+      checkpoint.icon = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
       if (checkpointsTemplate.length === 0) {
         checkpointsTemplate.push(checkpoints[0]);
       } else {
-        if (checkpoints[i].type == 2) {
-          if (startpointCounter == 0) {
-            checkpointsTemplate.push(checkpoints[i]);
-            break;
-          }
-          startpointCounter--;
-          startPointList.splice(-1, 1);
-        }
-        let currentStartpoint = startPointList;
+        const currentStartpoint: Checkpoint[] = startPointList;
         if (!currentStartpoint[startPointList.length - 1].checkpoints) {
           currentStartpoint[startPointList.length - 1].checkpoints = [];
         }
-        currentStartpoint[startPointList.length - 1].checkpoints!.push(checkpoints[i]);
-
-        if (checkpoints[i].type == 1) {
-          startPointList.push(checkpoints[i]);
+        currentStartpoint[startPointList.length - 1].checkpoints!.push(checkpoint);
+        if (checkpoint.type == CheckpointType.Startpoint) {
+          startPointList.push(checkpoint);
           startpointCounter++;
         }
       }
