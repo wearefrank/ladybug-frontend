@@ -98,45 +98,8 @@
     }
     @else {
       <div data-cy-debug="table" class="table-responsive" id="metadataTable">
-<!--        <table class="table mb-0" matSort [style.font-size]="getFontSize()" (matSortChange)="sortData($event)">-->
-<!--          <thead id="table-header">-->
-<!--            <tr>-->
-<!--              <th class="table-row-checkbox header-padding">-->
-<!--                <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="allRowsSelected" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="selectAllRows()">-->
-<!--              </th>-->
-<!--              @for (header of viewSettings.currentView.metadataLabels; let index = $index; track header) {-->
-<!--                <th data-cy-debug="metadataLabel"-->
-<!--                  class="table-id-cell header-cell header-padding"-->
-<!--                    [attr.mat-sort-header]="index"-->
-<!--                    [title]="header">-->
-<!--                  {{ getShortenedTableHeaderNames(header) }}-->
-<!--                </th>-->
-<!--              }-->
-<!--            </tr>-->
-<!--          </thead>-->
-<!--          <tbody data-cy-debug="tableBody">-->
-<!--            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {-->
-<!--              <tr class="table-row"-->
-<!--                  [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"-->
-<!--                  [style.background-color]="getStatusColor(row)"-->
-<!--                  [attr.data-cy-record-table-index]="index"-->
-<!--                  (click)="openSelectedReport(row.storageId);"-->
-<!--              >-->
-<!--                <td class="table-row-checkbox" [style.padding]="getTableSpacing()">-->
-<!--                  <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row)">-->
-<!--                </td>-->
-<!--                @for (metadataName of viewSettings.currentView.metadataNames; track metadataName) {-->
-<!--                  <td-->
-<!--                    class="table-cell"-->
-<!--                    [style.padding]="getTableSpacing()"-->
-<!--                    [title]="metadataName">-->
-<!--                    {{ getMetadata(row, metadataName)|tableCellShortener }}</td>-->
-<!--                }-->
-<!--              </tr>-->
-<!--            }-->
-<!--          </tbody>-->
-<!--        </table>-->
-        <table mat-table class="table mb-0" matSort [style.font-size]="getFontSize()" [dataSource]="tableDataSource">
+        <table data-cy-debug="tableBody" mat-table class="table mb-0" matSort [style.font-size]="getFontSize()" [dataSource]="tableDataSource">
+          <!--Header and row container for checkboxes-->
           <ng-container matColumnDef="select">
             <th mat-header-cell *matHeaderCellDef class="table-row-checkbox header-padding">
               <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="allRowsSelected" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="selectAllRows()">
@@ -145,16 +108,16 @@
               <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row)">
             </td>
           </ng-container>
+
           @for (header of viewSettings.currentView.metadataLabels; let index = $index; track header) {
+            <!--For every metadata label, a header and row structure is created-->
             <ng-container [matColumnDef]="getMetadataNameFromHeader(header)">
-              <thead id="table-header">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header
-                    data-cy-debug="metadataLabel"
-                    class="table-id-cell header-cell header-padding"
-                    [title]="header">
-                  {{ getShortenedTableHeaderNames(header) }}
-                </th>
-              </thead>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header
+                  data-cy-debug="metadataLabel"
+                  class="table-id-cell header-cell header-padding"
+                  [title]="header">
+                {{ getShortenedTableHeaderNames(header) }}
+              </th>
               <td mat-cell *matCellDef="let row"
                 class="table-cell"
                 [style.padding]="getTableSpacing()"
@@ -162,10 +125,13 @@
                 {{ getMetadata(row, getMetadataNameFromHeader(header))|tableCellShortener }}</td>
             </ng-container>
           }
+
+          <!--Values are passed to their respective header and row elements-->
           <tr mat-header-row *matHeaderRowDef="getDisplayedColumnNames(viewSettings.currentView.metadataLabels)"></tr>
-          <tr mat-row *matRowDef="let row; columns: getDisplayedColumnNames(viewSettings.currentView.metadataLabels)"
+          <tr mat-row *matRowDef="let row; let rowIndex = index; columns: getDisplayedColumnNames(viewSettings.currentView.metadataLabels)"
               class="table-row"
               [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"
+              [attr.data-cy-record-table-index]="rowIndex"
               [style.background-color]="getStatusColor(row)"
               (click)="openSelectedReport(row.storageId);"
           ></tr>

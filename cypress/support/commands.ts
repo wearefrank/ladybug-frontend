@@ -185,9 +185,9 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
 
 Cypress.Commands.add('checkTableNumRows', (n) => {
   if (n === 0) {
-    cy.get('[data-cy-debug="tableBody"]').find('tr').should('not.exist');
+    cy.get('[data-cy-debug="tableBody"]').get('tbody').find('tr').should('not.exist');
   } else {
-    cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', n);
+    cy.get('[data-cy-debug="tableBody"]').get('tbody').find('tr').should('have.length', n);
   }
 });
 
@@ -199,6 +199,7 @@ Cypress.Commands.add('checkTestTableReportsAre', (reportNames) => {
   cy.checkTestTableNumRows(reportNames.length);
   reportNames.forEach((reportName) => {
     cy.get('[data-cy-test="table"]')
+      .get('tbody')
       .find('tr')
       .contains('/' + reportName)
       .should('have.length', 1);
@@ -235,7 +236,7 @@ Cypress.Commands.add('clickFirstChildInFileTree' as keyof Chainable, () => {
 })
 
 Cypress.Commands.add('clickRowInTable', (index: number) => {
-  cy.get('[data-cy-debug="tableBody"]').find('tr').eq(index).click();
+  cy.get('[data-cy-debug="tableBody"]').get('tbody').find('tr').eq(index).click();
 });
 
 Cypress.Commands.add('checkFileTreeLength', (n: number) => {

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
@@ -14,7 +14,7 @@ import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
 import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
-import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -58,7 +58,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
     MatTableModule,
   ],
 })
-export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TableComponent implements OnInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
   metadataCount = 0;
   viewSettings: any = {
@@ -103,7 +103,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
     estimatedMemoryUsage: '',
     uniqueValues: new Map<string, Array<string>>(),
   };
-  sortedReportMetadata: Report[] = [];
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
@@ -128,7 +127,10 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
   reportsInProgressThreshold!: number;
   protected selectedReportStorageId?: number;
   tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
-  @ViewChild(MatSort) sort!: MatSort;
+
+  @ViewChild(MatSort) set matSort(sort: MatSort) {
+    this.tableDataSource.sort = sort;
+  }
 
   constructor(
     private httpService: HttpService,
@@ -146,11 +148,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadData();
     this.listenForViewUpdate();
     this.subscribeToObservables();
-    this.tableDataSource = new MatTableDataSource(this.tableSettings.reportMetadata);
-  }
-
-  ngAfterViewInit(): void {
-    this.tableDataSource.sort = this.sort;
   }
 
   ngOnDestroy(): void {
@@ -205,8 +202,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
         next: (value) => {
           this.setUniqueOptions(value);
           this.tableSettings.reportMetadata = value;
-          this.tableDataSource.data = this.tableSettings.reportMetadata;
-          this.sortedReportMetadata = [...value];
+          this.tableDataSource.data = [...value];
           this.tableSettings.tableLoaded = true;
           this.toastService.showSuccess('Data loaded!');
           this.doneRetrieving = true;
@@ -677,24 +673,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
     return report[field as keyof Report];
   }
 
-  sortData(sort: Sort): any {
-    if (!sort.active || sort.direction === '') {
-      this.sortedReportMetadata = [...this.tableSettings.reportMetadata];
-      return;
-    }
-    this.sortedReportMetadata.sort((a: Report, b: Report): number => {
-      const isAsc: boolean = sort.direction === 'asc';
-      const headersA: [string, string][] = Object.entries(a);
-      const headersB: [string, string][] = Object.entries(b);
-      for (const [index, element] of headersA.entries()) {
-        if (this.getMetadataNameFromHeader(sort.active) === element[0]) {
-          return this.compare(element[1], headersB[index][1], isAsc);
-        }
-      }
-      return 0;
-    });
-  }
-
   getMetadataNameFromHeader(header: string): string {
     const index = this.viewSettings.currentView.metadataLabels.indexOf(header);
     return this.viewSettings.currentView.metadataNames[index];
@@ -706,14 +684,5 @@ export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
       names.push(this.getMetadataNameFromHeader(header));
     }
     return names;
-  }
-
-  compare(a: string, b: string, isAsc: boolean): number {
-    if (Number.isNaN(Number(a)) || Number.isNaN(b)) {
-      return (a < b ? -1 : a > b ? 1 : 0) * (isAsc ? 1 : -1);
-    }
-    const numberA: number = Number(a);
-    const numberB: number = Number(b);
-    return (numberA < numberB ? -1 : numberA > numberB ? 1 : 0) * (isAsc ? 1 : -1);
   }
 }

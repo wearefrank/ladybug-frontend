@@ -28,7 +28,7 @@ describe('Report transformation', () => {
     cy.createOtherReport();
     cy.get('[data-cy-debug="refresh"]').click();
     cy.wait(100);
-    cy.get('[data-cy-debug="tableBody"]')
+    cy.get('[data-cy-debug="tableBody"]').get('tbody')
       .find('tr')
       .should('have.length', 1)
       .click();
