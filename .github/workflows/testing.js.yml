@@ -6,18 +6,13 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
-      useRealFrontend:
-        description: If true, visit the front-end that is available in ladybug
-        type: boolean
-        default: false
-        required: true
       mergeMasterToBranch:
         description: If true, the checkout-out backend is merged with the backend master
         type: boolean
         default: false
         required: true
       frontendCommitToCheckout:
-        description: Tag or branch of ladybug-frontend to check out
+        description: Tag or branch of ladybug-frontend to check out - timestamp releases are not tagged
         required: false
       backendCommitToCheckout:
         description: Tag or branch of the backend to test against
@@ -169,7 +164,6 @@ jobs:
         working-directory: ladybug-frontend
 
       - name: Run cypress with chrome browser
-        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         uses: cypress-io/github-action@v6.6.0
         with:
           working-directory: ladybug-frontend
@@ -189,25 +183,6 @@ jobs:
       #          wait-on-timeout: 240
       #          browser: firefox
       #          config: screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
-
-      - name: Run cypress with chrome browser - real frontend
-        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
-        uses: cypress-io/github-action@v6.6.0
-        with:
-          working-directory: ladybug-frontend
-          wait-on: "http://localhost:8090"
-          wait-on-timeout: 1000
-          browser: chrome
-          config: baseUrl=http://localhost:8090/ladybug/
-      #      - name: Run cypress with firefox browser - real frontend
-      #        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
-      #        uses: cypress-io/github-action@v2.9.7
-      #        with:
-      #          working-directory: ladybug-frontend
-      #          wait-on: 'http://localhost:8090'
-      #          wait-on-timeout: 240
-      #          browser: firefox
-      #          config: baseUrl=http://localhost:8090/ladybug/,screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
 
       - name: Show files
         run: tree -d -L 5 .
