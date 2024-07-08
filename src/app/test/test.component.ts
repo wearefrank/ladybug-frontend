@@ -226,12 +226,12 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   downloadSelected(): void {
-    const selectedReports = this.helperService.getSelectedReports(this.reports);
+    const selectedReports: Report[] = this.helperService.getSelectedReports(this.reports);
     if (selectedReports.length > 0) {
-      const queryString: string = selectedReports.reduce(
-        (totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&',
-        '',
-      );
+      let queryString: string = '';
+      for (let report of selectedReports) {
+        queryString += `id=${report.storageId}&`;
+      }
       this.helperService.download(queryString, this.currentView.storageName, true, false);
     } else {
       this.toastService.showWarning('No Report Selected!');
@@ -332,7 +332,7 @@ export class TestComponent implements OnInit, AfterViewInit {
 
   matches(report: any): boolean {
     let name = report.path + report.name;
-    return name.match('(/)?' + this.currentFilter + '.*') != undefined;
+    return name.match(`(/)?${this.currentFilter}.*`) != undefined;
   }
 
   extractVariables(variables: string): string {

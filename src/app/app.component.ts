@@ -16,9 +16,7 @@ import { ReportData } from './shared/interfaces/report-data';
 import { HelperService } from './shared/services/helper.service';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { ReportComponent } from './report/report.component';
-
-declare var require: any;
-const { version: appVersion } = require('../../package.json');
+import { CloseTab } from './shared/interfaces/close-tab';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +26,7 @@ const { version: appVersion } = require('../../package.json');
   imports: [RouterLinkActive, RouterLink, RouterOutlet, ToastComponent],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
-  appVersion: string;
+  appVersion: string = '0.0.0';
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
   @ViewChild(TestComponent) testComponent!: TestComponent;
 
@@ -52,11 +50,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private helperService: HelperService,
   ) {
-    this.appVersion = appVersion;
     this.titleService.setTitle(`Ladybug - v${this.appVersion}`);
   }
 
   ngOnInit(): void {
+    this.fetchAndSetAppVersion();
     this.subscribeToServices();
   }
 
@@ -68,17 +66,31 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this.unsubscribeAll();
   }
 
+  fetchAndSetAppVersion() {
+    fetch('../assets/package.json')
+      .then((response: Response): void => {
+        if (response.ok) {
+          response.json().then((packageJson: { version: string }): void => {
+            this.appVersion = packageJson.version;
+          });
+        } else {
+          console.error('package.json could not be found in assets', response);
+        }
+      })
+      .catch((error): void => {
+        console.error('package.json could not be found in assets', error);
+      });
+  }
+
   subscribeToServices(): void {
-    this.newTabSubscription = this.tabService.openReportInTab$.subscribe((value) => {
+    this.newTabSubscription = this.tabService.openReportInTab$.subscribe((value: ReportData) => {
       this.openReportInSeparateTab(value);
     });
-
-    this.newCompareTabSubscription = this.tabService.openInCompare$.subscribe((value) => {
+    this.newCompareTabSubscription = this.tabService.openInCompare$.subscribe((value: CompareData) => {
       this.openNewCompareTab(value);
     });
-
-    this.closeTabSubscription = this.tabService.closeTab$.subscribe((value) => {
-      const tab = this.tabs.find((s) => s.id === value.id);
+    this.closeTabSubscription = this.tabService.closeTab$.subscribe((value: CloseTab) => {
+      const tab: Tab | undefined = this.tabs.find((t: Tab) => t.id === value.id);
       if (tab) {
         this.closeTab(tab);
       }

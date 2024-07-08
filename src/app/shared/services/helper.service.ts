@@ -11,15 +11,19 @@ export class HelperService {
   constructor() {}
 
   getImage(type: number, encoding: string, level: number): string {
-    const even: boolean = level % 2 == 0;
-    let img: string = 'assets/tree-icons/' + this.getCheckpointType(type);
+    const even = this.determineEvenCheckpoint(level);
+    let img = `assets/tree-icons/${this.getCheckpointType(type)}`;
     if (encoding === this.THROWABLE_ENCODER) {
       img += '-error';
     }
     if (even) {
-      return img + '-even.gif';
+      return `${img}-even.gif`;
     }
-    return img + '-odd.gif';
+    return `${img}-odd.gif`;
+  }
+
+  private determineEvenCheckpoint(level: number) {
+    return level % 2 == 0;
   }
 
   getCheckpointType(type: number): string {
@@ -88,7 +92,7 @@ export class HelperService {
 
   setButtonHtml(report: any, button: any, type: string, showConverted: boolean): void {
     report.showConverted = showConverted;
-    button.target.title = 'Convert to ' + type;
+    button.target.title = `Convert to ${type}`;
     button.target.innerHTML = type;
   }
 
@@ -118,9 +122,9 @@ export class HelperService {
 
   getCheckpointOrStorageId(checkpoint: any, root: boolean): string {
     if (root && localStorage.getItem('showReportStorageIds')) {
-      return localStorage.getItem('showReportStorageIds') === 'true' ? '[' + checkpoint.storageId + '] ' : '';
+      return localStorage.getItem('showReportStorageIds') === 'true' ? `${[checkpoint.storageId]}` : '';
     } else if (localStorage.getItem('showCheckpointIds')) {
-      return localStorage.getItem('showCheckpointIds') === 'true' ? checkpoint.index + '. ' : '';
+      return localStorage.getItem('showCheckpointIds') === 'true' ? `${checkpoint.index}. ` : '';
     } else {
       return '';
     }
@@ -159,7 +163,7 @@ export class HelperService {
 
   findParent(currentNode: any, potentialParent: any, parentMap: any[]): any {
     if (currentNode.level < 0) {
-      currentNode.value.path = '[INVALID LEVEL ' + currentNode.value.level + '] ' + currentNode.value.name;
+      currentNode.value.path = `[INVALID LEVEL ${currentNode.value.level}] ${currentNode.value.name}`;
       currentNode.level = 0;
     } else if (currentNode.level - 1 == potentialParent.level) {
       // If the level difference is only 1, then the potential parent is the actual parent

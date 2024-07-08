@@ -13,6 +13,7 @@
     <!-- For pom.properties -->
     <version>${project.version}</version>
     <compiled.frontend.location>${basedir}/dist</compiled.frontend.location>
+    <meta-inf.frontend.output>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}/</meta-inf.frontend.output>
   </properties>
 
   <build>
@@ -97,9 +98,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>
-                ${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}/
-              </outputDirectory>
+              <outputDirectory>${meta-inf.frontend.output}</outputDirectory>
               <resources>
                 <resource>
                   <directory>${compiled.frontend.location}/ladybug</directory>
@@ -108,6 +107,18 @@
                     <exclude>package.json</exclude>
                   </excludes>
                 </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy package.json to assets</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${meta-inf.frontend.output}/assets/</outputDirectory>
+              <resources>
                 <resource>
                   <directory>${compiled.frontend.location}/ladybug</directory>
                   <filtering>true</filtering>
