@@ -36,77 +36,77 @@
       Could not find stub message for {{ report.stubNotFound }}
     </div>
   </div>
-  <table data-cy-metadata-table="table" class="metadata-table" id="displayedNodeTable">
-    <tr class="table-row" *ngIf="report.name">
-      <td class="key">Name</td>
-      <td class="value" [appCopyTooltip]="report.name">{{ report.name }}</td>
-    </tr>
-    <tr class="table-row" *ngIf="report.xml">
-      <td class="key">Description</td>
-      <td class="value" [appCopyTooltip]="report.description">{{ report.description }}</td>
-    </tr>
+  <div data-cy-metadata-table="table" class="metadata-table" id="displayedNodeTable">
+    <div class="table-row" *ngIf="report.name">
+      <div class="key">Name</div>
+      <div class="value" [appCopyTooltip]="report.name">{{ report.name }}</div>
+    </div>
+    <div class="table-row" *ngIf="report.xml">
+      <div class="key">Description</div>
+      <div class="value" [appCopyTooltip]="report.description">{{ report.description }}</div>
+    </div>
     @if (!report.xml) {
-      <tr class="table-row">
-        <td class="key">Type</td>
-        <td class="value" [appCopyTooltip]="report.type">{{ report.type|checkpointType }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">Thread name</td>
-        <td class="value" [appCopyTooltip]="report.threadName">{{ report.threadName }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">Source class name</td>
-        <td class="value" [appCopyTooltip]="report.sourceClassName">{{ report.sourceClassName }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">Message class name</td>
-        <td class="value" [appCopyTooltip]="report.messageClassName">{{ report.messageClassName }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">Path</td>
-        <td class="value" [appCopyTooltip]="report.path">{{ report.path }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">CheckpointUID</td>
-        <td class="value" [appCopyTooltip]="report.uid">{{ report.uid }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">Level</td>
-        <td class="value" [appCopyTooltip]="report.level">{{ report.level }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">Encoding</td>
-        <td class="value" [appCopyTooltip]="report.encoding">{{ report.encoding }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">Number of characters</td>
+      <div class="table-row">
+        <div class="key">Type</div>
+        <div class="value" [appCopyTooltip]="report.type">{{ report.type|checkpointType }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">Thread name</div>
+        <div class="value" [appCopyTooltip]="report.threadName">{{ report.threadName }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">Source class name</div>
+        <div class="value" [appCopyTooltip]="report.sourceClassName">{{ report.sourceClassName }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">Message class name</div>
+        <div class="value" [appCopyTooltip]="report.messageClassName">{{ report.messageClassName }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">Path</div>
+        <div class="value" [appCopyTooltip]="report.path">{{ report.path }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">CheckpointUID</div>
+        <div class="value" [appCopyTooltip]="report.uid">{{ report.uid }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">Level</div>
+        <div class="value" [appCopyTooltip]="report.level">{{ report.level }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">Encoding</div>
+        <div class="value" [appCopyTooltip]="report.encoding">{{ report.encoding }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">Number of characters</div>
         @if (report.message && report.message.length > 0) {
-          <td class="value" [appCopyTooltip]="report.message.length">{{ report.message.length }}</td>
+          <div class="value" [appCopyTooltip]="report.message.length">{{ report.message.length }}</div>
         } @else {
-          <td class="value"></td>
+          <div class="value"></div>
         }
-      </tr>
+      </div>
     } @else {
-      <tr class="table-row">
-        <td class="key">Transformation</td>
-        <td class="value" [appCopyTooltip]="report.transformation">{{ report.transformation }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">StorageId</td>
-        <td class="value" [appCopyTooltip]="report.storageId">{{ report.storageId }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">Storage</td>
-        <td class="value" [appCopyTooltip]="report.storage">{{ report.storage }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">Estimated memory usage</td>
-        <td class="value" [appCopyTooltip]="report.estimatedMemoryUsage">{{ report.estimatedMemoryUsage }}</td>
-      </tr>
-      <tr class="table-row">
-        <td class="key">CorrelationId</td>
-        <td class="value" [appCopyTooltip]="report.correlationId">{{ report.correlationId }}</td>
-      </tr>
+      <div class="table-row">
+        <div class="key">Transformation</div>
+        <div class="value" [appCopyTooltip]="report.transformation">{{ report.transformation }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">StorageId</div>
+        <div class="value" [appCopyTooltip]="report.storageId">{{ report.storageId }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">Storage</div>
+        <div class="value" [appCopyTooltip]="report.storage">{{ report.storage }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">Estimated memory usage</div>
+        <div class="value" [appCopyTooltip]="report.estimatedMemoryUsage">{{ report.estimatedMemoryUsage }}</div>
+      </div>
+      <div class="table-row">
+        <div class="key">CorrelationId</div>
+        <div class="value" [appCopyTooltip]="report.correlationId">{{ report.correlationId }}</div>
+      </div>
     }
-  </table>
+  </div>
 </div>

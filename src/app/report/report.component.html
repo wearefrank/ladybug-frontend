@@ -1,21 +1,18 @@
-<as-split #splitter direction="horizontal">
-
+<as-split direction="horizontal">
   <as-split-area [size]="25">
-    <div class="h-100">
-      <app-debug-tree
-        [adjustWidth]="treeWidth.asObservable()"
-        [currentView]="currentView"
-        (closeEntireTreeEvent)="closeEntireTree()"
-        (selectReportEvent)="selectReport($event)"></app-debug-tree>
-    </div>
+    <app-debug-tree
+      [adjustWidth]="treeWidth.asObservable()"
+      [currentView]="currentView"
+      (closeEntireTreeEvent)="closeEntireTree()"
+      (selectReportEvent)="selectReport($event)"
+    />
   </as-split-area>
-  <as-split-area style="overflow: hidden" [size]="75">
+  <as-split-area class="right-side" [size]="75">
     <app-edit-display
-      id="debug"
       [newTab]="newTab"
       [containerHeight]="calculatedHeight"
       [currentView]="currentView"
-      (closeReportEvent)="closeReport($event)"></app-edit-display>
+      (closeReportEvent)="closeReport($event)"
+    />
   </as-split-area>
-
 </as-split>
