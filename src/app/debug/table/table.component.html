@@ -29,7 +29,7 @@
       <button data-cy-debug="upload" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
               title="Upload" (click)="uploadFileTable.click()">
         <i class="fa fa-upload"></i>
-        <input #uploadFileTable (change)="uploadReports($event)" type="file" id="uploadFileTable">
+        <input #uploadFileTable type="file" id="uploadFileTable" (change)="uploadReports($event)">
       </button>
       <button data-cy-debug="openSelected" class="btn btn-info btn-table" title="Open Selected Reports" (click)="openSelected()">
         Open Selected
@@ -59,13 +59,13 @@
         <div class="row">
           <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
           <div class="col input-group my-2 mx-1 px-2">
-            <input #openIndex type="number" min="0" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" class="form-control" data-cy-debug="openInProgressNo"/>
+            <input #openIndex type="number" min="0" class="form-control" data-cy-debug="openInProgressNo" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress"/>
             <div class="input-group-append">
               <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
             </div>
           </div>
           <div class="col input-group my-2 mx-1 px-2">
-            <input #deleteIndex type="number" min="0" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" class="form-control" id="deleteInProgressNo"/>
+            <input #deleteIndex type="number" min="0" class="form-control" id="deleteInProgressNo" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress"/>
             <div class="input-group-append">
               <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
             </div>
@@ -98,42 +98,77 @@
     }
     @else {
       <div data-cy-debug="table" class="table-responsive" id="metadataTable">
-        <table class="table mb-0" matSort (matSortChange)="sortData($event)" [style.font-size]="getFontSize()">
-          <thead id="table-header">
-            <tr>
-              <th class="table-row-checkbox header-padding">
-                <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
-              </th>
-              @for (header of viewSettings.currentView.metadataLabels; let index = $index; track header) {
-                <th class="table-id-cell header-cell header-padding"
-                    [attr.mat-sort-header]="index"
+<!--        <table class="table mb-0" matSort [style.font-size]="getFontSize()" (matSortChange)="sortData($event)">-->
+<!--          <thead id="table-header">-->
+<!--            <tr>-->
+<!--              <th class="table-row-checkbox header-padding">-->
+<!--                <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="allRowsSelected" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="selectAllRows()">-->
+<!--              </th>-->
+<!--              @for (header of viewSettings.currentView.metadataLabels; let index = $index; track header) {-->
+<!--                <th data-cy-debug="metadataLabel"-->
+<!--                  class="table-id-cell header-cell header-padding"-->
+<!--                    [attr.mat-sort-header]="index"-->
+<!--                    [title]="header">-->
+<!--                  {{ getShortenedTableHeaderNames(header) }}-->
+<!--                </th>-->
+<!--              }-->
+<!--            </tr>-->
+<!--          </thead>-->
+<!--          <tbody data-cy-debug="tableBody">-->
+<!--            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {-->
+<!--              <tr class="table-row"-->
+<!--                  [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"-->
+<!--                  [style.background-color]="getStatusColor(row)"-->
+<!--                  [attr.data-cy-record-table-index]="index"-->
+<!--                  (click)="openSelectedReport(row.storageId);"-->
+<!--              >-->
+<!--                <td class="table-row-checkbox" [style.padding]="getTableSpacing()">-->
+<!--                  <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row)">-->
+<!--                </td>-->
+<!--                @for (metadataName of viewSettings.currentView.metadataNames; track metadataName) {-->
+<!--                  <td-->
+<!--                    class="table-cell"-->
+<!--                    [style.padding]="getTableSpacing()"-->
+<!--                    [title]="metadataName">-->
+<!--                    {{ getMetadata(row, metadataName)|tableCellShortener }}</td>-->
+<!--                }-->
+<!--              </tr>-->
+<!--            }-->
+<!--          </tbody>-->
+<!--        </table>-->
+        <table mat-table class="table mb-0" matSort [style.font-size]="getFontSize()" [dataSource]="tableDataSource">
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef class="table-row-checkbox header-padding">
+              <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="allRowsSelected" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="selectAllRows()">
+            </th>
+            <td mat-cell *matCellDef="let row" class="table-row-checkbox" [style.padding]="getTableSpacing()">
+              <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row)">
+            </td>
+          </ng-container>
+          @for (header of viewSettings.currentView.metadataLabels; let index = $index; track header) {
+            <ng-container [matColumnDef]="getMetadataNameFromHeader(header)">
+              <thead id="table-header">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header
+                    data-cy-debug="metadataLabel"
+                    class="table-id-cell header-cell header-padding"
                     [title]="header">
                   {{ getShortenedTableHeaderNames(header) }}
                 </th>
-              }
-            </tr>
-          </thead>
-          <tbody data-cy-debug="tableBody">
-            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {
-              <tr class="table-row"
-                  (click)="openSelectedReport(row.storageId, index);"
-                  [ngClass]="{'highlight': selectedRow === index}"
-                  [style.background-color]="getStatusColor(row)"
-                  [attr.data-cy-record-table-index]="index"
-              >
-                <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
-                  <input type="checkbox" [checked]="row.checked" (click)="toggleCheck(row)" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
-                </td>
-                @for (metadataName of viewSettings.currentView.metadataNames; track metadataName) {
-                  <td
-                    [style.padding]="getTableSpacing()"
-                    class="table-cell"
-                    [title]="metadataName">
-                    {{ getMetadata(row, metadataName)|tableCellShortener }}</td>
-                }
-              </tr>
-            }
-          </tbody>
+              </thead>
+              <td mat-cell *matCellDef="let row"
+                class="table-cell"
+                [style.padding]="getTableSpacing()"
+                [title]="header">
+                {{ getMetadata(row, getMetadataNameFromHeader(header))|tableCellShortener }}</td>
+            </ng-container>
+          }
+          <tr mat-header-row *matHeaderRowDef="getDisplayedColumnNames(viewSettings.currentView.metadataLabels)"></tr>
+          <tr mat-row *matRowDef="let row; columns: getDisplayedColumnNames(viewSettings.currentView.metadataLabels)"
+              class="table-row"
+              [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"
+              [style.background-color]="getStatusColor(row)"
+              (click)="openSelectedReport(row.storageId);"
+          ></tr>
         </table>
       </div>
     }

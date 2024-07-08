@@ -176,8 +176,8 @@ export class HelperService {
     parent.items.push(node);
   }
 
-  getSelectedIds(reports: any[]): string[] {
-    let copiedIds: string[] = [];
+  getSelectedIds(reports: any[]): number[] {
+    let copiedIds: number[] = [];
     this.getSelectedReports(reports).forEach((report: Report) => copiedIds.push(report.storageId));
     return copiedIds;
   }

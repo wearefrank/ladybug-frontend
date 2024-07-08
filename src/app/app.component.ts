@@ -98,11 +98,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   openReportInSeparateTab(data: ReportData): void {
-    const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id === data.report.storageId);
+    const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id === String(data.report.storageId));
     if (tabIndex == -1) {
       this.tabs.push({
         key: data.report.name,
-        id: data.report.storageId,
+        id: String(data.report.storageId),
         data: data.report,
         path: `report/${data.report.storageId}`,
       });
@@ -113,7 +113,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   observeReportSave(): void {
     this.dynamicService.getObservable().subscribe((report: Report) => {
-      const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id == report.storageId);
+      const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id == String(report.storageId));
       this.tabs[tabIndex].data = report;
     });
   }

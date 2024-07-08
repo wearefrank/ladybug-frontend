@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
@@ -14,7 +14,7 @@ import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
 import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
-import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -28,6 +28,7 @@ import {
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
 import { KeyValuePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-table',
@@ -54,9 +55,10 @@ import { KeyValuePipe, NgClass, NgFor, NgIf } from '@angular/common';
     ToastComponent,
     KeyValuePipe,
     TableCellShortenerPipe,
+    MatTableModule,
   ],
 })
-export class TableComponent implements OnInit, OnDestroy {
+export class TableComponent implements OnInit, AfterViewInit, OnDestroy {
   DEFAULT_DISPLAY_AMOUNT: number = 10;
   metadataCount = 0;
   viewSettings: any = {
@@ -124,7 +126,9 @@ export class TableComponent implements OnInit, OnDestroy {
   hasTimedOut: boolean = false;
   reportsInProgress: Record<string, number> = {};
   reportsInProgressThreshold!: number;
-  protected selectedReportStorageId?: string;
+  protected selectedReportStorageId?: number;
+  tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private httpService: HttpService,
@@ -142,6 +146,11 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadData();
     this.listenForViewUpdate();
     this.subscribeToObservables();
+    this.tableDataSource = new MatTableDataSource(this.tableSettings.reportMetadata);
+  }
+
+  ngAfterViewInit(): void {
+    this.tableDataSource.sort = this.sort;
   }
 
   ngOnDestroy(): void {
@@ -196,6 +205,7 @@ export class TableComponent implements OnInit, OnDestroy {
         next: (value) => {
           this.setUniqueOptions(value);
           this.tableSettings.reportMetadata = value;
+          this.tableDataSource.data = this.tableSettings.reportMetadata;
           this.sortedReportMetadata = [...value];
           this.tableSettings.tableLoaded = true;
           this.toastService.showSuccess('Data loaded!');
@@ -419,7 +429,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   compareTwoReports(): void {
     let compareReports: any = {};
-    let selectedReports: string[] = this.tableSettings.reportMetadata
+    let selectedReports: number[] = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .map((report) => report.storageId);
     this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
@@ -481,14 +491,14 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadData();
   }
 
-  openReport(storageId: string): void {
+  openReport(storageId: number): void {
     this.httpService.getReport(storageId, this.viewSettings.currentView.storageName).subscribe((data: Report): void => {
       data.storageName = this.viewSettings.currentView.storageName;
       this.openReportEvent.next(data);
     });
   }
 
-  openSelectedReport(storageId: string) {
+  openSelectedReport(storageId: number) {
     this.selectedReportStorageId = storageId;
     this.openReport(storageId);
   }
@@ -685,9 +695,17 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  getMetadataNameFromHeader(header: string) {
+  getMetadataNameFromHeader(header: string): string {
     const index = this.viewSettings.currentView.metadataLabels.indexOf(header);
     return this.viewSettings.currentView.metadataNames[index];
+  }
+
+  getDisplayedColumnNames(labels: string[]): string[] {
+    const names: string[] = ['select'];
+    for (const header of labels) {
+      names.push(this.getMetadataNameFromHeader(header));
+    }
+    return names;
   }
 
   compare(a: string, b: string, isAsc: boolean): number {

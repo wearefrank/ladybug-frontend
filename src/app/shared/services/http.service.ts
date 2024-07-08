@@ -104,16 +104,11 @@ export class HttpService {
     });
   }
 
-  getReport(reportId: string, storage: string): Observable<Report> {
+  getReport(reportId: number, storage: string): Observable<Report> {
     return this.http
       .get<Record<string, Report | string>>(
         // eslint-disable-next-line sonarjs/no-duplicate-string
-        'api/report/' +
-          storage +
-          '/' +
-          reportId +
-          '/?xml=true&globalTransformer=' +
-          localStorage.getItem('transformationEnabled'),
+        `api/report/${storage}/${reportId}/?xml=true&globalTransformer=${localStorage.getItem('transformationEnabled')}`,
       )
       .pipe(
         map((e) => {
@@ -125,7 +120,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  getReports(reportIds: string[], storage: string): Observable<Record<string, CompareReport>> {
+  getReports(reportIds: number[], storage: string): Observable<Record<string, CompareReport>> {
     return this.http
       .get<
         Record<string, CompareReport>
@@ -135,21 +130,21 @@ export class HttpService {
 
   updateReport(reportId: string, body: Report, storage: string): Observable<void> {
     return this.http
-      .post('api/report/' + storage + '/' + reportId, body)
+      .post(`api/report/${storage}/${reportId}`, body)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }
 
-  copyReport(data: Record<string, string[]>, storage: string): Observable<void> {
+  copyReport(data: Record<string, number[]>, storage: string): Observable<void> {
     return this.http
-      .put('api/report/store/' + storage, data)
+      .put(`api/report/store/${storage}`, data)
       .pipe(tap(() => this.handleSuccess('Report copied!')))
       .pipe(catchError(this.handleError()));
   }
 
-  updatePath(reportIds: string[], storage: string, map: UpdatePathSettings): Observable<void> {
+  updatePath(reportIds: number[], storage: string, map: UpdatePathSettings): Observable<void> {
     return this.http
-      .put('api/report/move/' + storage, map, {
+      .put(`api/report/move/${storage}`, map, {
         params: { storageIds: reportIds },
       })
       .pipe(catchError(this.handleError()));
@@ -203,7 +198,7 @@ export class HttpService {
     return this.http.get<OptionsSettings>('api/testtool/reset').pipe(catchError(this.handleError()));
   }
 
-  runReport(storage: string, reportId: string): Observable<TestResult> {
+  runReport(storage: string, reportId: number): Observable<TestResult> {
     return this.http
       .post<TestResult>(`api/runner/run/${storage}/${reportId}`, {
         headers: this.headers,
@@ -221,16 +216,16 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  cloneReport(storage: string, storageId: string, map: CloneReport): Observable<void> {
+  cloneReport(storage: string, storageId: number, map: CloneReport): Observable<void> {
     return this.http
-      .post('api/report/move/' + storage + '/' + storageId, map)
+      .post(`api/report/move/${storage}/${storageId}`, map)
       .pipe(tap(() => this.handleSuccess('Report cloned!')))
       .pipe(catchError(this.handleError()));
   }
 
-  deleteReport(reportIds: string[], storage: string): Observable<void> {
+  deleteReport(reportIds: number[], storage: string): Observable<void> {
     return this.http
-      .delete('api/report/' + storage, { params: { storageIds: reportIds } })
+      .delete(`api/report/${storage}`, { params: { storageIds: reportIds } })
       .pipe(catchError(this.handleError()));
   }
 
@@ -242,9 +237,9 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  getUnmatchedCheckpoints(storageName: string, storageId: string, viewName: string): Observable<void> {
+  getUnmatchedCheckpoints(storageName: string, storageId: number, viewName: string): Observable<void> {
     return this.http
-      .get('api/report/' + storageName + '/' + storageId + '/checkpoints/uids', {
+      .get(`api/report/${storageName}/${storageId}/checkpoints/uids`, {
         params: { view: viewName, invert: true },
       })
       .pipe(catchError(this.handleError()));
