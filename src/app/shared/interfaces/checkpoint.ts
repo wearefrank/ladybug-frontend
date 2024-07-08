@@ -1,3 +1,5 @@
+import { CheckpointType } from '../enums/checkpoint-type';
+
 export interface Checkpoint {
   encoding: string;
   estimatedMemoryUsage: number;
@@ -13,7 +15,7 @@ export interface Checkpoint {
   stubNotFound: string;
   stubbed: boolean;
   threadName: string;
-  type: number;
+  type: CheckpointType;
   typeAsString: string;
   uid: string;
   waitingForStream: boolean;

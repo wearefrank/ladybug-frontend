@@ -1,13 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { HelperService } from '../services/helper.service';
+import { CHECKPOINT_TYPE_STRINGS, CheckpointType } from '../enums/checkpoint-type';
 
 @Pipe({
   name: 'checkpointType',
   standalone: true,
 })
 export class CheckpointTypePipe implements PipeTransform {
-  constructor(private helperService: HelperService) {}
-  transform(type: number): string {
-    return this.helperService.getCheckpointType(type);
+  transform(type: CheckpointType): string {
+    return CHECKPOINT_TYPE_STRINGS[type];
   }
 }
