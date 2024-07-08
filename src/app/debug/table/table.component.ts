@@ -511,13 +511,16 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
-    const queryString: string = this.tableSettings.reportMetadata
-      .filter((report) => report.checked)
-      .reduce((totalQuery: string, selectedReport: any) => totalQuery + 'id=' + selectedReport.storageId + '&', '');
-    if (queryString === '') {
-      this.toastService.showWarning('No reports selected to download');
-    } else {
+    const selectedReports = this.tableSettings.reportMetadata.filter((report) => report.checked);
+
+    if (selectedReports.length > 0) {
+      let queryString: string = '';
+      for (let report of selectedReports) {
+        queryString += `id=${report.storageId}&`;
+      }
       this.helperService.download(queryString, this.viewSettings.currentView.storageName, exportBinary, exportXML);
+    } else {
+      this.toastService.showWarning('No reports selected to download');
     }
   }
 
@@ -619,7 +622,7 @@ export class TableComponent implements OnInit, OnDestroy {
         longestViewName = key;
       }
     }
-    this.viewDropdownBoxWidth = longestViewName.length / 2 + 'rem';
+    this.viewDropdownBoxWidth = `${longestViewName.length / 2}rem`;
   }
 
   loadReportInProgressThreshold(): void {
