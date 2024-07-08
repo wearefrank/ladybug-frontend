@@ -104,7 +104,7 @@ export class HttpService {
     });
   }
 
-  getReport(reportId: string, storage: string): Observable<Report> {
+  getReport(reportId: number, storage: string): Observable<Report> {
     return this.http
       .get<Record<string, Report | string>>(
         `api/report/${storage}/${reportId}/?xml=true&globalTransformer=${localStorage.getItem('transformationEnabled')}`,
