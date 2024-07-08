@@ -157,7 +157,7 @@ Cypress.Commands.add('waitForNumFiles' as keyof Chainable, (thePath: any, expect
 });
 
 function getShownMonacoModelElement() {
-  cy.get('[data-cy-test-editor="editor"] [data-keybinding-context]').within((monacoEditor: JQuery<HTMLElement>) => {
+  cy.get('[data-cy-report="editor"] [data-keybinding-context]').within((monacoEditor: JQuery<HTMLElement>) => {
     const keybindingNumber = Number.parseInt(monacoEditor.attr('data-keybinding-context'));
     // Show the number
     cy.wrap(keybindingNumber);

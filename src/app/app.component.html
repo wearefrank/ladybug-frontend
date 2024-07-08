@@ -1,10 +1,10 @@
 <div class="px-1 pt-1 vh-100" id="ladybug-tabs">
   <ul class="nav nav-tabs">
     <li data-cy-nav-tab="debugTab" class="nav-item">
-      <a [routerLink]="debugComponentPath" class="nav-link" routerLinkActive="active">Debug</a>
+      <a class="nav-link" routerLinkActive="active" [routerLink]="debugComponentPath">Debug</a>
     </li>
     <li data-cy-nav-tab="testTab" class="nav-item">
-      <a [routerLink]="testComponentPath" class="nav-link" routerLinkActive="active">Test</a>
+      <a class="nav-link" routerLinkActive="active" [routerLink]="testComponentPath">Test</a>
     </li>
 
     @for (tab of tabs; track tab) {
@@ -17,6 +17,10 @@
         </div>
       </li>
     }
+    <li ngbNavItem class="ml-auto my-auto mr-1" id="version">
+      <a ngbNavLink>v{{ appVersion }}</a>
+      <ng-template ngbNavContent></ng-template>
+    </li>
   </ul>
   <router-outlet></router-outlet>
 </div>

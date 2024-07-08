@@ -1,5 +1,5 @@
-import { Component, ElementRef, Input, Output, ViewChild } from '@angular/core';
-import { DifferenceModal } from '../../shared/interfaces/difference-modal';
+import { Component, Input, Output, ViewChild } from '@angular/core';
+import { ReportDifference } from '../../shared/interfaces/report-difference';
 import {
   NgbDropdown,
   NgbDropdownButtonItem,
@@ -17,10 +17,16 @@ import { Report } from '../../shared/interfaces/report';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
-import { NgFor, NgIf, NgStyle } from '@angular/common';
+import { NgClass, NgFor, NgIf, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
 import { Subject } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { EditFormComponent } from '../edit-form/edit-form.component';
+import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
+import { ToggleButtonComponent } from '../../shared/components/button/toggle-button/toggle-button.component';
+import { ToastService } from '../../shared/services/toast.service';
+import { TestResult } from '../../shared/interfaces/test-result';
+import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-edit-display',
@@ -42,16 +48,15 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     BooleanToStringPipe,
     NgStyle,
     ClipboardModule,
+    EditFormComponent,
+    TitleCasePipe,
+    DifferenceModalComponent,
+    ToggleButtonComponent,
+    MatTooltipModule,
+    NgClass,
   ],
 })
 export class EditDisplayComponent {
-  editingEnabled: boolean = false;
-  editingChildNode: boolean = false;
-  editingRootNode: boolean = false;
-  metadataTableVisible: boolean = false;
-  rerunResult: string = '';
-  report: any = {};
-  displayReport: boolean = false;
   @Input() id: string = '';
   @Input() containerHeight!: number;
   @Input() currentView: any = {};
@@ -59,29 +64,30 @@ export class EditDisplayComponent {
   @Output() saveReportEvent: Subject<any> = new Subject<any>();
   @Output() closeReportEvent: Subject<void> = new Subject<void>();
   @ViewChild(CustomEditorComponent) editor!: CustomEditorComponent;
-  @ViewChild('name') name!: ElementRef;
-  @ViewChild('description') description!: ElementRef;
-  @ViewChild('path') path!: ElementRef;
-  @ViewChild('transformation') transformation!: ElementRef;
-  @ViewChild('variables') variables!: ElementRef;
-  @ViewChild('top') top!: ElementRef;
-  saveOrDiscardType: string = '';
-  differenceModal: DifferenceModal[] = [];
-  rerunSuccess: boolean = false;
+  @ViewChild(EditFormComponent) editFormComponent!: EditFormComponent;
+  @ViewChild(DifferenceModalComponent) differenceModal!: DifferenceModalComponent;
+  editingEnabled: boolean = false;
+  editingChildNode: boolean = false;
+  editingRootNode: boolean = false;
+  metadataTableVisible: boolean = false;
+  rerunResult?: TestResult;
+  report: any = {};
+  displayReport: boolean = false;
 
   constructor(
     private modalService: NgbModal,
     private httpService: HttpService,
     private helperService: HelperService,
+    private toastService: ToastService,
   ) {}
 
   showReport(report: Report): void {
-    this.disableEditing(); // For switching from editing current report to another
+    this.disableEditing();
     this.report = report;
     report.xml
       ? this.editor.setNewReport(report.xml)
       : this.editor.setNewReport(this.helperService.convertMessage(report));
-    this.rerunResult = '';
+    this.rerunResult = undefined;
     this.displayReport = true;
   }
 
@@ -90,16 +96,17 @@ export class EditDisplayComponent {
   }
 
   rerunReport(): void {
-    let reportId: string = this.report.storageId;
-    // TODO: Fix the run report for debug tab after PR 433 of frontend project
-    // this.httpService.runDisplayReport(reportId, this.currentView.storageName).subscribe((response) => {
-    //   this.rerunSuccess = this.report == response;
-    // });
+    const reportId: string = this.report.storageId;
+    this.httpService.runReport(this.currentView.storageName, reportId).subscribe((response: TestResult): void => {
+      this.toastService.showSuccess('Report rerun successful');
+      this.rerunResult = response;
+    });
   }
 
   closeReport(removeReportFromTree: boolean): void {
     this.displayReport = false;
     this.editingRootNode = false;
+    this.editingChildNode = false;
     this.editingRootNode = false;
     if (removeReportFromTree) {
       this.closeReportEvent.next(this.report);
@@ -108,74 +115,68 @@ export class EditDisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    let queryString: string = this.report.xml ? this.report.storageId : this.report.uid.split('#')[0];
-    this.helperService.download(queryString + '&', this.currentView.storageName, exportBinary, exportXML);
+    const queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
+    this.helperService.download(`${queryString}&`, this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
   }
 
-  selectStubStrategy(event: any) {
-    let stubStrategy: string;
-    switch (event.target.value) {
-      case 'Use report level stub strategy': {
-        stubStrategy = '-1';
-        break;
-      }
-      case 'Always stub this checkpoint': {
-        stubStrategy = '1';
-        break;
-      }
-      case 'Never stub this checkpoint': {
-        stubStrategy = '0';
-        break;
-      }
-      default: {
-        stubStrategy = this.report.stub;
-      }
-    }
-    this.saveChanges(true, stubStrategy);
+  selectStubStrategy(event: Event): void {
+    this.saveChanges((event.target as HTMLOptionElement).value);
   }
 
-  openDifferenceModal(modal: any, type: string): void {
-    this.differenceModal = [];
-    if (this.report.xml) {
-      this.addToDifferenceModal('name', this.name.nativeElement.value);
-      this.addToDifferenceModal('description', this.description.nativeElement.value);
-      this.addToDifferenceModal('path', this.path.nativeElement.value);
-      this.addToDifferenceModal('transformation', this.transformation.nativeElement.value);
-      this.addToDifferenceModal('variables', this.variables.nativeElement.value);
+  openDifferenceModal(type: ChangesAction): void {
+    let reportDifferences: ReportDifference[] = [];
+    if (this.report.xml && this.editFormComponent) {
+      reportDifferences = this.getDifferences();
+    } else if (this.report.message) {
+      reportDifferences.push(this.getDifference('message', this.report.message, this.editor?.getValue()));
+    }
+    if (reportDifferences.length > 0) {
+      this.differenceModal.open(reportDifferences, type);
     } else {
-      this.addToDifferenceModal('message', this.editor?.getValue());
+      this.rerunReport();
     }
-
-    modal.type = type;
-    this.saveOrDiscardType = type;
-    this.modalService.open(modal, { backdrop: 'static', keyboard: false });
   }
 
-  addToDifferenceModal(keyword: string, elementValue: string) {
-    const difference = new DiffMatchPatch().diff_main(this.report[keyword] ?? '', elementValue ?? '');
-    this.differenceModal.push({
-      name: keyword,
-      originalValue: this.report[keyword],
-      difference: difference,
-    });
+  getDifferences(): ReportDifference[] {
+    return [
+      this.getDifference('name', this.report.name, this.editFormComponent.name),
+      this.getDifference('description', this.report.description, this.editFormComponent.description),
+      this.getDifference('path', this.report.path, this.editFormComponent.path),
+      this.getDifference('transformation', this.report.transformation, this.editFormComponent.transformation),
+      this.getDifference('variables', this.report.variables, this.editFormComponent.variables),
+    ];
   }
 
-  getReportValues(checkpointId: string): any {
+  getDifference(name: string, originalValue: string, newValue: string): ReportDifference {
+    const difference = new DiffMatchPatch().diff_main(originalValue ?? '', newValue ?? '');
     return {
-      name: this.name?.nativeElement.value ?? '',
-      path: this.path?.nativeElement.value ?? '',
-      description: this.description?.nativeElement.value ?? '',
-      transformation: this.transformation?.nativeElement.value ?? '',
-      checkpointId: checkpointId,
-      variables: this.variables?.nativeElement.value ?? '',
-      checkpointMessage: this.editor?.getValue() ?? '',
+      name: name,
+      originalValue: originalValue,
+      difference: difference,
     };
   }
 
-  dismissModal() {
-    this.differenceModal = [];
-    this.modalService.dismissAll();
+  getReportValues(checkpointId: string): any {
+    return this.editingRootNode || this.editingChildNode
+      ? {
+          name: this.editFormComponent.name,
+          path: this.editFormComponent.path,
+          description: this.editFormComponent.description,
+          transformation: this.editFormComponent.transformation,
+          checkpointId: checkpointId,
+          variables: this.editFormComponent.variables,
+          checkpointMessage: this.editor?.getValue() ?? '',
+        }
+      : {
+          name: this.report.name,
+          path: this.report.path,
+          description: this.report.description,
+          transformation: this.report.transformation,
+          checkpointId: checkpointId,
+          variables: this.report.variables,
+          checkpointMessage: this.report.checkpointMessage,
+        };
   }
 
   editReport(): void {
@@ -187,7 +188,7 @@ export class EditDisplayComponent {
     this.editingEnabled = true;
   }
 
-  disableEditing() {
+  disableEditing(): void {
     if (this.editingChildNode) {
       this.editingChildNode = false;
     }
@@ -195,26 +196,7 @@ export class EditDisplayComponent {
     this.editingEnabled = false;
   }
 
-  saveOrDiscard(type: string): void {
-    if (type === 'save') {
-      this.saveChanges(false, this.report.stub);
-    } else {
-      this.discardChanges();
-    }
-    this.disableEditing();
-    this.modalService.dismissAll();
-    setTimeout(() => {
-      this.showReport(this.report);
-    });
-  }
-
-  discardChanges() {
-    if (!this.report.xml) {
-      this.editor.setNewReport(this.differenceModal[0].originalValue);
-    }
-  }
-
-  saveChanges(saveStubStrategy: boolean, stubStrategy: string) {
+  saveChanges(stubStrategy: string): void {
     let checkpointId: string = '';
     let storageId: string;
     if (this.report.xml) {
@@ -224,13 +206,14 @@ export class EditDisplayComponent {
       checkpointId = this.report.uid.split('#')[1];
     }
 
-    const params = saveStubStrategy
-      ? { stub: stubStrategy, checkpointId: checkpointId }
-      : this.getReportValues(checkpointId);
+    const body = { stub: stubStrategy, ...this.getReportValues(checkpointId) };
 
-    this.httpService.updateReport(storageId, params, this.currentView.storageName).subscribe((response: any) => {
+    this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe((response: any) => {
       response.report.xml = response.xml;
-      this.saveReportEvent.next(response.report);
+      this.report = response.report;
+      this.saveReportEvent.next(this.report);
+      this.editor.setNewReport(this.report.xml);
+      this.disableEditing();
     });
   }
 
@@ -246,14 +229,24 @@ export class EditDisplayComponent {
     });
   }
 
-  closeModal(): void {
-    this.modalService.dismissAll();
+  copyReport(): void {
+    const storageId = this.report.storageId ?? this.report.uid.split('#')[0];
+    const data: Record<string, string[]> = {
+      [this.currentView.storageName]: [storageId],
+    };
+    this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this
   }
 
-  copyReport(): void {
-    const storageId: number = this.report.xml ? +this.report.storageId : +this.report.uid.split('#')[0];
-    const data: any = {};
-    data[this.currentView.storageName] = [storageId];
-    this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this
+  toggleEditMode(value: boolean): void {
+    if (value) {
+      this.editReport();
+    } else {
+      this.disableEditing();
+    }
+  }
+
+  toggleToolTip(toolTip: MatTooltip): void {
+    toolTip.show();
+    setTimeout(() => toolTip.hide(), 2500);
   }
 }

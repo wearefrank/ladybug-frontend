@@ -104,10 +104,9 @@
               <th class="table-row-checkbox header-padding">
                 <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" [checked]="allRowsSelected" (click)="selectAllRows()" title="Select all rows" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()">
               </th>
-              @for (header of viewSettings.currentView.metadataLabels; track header) {
-                <th data-cy-debug="metadataLabel"
-                    class="table-id-cell header-cell header-padding"
-                    [mat-sort-header]="header"
+              @for (header of viewSettings.currentView.metadataLabels; let index = $index; track header) {
+                <th class="table-id-cell header-cell header-padding"
+                    [attr.mat-sort-header]="index"
                     [title]="header">
                   {{ getShortenedTableHeaderNames(header) }}
                 </th>
@@ -115,7 +114,7 @@
             </tr>
           </thead>
           <tbody data-cy-debug="tableBody">
-            @for (row of sortedReportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {
+            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {
               <tr class="table-row"
                   (click)="openSelectedReport(row.storageId, index);"
                   [ngClass]="{'highlight': selectedRow === index}"

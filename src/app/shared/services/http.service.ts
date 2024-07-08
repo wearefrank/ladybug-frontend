@@ -133,9 +133,9 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  updateReport(reportId: string, params: Report, storage: string): Observable<void> {
+  updateReport(reportId: string, body: Report, storage: string): Observable<void> {
     return this.http
-      .post('api/report/' + storage + '/' + reportId, params)
+      .post('api/report/' + storage + '/' + reportId, body)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
       .pipe(catchError(this.handleError()));
   }
@@ -205,7 +205,7 @@ export class HttpService {
 
   runReport(storage: string, reportId: string): Observable<TestResult> {
     return this.http
-      .post<void>(`api/runner/run/${storage}/${reportId}`, {
+      .post<TestResult>(`api/runner/run/${storage}/${reportId}`, {
         headers: this.headers,
         observe: 'response',
       })
@@ -247,6 +247,13 @@ export class HttpService {
       .get('api/report/' + storageName + '/' + storageId + '/checkpoints/uids', {
         params: { view: viewName, invert: true },
       })
+      .pipe(catchError(this.handleError()));
+  }
+
+  getWarningsAndErrors(storageName: string): Observable<string | undefined> {
+    const cleanStorageName = storageName.replaceAll(' ', '');
+    return this.http
+      .get(`api/report/warningsAndErrors/${cleanStorageName}`, { responseType: 'text' })
       .pipe(catchError(this.handleError()));
   }
 }

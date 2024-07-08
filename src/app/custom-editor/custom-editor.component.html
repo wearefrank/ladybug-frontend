@@ -1,16 +1,16 @@
-<div class="position-relative" [style.height]="height - ACTIONS_BAR_HEIGHT + 'px'" *ngIf="rawFile">
+<div class="position-relative" *ngIf="rawFile" [style.height]="height - ACTIONS_BAR_HEIGHT + 'px'">
   <ngx-monaco-editor
     data-cy-element-name="editor"
-    (onInit)="initEditor($event)"
+    class="editor"
     [options]="options"
-    [(ngModel)]="editorContent"
-    (ngModelChange)="onChange($event)"
     [style.height]="height - STATUS_BAR_HEIGHT + 'px'"
-    class="editor">
+    [(ngModel)]="editorContent"
+    (onInit)="initEditor($event)"
+    (ngModelChange)="onChange($event)">
   </ngx-monaco-editor>
   <div class="status-bar">
     <div class="left-side">
-      <div *ngIf="!readOnlyMode" class="status"
+      <div class="status" *ngIf="!readOnlyMode"
            [title]="unsavedChanges ? 'This file has unsaved changed, press ctrl + s to save' : 'No unsaved changes'">
         <i class="bi bi-floppy"></i>
         <span class="status-text">{{ unsavedChanges ? 'Unsaved' : 'Saved' }}</span>
@@ -28,12 +28,12 @@
     <div class="right-side">
       <select
         class="drop-down"
-        *ngIf="availableViews"
-        [(ngModel)]="currentView"
         data-cy-editor="viewDropDown"
-        (ngModelChange)="onViewChange($event)"
+        *ngIf="availableViews"
         [title]="'Current view: ' + currentView"
-        [disabled]="availableViews.length <= 1">
+        [disabled]="availableViews.length <= 1"
+        [(ngModel)]="currentView"
+        (ngModelChange)="onViewChange($event)">
         <option
           *ngFor="let view of availableViews; let index = index"
           [selected]="availableViews[index] === currentView"

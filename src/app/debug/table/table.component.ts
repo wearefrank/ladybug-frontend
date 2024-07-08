@@ -17,17 +17,17 @@ import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   NgbDropdown,
-  NgbDropdownToggle,
-  NgbDropdownMenu,
   NgbDropdownButtonItem,
   NgbDropdownItem,
+  NgbDropdownMenu,
+  NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
-import { NgIf, NgFor, NgClass, KeyValuePipe } from '@angular/common';
+import { KeyValuePipe, NgClass, NgFor, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-table',
@@ -105,7 +105,6 @@ export class TableComponent implements OnInit, OnDestroy {
   @Output() openReportEvent = new EventEmitter<any>();
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
-  selectedRow: number = -1;
   doneRetrieving: boolean = false;
   tableSpacing!: number;
   tableSpacingSubscription?: Subscription;
@@ -125,6 +124,7 @@ export class TableComponent implements OnInit, OnDestroy {
   hasTimedOut: boolean = false;
   reportsInProgress: Record<string, number> = {};
   reportsInProgressThreshold!: number;
+  protected selectedReportStorageId?: string;
 
   constructor(
     private httpService: HttpService,
@@ -233,7 +233,6 @@ export class TableComponent implements OnInit, OnDestroy {
     this.viewSettings.currentViewName = event.target.value;
     this.clearFilters();
     this.debugReportService.changeView(this.viewSettings.currentView);
-    this.selectedRow = -1;
     this.filterService.setMetadataLabels(this.viewSettings.currentView.metadataLabels);
     this.viewChange.next(this.viewSettings.currentViewName);
   }
@@ -489,13 +488,9 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  highLightRow(event: any): void {
-    this.selectedRow = event;
-  }
-
-  openSelectedReport(storageId: string, index: number) {
+  openSelectedReport(storageId: string) {
+    this.selectedReportStorageId = storageId;
     this.openReport(storageId);
-    this.highLightRow(index);
   }
 
   openLatestReports(amount: number): void {

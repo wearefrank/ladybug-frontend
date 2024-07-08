@@ -151,7 +151,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   prettify(): void {
-    if (this.editorContent && !this.isPrettified) {
+    if (this.editorContent) {
       if (this.currentView === 'xml' && this.contentType === 'xml') {
         prettier
           .format(this.editorContent, {
