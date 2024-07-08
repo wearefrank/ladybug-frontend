@@ -133,7 +133,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   openNewCompareTab(data: CompareData): void {
     const tabId = this.helperService.createCompareTabId(data.originalReport, data.runResultReport);
     const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id == tabId);
-
     if (tabIndex == -1) {
       data.id = tabId;
       this.tabs.push({

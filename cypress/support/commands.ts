@@ -252,3 +252,7 @@ Cypress.Commands.add('refreshApp', () => {
   cy.get('[data-cy-debug="refresh"]').click();
   cy.wait('@apiCall').then(() => cy.log('All api requests have completed'));
 });
+
+Cypress.Commands.add('getTableBody', () => {
+  return cy.get('[data-cy-debug="tableBody"]').get('tbody');
+});

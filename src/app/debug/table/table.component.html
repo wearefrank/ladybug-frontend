@@ -79,7 +79,7 @@
 
       @switch (getAmountOfReportsSelected()) {
         @case (1) {
-          <button class="btn btn-info btn-table" title="Open In New Tab" (click)="openReportInTab()">
+          <button data-cy-debug="openReportTab" class="btn btn-info btn-table" title="Open In New Tab" (click)="openReportInTab()">
             Open In New Tab
           </button>
         }

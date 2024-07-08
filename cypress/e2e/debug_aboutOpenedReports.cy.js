@@ -53,7 +53,7 @@ describe('About opened reports', () => {
   it('Correct nesting in debug tree for report with infopoint', () => {
     cy.createReportWithInfopoint();
     cy.initializeApp();
-    cy.get('[data-cy-debug="tableBody"] tbody tr td:contains("Hide a checkpoint in blackbox view")')
+    cy.getTableBody().get('tr td:contains("Hide a checkpoint in blackbox view")')
       .first()
       .click();
     cy.checkFileTreeLength(1);
@@ -68,7 +68,7 @@ describe('About opened reports', () => {
   it('Correct nesting in debug tree for report with multiple startpoints', () => {
     cy.createReportWithMutipleStartpoints();
     cy.initializeApp();
-    cy.get('[data-cy-debug="tableBody"] tbody tr td:contains("Multiple startpoints")')
+    cy.getTableBody().get('tr td:contains("Multiple startpoints")')
       .first()
       .click();
     cy.checkFileTreeLength(1);

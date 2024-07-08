@@ -425,7 +425,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   compareTwoReports(): void {
     let compareReports: any = {};
-    let selectedReports: number[] = this.tableSettings.reportMetadata
+    const selectedReports: number[] = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .map((report) => report.storageId);
     this.httpService.getReports(selectedReports, this.viewSettings.currentView.storageName).subscribe({
