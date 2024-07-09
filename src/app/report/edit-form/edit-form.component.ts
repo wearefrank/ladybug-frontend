@@ -1,53 +1,41 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReportDifference } from '../../shared/interfaces/report-difference';
+// @ts-expect-error no default export
+import DiffMatchPatch from 'diff-match-patch';
 
 @Component({
   selector: 'app-edit-form',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './edit-form.component.html',
   styleUrl: './edit-form.component.css',
 })
 export class EditFormComponent implements OnChanges {
   @Input({ required: true }) report!: Report;
-  protected _name?: string;
-  protected _description?: string;
-  protected _path?: string;
-  protected _transformation?: string;
-  protected _variables?: string;
+  editForm!: FormGroup;
 
   ngOnChanges(): void {
-    if (this.report) {
-      this.initForm();
-    }
+    this.editForm = new FormGroup(
+      {
+        name: new FormControl(this.report.name),
+        description: new FormControl(this.report.description),
+        path: new FormControl(this.report.path),
+        transformation: new FormControl(this.report.transformation),
+        variableCsv: new FormControl(this.report.variableCsv),
+      },
+      { updateOn: 'change' },
+    );
   }
 
-  initForm(): void {
-    this._name = this.report.name;
-    this._description = this.report.description;
-    this._path = this.report.path;
-    this._transformation = this.report.transformation;
-    this._variables = this.report.variableCsv;
-  }
-
-  get name(): string {
-    return this._name ?? '';
-  }
-
-  get description(): string {
-    return this._description ?? '';
-  }
-
-  get path(): string {
-    return this._path ?? '';
-  }
-
-  get transformation(): string {
-    return this._transformation ?? '';
-  }
-
-  get variables(): string {
-    return this._variables ?? '';
+  getDifference(name: keyof Report): ReportDifference {
+    const originalValue = this.report[name] ?? '';
+    const difference = new DiffMatchPatch().diff_main(originalValue, this.editForm.get(name)?.value ?? '');
+    return {
+      name: name,
+      originalValue: originalValue,
+      difference: difference,
+    };
   }
 }
