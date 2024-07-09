@@ -164,7 +164,7 @@ export class EditDisplayComponent {
           description: this.editFormComponent.editForm.get('description')?.value,
           transformation: this.editFormComponent.editForm.get('transformation')?.value,
           checkpointId: checkpointId,
-          variables: this.editFormComponent.editForm.get('variables')?.value,
+          variables: this.editFormComponent.editForm.get('variableCsv')?.value,
           checkpointMessage: this.editor?.getValue() ?? '',
         }
       : {
