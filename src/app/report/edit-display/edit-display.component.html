@@ -132,7 +132,7 @@
   [readOnlyMode]="!editingChildNode"
 />
 
-<app-difference-modal (saveChangesEvent)="saveChanges(report.stub)" (rerunEvent)="rerunReport()" />
+<app-difference-modal (saveChangesEvent)="saveChanges(report.stub)" (discardChangesEvent)="discardChanges()" (rerunEvent)="rerunReport()" />
 
 <ng-template #possibilitiesModal let-modal>
   <div class="modal-header d-flex align-items-center">

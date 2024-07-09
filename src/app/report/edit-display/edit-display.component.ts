@@ -107,7 +107,6 @@ export class EditDisplayComponent {
     this.displayReport = false;
     this.editingRootNode = false;
     this.editingChildNode = false;
-    this.editingRootNode = false;
     if (removeReportFromTree) {
       this.closeReportEvent.next(this.report);
     }
@@ -140,11 +139,11 @@ export class EditDisplayComponent {
 
   getDifferences(): ReportDifference[] {
     return [
-      this.getDifference('name', this.report.name, this.editFormComponent.name),
-      this.getDifference('description', this.report.description, this.editFormComponent.description),
-      this.getDifference('path', this.report.path, this.editFormComponent.path),
-      this.getDifference('transformation', this.report.transformation, this.editFormComponent.transformation),
-      this.getDifference('variables', this.report.variables, this.editFormComponent.variables),
+      this.editFormComponent.getDifference('name'),
+      this.editFormComponent.getDifference('description'),
+      this.editFormComponent.getDifference('path'),
+      this.editFormComponent.getDifference('transformation'),
+      this.editFormComponent.getDifference('variableCsv'),
     ];
   }
 
@@ -160,12 +159,12 @@ export class EditDisplayComponent {
   getReportValues(checkpointId: string): any {
     return this.editingRootNode || this.editingChildNode
       ? {
-          name: this.editFormComponent.name,
-          path: this.editFormComponent.path,
-          description: this.editFormComponent.description,
-          transformation: this.editFormComponent.transformation,
+          name: this.editFormComponent.editForm.get('name')?.value,
+          path: this.editFormComponent.editForm.get('path')?.value,
+          description: this.editFormComponent.editForm.get('description')?.value,
+          transformation: this.editFormComponent.editForm.get('transformation')?.value,
           checkpointId: checkpointId,
-          variables: this.editFormComponent.variables,
+          variables: this.editFormComponent.editForm.get('variables')?.value,
           checkpointMessage: this.editor?.getValue() ?? '',
         }
       : {
@@ -215,6 +214,10 @@ export class EditDisplayComponent {
       this.editor.setNewReport(this.report.xml);
       this.disableEditing();
     });
+  }
+
+  discardChanges(): void {
+    this.disableEditing();
   }
 
   toggleMetadataTable(): void {

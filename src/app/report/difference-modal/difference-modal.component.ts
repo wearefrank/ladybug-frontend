@@ -19,6 +19,7 @@ export class DifferenceModalComponent {
   protected reportDifferences?: ReportDifference[];
   protected activeModal?: NgbModalRef;
   @Output() saveChangesEvent: Subject<void> = new Subject<void>();
+  @Output() discardChangesEvent: Subject<void> = new Subject<void>();
   @Output() rerunEvent: Subject<void> = new Subject<void>();
   @ViewChild('modal') protected modal!: TemplateRef<DifferenceModalComponent>;
 
@@ -56,6 +57,8 @@ export class DifferenceModalComponent {
   onClickSave(): void {
     if (this.saveOrDiscardType === 'save') {
       this.saveChangesEvent.next();
+    } else if (this.saveOrDiscardType === 'discard') {
+      this.discardChangesEvent.next();
     }
     this.closeModal();
   }
