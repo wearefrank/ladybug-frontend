@@ -154,24 +154,73 @@ export class DebugTreeComponent implements OnDestroy {
     }
   }
 
-  //Ladybug reports don't have a parent-child structure for its checkpoints, this function creates that parent-child structure
   transformReportToHierarchyStructure(report: Report): Report {
-    const checkpoints: Checkpoint[] = report.checkpoints;
-    let currentStartPoint: Checkpoint | undefined;
-    let transformedCheckpoints: Checkpoint[] = [];
+    const checkpoints = report.checkpoints;
+    let checkpointsTemplate: Checkpoint[] = [];
+    let startPointStack: Checkpoint[] = [];
+
     for (const checkpoint of checkpoints) {
       checkpoint.icon = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
+
       if (checkpoint.type === CheckpointType.Startpoint) {
-        currentStartPoint = { ...checkpoint, checkpoints: [] };
-        transformedCheckpoints.push(currentStartPoint);
-        continue;
-      }
-      if (currentStartPoint) {
-        currentStartPoint.checkpoints!.push(checkpoint);
+        this.handleStartpoint(checkpoint, checkpointsTemplate, startPointStack);
+      } else if (checkpoint.type === CheckpointType.Endpoint) {
+        this.handleEndpoint(checkpoint, checkpointsTemplate, startPointStack);
+      } else {
+        this.handleIntermediatePoint(checkpoint, checkpointsTemplate, startPointStack);
       }
     }
-    report.checkpoints = transformedCheckpoints;
+
+    report.checkpoints = checkpointsTemplate;
     return report;
+  }
+
+  private handleStartpoint(
+    checkpoint: Checkpoint,
+    checkpointsTemplate: Checkpoint[],
+    startPointStack: Checkpoint[],
+  ): void {
+    if (startPointStack.length > 0) {
+      this.addCheckpointToParent(checkpoint, startPointStack);
+    } else {
+      checkpointsTemplate.push(checkpoint);
+    }
+    startPointStack.push(checkpoint);
+  }
+
+  private handleEndpoint(
+    checkpoint: Checkpoint,
+    checkpointsTemplate: Checkpoint[],
+    startPointStack: Checkpoint[],
+  ): void {
+    if (startPointStack.length > 0) {
+      const currentStartpoint = startPointStack.pop();
+      if (currentStartpoint) {
+        this.addCheckpointToParent(checkpoint, [currentStartpoint]);
+      }
+    } else {
+      checkpointsTemplate.push(checkpoint);
+    }
+  }
+
+  private handleIntermediatePoint(
+    checkpoint: Checkpoint,
+    checkpointsTemplate: Checkpoint[],
+    startPointStack: Checkpoint[],
+  ): void {
+    if (startPointStack.length > 0) {
+      this.addCheckpointToParent(checkpoint, startPointStack);
+    } else {
+      checkpointsTemplate.push(checkpoint);
+    }
+  }
+
+  private addCheckpointToParent(checkpoint: Checkpoint, startPointStack: Checkpoint[]): void {
+    const parentStartpoint = startPointStack.at(-1)!;
+    if (!parentStartpoint.checkpoints) {
+      parentStartpoint.checkpoints = [];
+    }
+    parentStartpoint.checkpoints.push(checkpoint);
   }
 
   selectReport(value: FileTreeItem): void {
