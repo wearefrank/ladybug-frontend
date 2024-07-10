@@ -2,7 +2,6 @@
   @for (toast of toasts; track toast) {
   <div class="my-2" [attr.data-cy-toast]="toast.type">
     @if (toast.type === 'info') {
-      <div>
         <ngb-toast class="fade animate-show animate-hide" [autohide]="true" [delay]="5000"
                    (hidden)="close(toast)">
           <div class="d-flex flex-row justify-content-between align-items-center">
@@ -20,11 +19,9 @@
             </div>
           </div>
         </ngb-toast>
-      </div>
     }
 
     @if (toast.type === 'success') {
-      <div>
         <ngb-toast class="fade animate-show animate-hide bg-success" [autohide]="true" [delay]="5000"
                   (hidden)="close(toast)">
           <div class="d-flex flex-row justify-content-between align-items-center">
@@ -33,11 +30,9 @@
             <i class="fa fa-close" (click)="close(toast)"></i>
           </div>
         </ngb-toast>
-      </div>
     }
 
     @if (toast.type === 'warning') {
-      <div>
         <ngb-toast class="fade animate-show animate-hide bg-warning" [autohide]="true" [delay]="8000" (hidden)="close(toast)"
                   (click)="close(toast)">
           <div class="d-flex flex-row justify-content-between align-items-center">
@@ -46,12 +41,9 @@
             <i class="fa fa-close" (click)="close(toast)"></i>
           </div>
         </ngb-toast>
-      </div>
     }
-
     
     @if (toast.type === 'danger') {
-      <div>
         <ngb-toast class="fade animate-show animate-hide bg-danger" [autohide]="false"
                   (click)="showDetailedErrorMessages(toast)">
           <div class="d-flex flex-row justify-content-between align-items-center">
@@ -74,7 +66,6 @@
             </div>
           </div>
         </ngb-toast>
-      </div>
     }
   </div>
   }
