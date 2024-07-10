@@ -7,14 +7,13 @@ import { Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
 import { ToastComponent } from '../../../shared/components/toast/toast.component';
-import { NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-table-settings-modal',
   templateUrl: './table-settings-modal.component.html',
   styleUrls: ['./table-settings-modal.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, NgFor, ToastComponent],
+  imports: [ReactiveFormsModule, ToastComponent],
 })
 export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;

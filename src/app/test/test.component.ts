@@ -15,7 +15,6 @@ import { ReportData } from '../shared/interfaces/report-data';
 import { NodeLinkStrategy } from '../shared/enums/compare-method';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
-import { NgFor, NgIf } from '@angular/common';
 import { FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
 import { TestListItem } from '../shared/interfaces/test-list-item';
@@ -34,8 +33,6 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     ButtonComponent,
     ReactiveFormsModule,
     FormsModule,
-    NgIf,
-    NgFor,
     ToastComponent,
     TestSettingsModalComponent,
     CloneModalComponent,
