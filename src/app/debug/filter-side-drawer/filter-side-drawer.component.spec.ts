@@ -4,6 +4,7 @@ import { FilterSideDrawerComponent } from './filter-side-drawer.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { View } from '../../shared/interfaces/view';
 
 describe('FilterSideDrawerComponent', () => {
   let component: FilterSideDrawerComponent;
@@ -16,6 +17,7 @@ describe('FilterSideDrawerComponent', () => {
 
     fixture = TestBed.createComponent(FilterSideDrawerComponent);
     component = fixture.componentInstance;
+    component.currentView = { storageName: 'mockStorage', metadataNames: ['mockMetadata'] } as View;
     fixture.detectChanges();
   });
 
