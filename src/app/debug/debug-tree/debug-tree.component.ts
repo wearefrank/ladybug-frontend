@@ -157,27 +157,20 @@ export class DebugTreeComponent implements OnDestroy {
   //Ladybug reports don't have a parent-child structure for its checkpoints, this function creates that parent-child structure
   transformReportToHierarchyStructure(report: Report): Report {
     const checkpoints: Checkpoint[] = report.checkpoints;
-    const checkpointsTemplate: Checkpoint[] = [];
-    let startpointCounter: number = 0;
-    const startPointList: Checkpoint[] = [checkpoints[0]];
-    for (let i = 0; i < checkpoints.length; i++) {
-      const checkpoint: Checkpoint = checkpoints[i];
+    let currentStartPoint: Checkpoint | undefined;
+    let transformedCheckpoints: Checkpoint[] = [];
+    for (const checkpoint of checkpoints) {
       checkpoint.icon = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
-      if (checkpointsTemplate.length === 0) {
-        checkpointsTemplate.push(checkpoints[0]);
-      } else {
-        const currentStartpoint: Checkpoint[] = startPointList;
-        if (!currentStartpoint[startPointList.length - 1].checkpoints) {
-          currentStartpoint[startPointList.length - 1].checkpoints = [];
-        }
-        currentStartpoint[startPointList.length - 1].checkpoints!.push(checkpoint);
-        if (checkpoint.type == CheckpointType.Startpoint) {
-          startPointList.push(checkpoint);
-          startpointCounter++;
-        }
+      if (checkpoint.type === CheckpointType.Startpoint) {
+        currentStartPoint = { ...checkpoint, checkpoints: [] };
+        transformedCheckpoints.push(currentStartPoint);
+        continue;
+      }
+      if (currentStartPoint) {
+        currentStartPoint.checkpoints!.push(checkpoint);
       }
     }
-    report.checkpoints = checkpointsTemplate;
+    report.checkpoints = transformedCheckpoints;
     return report;
   }
 

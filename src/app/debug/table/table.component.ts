@@ -134,7 +134,6 @@ export class TableComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     localStorage.setItem('transformationEnabled', 'true');
     this.calculateViewDropDownWidth();
-    this.retrieveRecords();
     this.filterService.setMetadataTypes(this.currentView.metadataTypes);
     this.loadData();
     this.subscribeToObservables();
@@ -208,12 +207,13 @@ export class TableComponent implements OnInit, OnDestroy {
   loadData(): void {
     this.loadReportInProgressThreshold();
     this.loadReportInProgressSettings();
+    this.retrieveRecords();
   }
 
   loadMetadataCount(): void {
-    this.httpService.getMetadataCount(this.currentView.storageName).subscribe((count: number) => {
-      this.metadataCount = count;
-    });
+    this.httpService
+      .getMetadataCount(this.currentView.storageName)
+      .subscribe((count: number) => (this.metadataCount = count));
   }
 
   loadReportInProgressSettings(): void {
