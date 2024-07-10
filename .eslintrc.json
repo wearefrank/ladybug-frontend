@@ -8,7 +8,10 @@
   },
   "root": true,
   "ignorePatterns": [
-    "projects/**/*"
+    "projects/**/*",
+    "dist/**",
+    "target/**",
+    "node_modules/**"
   ],
   "overrides": [
     {

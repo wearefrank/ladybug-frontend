@@ -1,5 +1,5 @@
 @if (shouldShowFilter) {
-  <div class="filter-vertical-panel" data-cy-debug="filter-side-drawer" @removeTrigger>
+  <div data-cy-debug="filter-side-drawer" class="filter-vertical-panel" @removeTrigger>
     <div class="panel-container">
       <h1 class="h1 filter-label">Filter</h1>
       <div class="filter-input-container">
@@ -11,7 +11,7 @@
                 class="form-control"
                 type="text"
                 data-cy-debug="tableFilter"
-                [title]="metadataName"
+                [title]="getTooltipSuggestion(metadataName)"
                 [ngModel]="filterService.getCurrentFilterContext().get(metadataName)"
                 [matAutocomplete]="auto"
                 [placeholder]="'Filter for ' + metadataName"
@@ -41,7 +41,8 @@
         }
       </div>
       <div class="btn-container">
-        <button class="close-filter-btn btn btn-info" data-cy-debug="close-filter-btn" (click)="closeFilter()">Close
+        <button class="close-filter-btn btn btn-info" data-cy-debug="close-filter-btn" (click)="closeFilter()">
+          Close
         </button>
         <button
           class="clear-filter-btn btn btn-info"
