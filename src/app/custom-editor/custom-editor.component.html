@@ -38,11 +38,7 @@
             [(ngModel)]="currentView"
             (ngModelChange)="onViewChange($event)">
             @for (view of availableViews; track view) {
-              <option
-                [selected]="view === currentView"
-                [ngValue]="view">
-                {{view|titlecase}}
-              </option>
+              <option [selected]="view === currentView" [ngValue]="view">{{ view|titlecase }}</option>
             }
           </select>
         }
