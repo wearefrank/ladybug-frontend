@@ -40,8 +40,19 @@ export class HttpService {
     this.toastService.showSuccess(message);
   }
 
-  getViews(): Observable<Record<string, View>> {
-    return this.http.get<Record<string, View>>('api/testtool/views').pipe(catchError(this.handleError()));
+  getViews(): Observable<View[]> {
+    return this.http
+      .get('api/testtool/views')
+      .pipe(catchError(this.handleError()))
+      .pipe(
+        map((data: Record<string, View>) => {
+          let views: View[] = [];
+          for (let [key, value] of Object.entries(data)) {
+            views.push({ ...value, name: key });
+          }
+          return views;
+        }),
+      );
   }
 
   getMetadataReports(
@@ -61,8 +72,8 @@ export class HttpService {
     });
   }
 
-  getUserHelp(storage: string, metadataNames: string[]): Observable<Report[]> {
-    return this.http.get<Report[]>(`api/metadata/${storage}/userHelp`, {
+  getUserHelp(storage: string, metadataNames: string[]): Observable<Report> {
+    return this.http.get<Report>(`api/metadata/${storage}/userHelp`, {
       params: {
         metadataNames: metadataNames,
       },
