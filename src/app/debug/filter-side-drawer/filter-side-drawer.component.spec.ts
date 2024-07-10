@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FilterSideDrawerComponent } from './filter-side-drawer.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('FilterSideDrawerComponent', () => {
   let component: FilterSideDrawerComponent;
@@ -10,7 +11,7 @@ describe('FilterSideDrawerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatAutocompleteModule, FormsModule, FilterSideDrawerComponent],
+      imports: [MatAutocompleteModule, FormsModule, FilterSideDrawerComponent, HttpClientTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FilterSideDrawerComponent);
