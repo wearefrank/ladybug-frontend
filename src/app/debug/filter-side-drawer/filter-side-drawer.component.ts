@@ -32,12 +32,12 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected metadataLabels!: string[];
   protected currentRecords: Map<string, Array<string>> = new Map<string, Array<string>>();
   protected metadataTypes!: Map<string, string>;
-  protected toolTipSuggestions?: Report[];
+  protected toolTipSuggestions?: Report;
 
-  shouldShowFilterSubscription?: Subscription;
-  metadataLabelsSubscription?: Subscription;
-  currentRecordsSubscription?: Subscription;
-  metadataTypesSubscription?: Subscription;
+  private shouldShowFilterSubscription?: Subscription;
+  private metadataLabelsSubscription?: Subscription;
+  private currentRecordsSubscription?: Subscription;
+  private metadataTypesSubscription?: Subscription;
 
   constructor(
     protected filterService: FilterService,
@@ -79,14 +79,10 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     this.metadataTypesSubscription?.unsubscribe();
   }
 
-  getFilterToolTips() {
-    if (this.currentView) {
-      this.httpService.getUserHelp(this.currentView.storageName, this.currentView.metadataNames).subscribe({
-        next: (response: Report[]) => {
-          this.toolTipSuggestions = response;
-        },
-      });
-    }
+  getFilterToolTips(): void {
+    this.httpService
+      .getUserHelp(this.currentView.storageName, this.currentView.metadataNames)
+      .subscribe((response: Report) => (this.toolTipSuggestions = response));
   }
 
   closeFilter(): void {
@@ -99,5 +95,11 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
 
   removeFilter(metadataName: string): void {
     this.filterService.updateFilterContext(metadataName, '');
+  }
+
+  getTooltipSuggestion(key: string) {
+    if (this.toolTipSuggestions) {
+      return this.toolTipSuggestions[key as keyof Report];
+    }
   }
 }

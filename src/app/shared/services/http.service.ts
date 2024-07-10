@@ -72,8 +72,8 @@ export class HttpService {
     });
   }
 
-  getUserHelp(storage: string, metadataNames: string[]): Observable<Report[]> {
-    return this.http.get<Report[]>(`api/metadata/${storage}/userHelp`, {
+  getUserHelp(storage: string, metadataNames: string[]): Observable<Report> {
+    return this.http.get<Report>(`api/metadata/${storage}/userHelp`, {
       params: {
         metadataNames: metadataNames,
       },

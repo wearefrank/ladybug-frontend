@@ -89,7 +89,6 @@ export class TableComponent implements OnInit, OnDestroy {
 
   tableSettings: TableSettings = {
     reportMetadata: [],
-    metadataHeaders: [],
     tableLoaded: false,
     displayAmount: this.DEFAULT_DISPLAY_AMOUNT,
     showFilter: false,
@@ -136,7 +135,6 @@ export class TableComponent implements OnInit, OnDestroy {
     localStorage.setItem('transformationEnabled', 'true');
     this.calculateViewDropDownWidth();
     this.retrieveRecords();
-    this.getUserHelp();
     this.filterService.setMetadataTypes(this.currentView.metadataTypes);
     this.loadData();
     this.subscribeToObservables();
@@ -195,32 +193,13 @@ export class TableComponent implements OnInit, OnDestroy {
           catchError(this.httpService.handleError());
         },
       });
-
-    this.getUserHelp();
     this.loadMetadataCount();
-  }
-
-  getUserHelp(): void {
-    if (this.currentView) {
-      this.httpService.getUserHelp(this.currentView.storageName, this.currentView.metadataNames).subscribe({
-        next: (response: Report[]) => {
-          this.tableSettings.metadataHeaders = response;
-        },
-      });
-    }
-  }
-
-  clearFilters(): void {
-    this.tableSettings.filterValues = [];
-    this.tableSettings.filterHeaders = [];
-    this.retrieveRecords();
   }
 
   changeView(index: number): void {
     this.currentView = this.views[index];
     this.retrieveRecords();
     this.allRowsSelected = false;
-    this.clearFilters();
     this.debugReportService.changeView(this.currentView);
     this.filterService.setMetadataLabels(this.currentView.metadataLabels);
     this.viewChange.next(this.currentView);
@@ -440,8 +419,6 @@ export class TableComponent implements OnInit, OnDestroy {
 
   refresh(): void {
     this.filterService.setShowFilter(false);
-    this.tableSettings.reportMetadata = [];
-    this.tableSettings.tableLoaded = false;
     this.tableSettings.displayAmount = 10;
     this.loadData();
   }
@@ -577,12 +554,6 @@ export class TableComponent implements OnInit, OnDestroy {
       }
       return String(a).localeCompare(String(b));
     });
-  }
-
-  sortFilterList(): void {
-    for (let metadataLabel of this.currentView.metadataNames) {
-      this.currentFilters.set(metadataLabel.toLowerCase().replaceAll(' ', ''), '');
-    }
   }
 
   calculateViewDropDownWidth(): void {
