@@ -1,10 +1,15 @@
-<div class="d-flex flex-row" *ngIf="activeFilters">
-  <span *ngFor="let filter of activeFilters | dictionary;first as isFirst">
-    <span class="filter-container d-flex align-items-center rounded-pill px-3 py-2 text-white "
-          *ngIf="filter.value !== ''"
-          [title]="'Active filter for' + filter.key"
-          [ngClass]="{'ml-1': !isFirst}">
-    {{ filter.key|titlecase }}: {{ filter.value }}
-    </span>
-  </span>
-</div>
+@if (activeFilters) {
+  <div class="d-flex flex-row">
+    @for (filter of activeFilters | dictionary; track filter; let isFirst = $first) {
+      <span>
+        @if (filter.value !== '') {
+          <span class="filter-container d-flex align-items-center rounded-pill px-3 py-2 text-white "
+                [title]="'Active filter for' + filter.key"
+                [ngClass]="{'ml-1': !isFirst}">
+          {{ filter.key|titlecase }}: {{ filter.value }}
+          </span>
+        }
+      </span>
+    }
+  </div>
+}
