@@ -90,8 +90,8 @@ importers:
         specifier: ^3.7.1
         version: 3.7.1
       jqwidgets-ng:
-        specifier: ^14.1.17
-        version: 14.1.20
+        specifier: ^19.2.2
+        version: 19.2.2
       monaco-editor:
         specifier: 0.44.0
         version: 0.44.0
@@ -3701,8 +3701,8 @@ packages:
   jquery@3.7.1:
     resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
 
-  jqwidgets-ng@14.1.20:
-    resolution: {integrity: sha512-rApVo4/k1M4aj3AI5bn2nG/5pKmeCGSuCFTynLS0F0/iXYV6iegPC8bNzwui0qkQJ19a7I5IW3yyi1LaxJpttA==}
+  jqwidgets-ng@19.2.2:
+    resolution: {integrity: sha512-spAofOasftpMVq8uTWOe0hhU4iM2pIBRyIf00dajAOfHNBQjCMqK4aRBUMAAPZZ3yjWj3FOrfpnshEaWWRQ1ZA==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -9987,7 +9987,7 @@ snapshots:
 
   jquery@3.7.1: {}
 
-  jqwidgets-ng@14.1.20: {}
+  jqwidgets-ng@19.2.2: {}
 
   js-tokens@4.0.0: {}
 
