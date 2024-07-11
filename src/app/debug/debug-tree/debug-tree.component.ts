@@ -21,7 +21,6 @@ import {
   NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
-import { NgIf } from '@angular/common';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { CheckpointType } from '../../shared/enums/checkpoint-type';
 
@@ -31,7 +30,6 @@ import { CheckpointType } from '../../shared/enums/checkpoint-type';
   styleUrls: ['./debug-tree.component.css'],
   standalone: true,
   imports: [
-    NgIf,
     ButtonComponent,
     NgbDropdown,
     NgbDropdownToggle,

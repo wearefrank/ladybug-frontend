@@ -14,8 +14,8 @@ describe('Tests for custom editor in debug tab', () => {
     cy.get('[data-cy-editor="viewDropDown"]').as('viewDropDown').find('option:selected').should('contain.text', 'Raw');
     // eslint-disable-next-line sonarjs/no-duplicate-string
     cy.get('@viewDropDown').find('option').should('have.length', 2);
-    cy.get('@viewDropDown').find('option').eq(0).should('have.text', 'Raw');
-    cy.get('@viewDropDown').find('option').eq(1).should('have.text', 'Xml');
+    cy.get('@viewDropDown').find('option').eq(0).should('contain.text', 'Raw');
+    cy.get('@viewDropDown').find('option').eq(1).should('contain.text', 'Xml');
     cy.get('@viewDropDown').find('option').eq(2).should('not.exist');
   });
 

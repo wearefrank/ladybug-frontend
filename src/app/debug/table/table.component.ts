@@ -26,7 +26,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
-import { KeyValuePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { KeyValuePipe, NgClass } from '@angular/common';
 import { View } from '../../shared/interfaces/view';
 import { OptionsSettings } from '../../shared/interfaces/options-settings';
 
@@ -36,7 +36,6 @@ import { OptionsSettings } from '../../shared/interfaces/options-settings';
   styleUrls: ['./table.component.css'],
   standalone: true,
   imports: [
-    NgIf,
     FilterSideDrawerComponent,
     ButtonComponent,
     NgbDropdown,
@@ -46,7 +45,6 @@ import { OptionsSettings } from '../../shared/interfaces/options-settings';
     NgbDropdownItem,
     ReactiveFormsModule,
     FormsModule,
-    NgFor,
     ActiveFiltersComponent,
     MatProgressSpinnerModule,
     MatSortModule,
