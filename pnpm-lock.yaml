@@ -60,8 +60,8 @@ importers:
         specifier: ^14.1.0
         version: 14.1.0(@angular/common@17.0.8(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.3))(rxjs@7.4.0))(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.3))(rxjs@7.4.0)
       bootstrap:
-        specifier: '4'
-        version: 4.6.2(jquery@3.7.1)(popper.js@1.16.1)
+        specifier: '5'
+        version: 5.3.3(@popperjs/core@2.11.8)
       bootstrap-icons:
         specifier: ^1.11.3
         version: 1.11.3
@@ -148,8 +148,8 @@ importers:
         specifier: 17.0.8
         version: 17.0.8(@angular/compiler@17.0.8(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.3)))(typescript@5.2.2)
       '@types/bootstrap':
-        specifier: ^4
-        version: 4.6.6
+        specifier: ^5
+        version: 5.2.10
       '@types/diff-match-patch':
         specifier: 1.0.32
         version: 1.0.32
@@ -1874,8 +1874,8 @@ packages:
   '@types/bonjour@3.5.13':
     resolution: {integrity: sha512-z9fJ5Im06zvUL548KvYNecEVlA7cVDkGUi6kZusb04mpyEFKCIZJvloCcmpmLaIahDpOQGHaHmG6imtPMmPXGQ==}
 
-  '@types/bootstrap@4.6.6':
-    resolution: {integrity: sha512-ca2slWHuPLl0QZCO7nRSsQrnPjE9fxJ+VokXMSlHRv2nlk3tYSHUkWPNOVrCsIv6iwCy8vGQGbyTkRDNjTNejA==}
+  '@types/bootstrap@5.2.10':
+    resolution: {integrity: sha512-F2X+cd6551tep0MvVZ6nM8v7XgGN/twpdNDjqS1TUM7YFNEtQYWk+dKAnH+T1gr6QgCoGMPl487xw/9hXooa2g==}
 
   '@types/connect-history-api-fallback@1.5.4':
     resolution: {integrity: sha512-n6Cr2xS1h4uAulPRdlw6Jl6s1oG8KrVilPN2yUITEs+K48EzMJJ3W1xy8K5eWuFvjp3R74AOIGSmp2UfBJ8HFw==}
@@ -1915,9 +1915,6 @@ packages:
 
   '@types/jasmine@3.9.1':
     resolution: {integrity: sha512-PVpjh8S8lqKFKurWSKdFATlfBHGPzgy0PoDdzQ+rr78jTQ0aacyh9YndzZcAUPxhk4kRujItFFGQdUJ7flHumw==}
-
-  '@types/jquery@3.5.30':
-    resolution: {integrity: sha512-nbWKkkyb919DOUxjmRVk8vwtDb0/k8FKncmUKFi+NY+QXqWltooxTrswvz4LspQwxvLdvzBN1TImr6cw3aQx2A==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -2389,11 +2386,10 @@ packages:
   bootstrap-icons@1.11.3:
     resolution: {integrity: sha512-+3lpHrCw/it2/7lBL15VR0HEumaBss0+f/Lb6ZvHISn1mlK83jjFpooTLsMWbIjJMDjDjOExMsTxnXSIT4k4ww==}
 
-  bootstrap@4.6.2:
-    resolution: {integrity: sha512-51Bbp/Uxr9aTuy6ca/8FbFloBUJZLHwnhTcnjIeRn2suQWsWzcuJhGjKDB5eppVte/8oCdOL3VuwxvZDUggwGQ==}
+  bootstrap@5.3.3:
+    resolution: {integrity: sha512-8HLCdWgyoMguSO9o+aH+iuZ+aht+mzW0u3HIMzVu7Srrpv7EBBxTnrFlSCskwdY1+EOFQSm7uMJhNQHkdPcmjg==}
     peerDependencies:
-      jquery: 1.9.1 - 3
-      popper.js: ^1.16.1
+      '@popperjs/core': ^2.11.8
 
   bower@1.8.12:
     resolution: {integrity: sha512-u1xy9SrwwoPlgjuHNjhV+YUPVdqyBj2ALBxuzeIUKXaPI2i2xypGgxqXkuHcITGdi5yBj5JuXgyMvgiWiS1S3Q==}
@@ -7872,10 +7868,9 @@ snapshots:
     dependencies:
       '@types/node': 16.10.3
 
-  '@types/bootstrap@4.6.6':
+  '@types/bootstrap@5.2.10':
     dependencies:
-      '@types/jquery': 3.5.30
-      popper.js: 1.16.1
+      '@popperjs/core': 2.11.8
 
   '@types/connect-history-api-fallback@1.5.4':
     dependencies:
@@ -7927,10 +7922,6 @@ snapshots:
       '@types/node': 16.10.3
 
   '@types/jasmine@3.9.1': {}
-
-  '@types/jquery@3.5.30':
-    dependencies:
-      '@types/sizzle': 2.3.8
 
   '@types/json-schema@7.0.15': {}
 
@@ -8491,10 +8482,9 @@ snapshots:
 
   bootstrap-icons@1.11.3: {}
 
-  bootstrap@4.6.2(jquery@3.7.1)(popper.js@1.16.1):
+  bootstrap@5.3.3(@popperjs/core@2.11.8):
     dependencies:
-      jquery: 3.7.1
-      popper.js: 1.16.1
+      '@popperjs/core': 2.11.8
 
   bower@1.8.12: {}
 
