@@ -67,7 +67,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   fetchAndSetAppVersion() {
-    fetch('../assets/package.json')
+    fetch('assets/package.json')
       .then((response: Response): void => {
         if (response.ok) {
           response.json().then((packageJson: { version: string }): void => {
