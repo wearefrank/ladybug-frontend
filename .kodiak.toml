@@ -10,3 +10,6 @@ usernames = ["dependabot"]
 
 [approve]
 auto_approve_usernames = ["dependabot"]
+
+[update]
+always = false
