@@ -23,6 +23,9 @@ import {
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { CheckpointType } from '../../shared/enums/checkpoint-type';
+import { NgClass } from '@angular/common';
+import { MatTreeModule } from '@angular/material/tree';
+import { IconData } from '../../shared/interfaces/icon-data';
 
 @Component({
   selector: 'app-debug-tree',
@@ -37,6 +40,8 @@ import { CheckpointType } from '../../shared/enums/checkpoint-type';
     NgbDropdownButtonItem,
     NgbDropdownItem,
     NgSimpleFileTreeModule,
+    NgClass,
+    MatTreeModule,
   ],
 })
 export class DebugTreeComponent implements OnDestroy {
@@ -153,12 +158,14 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   transformReportToHierarchyStructure(report: Report): Report {
-    const checkpoints = report.checkpoints;
+    const checkpoints: Checkpoint[] = report.checkpoints;
     let checkpointsTemplate: Checkpoint[] = [];
     let startPointStack: Checkpoint[] = [];
 
     for (const checkpoint of checkpoints) {
-      checkpoint.icon = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
+      const icon: IconData = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
+      checkpoint.icon = icon.path;
+      checkpoint.cssClasses = icon.cssClasses;
 
       if (checkpoint.type === CheckpointType.Startpoint) {
         this.handleStartpoint(checkpoint, checkpointsTemplate, startPointStack);

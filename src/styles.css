@@ -138,3 +138,15 @@ html, body {
 .cursor-pointer {
   cursor: pointer;
 }
+
+.end-point {
+  transform: scale(-1, 1);
+}
+
+.tree-icon-even {
+  filter: invert(10%) sepia(100%) saturate(7164%) hue-rotate(11deg) brightness(98%) contrast(106%);
+}
+
+.tree-icon-odd {
+  filter: invert(77%) sepia(81%) saturate(5242%) hue-rotate(323deg) brightness(104%) contrast(90%);
+}

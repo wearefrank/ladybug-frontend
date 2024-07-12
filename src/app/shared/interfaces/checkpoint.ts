@@ -1,4 +1,5 @@
 import { CheckpointType } from '../enums/checkpoint-type';
+import { IconData } from './icon-data';
 
 export interface Checkpoint {
   encoding: string;
@@ -21,5 +22,6 @@ export interface Checkpoint {
   waitingForStream: boolean;
   storageId?: string;
   checkpoints?: Checkpoint[];
-  icon?: string;
+  icon: string;
+  cssClasses: string;
 }
