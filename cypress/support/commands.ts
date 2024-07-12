@@ -183,14 +183,6 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
   cy.get('[data-cy-settings="saveChanges"]').click();
 });
 
-Cypress.Commands.add('checkTableNumRows', (n) => {
-  if (n === 0) {
-    cy.get('[data-cy-debug="tableBody"]').find('tr').should('not.exist');
-  } else {
-    cy.get('[data-cy-debug="tableBody"]').find('tr').should('have.length', n);
-  }
-});
-
 Cypress.Commands.add('checkTestTableNumRows', (n) => {
   cy.get('[data-cy-test="table"] tr').should('have.length', n);
 });
@@ -235,7 +227,7 @@ Cypress.Commands.add('clickFirstChildInFileTree' as keyof Chainable, () => {
 })
 
 Cypress.Commands.add('clickRowInTable', (index: number) => {
-  cy.get('[data-cy-debug="tableBody"]').find('tr').eq(index).click();
+  cy.get('[data-cy-debug="tableBody"]').get('tbody').find('tr').eq(index).click();
 });
 
 Cypress.Commands.add('checkFileTreeLength', (n: number) => {
@@ -250,4 +242,14 @@ Cypress.Commands.add('refreshApp', () => {
   }).as('apiCall');
   cy.get('[data-cy-debug="refresh"]').click();
   cy.wait('@apiCall').then(() => cy.log('All api requests have completed'));
+});
+
+Cypress.Commands.add('getTableBody', () => {
+  return cy.get('[data-cy-debug="tableBody"]').get('tbody');
+});
+
+Cypress.Commands.add('assertDebugTableLength', (length: number) => {
+  length === 0
+    ? cy.getTableBody().find('tr').should('not.exist')
+    : cy.getTableBody().find('tr').should('have.length', length);
 });

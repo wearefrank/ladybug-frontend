@@ -153,7 +153,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.reranReports = [];
   }
 
-  run(reportId: string): void {
+  run(reportId: number): void {
     if (this.generatorStatus === 'Enabled') {
       this.httpService.runReport(this.currentView.storageName, reportId).subscribe((response: TestResult): void => {
         this.showResult(response);
@@ -188,7 +188,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   showResult(result: TestResult): void {
-    const id: string = result.originalReport.storageId.toString();
+    const id: string = String(result.originalReport.storageId);
     this.removeReranReportIfExists(id);
     const reranReport: ReranReport = this.createReranReport(result, id);
     this.reranReports.push(reranReport);
@@ -198,7 +198,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     return <ReranReport>this.reranReports.find((report) => report.id == id);
   }
 
-  openReport(storageId: string, name: string): void {
+  openReport(storageId: number, name: string): void {
     this.httpService.getReport(storageId, this.currentView.storageName).subscribe((report: Report): void => {
       const reportData: ReportData = {
         report: report,
@@ -273,8 +273,8 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   copySelected(): void {
-    const copiedIds: string[] = this.helperService.getSelectedIds(this.reports);
-    const data: Record<string, string[]> = {
+    const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
+    const data: Record<string, number[]> = {
       [this.currentView.storageName]: copiedIds,
     };
     this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
@@ -295,7 +295,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   updatePath(): void {
-    const reportIds: string[] = this.helperService.getSelectedIds(this.reports);
+    const reportIds: number[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       let path: string = this.moveToInputModel.value;
       path = this.transformPath(path);
