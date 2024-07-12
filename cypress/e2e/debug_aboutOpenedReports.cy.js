@@ -31,11 +31,11 @@ describe('About opened reports', () => {
 
   it('Close all', () => {
     cy.enableShowMultipleInDebugTree();
-    cy.get('[data-cy-debug="tableBody"] tbody tr td:contains(Simple report)')
+    cy.getTableBody().get('tr td:contains(Simple report)')
       .first()
       .click();
     cy.checkFileTreeLength(1);
-    cy.get('[data-cy-debug="tableBody"] tbody tr td:contains("Another simple report")')
+    cy.getTableBody().get('tr td:contains("Another simple report")')
       .first()
       .click();
     cy.checkFileTreeLength(2);
