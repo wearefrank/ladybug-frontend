@@ -20,7 +20,7 @@ export interface Report {
   stubStrategy: string;
   transformation: string;
   variableCsv: string;
-
+  checked: boolean;
   storageName: string;
   variablesAsMap: any; // Map<String, String>
   xml: string; // Custom for the xml representation of the report

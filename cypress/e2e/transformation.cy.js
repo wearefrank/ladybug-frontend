@@ -28,10 +28,7 @@ describe('Report transformation', () => {
     cy.createOtherReport();
     cy.get('[data-cy-debug="refresh"]').click();
     cy.wait(100);
-    cy.get('[data-cy-debug="tableBody"]')
-      .find('tr')
-      .should('have.length', 1)
-      .click();
+    cy.assertDebugTableLength(1).click();
     cy.checkFileTreeLength(1);
     // We test that the top node was not selected before.
     // cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > div').click();
