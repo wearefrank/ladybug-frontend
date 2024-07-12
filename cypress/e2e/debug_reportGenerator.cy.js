@@ -16,7 +16,7 @@ describe('Report generator', () => {
     cy.createReport();
     cy.refreshApp();
     cy.wait(100);
-    cy.functions.assertDebugTableLength(1);
+    cy.assertDebugTableLength(1);
     cy.get('[data-cy-debug="openSettings"]').click();
     cy.get('[role=dialog]').should('be.visible');
     cy.get('select[formcontrolname=generatorEnabled]').select('Disabled').should('have.value', 'Disabled');
@@ -28,7 +28,7 @@ describe('Report generator', () => {
     // before refresh.
     cy.get('[data-cy-debug="refresh"]').click();
     cy.wait(100);
-    cy.functions.assertDebugTableLength(1);
+    cy.assertDebugTableLength(1);
     cy.get('[data-cy-debug="openSettings"]').click();
     cy.get('[role=dialog]').should('be.visible');
     cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
@@ -37,6 +37,6 @@ describe('Report generator', () => {
     cy.createOtherReport();
     cy.get('[data-cy-debug="refresh"]').click();
     cy.wait(100);
-    cy.functions.assertDebugTableLength(2);
+    cy.assertDebugTableLength(2);
   });
 });

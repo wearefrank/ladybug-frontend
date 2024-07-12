@@ -11,6 +11,6 @@ describe('Test toast window', () => {
     cy.get('[data-cy-debug="refresh"]').click();
     cy.wait(100);
     cy.get('[data-cy-toast]').contains('Data loaded!');
-    cy.functions.assertDebugTableLength(1);
+    cy.assertDebugTableLength(1);
   });
 });
