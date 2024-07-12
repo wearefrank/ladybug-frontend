@@ -52,7 +52,7 @@ describe('Debug tab download', function () {
           });
         cy.clearDebugStore();
         cy.get('[data-cy-debug="refresh"]').click();
-        cy.getTableBody().find('tr').should('not.exist');
+        cy.assertDebugTableLength(0);
         cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should(
           'have.length',
           0

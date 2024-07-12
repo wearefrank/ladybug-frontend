@@ -18,8 +18,4 @@ cy.functions = {
         cy.wait(1000);
       });
   },
-
-  assertDebugTableLength: (length: number) => {
-    cy.getTableBody().find('tr').should('have.length', length);
-  },
 };

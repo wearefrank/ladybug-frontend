@@ -12,7 +12,7 @@ describe('Report generator', () => {
   afterEach(() => cy.resetApp());
 
   it('disable and enable', () => {
-    cy.getTableBody().find('tr').should('not.exist');
+    cy.assertDebugTableLength(0);
     cy.createReport();
     cy.refreshApp();
     cy.wait(100);

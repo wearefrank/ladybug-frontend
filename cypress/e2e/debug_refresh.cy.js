@@ -8,7 +8,7 @@ describe('Refresh', () => {
   afterEach(() => cy.resetApp());
 
   it('New reports are only shown on refresh', () => {
-    cy.getTableBody().find('tr').should('not.exist');
+    cy.assertDebugTableLength(0);
     cy.createReport();
     cy.get('[data-cy-debug="refresh"]').click();
     cy.wait(100);

@@ -13,10 +13,10 @@ describe('Tests about copying', function() {
     cy.get('[data-cy-nav-tab="testTab"]').click();
     cy.checkTestTableNumRows(0);
     cy.get('[data-cy-nav-tab="debugTab"]').click();
-    cy.functions.assertDebugTableLength(0);
+    cy.assertDebugTableLength(0);
     cy.createReport();
     cy.refreshApp();
-    cy.functions.assertDebugTableLength(1);
+    cy.assertDebugTableLength(1);
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();
     cy.debugTreeGuardedCopyReport('Simple report', 3, '');
@@ -24,7 +24,7 @@ describe('Tests about copying', function() {
     // We test that the user does not have to refresh here.
     cy.checkTestTableReportsAre(['Simple report']);
     cy.get('[data-cy-nav-tab="debugTab"]').click();
-    cy.functions.assertDebugTableLength(1);
+    cy.assertDebugTableLength(1);
     cy.clickRowInTable(0);
     cy.checkFileTreeLength(1);
     cy.get('[data-cy-nav-tab="testTab"]').click();

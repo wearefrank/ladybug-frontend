@@ -247,3 +247,9 @@ Cypress.Commands.add('refreshApp', () => {
 Cypress.Commands.add('getTableBody', () => {
   return cy.get('[data-cy-debug="tableBody"]').get('tbody');
 });
+
+Cypress.Commands.add('assertDebugTableLength', (length: number) => {
+  length === 0
+    ? cy.getTableBody().find('tr').should('not.exist')
+    : cy.getTableBody().find('tr').should('have.length', length);
+});

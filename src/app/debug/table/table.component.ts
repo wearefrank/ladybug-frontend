@@ -191,7 +191,7 @@ export class TableComponent implements OnInit, OnDestroy {
         next: (value: Report[]) => {
           this.setUniqueOptions(value);
           this.tableSettings.reportMetadata = value;
-          this.tableDataSource.data = [...value];
+          this.tableDataSource.data = value;
           this.tableSettings.tableLoaded = true;
           this.toastService.showSuccess('Data loaded!');
         },

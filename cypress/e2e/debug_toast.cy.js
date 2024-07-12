@@ -6,7 +6,7 @@ describe('Test toast window', () => {
   afterEach(() => cy.resetApp());
 
   it('When new report appears in table then toast window shown', () => {
-    cy.getTableBody().find('tr').should('not.exist');
+    cy.assertDebugTableLength(0);
     cy.createReport();
     cy.get('[data-cy-debug="refresh"]').click();
     cy.wait(100);
