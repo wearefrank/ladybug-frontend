@@ -191,7 +191,6 @@ Cypress.Commands.add('checkTestTableReportsAre', (reportNames) => {
   cy.checkTestTableNumRows(reportNames.length);
   reportNames.forEach((reportName) => {
     cy.get('[data-cy-test="table"]')
-      .get('tbody')
       .find('tr')
       .contains('/' + reportName)
       .should('have.length', 1);
