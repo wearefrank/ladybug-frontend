@@ -137,7 +137,7 @@ export class HelperService {
     if (checkpoints && checkpoints.length > 0) {
       for (let checkpoint of checkpoints) {
         const img: string = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
-        let showingId: string = this.getCheckpointOrStorageId(checkpoint, false);
+        const showingId: string = this.getCheckpointOrStorageId(checkpoint, false);
         const currentNode: any = this.createNode(checkpoint, showingId, img, index++, checkpoint.level);
         this.createHierarchy(previousNode, currentNode, parentMap);
         previousNode = currentNode;
