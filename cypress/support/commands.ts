@@ -183,14 +183,6 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
   cy.get('[data-cy-settings="saveChanges"]').click();
 });
 
-Cypress.Commands.add('checkTableNumRows', (n) => {
-  if (n === 0) {
-    cy.get('[data-cy-debug="tableBody"]').get('tbody').find('tr').should('not.exist');
-  } else {
-    cy.get('[data-cy-debug="tableBody"]').get('tbody').find('tr').should('have.length', n);
-  }
-});
-
 Cypress.Commands.add('checkTestTableNumRows', (n) => {
   cy.get('[data-cy-test="table"] tr').should('have.length', n);
 });

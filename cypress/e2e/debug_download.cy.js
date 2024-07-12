@@ -89,7 +89,7 @@ describe('Debug tab download', function () {
   // TODO: Fix issue and re-enable test.
   xit('Download all open reports', function () {
     const downloadsFolder = Cypress.config('downloadsFolder');
-    cy.getTableBody().find('tr').should('have.length', 2);
+    cy.functions.assertDebugTableLength(2);
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();
     cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 2);
@@ -167,7 +167,7 @@ describe('Debug tab download', function () {
 function testDownloadFromNode(nodeNum) {
   const downloadsFolder = Cypress.config('downloadsFolder');
   cy.wait(100);
-  cy.getTableBody().find('tr').should('have.length', 2);
+  cy.functions.assertDebugTableLength(2);
   cy.get('[data-cy-debug="selectAll"]').click();
   cy.get('[data-cy-debug="openSelected"]').click();
   cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 2);

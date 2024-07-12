@@ -32,7 +32,7 @@ describe('With running reports', () => {
     cy.get('[data-cy-debug-in-progress-counter]').should('contain.text', 'Reports in progress: 2');
     cy.get('[data-cy-debug="refresh"]').click();
     cy.wait(100);
-    cy.checkTableNumRows(0);
+    cy.functions.assertDebugTableLength(0);
     cy.checkFileTreeLength(0);
     cy.get('[data-cy-debug="openInProgressNo"]').type('{backspace}1');
     cy.get('[data-cy-debug="openInProgress"]').click();
