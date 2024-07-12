@@ -6,7 +6,7 @@ import { SettingsService } from '../shared/services/settings.service';
 import { editor } from 'monaco-editor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
-import { NgFor, NgIf, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import IEditor = editor.IEditor;
 
 export const basicContentTypes = ['raw'] as const;
@@ -21,7 +21,7 @@ export type EditorView = (typeof editorViewsConst)[number];
   templateUrl: './custom-editor.component.html',
   styleUrl: './custom-editor.component.css',
   standalone: true,
-  imports: [NgIf, MonacoEditorModule, ReactiveFormsModule, FormsModule, NgFor, TitleCasePipe],
+  imports: [MonacoEditorModule, ReactiveFormsModule, FormsModule, TitleCasePipe],
 })
 export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() height!: number;

@@ -17,7 +17,7 @@ import { Report } from '../../shared/interfaces/report';
 import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
-import { NgClass, NgFor, NgIf, NgStyle, TitleCasePipe } from '@angular/common';
+import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
 import { Subject } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
@@ -34,7 +34,6 @@ import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
   styleUrls: ['./edit-display.component.css'],
   standalone: true,
   imports: [
-    NgIf,
     ButtonComponent,
     NgbDropdown,
     NgbDropdownToggle,
@@ -44,7 +43,6 @@ import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
     ReactiveFormsModule,
     CustomEditorComponent,
     DisplayTableComponent,
-    NgFor,
     BooleanToStringPipe,
     NgStyle,
     ClipboardModule,
