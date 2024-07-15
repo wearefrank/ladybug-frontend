@@ -50,7 +50,7 @@
     "jquery": "^3.7.1",
     "jqwidgets-ng": "^14.1.17",
     "monaco-editor": "0.44.0",
-    "ng-simple-file-tree": "^0.1.13",
+    "ng-simple-file-tree": "^0.1.16",
     "ngx-monaco-editor-v2": "17.0.1",
     "path": "^0.12.7",
     "popper.js": "^1.16.1",
