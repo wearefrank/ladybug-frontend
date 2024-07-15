@@ -1,14 +1,13 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { CheckpointTypePipe } from '../../pipes/checkpoint-type.pipe';
 import { ClipboardModule } from '@angular/cdk/clipboard';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-display-table',
   templateUrl: './display-table.component.html',
   styleUrls: ['./display-table.component.css'],
   standalone: true,
-  imports: [NgIf, ClipboardModule, CheckpointTypePipe],
+  imports: [ClipboardModule, CheckpointTypePipe],
 })
 export class DisplayTableComponent implements OnChanges {
   @Input() report!: any;

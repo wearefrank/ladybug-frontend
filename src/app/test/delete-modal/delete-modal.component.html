@@ -7,7 +7,9 @@
   </div>
   <div class="modal-body">
     <ul>
-      <li *ngFor="let report of reports"> [{{ report.storageId }}] {{ report.name }}</li>
+      @for (report of reports; track report) {
+        <li> [{{ report.storageId }}] {{ report.name }}</li>
+      }
     </ul>
   </div>
   <div class="modal-footer">

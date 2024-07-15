@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
 import { Subscription } from 'rxjs';
 import { DebugReportService } from './debug-report.service';
@@ -7,6 +7,7 @@ import { TableComponent } from './table/table.component';
 import { ReportComponent } from '../report/report.component';
 import { ToastService } from '../shared/services/toast.service';
 import { HttpService } from '../shared/services/http.service';
+import { View } from '../shared/interfaces/view';
 
 @Component({
   selector: 'app-debug',
@@ -18,10 +19,9 @@ import { HttpService } from '../shared/services/http.service';
 export class DebugComponent implements OnInit, OnDestroy {
   static readonly ROUTER_PATH: string = 'debug';
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
-  @ViewChild('bottom') container!: ElementRef<HTMLElement>;
   @ViewChild('reportComponent') customReportComponent!: ReportComponent;
-  currentView: any = {};
-  loaded: boolean = false;
+  currentView?: View;
+  views?: View[];
 
   private viewSubscription!: Subscription;
 
@@ -32,16 +32,22 @@ export class DebugComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.retrieveViews();
     this.subscribeToServices();
     this.retrieveErrorsAndWarnings();
   }
 
-  ngOnAfterViewInit() {
-    this.loaded = true;
-  }
-
   ngOnDestroy(): void {
     this.unsubscribeAll();
+  }
+
+  retrieveViews(): void {
+    this.httpService.getViews().subscribe((views: View[]): void => {
+      this.views = views;
+      if (!this.currentView) {
+        this.currentView = this.views.find((v: View) => v.defaultView);
+      }
+    });
   }
 
   subscribeToServices(): void {
@@ -58,13 +64,13 @@ export class DebugComponent implements OnInit, OnDestroy {
     this.customReportComponent.addReportToTree(report);
   }
 
-  onViewChange(viewName: string): void {
-    this.currentView.currentViewName = viewName;
+  onViewChange(view: View): void {
+    this.currentView = view;
     this.retrieveErrorsAndWarnings();
   }
 
   retrieveErrorsAndWarnings(): void {
-    if (this.currentView.currentViewName) {
+    if (this.currentView) {
       this.httpService
         .getWarningsAndErrors(this.currentView.storageName)
         .subscribe((value: string | undefined): void => {

@@ -8,13 +8,13 @@ describe('About the Test tab', () => {
     cy.createOtherReport();
     cy.initializeApp();
     const storageIds = [];
-    cy.get('[data-cy-debug="tableBody"] tr').each($row => {
+    cy.getTableBody().find('tr').each($row => {
       cy.wrap($row).find('td:eq(1)').invoke('text').then(s => {
         storageIds.push(s);
         cy.log(`Table has storage id ${s}`);
       });
     });
-    cy.get('[data-cy-debug="tableBody"] tr').then(() => {
+    cy.getTableBody().find('tr').then(() => {
       cy.log(`Table has storage ids: [${storageIds}]`);
     });
     // When making videos is enabled, the number of frames is limited.

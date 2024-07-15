@@ -1,6 +1,4 @@
-import { OnDestroy, Pipe, PipeTransform } from '@angular/core';
-import { SettingsService } from '../services/settings.service';
-import { Subscription } from 'rxjs';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'tableCellShortener',
@@ -15,7 +13,7 @@ export class TableCellShortenerPipe implements PipeTransform {
   }
 
   removeMillisecondsFromTimestamp(value: string): string {
-    if (value.match('\\b\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\b')) {
+    if (/\b\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\b/.test(value)) {
       return value.slice(0, Math.max(0, value.indexOf('.')));
     }
     return value;

@@ -1,4 +1,4 @@
-import { AfterViewInit, OnInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
@@ -15,8 +15,7 @@ import { ReportData } from '../shared/interfaces/report-data';
 import { NodeLinkStrategy } from '../shared/enums/compare-method';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
-import { NgIf, NgFor } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, NgModel } from '@angular/forms';
+import { FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { View } from '../shared/interfaces/view';
@@ -34,8 +33,6 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     ButtonComponent,
     ReactiveFormsModule,
     FormsModule,
-    NgIf,
-    NgFor,
     ToastComponent,
     TestSettingsModalComponent,
     CloneModalComponent,
@@ -124,14 +121,15 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   loadData(path: string): void {
-    this.httpService.getViews().subscribe((views: Record<string, View>) => {
-      const defaultViewKey: string | undefined = Object.keys(views).find((view: string) => views[view].defaultView);
-      if (defaultViewKey) {
+    this.httpService.getViews().subscribe((views: View[]) => {
+      const defaultView: View | undefined = views.find((view: View) => view.defaultView);
+      console.log(defaultView);
+      /*if (defaultView) {
         const selectedView: View = views[defaultViewKey];
         if (selectedView.storageName) {
           this.currentView.targetStorage = selectedView.storageName;
         }
-      }
+      }*/
     });
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value: TestListItem[]) => {
@@ -155,7 +153,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.reranReports = [];
   }
 
-  run(reportId: string): void {
+  run(reportId: number): void {
     if (this.generatorStatus === 'Enabled') {
       this.httpService.runReport(this.currentView.storageName, reportId).subscribe((response: TestResult): void => {
         this.showResult(response);
@@ -190,7 +188,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   showResult(result: TestResult): void {
-    const id: string = result.originalReport.storageId.toString();
+    const id: string = String(result.originalReport.storageId);
     this.removeReranReportIfExists(id);
     const reranReport: ReranReport = this.createReranReport(result, id);
     this.reranReports.push(reranReport);
@@ -200,7 +198,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     return <ReranReport>this.reranReports.find((report) => report.id == id);
   }
 
-  openReport(storageId: string, name: string): void {
+  openReport(storageId: number, name: string): void {
     this.httpService.getReport(storageId, this.currentView.storageName).subscribe((report: Report): void => {
       const reportData: ReportData = {
         report: report,
@@ -275,8 +273,8 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   copySelected(): void {
-    const copiedIds: string[] = this.helperService.getSelectedIds(this.reports);
-    const data: Record<string, string[]> = {
+    const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
+    const data: Record<string, number[]> = {
       [this.currentView.storageName]: copiedIds,
     };
     this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
@@ -297,7 +295,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   updatePath(): void {
-    const reportIds: string[] = this.helperService.getSelectedIds(this.reports);
+    const reportIds: number[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       let path: string = this.moveToInputModel.value;
       path = this.transformPath(path);

@@ -1,6 +1,6 @@
 @if (tableSettings.tableLoaded) {
   <div data-cy-debug="root" class="row" id="tableContent">
-    <app-filter-side-drawer></app-filter-side-drawer>
+    <app-filter-side-drawer [currentView]="currentView"></app-filter-side-drawer>
     @if (this.showFilterError) {
       <div class="alert alert-danger" role="alert" data-cy-debug="filter-error-message">
         Filter Error: {{ this.handleFilterErrorContext() }}
@@ -10,7 +10,8 @@
       <button data-cy-debug="refresh" class="btn btn-info btn-table" title="Refresh" (click)="refresh()">
         <i class="fa fa-refresh"></i>
       </button>
-      <button data-cy-debug="openSettings" class="btn btn-info btn-table" title="Settings" (click)="openSettingsModal()">
+      <button data-cy-debug="openSettings" class="btn btn-info btn-table" title="Settings"
+              (click)="openSettingsModal()">
         <i class="fa fa-cog"></i>
       </button>
       <button data-cy-debug="filter" class="btn btn-info btn-table" title="Filter" (click)="toggleFilter()">
@@ -21,9 +22,15 @@
           <i class="fa fa-download px-2"></i><span class="caret"></span>
         </button>
         <div ngbDropdownMenu aria-labelledby="dropdownDownloadTable">
-          <button ngbDropdownItem (click)="downloadReports(true, true)">XML & Binary</button>
-          <button ngbDropdownItem (click)="downloadReports(false, true)">XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i></button>
-          <button ngbDropdownItem (click)="downloadReports(true, false)">Binary</button>
+          <button ngbDropdownItem (click)="downloadReports(true, true)">
+            XML & Binary
+          </button>
+          <button ngbDropdownItem (click)="downloadReports(false, true)">
+            XML <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i>
+          </button>
+          <button ngbDropdownItem (click)="downloadReports(true, false)">
+            Binary
+          </button>
         </div>
       </div>
       <button data-cy-debug="upload" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
@@ -31,7 +38,8 @@
         <i class="fa fa-upload"></i>
         <input #uploadFileTable type="file" id="uploadFileTable" (change)="uploadReports($event)">
       </button>
-      <button data-cy-debug="openSelected" class="btn btn-info btn-table" title="Open Selected Reports" (click)="openSelected()">
+      <button data-cy-debug="openSelected" class="btn btn-info btn-table" title="Open Selected Reports"
+              (click)="openSelected()">
         Open Selected
       </button>
       <button data-cy-debug="delete" class="btn btn-info btn-table" title="Refresh" (click)="deleteSelected()">
@@ -40,46 +48,60 @@
 
       <div class="input-group input-group-container">
         <input data-cy-debug="displayAmount" type="number" class="form-control input-field"
-               [ngModel]="tableSettings.displayAmount" (keydown.enter)="changeTableLimit($event)" (blur)="changeTableLimit($event)">
+               [ngModel]="tableSettings.displayAmount" (keydown.enter)="changeTableLimit($event)"
+               (blur)="changeTableLimit($event)">
         <div data-cy-debug="amountShown" class="input-group-append">
           <div class="input-group-text">/{{ metadataCount }}</div>
         </div>
       </div>
 
       <div class="my-2 mx-1 px-2">
-        <select data-cy-change-view-dropdown class="form-control" (change)="changeView($event)">
-          @for (view of viewSettings.views | keyvalue; track view) {
-            <option [style.width]="viewDropdownBoxWidth" [selected]="view.key === viewSettings.currentView.name" [value]="view.key">{{ view.key }}</option>
+        <select #dropdown data-cy-change-view-dropdown class="form-control" (change)="changeView(+dropdown.value)">
+          @for (view of views; track view.name; let index = $index) {
+            <option [style.width]="viewDropdownBoxWidth" [selected]="currentView.name === view.name"
+                    [value]="index">{{ view.name }}
+            </option>
           }
         </select>
       </div>
 
-      <div data-cy-debug-in-progress-counter class="btn btn-static my-2 mx-1 px-2"> Reports in progress: {{ tableSettings.numberOfReportsInProgress }}</div>
+      <div data-cy-debug-in-progress-counter class="btn btn-static my-2 mx-1 px-2"
+      >Reports in progress: {{ tableSettings.numberOfReportsInProgress }}
+      </div>
       @if (tableSettings.numberOfReportsInProgress > 0) {
         <div class="row">
-          <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in progress: {{ tableSettings.estimatedMemoryUsage }} Bytes</div>
+          <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in
+            progress: {{ tableSettings.estimatedMemoryUsage }} Bytes
+          </div>
           <div class="col input-group my-2 mx-1 px-2">
-            <input #openIndex type="number" min="0" class="form-control" data-cy-debug="openInProgressNo" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress"/>
+            <input #openIndex type="number" min="0" class="form-control" data-cy-debug="openInProgressNo"
+                   [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" />
             <div class="input-group-append">
-              <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton" (click)="openReportInProgress(+openIndex.value)">Open</button>
+              <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton"
+                      (click)="openReportInProgress(+openIndex.value)">Open
+              </button>
             </div>
           </div>
           <div class="col input-group my-2 mx-1 px-2">
-            <input #deleteIndex type="number" min="0" class="form-control" id="deleteInProgressNo" [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress"/>
+            <input #deleteIndex type="number" min="0" class="form-control" id="deleteInProgressNo"
+                   [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" />
             <div class="input-group-append">
-              <button class="btn btn-info" type="button" id="deleteReportInProgressButton" (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
+              <button class="btn btn-info" type="button" id="deleteReportInProgressButton"
+                      (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
             </div>
           </div>
         </div>
       }
 
       @if (hasTimedOut) {
-        <h4 class="progress-report-timout">[One or more reports are in progress for more than {{ this.reportsInProgressThreshold / 1000 / 60 }} minutes]</h4>
+        <h4 class="progress-report-timout">[One or more reports are in progress for more
+          than {{ this.reportsInProgressThreshold / 1000 / 60 }} minutes]</h4>
       }
 
       @switch (getAmountOfReportsSelected()) {
         @case (1) {
-          <button data-cy-debug="openReportTab" class="btn btn-info btn-table" title="Open In New Tab" (click)="openReportInTab()">
+          <button data-cy-debug="openReportTab" class="btn btn-info btn-table" title="Open In New Tab"
+                  (click)="openReportInTab()">
             Open In New Tab
           </button>
         }
@@ -91,52 +113,47 @@
       }
       <app-active-filters class="ml-2" [activeFilters]="currentFilters" (click)="toggleFilter()"></app-active-filters>
     </div>
-    @if (!doneRetrieving) {
-      <div>
-        <mat-spinner mode="indeterminate" [diameter]="30"></mat-spinner>
-      </div>
-    }
-    @else {
-      <div data-cy-debug="table" class="table-responsive" id="metadataTable">
-        <table class="table mb-0" matSort [style.font-size]="getFontSize()" (matSortChange)="helperService.sortData($event, tableSettings.reportMetadata)">
-          <thead id="table-header">
-            <tr>
-              <th class="table-row-checkbox header-padding">
-                <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="allRowsSelected" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="selectAllRows()">
-              </th>
-              @for (header of viewSettings.currentView.metadataLabels; let index = $index; track header) {
-                <th class="table-id-cell header-cell header-padding"
-                    [attr.mat-sort-header]="index"
-                    [title]="header">
-                  {{ getShortenedTableHeaderNames(header) }}
-                </th>
-              }
-            </tr>
-          </thead>
-          <tbody data-cy-debug="tableBody">
-            @for (row of tableSettings.reportMetadata.slice(0, tableSettings.displayAmount); let index = $index; track row.storageId) {
-              <tr class="table-row"
-                  [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"
-                  [style.background-color]="getStatusColor(row)"
-                  [attr.data-cy-record-table-index]="index"
-                  (click)="openSelectedReport(row.storageId);"
-              >
-                <td class="table-row-checkbox" [style.padding]="getTableSpacing()">
-                  <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row)">
-                </td>
-                @for (metadataName of viewSettings.currentView.metadataNames; track metadataName) {
-                  <td
-                    class="table-cell"
-                    [style.padding]="getTableSpacing()"
-                    [title]="row[metadataName]">
-                    {{ row[metadataName]|tableCellShortener }}</td>
-                }
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
+    <div data-cy-debug="table" class="table-responsive" id="metadataTable">
+      <table data-cy-debug="tableBody" mat-table class="table mb-0" matSort [style.font-size]="getFontSize()" [dataSource]="tableDataSource">
+        <!--Header and row container for checkboxes-->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell class="table-row-checkbox header-padding" *matHeaderCellDef >
+            <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="allRowsSelected" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="selectAllRows()">
+          </th>
+          <td mat-cell class="table-row-checkbox" *matCellDef="let row" [style.padding]="getTableSpacing()">
+            <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row)">
+          </td>
+        </ng-container>
+
+        @for (header of currentView.metadataLabels; let index = $index; track header) {
+          <!--For every metadata label, a header and row structure is created-->
+          <ng-container [matColumnDef]="getMetadataNameFromHeader(header)">
+            <th mat-header-cell mat-sort-header
+                data-cy-debug="metadataLabel"
+                class="table-id-cell header-cell header-padding"
+                *matHeaderCellDef
+                [title]="header">
+              {{ getShortenedTableHeaderNames(header) }}
+            </th>
+            <td mat-cell class="table-cell"
+              *matCellDef="let row"
+              [style.padding]="getTableSpacing()"
+              [title]="header">
+              {{ getMetadata(row, getMetadataNameFromHeader(header))|tableCellShortener }}</td>
+          </ng-container>
+        }
+
+        <!--Values are passed to their respective header and row elements-->
+        <tr mat-header-row *matHeaderRowDef="getDisplayedColumnNames(currentView.metadataLabels)"></tr>
+        <tr mat-row class="table-row"
+            *matRowDef="let row; let rowIndex = index; columns: getDisplayedColumnNames(currentView.metadataLabels)"
+            [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"
+            [attr.data-cy-record-table-index]="rowIndex"
+            [style.background-color]="getStatusColor(row)"
+            (click)="openSelectedReport(row.storageId);"
+        ></tr>
+      </table>
+    </div>
   </div>
 }
 
