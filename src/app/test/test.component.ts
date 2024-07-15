@@ -123,7 +123,6 @@ export class TestComponent implements OnInit, AfterViewInit {
   loadData(path: string): void {
     this.httpService.getViews().subscribe((views: View[]) => {
       const defaultView: View | undefined = views.find((view: View) => view.defaultView);
-      console.log(defaultView);
       /*if (defaultView) {
         const selectedView: View = views[defaultViewKey];
         if (selectedView.storageName) {

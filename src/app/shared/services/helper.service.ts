@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Sort } from '@angular/material/sort';
 import { Report } from '../interfaces/report';
+import { Checkpoint } from '../interfaces/checkpoint';
 
 @Injectable({
   providedIn: 'root',
@@ -62,38 +62,36 @@ export class HelperService {
   }
 
   download(queryString: string, storage: string, exportBinary: boolean, exportXML: boolean): void {
-    window.open(
-      'api/report/download/' + storage + '/' + exportBinary + '/' + exportXML + '?' + queryString.slice(0, -1),
-    );
+    window.open(`api/report/download/${storage}/${exportBinary}/${exportXML}?${queryString.slice(0, -1)}`);
   }
 
-  convertMessage(report: any): string {
-    let message: string = report.message === null ? '' : report.message;
-    if (report.encoding == 'Base64') {
-      report.showConverted = true;
+  convertMessage(checkpoint: Checkpoint): string {
+    let message: string = checkpoint.message === null ? '' : checkpoint.message;
+    if (checkpoint.encoding == 'Base64') {
       message = btoa(message);
     }
-
     return message;
   }
 
-  changeEncoding(report: any, button: any): string {
+  changeEncoding(checkpoint: Checkpoint, button: MouseEvent): string {
     let message: string;
-    if (button.target.innerHTML.includes('Base64')) {
-      message = report.message;
-      this.setButtonHtml(report, button, 'utf8', false);
+    const target: HTMLElement | null = button.target as HTMLElement;
+    if (target && target.innerHTML.includes('Base64')) {
+      message = checkpoint.message;
+      this.setButtonHtml(checkpoint, button, 'utf8', false);
     } else {
-      message = btoa(report.message);
-      this.setButtonHtml(report, button, 'Base64', true);
+      message = btoa(checkpoint.message);
+      this.setButtonHtml(checkpoint, button, 'Base64', true);
     }
 
     return message;
   }
 
-  setButtonHtml(report: any, button: any, type: string, showConverted: boolean): void {
-    report.showConverted = showConverted;
-    button.target.title = `Convert to ${type}`;
-    button.target.innerHTML = type;
+  setButtonHtml(checkpoint: Checkpoint, button: MouseEvent, type: string, showConverted: boolean): void {
+    checkpoint.showConverted = showConverted;
+    const target: HTMLElement | null = button.target as HTMLElement;
+    target.title = `Convert to ${type}`;
+    target.innerHTML = type;
   }
 
   convertReportToJqxTree(report: Report) {
@@ -180,7 +178,7 @@ export class HelperService {
     parent.items.push(node);
   }
 
-  getSelectedIds(reports: any[]): number[] {
+  getSelectedIds(reports: Report[]): number[] {
     let copiedIds: number[] = [];
     for (const report of this.getSelectedReports(reports)) {
       copiedIds.push(report.storageId);
