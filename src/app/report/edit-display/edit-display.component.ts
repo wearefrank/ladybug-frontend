@@ -71,6 +71,7 @@ export class EditDisplayComponent {
   rerunResult?: TestResult;
   report: any = {};
   rootReport?: Report;
+  uid?: string;
   displayReport: boolean = false;
 
   constructor(
@@ -86,8 +87,10 @@ export class EditDisplayComponent {
     if (report.xml) {
       this.rootReport = report;
       this.editor.setNewReport(report.xml);
+      this.uid = undefined;
     } else {
       this.editor.setNewReport(this.helperService.convertMessage(report));
+      this.uid = this.report.uid;
     }
     this.rerunResult = undefined;
     this.displayReport = true;
@@ -130,7 +133,11 @@ export class EditDisplayComponent {
     if (this.report.xml && this.editFormComponent) {
       reportDifferences = this.getDifferences();
     } else if (this.report.message) {
-      reportDifferences.push(this.getDifference('message', this.report.message, this.editor?.getValue()));
+      reportDifferences.push({
+        name: 'message',
+        originalValue: this.report.message,
+        difference: new DiffMatchPatch().diff_main(this.report.message ?? '', this.editor?.getValue()),
+      });
     }
     if (reportDifferences.length > 0) {
       this.differenceModal.open(reportDifferences, type);
@@ -149,15 +156,6 @@ export class EditDisplayComponent {
     ];
   }
 
-  getDifference(name: string, originalValue: string, newValue: string): ReportDifference {
-    const difference = new DiffMatchPatch().diff_main(originalValue ?? '', newValue ?? '');
-    return {
-      name: name,
-      originalValue: originalValue,
-      difference: difference,
-    };
-  }
-
   getReportValues(checkpointId: string): any {
     if (this.editingRootNode) {
       return this.getReportValuesForRootNode(checkpointId);
@@ -174,6 +172,7 @@ export class EditDisplayComponent {
       transformation: this.editFormComponent.editForm.get('transformation')?.value,
       checkpointId: checkpointId,
       variables: this.editFormComponent.editForm.get('variableCsv')?.value,
+      // checkpointMessage can only be updated when stub is not in request body
       checkpointMessage: this.report.message,
     };
   }
@@ -187,6 +186,7 @@ export class EditDisplayComponent {
         transformation: this.rootReport.transformation,
         checkpointId: checkpointId,
         variables: this.rootReport.variableCsv,
+        // checkpointMessage can only be updated when stub is not in request body
         checkpointMessage: this.editor.getValue(),
       };
     }
@@ -219,14 +219,14 @@ export class EditDisplayComponent {
       checkpointId = this.report.uid.split('#')[1];
     }
 
-    const body = { stub: stubStrategy, ...this.getReportValues(checkpointId) };
+    const body = this.getReportValues(checkpointId);
 
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe((response: any) => {
       response.report.xml = response.xml;
       this.report = response.report;
       this.rootReport = response.report;
       this.saveReportEvent.next(this.report);
-      this.editor.setNewReport(this.report.xml);
+      this.editor.setNewReport(this.uid ? body.checkpointMessage : this.report.xml);
       this.disableEditing();
     });
   }
