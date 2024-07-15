@@ -43,7 +43,7 @@ export class CloneModalComponent {
       message: this.variableForm.value.message,
     };
     this.httpService
-      .cloneReport(this.currentView.storageName, this.report.storageId.toString(), map)
+      .cloneReport(this.currentView.storageName, this.report.storageId, map)
       .subscribe(() => this.cloneReportEvent.emit());
   }
 }

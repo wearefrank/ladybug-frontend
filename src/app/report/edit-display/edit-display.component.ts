@@ -94,7 +94,7 @@ export class EditDisplayComponent {
   }
 
   rerunReport(): void {
-    const reportId: string = this.report.storageId;
+    const reportId: number = this.report.storageId;
     this.httpService.runReport(this.currentView.storageName, reportId).subscribe((response: TestResult): void => {
       this.toastService.showSuccess('Report rerun successful');
       this.rerunResult = response;
@@ -229,7 +229,7 @@ export class EditDisplayComponent {
 
   copyReport(): void {
     const storageId = this.report.storageId ?? this.report.uid.split('#')[0];
-    const data: Record<string, string[]> = {
+    const data: Record<string, number[]> = {
       [this.currentView.storageName]: [storageId],
     };
     this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this
