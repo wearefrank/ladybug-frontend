@@ -22,6 +22,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
+import { CHECKPOINT_TYPE_STRINGS, CheckpointType } from '../../shared/enums/checkpoint-type';
 
 @Component({
   selector: 'app-debug-tree',
@@ -36,8 +37,6 @@ import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarch
     NgbDropdownButtonItem,
     NgbDropdownItem,
     NgSimpleFileTreeModule,
-    NgClass,
-    MatTreeModule,
   ],
 })
 export class DebugTreeComponent implements OnDestroy {
@@ -55,6 +54,7 @@ export class DebugTreeComponent implements OnDestroy {
     highlightOpenFolders: false,
     folderBehaviourOnClick: 'select',
     autoOpenCondition: this.conditionalOpenFunction,
+    determineIconClass: this.conditionalCssClass,
   };
 
   constructor(
@@ -188,7 +188,16 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   conditionalOpenFunction(item: CreateTreeItem): boolean {
+    // console.log(item)
     const type = item['type'];
     return type === undefined || type === 1 || type === 2;
+  }
+
+  conditionalCssClass(item: CreateTreeItem): string {
+    // console.log(item)
+    // if (item.inputCheckpoint.type == CheckpointType.Startpoint) {
+    //   return 'tree-icon-even';
+    // }
+    return 'red';
   }
 }

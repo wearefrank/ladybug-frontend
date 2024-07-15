@@ -139,7 +139,7 @@ html, body {
   cursor: pointer;
 }
 
-.end-point {
+.endpoint {
   transform: scale(-1, 1);
 }
 
@@ -149,4 +149,7 @@ html, body {
 
 .tree-icon-odd {
   filter: invert(77%) sepia(81%) saturate(5242%) hue-rotate(323deg) brightness(104%) contrast(90%);
+}
+.red {
+  color: red;
 }
