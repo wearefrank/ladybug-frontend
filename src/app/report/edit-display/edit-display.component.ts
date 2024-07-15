@@ -19,7 +19,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
-import { Subject } from 'rxjs';
+import { Observable, Subject, catchError, of } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { EditFormComponent } from '../edit-form/edit-form.component';
 import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
@@ -27,6 +27,7 @@ import { ToggleButtonComponent } from '../../shared/components/button/toggle-but
 import { ToastService } from '../../shared/services/toast.service';
 import { TestResult } from '../../shared/interfaces/test-result';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-edit-display',
@@ -79,6 +80,19 @@ export class EditDisplayComponent {
     private toastService: ToastService,
   ) {}
 
+  handleError(): (error: HttpErrorResponse) => Observable<any> {
+    return (error: HttpErrorResponse): Observable<any> => {
+      const message = error.error;
+      if (message && message.includes('- detailed error message -')) {
+        const errorMessageParts = message.split('- detailed error message -');
+        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
+      } else {
+        this.toastService.showDanger(error.message, '');
+      }
+      return of(error);
+    };
+  }
+
   showReport(report: Report): void {
     this.disableEditing();
     this.report = report;
@@ -95,9 +109,12 @@ export class EditDisplayComponent {
 
   rerunReport(): void {
     const reportId: number = this.report.storageId;
-    this.httpService.runReport(this.currentView.storageName, reportId).subscribe((response: TestResult): void => {
-      this.toastService.showSuccess('Report rerun successful');
-      this.rerunResult = response;
+    this.httpService.runReport(this.currentView.storageName, reportId).subscribe({
+      next: (response: TestResult): void => {
+        this.toastService.showSuccess('Report rerun successful');
+        this.rerunResult = response;
+      },
+      error: () => catchError(this.handleError()),
     });
   }
 
@@ -206,12 +223,15 @@ export class EditDisplayComponent {
 
     const body = { stub: stubStrategy, ...this.getReportValues(checkpointId) };
 
-    this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe((response: any) => {
-      response.report.xml = response.xml;
-      this.report = response.report;
-      this.saveReportEvent.next(this.report);
-      this.editor.setNewReport(this.report.xml);
-      this.disableEditing();
+    this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
+      next: (response: any) => {
+        response.report.xml = response.xml;
+        this.report = response.report;
+        this.saveReportEvent.next(this.report);
+        this.editor.setNewReport(this.report.xml);
+        this.disableEditing();
+      },
+      error: () => catchError(this.handleError()),
     });
   }
 
@@ -232,7 +252,9 @@ export class EditDisplayComponent {
     const data: Record<string, number[]> = {
       [this.currentView.storageName]: [storageId],
     };
-    this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this
+    this.httpService.copyReport(data, 'Test').subscribe({
+      error: catchError(this.handleError()),
+    }); // TODO: storage is hardcoded, fix issue #196 for this
   }
 
   toggleEditMode(value: boolean): void {

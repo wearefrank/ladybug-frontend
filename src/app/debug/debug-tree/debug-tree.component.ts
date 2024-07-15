@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { HelperService } from '../../shared/services/helper.service';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, catchError, of } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
 import {
@@ -22,6 +22,8 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ToastService } from 'src/app/shared/services/toast.service';
 
 @Component({
   selector: 'app-debug-tree',
@@ -59,12 +61,26 @@ export class DebugTreeComponent implements OnDestroy {
     private helperService: HelperService,
     private httpService: HttpService,
     private settingsService: SettingsService,
+    private toastService: ToastService,
   ) {
     this.subscribeToSettingsServiceObservables();
   }
 
   ngOnDestroy() {
     this.showMultipleAtATimeSubscription.unsubscribe();
+  }
+
+  handleError(): (error: HttpErrorResponse) => Observable<any> {
+    return (error: HttpErrorResponse): Observable<any> => {
+      const message = error.error;
+      if (message && message.includes('- detailed error message -')) {
+        const errorMessageParts = message.split('- detailed error message -');
+        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
+      } else {
+        this.toastService.showDanger(error.message, '');
+      }
+      return of(error);
+    };
   }
 
   @Input() set currentView(value: any) {
@@ -88,11 +104,10 @@ export class DebugTreeComponent implements OnDestroy {
   checkUnmatchedCheckpoints(reports: Report[], currentView: any) {
     for (let report of reports) {
       if (report.storageName === currentView.storageName) {
-        this.httpService
-          .getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name)
-          .subscribe((unmatched: any) => {
-            this.hideCheckpoints(unmatched, this.tree.elements.toArray());
-          });
+        this.httpService.getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name).subscribe({
+          next: (unmatched: any) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
+          error: () => catchError(this.handleError()),
+        });
       }
     }
   }
@@ -108,14 +123,15 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   subscribeToSettingsServiceObservables(): void {
-    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
-      (value: boolean) => {
+    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
+      next: (value: boolean) => {
         this.showMultipleAtATime = value;
         if (!this.showMultipleAtATime) {
           this.removeAllReportsButOne();
         }
       },
-    );
+      error: () => catchError(this.handleError()),
+    });
   }
 
   hideCheckpoints(unmatched: string[], items: TreeItemComponent[]): void {

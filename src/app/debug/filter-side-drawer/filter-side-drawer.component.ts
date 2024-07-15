@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FilterService } from './filter.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, catchError, of } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,8 @@ import { TitleCasePipe } from '@angular/common';
 import { View } from '../../shared/interfaces/view';
 import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ToastService } from 'src/app/shared/services/toast.service';
 
 @Component({
   standalone: true,
@@ -42,6 +44,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   constructor(
     protected filterService: FilterService,
     private httpService: HttpService,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -53,23 +56,36 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     this.unsubscribeAll();
   }
 
+  handleError(): (error: HttpErrorResponse) => Observable<any> {
+    return (error: HttpErrorResponse): Observable<any> => {
+      const message = error.error;
+      if (message && message.includes('- detailed error message -')) {
+        const errorMessageParts = message.split('- detailed error message -');
+        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
+      } else {
+        this.toastService.showDanger(error.message, '');
+      }
+      return of(error);
+    };
+  }
+
   setSubscriptions(): void {
-    this.shouldShowFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
-      this.shouldShowFilter = show;
+    this.shouldShowFilterSubscription = this.filterService.showFilter$.subscribe({
+      next: (show: boolean) => (this.shouldShowFilter = show),
+      error: () => catchError(this.handleError()),
     });
-    this.metadataLabelsSubscription = this.filterService.metadataLabels$.subscribe((metadataLabels: string[]): void => {
-      this.metadataLabels = metadataLabels;
+    this.metadataLabelsSubscription = this.filterService.metadataLabels$.subscribe({
+      next: (metadataLabels: string[]) => (this.metadataLabels = metadataLabels),
+      error: () => catchError(this.handleError()),
     });
-    this.currentRecordsSubscription = this.filterService.currentRecords$.subscribe(
-      (records: Map<string, Array<string>>): void => {
-        this.currentRecords = records;
-      },
-    );
-    this.metadataTypesSubscription = this.filterService.metadataTypes$.subscribe(
-      (metadataTypes: Map<string, string>): void => {
-        this.metadataTypes = metadataTypes;
-      },
-    );
+    this.currentRecordsSubscription = this.filterService.currentRecords$.subscribe({
+      next: (records: Map<string, Array<string>>) => (this.currentRecords = records),
+      error: () => catchError(this.handleError()),
+    });
+    this.metadataTypesSubscription = this.filterService.metadataTypes$.subscribe({
+      next: (metadataTypes: Map<string, string>) => (this.metadataTypes = metadataTypes),
+      error: () => catchError(this.handleError()),
+    });
   }
 
   unsubscribeAll(): void {
@@ -80,9 +96,10 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   getFilterToolTips(): void {
-    this.httpService
-      .getUserHelp(this.currentView.storageName, this.currentView.metadataNames)
-      .subscribe((response: Report) => (this.toolTipSuggestions = response));
+    this.httpService.getUserHelp(this.currentView.storageName, this.currentView.metadataNames).subscribe({
+      next: (response: Report) => (this.toolTipSuggestions = response),
+      error: () => catchError(this.handleError()),
+    });
   }
 
   closeFilter(): void {
