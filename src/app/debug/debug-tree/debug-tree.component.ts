@@ -22,8 +22,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ToastService } from 'src/app/shared/services/toast.service';
+import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-debug-tree',
@@ -61,26 +60,13 @@ export class DebugTreeComponent implements OnDestroy {
     private helperService: HelperService,
     private httpService: HttpService,
     private settingsService: SettingsService,
-    private toastService: ToastService,
+    private errorHandler: ErrorHandling,
   ) {
     this.subscribeToSettingsServiceObservables();
   }
 
   ngOnDestroy() {
     this.showMultipleAtATimeSubscription.unsubscribe();
-  }
-
-  handleError(): (error: HttpErrorResponse) => Observable<any> {
-    return (error: HttpErrorResponse): Observable<any> => {
-      const message = error.error;
-      if (message && message.includes('- detailed error message -')) {
-        const errorMessageParts = message.split('- detailed error message -');
-        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
-      } else {
-        this.toastService.showDanger(error.message, '');
-      }
-      return of(error);
-    };
   }
 
   @Input() set currentView(value: any) {
@@ -106,7 +92,7 @@ export class DebugTreeComponent implements OnDestroy {
       if (report.storageName === currentView.storageName) {
         this.httpService.getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name).subscribe({
           next: (unmatched: any) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
-          error: () => catchError(this.handleError()),
+          error: () => catchError(this.errorHandler.handleError()),
         });
       }
     }
@@ -130,7 +116,7 @@ export class DebugTreeComponent implements OnDestroy {
           this.removeAllReportsButOne();
         }
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 

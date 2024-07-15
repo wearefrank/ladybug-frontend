@@ -3,7 +3,7 @@ import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../shared/interfaces/table-settings';
-import { catchError, Observable, of, Subject, Subscription } from 'rxjs';
+import { catchError, Subject, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
@@ -30,7 +30,7 @@ import { KeyValuePipe, NgClass } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { View } from '../../shared/interfaces/view';
 import { OptionsSettings } from '../../shared/interfaces/options-settings';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-table',
@@ -136,6 +136,7 @@ export class TableComponent implements OnInit, OnDestroy {
     private debugReportService: DebugReportService,
     private tabService: TabService,
     private filterService: FilterService,
+    private errorHandler: ErrorHandling,
   ) {}
 
   ngOnInit(): void {
@@ -150,42 +151,29 @@ export class TableComponent implements OnInit, OnDestroy {
     this.unsubscribeFromObservables();
   }
 
-  handleError(): (error: HttpErrorResponse) => Observable<any> {
-    return (error: HttpErrorResponse): Observable<any> => {
-      const message = error.error;
-      if (message && message.includes('- detailed error message -')) {
-        const errorMessageParts = message.split('- detailed error message -');
-        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
-      } else {
-        this.toastService.showDanger(error.message, '');
-      }
-      return of(error);
-    };
-  }
-
   subscribeToObservables(): void {
     this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe({
       next: (value: number) => (this.tableSpacing = value),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
     this.showMultipleFilesSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
       next: (value: boolean) => (this.showMultipleFiles = value),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
     this.showFilterSubscription = this.filterService.showFilter$.subscribe({
       next: (show: boolean) => (this.tableSettings.showFilter = show),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
     this.filterErrorSubscription = this.filterService.filterError$.subscribe({
       next: (filterError: [boolean, Map<string, string>]): void => {
         this.showFilterError = filterError[0];
         this.filterErrorDetails = filterError[1];
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
     this.filterContextSubscription = this.filterService.filterContext$.subscribe({
       next: (context: Map<string, string>) => this.changeFilter(context),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -214,7 +202,7 @@ export class TableComponent implements OnInit, OnDestroy {
           this.tableSettings.tableLoaded = true;
           this.toastService.showSuccess('Data loaded!');
         },
-        error: () => catchError(this.handleError()),
+        error: () => catchError(this.errorHandler.handleError()),
       });
     this.loadMetadataCount();
   }
@@ -237,7 +225,7 @@ export class TableComponent implements OnInit, OnDestroy {
   loadMetadataCount(): void {
     this.httpService.getMetadataCount(this.currentView.storageName).subscribe({
       next: (count: number) => (this.metadataCount = count),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -248,7 +236,7 @@ export class TableComponent implements OnInit, OnDestroy {
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
         this.loadReportInProgressDates();
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -263,7 +251,7 @@ export class TableComponent implements OnInit, OnDestroy {
             hasChanged = true;
           }
         },
-        error: () => catchError(this.handleError()),
+        error: () => catchError(this.errorHandler.handleError()),
       });
     }
     if (!hasChanged) {
@@ -349,7 +337,7 @@ export class TableComponent implements OnInit, OnDestroy {
         };
         this.tabService.openNewTab(reportData);
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -371,7 +359,7 @@ export class TableComponent implements OnInit, OnDestroy {
     const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
     this.httpService.deleteReport(reportIds, this.currentView.storageName).subscribe({
       next: () => this.retrieveRecords(),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -407,7 +395,7 @@ export class TableComponent implements OnInit, OnDestroy {
           nodeLinkStrategy: this.currentView.nodeLinkStrategy,
         };
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
 
       complete: () => {
         this.tabService.openNewCompareTab(compareReports);
@@ -458,7 +446,7 @@ export class TableComponent implements OnInit, OnDestroy {
         data.storageName = this.currentView.storageName;
         this.openReportEvent.next(data);
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -474,7 +462,7 @@ export class TableComponent implements OnInit, OnDestroy {
           this.openReportEvent.next(report);
         });
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -483,13 +471,13 @@ export class TableComponent implements OnInit, OnDestroy {
       next: (report) => {
         this.openReportEvent.next(report);
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
   deleteReportInProgress(index: number): void {
     this.httpService.deleteReportInProgress(index).subscribe({
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
       complete: () => {
         this.loadReportInProgressSettings();
       },
@@ -530,7 +518,7 @@ export class TableComponent implements OnInit, OnDestroy {
           this.tabService.openNewTab(reportData);
         }
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -613,7 +601,7 @@ export class TableComponent implements OnInit, OnDestroy {
   loadReportInProgressThreshold(): void {
     this.httpService.getReportsInProgressThresholdTime().subscribe({
       next: (time: number) => (this.reportsInProgressThreshold = time),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 

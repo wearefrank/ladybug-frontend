@@ -19,7 +19,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
-import { Observable, Subject, catchError, of } from 'rxjs';
+import { Subject, catchError } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { EditFormComponent } from '../edit-form/edit-form.component';
 import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
@@ -27,7 +27,7 @@ import { ToggleButtonComponent } from '../../shared/components/button/toggle-but
 import { ToastService } from '../../shared/services/toast.service';
 import { TestResult } from '../../shared/interfaces/test-result';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-edit-display',
@@ -78,20 +78,8 @@ export class EditDisplayComponent {
     private httpService: HttpService,
     private helperService: HelperService,
     private toastService: ToastService,
+    private errorHandler: ErrorHandling,
   ) {}
-
-  handleError(): (error: HttpErrorResponse) => Observable<any> {
-    return (error: HttpErrorResponse): Observable<any> => {
-      const message = error.error;
-      if (message && message.includes('- detailed error message -')) {
-        const errorMessageParts = message.split('- detailed error message -');
-        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
-      } else {
-        this.toastService.showDanger(error.message, '');
-      }
-      return of(error);
-    };
-  }
 
   showReport(report: Report): void {
     this.disableEditing();
@@ -114,7 +102,7 @@ export class EditDisplayComponent {
         this.toastService.showSuccess('Report rerun successful');
         this.rerunResult = response;
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -231,7 +219,7 @@ export class EditDisplayComponent {
         this.editor.setNewReport(this.report.xml);
         this.disableEditing();
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -253,7 +241,7 @@ export class EditDisplayComponent {
       [this.currentView.storageName]: [storageId],
     };
     this.httpService.copyReport(data, 'Test').subscribe({
-      error: catchError(this.handleError()),
+      error: catchError(this.errorHandler.handleError()),
     }); // TODO: storage is hardcoded, fix issue #196 for this
   }
 

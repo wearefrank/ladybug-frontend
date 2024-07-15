@@ -3,11 +3,11 @@ import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angu
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
 import { SettingsService } from '../../../shared/services/settings.service';
-import { Observable, Subscription, catchError, of } from 'rxjs';
+import { Subscription, catchError } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
 import { ToastComponent } from '../../../shared/components/toast/toast.component';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -45,6 +45,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     private httpService: HttpService,
     private settingsService: SettingsService,
     private toastService: ToastService,
+    private errorHandler: ErrorHandling,
   ) {
     this.subscribeToSettingsServiceObservables();
   }
@@ -53,47 +54,34 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.unsubscribeAll();
   }
 
-  handleError(): (error: HttpErrorResponse) => Observable<any> {
-    return (error: HttpErrorResponse): Observable<any> => {
-      const message = error.error;
-      if (message && message.includes('- detailed error message -')) {
-        const errorMessageParts = message.split('- detailed error message -');
-        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
-      } else {
-        this.toastService.showDanger(error.message, '');
-      }
-      return of(error);
-    };
-  }
-
   subscribeToSettingsServiceObservables(): void {
     this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
       next: (value: boolean): void => {
         this.showMultipleAtATime = value;
         this.settingsForm.get('showMultipleFilesAtATime')?.setValue(this.showMultipleAtATime);
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
     this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe({
       next: (value: number): void => {
         this.tableSpacing = value;
         this.settingsForm.get('tableSpacing')?.setValue(this.tableSpacing);
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
     this.showSearchWindowOnLoadSubscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe({
       next: (value: boolean): void => {
         this.showSearchWindowOnLoad = value;
         this.settingsForm.get('showSearchWindowOnLoad')?.setValue(this.showSearchWindowOnLoad);
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
     this.prettifyOnLoadSubscription = this.settingsService.prettifyOnLoadObservable.subscribe({
       next: (value: boolean) => {
         this.prettifyOnLoad = value;
         this.settingsForm.get('prettifyOnLoad')?.setValue(this.prettifyOnLoad);
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -144,7 +132,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     localStorage.setItem('generatorEnabled', form.generatorEnabled);
     localStorage.setItem('transformationEnabled', form.transformationEnabled.toString());
     this.httpService.postTransformation(form.transformation).subscribe({
-      error: catchError(this.handleError()),
+      error: catchError(this.errorHandler.handleError()),
     });
     const generatorEnabled: string = String(form.generatorEnabled === 'Enabled');
     const data: UploadParams = {
@@ -152,7 +140,7 @@ export class TableSettingsModalComponent implements OnDestroy {
       regexFilter: form.regexFilter,
     };
     this.httpService.postSettings(data).subscribe({
-      error: catchError(this.handleError()),
+      error: catchError(this.errorHandler.handleError()),
     });
 
     this.toastService.showWarning('Reopen report to see updated XML');
@@ -168,25 +156,25 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.settingsService.setShowMultipleAtATime();
     this.httpService.resetSettings().subscribe({
       next: (response) => this.saveResponseSetting(response),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
     this.httpService.getTransformation(true).subscribe({
       next: (res) => this.settingsForm.get('transformation')?.setValue(res.transformation),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
   loadSettings(): void {
     this.httpService.getSettings().subscribe({
       next: (response) => this.saveResponseSetting(response),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
     if (localStorage.getItem('transformationEnabled')) {
       this.settingsForm.get('transformationEnabled')?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }
     this.httpService.getTransformation(false).subscribe({
       next: (response) => this.settingsForm.get('transformation')?.setValue(response.transformation),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 

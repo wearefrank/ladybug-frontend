@@ -4,7 +4,7 @@ import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { Observable, catchError, of } from 'rxjs';
+import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
@@ -19,8 +19,8 @@ import { FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { View } from '../shared/interfaces/view';
-import { HttpErrorResponse } from '@angular/common/http';
 import { OptionsSettings } from '../shared/interfaces/options-settings';
+import { ErrorHandling } from '../shared/classes/error-handling.service';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -64,25 +64,13 @@ export class TestComponent implements OnInit, AfterViewInit {
     private helperService: HelperService,
     private toastService: ToastService,
     private tabService: TabService,
+    private errorHandler: ErrorHandling,
   ) {
     this.getGeneratorStatus();
   }
 
   ngAfterViewInit(): void {
     this.loadData('');
-  }
-
-  handleError(): (error: HttpErrorResponse) => Observable<any> {
-    return (error: HttpErrorResponse): Observable<any> => {
-      const message = error.error;
-      if (message && message.includes('- detailed error message -')) {
-        const errorMessageParts = message.split('- detailed error message -');
-        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
-      } else {
-        this.toastService.showDanger(error.message, '');
-      }
-      return of(error);
-    };
   }
 
   openCloneModal(): void {
@@ -116,7 +104,7 @@ export class TestComponent implements OnInit, AfterViewInit {
           this.generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
           localStorage.setItem('generatorEnabled', this.generatorStatus);
         },
-        error: () => catchError(this.handleError()),
+        error: () => catchError(this.errorHandler.handleError()),
       });
     }
   }
@@ -134,7 +122,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   getCopiedReports(): void {
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (response: TestListItem[]) => this.addCopiedReports(response),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -150,7 +138,7 @@ export class TestComponent implements OnInit, AfterViewInit {
           }
         }*/
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value: TestListItem[]) => {
@@ -166,7 +154,7 @@ export class TestComponent implements OnInit, AfterViewInit {
           });
         }
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -178,7 +166,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     if (this.generatorStatus === 'Enabled') {
       this.httpService.runReport(this.currentView.storageName, reportId).subscribe({
         next: (response: TestResult): void => this.showResult(response),
-        error: () => catchError(this.handleError()),
+        error: () => catchError(this.errorHandler.handleError()),
       });
     } else {
       this.toastService.showWarning('Generator is disabled!');
@@ -229,7 +217,7 @@ export class TestComponent implements OnInit, AfterViewInit {
         };
         this.tabService.openNewTab(reportData);
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -245,7 +233,7 @@ export class TestComponent implements OnInit, AfterViewInit {
       .deleteReport(this.helperService.getSelectedIds(this.reports), this.currentView.storageName)
       .subscribe({
         next: () => this.loadData(''),
-        error: () => catchError(this.handleError()),
+        error: () => catchError(this.errorHandler.handleError()),
       });
   }
 
@@ -270,7 +258,7 @@ export class TestComponent implements OnInit, AfterViewInit {
       formData.append('file', file);
       this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe({
         next: () => this.loadData(''),
-        error: () => catchError(this.handleError()),
+        error: () => catchError(this.errorHandler.handleError()),
       });
     }
   }
@@ -297,13 +285,13 @@ export class TestComponent implements OnInit, AfterViewInit {
       next: () => {
         this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
     this.httpService.replaceReport(reportId, this.currentView.storageName).subscribe({
       next: () => {
         this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -314,7 +302,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     };
     this.httpService.copyReport(data, this.currentView.storageName).subscribe({
       next: () => this.loadData(''),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -338,7 +326,7 @@ export class TestComponent implements OnInit, AfterViewInit {
       const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
       this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe({
         next: () => this.loadData(path),
-        error: () => catchError(this.handleError()),
+        error: () => catchError(this.errorHandler.handleError()),
       });
     } else {
       this.toastService.showWarning('No Report Selected!');

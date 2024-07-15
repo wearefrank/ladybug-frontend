@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
-import { Observable, Subscription, catchError, of } from 'rxjs';
+import { Subscription, catchError } from 'rxjs';
 import { DebugReportService } from './debug-report.service';
 import { AngularSplitModule } from 'angular-split';
 import { TableComponent } from './table/table.component';
@@ -8,7 +8,7 @@ import { ReportComponent } from '../report/report.component';
 import { ToastService } from '../shared/services/toast.service';
 import { HttpService } from '../shared/services/http.service';
 import { View } from '../shared/interfaces/view';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorHandling } from '../shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-debug',
@@ -30,6 +30,7 @@ export class DebugComponent implements OnInit, OnDestroy {
     private debugReportService: DebugReportService,
     private httpService: HttpService,
     private toastService: ToastService,
+    private errorHandler: ErrorHandling,
   ) {}
 
   ngOnInit(): void {
@@ -42,19 +43,6 @@ export class DebugComponent implements OnInit, OnDestroy {
     this.unsubscribeAll();
   }
 
-  handleError(): (error: HttpErrorResponse) => Observable<any> {
-    return (error: HttpErrorResponse): Observable<any> => {
-      const message = error.error;
-      if (message && message.includes('- detailed error message -')) {
-        const errorMessageParts = message.split('- detailed error message -');
-        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
-      } else {
-        this.toastService.showDanger(error.message, '');
-      }
-      return of(error);
-    };
-  }
-
   retrieveViews(): void {
     this.httpService.getViews().subscribe({
       next: (views: View[]) => {
@@ -63,14 +51,14 @@ export class DebugComponent implements OnInit, OnDestroy {
           this.currentView = this.views.find((v: View) => v.defaultView);
         }
       },
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
   subscribeToServices(): void {
     this.viewSubscription = this.debugReportService.changeViewObservable.subscribe({
       next: (view) => (this.currentView = view),
-      error: () => catchError(this.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -97,7 +85,7 @@ export class DebugComponent implements OnInit, OnDestroy {
             this.showErrorsAndWarnings(value);
           }
         },
-        error: () => catchError(this.handleError()),
+        error: () => catchError(this.errorHandler.handleError()),
       });
     }
   }
