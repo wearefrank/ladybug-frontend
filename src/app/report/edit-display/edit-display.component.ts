@@ -72,6 +72,7 @@ export class EditDisplayComponent {
   metadataTableVisible: boolean = false;
   rerunResult?: TestResult;
   report: any = {};
+  rootReport?: Report;
   displayReport: boolean = false;
 
   constructor(
@@ -84,9 +85,12 @@ export class EditDisplayComponent {
   showReport(report: Report): void {
     this.disableEditing();
     this.report = report;
-    report.xml
-      ? this.editor.setNewReport(report.xml)
-      : this.editor.setNewReport(this.helperService.convertMessage(report));
+    if (report.xml) {
+      this.rootReport = report;
+      this.editor.setNewReport(report.xml);
+    } else {
+      this.editor.setNewReport(this.helperService.convertMessage(report));
+    }
     this.rerunResult = undefined;
     this.displayReport = true;
   }
@@ -157,25 +161,37 @@ export class EditDisplayComponent {
   }
 
   getReportValues(checkpointId: string): any {
-    return this.editingRootNode || this.editingChildNode
-      ? {
-          name: this.editFormComponent.editForm.get('name')?.value,
-          path: this.editFormComponent.editForm.get('path')?.value,
-          description: this.editFormComponent.editForm.get('description')?.value,
-          transformation: this.editFormComponent.editForm.get('transformation')?.value,
-          checkpointId: checkpointId,
-          variables: this.editFormComponent.editForm.get('variableCsv')?.value,
-          checkpointMessage: this.editor?.getValue() ?? '',
-        }
-      : {
-          name: this.report.name,
-          path: this.report.path,
-          description: this.report.description,
-          transformation: this.report.transformation,
-          checkpointId: checkpointId,
-          variables: this.report.variables,
-          checkpointMessage: this.report.checkpointMessage,
-        };
+    if (this.editingRootNode) {
+      return this.getReportValuesForRootNode(checkpointId);
+    } else if (this.editingChildNode) {
+      return this.getReportValuesForChildNode(checkpointId);
+    }
+  }
+
+  getReportValuesForRootNode(checkpointId: string): any {
+    return {
+      name: this.editFormComponent.editForm.get('name')?.value,
+      path: this.editFormComponent.editForm.get('path')?.value,
+      description: this.editFormComponent.editForm.get('description')?.value,
+      transformation: this.editFormComponent.editForm.get('transformation')?.value,
+      checkpointId: checkpointId,
+      variables: this.editFormComponent.editForm.get('variableCsv')?.value,
+      checkpointMessage: this.report.message,
+    };
+  }
+
+  getReportValuesForChildNode(checkpointId: string): any {
+    if (this.rootReport) {
+      return {
+        name: this.rootReport.name,
+        path: this.rootReport.path,
+        description: this.rootReport.description,
+        transformation: this.rootReport.transformation,
+        checkpointId: checkpointId,
+        variables: this.rootReport.variableCsv,
+        checkpointMessage: this.editor.getValue(),
+      };
+    }
   }
 
   editReport(): void {
@@ -210,6 +226,7 @@ export class EditDisplayComponent {
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe((response: any) => {
       response.report.xml = response.xml;
       this.report = response.report;
+      this.rootReport = response.report;
       this.saveReportEvent.next(this.report);
       this.editor.setNewReport(this.report.xml);
       this.disableEditing();
