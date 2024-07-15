@@ -21,11 +21,7 @@ import {
   NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
-import { Checkpoint } from '../../shared/interfaces/checkpoint';
-import { CheckpointType } from '../../shared/enums/checkpoint-type';
-import { NgClass } from '@angular/common';
-import { MatTreeModule } from '@angular/material/tree';
-import { IconData } from '../../shared/interfaces/icon-data';
+import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
 
 @Component({
   selector: 'app-debug-tree',
@@ -95,7 +91,7 @@ export class DebugTreeComponent implements OnDestroy {
     for (let report of reports) {
       if (report.storageName === currentView.storageName) {
         this.httpService
-          .getUnmatchedCheckpoints(report.storageName, report.storageId.toString(), currentView.currentViewName)
+          .getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name)
           .subscribe((unmatched: any) => {
             this.hideCheckpoints(unmatched, this.tree.elements.toArray());
           });
@@ -148,84 +144,13 @@ export class DebugTreeComponent implements OnDestroy {
     if (!this.showMultipleAtATime) {
       this.tree.clearItems();
     }
-    const newReport: CreateTreeItem = this.transformReportToHierarchyStructure(report);
+    const newReport: CreateTreeItem = new ReportHierarchyTransformer().transform(report);
     const optional: OptionalParameters = { childrenKey: 'checkpoints', pathAttribute: 'uid' };
     const path: string = this.tree.addItem(newReport, optional);
     this.tree.selectItem(path);
     if (this.currentView) {
       this.hideOrShowCheckpointsBasedOnView(this.currentView);
     }
-  }
-
-  transformReportToHierarchyStructure(report: Report): Report {
-    const checkpoints: Checkpoint[] = report.checkpoints;
-    let checkpointsTemplate: Checkpoint[] = [];
-    let startPointStack: Checkpoint[] = [];
-
-    for (const checkpoint of checkpoints) {
-      const icon: IconData = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
-      checkpoint.icon = icon.path;
-      checkpoint.cssClasses = icon.cssClasses;
-
-      if (checkpoint.type === CheckpointType.Startpoint) {
-        this.handleStartpoint(checkpoint, checkpointsTemplate, startPointStack);
-      } else if (checkpoint.type === CheckpointType.Endpoint) {
-        this.handleEndpoint(checkpoint, checkpointsTemplate, startPointStack);
-      } else {
-        this.handleIntermediatePoint(checkpoint, checkpointsTemplate, startPointStack);
-      }
-    }
-
-    report.checkpoints = checkpointsTemplate;
-    return report;
-  }
-
-  private handleStartpoint(
-    checkpoint: Checkpoint,
-    checkpointsTemplate: Checkpoint[],
-    startPointStack: Checkpoint[],
-  ): void {
-    if (startPointStack.length > 0) {
-      this.addCheckpointToParent(checkpoint, startPointStack);
-    } else {
-      checkpointsTemplate.push(checkpoint);
-    }
-    startPointStack.push(checkpoint);
-  }
-
-  private handleEndpoint(
-    checkpoint: Checkpoint,
-    checkpointsTemplate: Checkpoint[],
-    startPointStack: Checkpoint[],
-  ): void {
-    if (startPointStack.length > 0) {
-      const currentStartpoint = startPointStack.pop();
-      if (currentStartpoint) {
-        this.addCheckpointToParent(checkpoint, [currentStartpoint]);
-      }
-    } else {
-      checkpointsTemplate.push(checkpoint);
-    }
-  }
-
-  private handleIntermediatePoint(
-    checkpoint: Checkpoint,
-    checkpointsTemplate: Checkpoint[],
-    startPointStack: Checkpoint[],
-  ): void {
-    if (startPointStack.length > 0) {
-      this.addCheckpointToParent(checkpoint, startPointStack);
-    } else {
-      checkpointsTemplate.push(checkpoint);
-    }
-  }
-
-  private addCheckpointToParent(checkpoint: Checkpoint, startPointStack: Checkpoint[]): void {
-    const parentStartpoint = startPointStack.at(-1)!;
-    if (!parentStartpoint.checkpoints) {
-      parentStartpoint.checkpoints = [];
-    }
-    parentStartpoint.checkpoints.push(checkpoint);
   }
 
   selectReport(value: FileTreeItem): void {

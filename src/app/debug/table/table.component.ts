@@ -13,7 +13,7 @@ import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
 import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
-import { MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -27,6 +27,7 @@ import {
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
 import { KeyValuePipe, NgClass } from '@angular/common';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { View } from '../../shared/interfaces/view';
 import { OptionsSettings } from '../../shared/interfaces/options-settings';
 
@@ -53,6 +54,7 @@ import { OptionsSettings } from '../../shared/interfaces/options-settings';
     ToastComponent,
     KeyValuePipe,
     TableCellShortenerPipe,
+    MatTableModule,
   ],
 })
 export class TableComponent implements OnInit, OnDestroy {
@@ -117,7 +119,13 @@ export class TableComponent implements OnInit, OnDestroy {
   hasTimedOut: boolean = false;
   reportsInProgress: Record<string, number> = {};
   reportsInProgressThreshold!: number;
-  protected selectedReportStorageId?: string;
+  protected selectedReportStorageId?: number;
+  tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
+  tableDataSort?: MatSort;
+  @ViewChild(MatSort) set matSort(sort: MatSort) {
+    this.tableDataSort = sort;
+    this.tableDataSource.sort = this.tableDataSort;
+  }
 
   constructor(
     private httpService: HttpService,
@@ -183,6 +191,7 @@ export class TableComponent implements OnInit, OnDestroy {
         next: (value: Report[]) => {
           this.setUniqueOptions(value);
           this.tableSettings.reportMetadata = value;
+          this.tableDataSource.data = value;
           this.tableSettings.tableLoaded = true;
           this.toastService.showSuccess('Data loaded!');
         },
@@ -297,16 +306,19 @@ export class TableComponent implements OnInit, OnDestroy {
         return '#f79c9c';
       }
     }
-
     return 'none';
   }
 
   getAmountOfReportsSelected(): number {
-    return this.tableSettings.reportMetadata.filter((report) => report.checked).length;
+    return this.tableSettings.reportMetadata.filter((report: Report) => report.checked).length;
   }
 
   openReportInTab(): void {
-    const reportTab = this.tableSettings.reportMetadata.find((report) => report.checked);
+    const reportTab: Report | undefined = this.tableSettings.reportMetadata.find((report: Report) => report.checked);
+    if (!reportTab) {
+      this.toastService.showDanger('Could not find report that was selected.');
+      return;
+    }
     this.httpService.getReport(reportTab.storageId, this.currentView.storageName).subscribe((report: Report): void => {
       const reportData: ReportData = {
         report: report,
@@ -347,10 +359,9 @@ export class TableComponent implements OnInit, OnDestroy {
 
   compareTwoReports(): void {
     let compareReports: any = {};
-    const selectedReports: string[] = this.tableSettings.reportMetadata
+    const selectedReports: number[] = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .map((report) => report.storageId);
-
     this.httpService.getReports(selectedReports, this.currentView.storageName).subscribe({
       next: (data) => {
         const leftObject = data[selectedReports[0]];
@@ -405,17 +416,23 @@ export class TableComponent implements OnInit, OnDestroy {
   refresh(): void {
     this.filterService.setShowFilter(false);
     this.tableSettings.displayAmount = 10;
+    if (this.tableDataSort) {
+      //Resets the sort
+      //Needed because of a known issue with the Angular matSort
+      //https://github.com/angular/components/issues/10242
+      this.tableDataSort.sort({ id: '', start: 'desc', disableClear: false });
+    }
     this.loadData();
   }
 
-  openReport(storageId: string): void {
+  openReport(storageId: number): void {
     this.httpService.getReport(storageId, this.currentView.storageName).subscribe((data: Report): void => {
       data.storageName = this.currentView.storageName;
       this.openReportEvent.next(data);
     });
   }
 
-  openSelectedReport(storageId: string) {
+  openSelectedReport(storageId: number) {
     this.selectedReportStorageId = storageId;
     this.openReport(storageId);
   }
@@ -537,14 +554,14 @@ export class TableComponent implements OnInit, OnDestroy {
       } else if (!isANumber && isBNumber) {
         return 1;
       }
-      return String(a).localeCompare(String(b));
+      return a.localeCompare(b);
     });
   }
 
   calculateViewDropDownWidth(): void {
     if (this.views) {
-      let longestViewName = '';
-      for (let view of this.views) {
+      let longestViewName: string = '';
+      for (const view of this.views) {
         if (view.name.length > longestViewName.length) {
           longestViewName = view.name;
         }
@@ -587,5 +604,22 @@ export class TableComponent implements OnInit, OnDestroy {
       moreThanOne = true;
     }
     return result;
+  }
+
+  getMetadata(report: Report, field: string): string {
+    return report[field as keyof Report];
+  }
+
+  getMetadataNameFromHeader(header: string): string {
+    const index = this.currentView.metadataLabels.indexOf(header);
+    return this.currentView.metadataNames[index];
+  }
+
+  getDisplayedColumnNames(labels: string[]): string[] {
+    const names: string[] = ['select'];
+    for (const header of labels) {
+      names.push(this.getMetadataNameFromHeader(header));
+    }
+    return names;
   }
 }
