@@ -27,6 +27,8 @@ import { ToggleButtonComponent } from '../../shared/components/button/toggle-but
 import { ToastService } from '../../shared/services/toast.service';
 import { TestResult } from '../../shared/interfaces/test-result';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import { UpdateReport } from '../../shared/interfaces/update-report';
+import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
 
 @Component({
   selector: 'app-edit-display',
@@ -70,7 +72,6 @@ export class EditDisplayComponent {
   metadataTableVisible: boolean = false;
   rerunResult?: TestResult;
   report: any = {};
-  rootReport?: Report;
   uid?: string;
   displayReport: boolean = false;
 
@@ -85,7 +86,6 @@ export class EditDisplayComponent {
     this.disableEditing();
     this.report = report;
     if (report.xml) {
-      this.rootReport = report;
       this.editor.setNewReport(report.xml);
       this.uid = undefined;
     } else {
@@ -158,38 +158,22 @@ export class EditDisplayComponent {
 
   getReportValues(checkpointId: string): any {
     if (this.editingRootNode) {
-      return this.getReportValuesForRootNode(checkpointId);
+      return this.getReportValuesForRootNode();
     } else if (this.editingChildNode) {
       return this.getReportValuesForChildNode(checkpointId);
     }
   }
 
-  getReportValuesForRootNode(checkpointId: string): any {
-    return {
-      name: this.editFormComponent.editForm.get('name')?.value,
-      path: this.editFormComponent.editForm.get('path')?.value,
-      description: this.editFormComponent.editForm.get('description')?.value,
-      transformation: this.editFormComponent.editForm.get('transformation')?.value,
-      checkpointId: checkpointId,
-      variables: this.editFormComponent.editForm.get('variableCsv')?.value,
-      // checkpointMessage can only be updated when stub is not in request body
-      checkpointMessage: this.report.message,
-    };
+  getReportValuesForRootNode(): UpdateReport {
+    return this.editFormComponent.getValues();
   }
 
-  getReportValuesForChildNode(checkpointId: string): any {
-    if (this.rootReport) {
-      return {
-        name: this.rootReport.name,
-        path: this.rootReport.path,
-        description: this.rootReport.description,
-        transformation: this.rootReport.transformation,
-        checkpointId: checkpointId,
-        variables: this.rootReport.variableCsv,
-        // checkpointMessage can only be updated when stub is not in request body
-        checkpointMessage: this.editor.getValue(),
-      };
-    }
+  getReportValuesForChildNode(checkpointId: string): UpdateCheckpoint {
+    return {
+      checkpointId: checkpointId,
+      // checkpointMessage can only be updated when stub is not in request body
+      checkpointMessage: this.editor.getValue(),
+    };
   }
 
   editReport(): void {
@@ -224,7 +208,6 @@ export class EditDisplayComponent {
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe((response: any) => {
       response.report.xml = response.xml;
       this.report = response.report;
-      this.rootReport = response.report;
       this.saveReportEvent.next(this.report);
       this.editor.setNewReport(this.uid ? body.checkpointMessage : this.report.xml);
       this.disableEditing();
@@ -233,6 +216,9 @@ export class EditDisplayComponent {
 
   discardChanges(): void {
     this.disableEditing();
+    if (this.report.uid) {
+      this.editor.setNewReport(this.report.message);
+    }
   }
 
   toggleMetadataTable(): void {

@@ -4,6 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
 // @ts-expect-error no default export
 import DiffMatchPatch from 'diff-match-patch';
+import { UpdateReport } from '../../shared/interfaces/update-report';
 
 @Component({
   selector: 'app-edit-form',
@@ -36,6 +37,16 @@ export class EditFormComponent implements OnChanges {
       name: name,
       originalValue: originalValue,
       difference: difference,
+    };
+  }
+
+  getValues(): UpdateReport {
+    return {
+      name: this.editForm.get('name')?.value,
+      path: this.editForm.get('path')?.value,
+      description: this.editForm.get('description')?.value,
+      transformation: this.editForm.get('transformation')?.value,
+      variables: this.editForm.get('variableCsv')?.value,
     };
   }
 }
