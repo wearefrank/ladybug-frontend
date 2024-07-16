@@ -29,6 +29,7 @@ import { TestResult } from '../../shared/interfaces/test-result';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
+import { UpdateReportUtil } from '../../shared/util/update-report-util';
 
 @Component({
   selector: 'app-edit-display',
@@ -156,12 +157,8 @@ export class EditDisplayComponent {
     ];
   }
 
-  getReportValues(checkpointId: string): any {
-    if (this.editingRootNode) {
-      return this.getReportValuesForRootNode();
-    } else if (this.editingChildNode) {
-      return this.getReportValuesForChildNode(checkpointId);
-    }
+  getReportValues(checkpointId: string): UpdateReport | UpdateCheckpoint {
+    return this.editingRootNode ? this.getReportValuesForRootNode() : this.getReportValuesForChildNode(checkpointId);
   }
 
   getReportValuesForRootNode(): UpdateReport {
@@ -209,7 +206,7 @@ export class EditDisplayComponent {
       response.report.xml = response.xml;
       this.report = response.report;
       this.saveReportEvent.next(this.report);
-      this.editor.setNewReport(this.uid ? body.checkpointMessage : this.report.xml);
+      this.editor.setNewReport(UpdateReportUtil.isUpdateCheckpoint(body) ? body.checkpointMessage : this.report.xml);
       this.disableEditing();
     });
   }

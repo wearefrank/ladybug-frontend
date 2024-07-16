@@ -11,6 +11,8 @@ import { CloneReport } from '../interfaces/clone-report';
 import { UploadParams } from '../interfaces/upload-params';
 import { UpdatePathSettings } from '../interfaces/update-path-settings';
 import { TestResult } from '../interfaces/test-result';
+import { UpdateReport } from '../interfaces/update-report';
+import { UpdateCheckpoint } from '../interfaces/update-checkpoint';
 
 @Injectable({
   providedIn: 'root',
@@ -138,7 +140,7 @@ export class HttpService {
       .pipe(catchError(this.handleError()));
   }
 
-  updateReport(reportId: string, body: Report, storage: string): Observable<void> {
+  updateReport(reportId: string, body: UpdateReport | UpdateCheckpoint, storage: string): Observable<void> {
     return this.http
       .post(`api/report/${storage}/${reportId}`, body)
       .pipe(tap(() => this.handleSuccess('Report updated!')))
