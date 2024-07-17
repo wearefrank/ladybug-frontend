@@ -282,7 +282,11 @@ export class EditDisplayComponent {
       this.toastService.showDanger('Could not find report to copy');
       return;
     }
-    const storageId: number = ReportUtil.isReport(node) ? node.storageId : Number.parseInt(node.uid.split('#')[0]);
+    const storageId: number = ReportUtil.isReport(node)
+      ? node.storageId
+      : node.storageId
+        ? Number.parseInt(node.storageId)
+        : Number.parseInt(node.uid.split('#')[0]);
     const data: Record<string, number[]> = {
       [this.currentView.storageName]: [storageId],
     };
