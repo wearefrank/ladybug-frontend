@@ -23,5 +23,5 @@ export interface Checkpoint {
   storageId?: string;
   checkpoints?: Checkpoint[];
   icon: string;
-  cssClasses: string;
+  iconClass?: string;
 }

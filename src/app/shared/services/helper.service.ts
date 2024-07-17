@@ -11,14 +11,20 @@ export class HelperService {
 
   constructor() {}
 
-  getImage(type: number, encoding: string, level: number): IconData {
-    let icon: IconData = { path: `assets/tree-icons/${this.getCheckpointType(type)}.svg`, cssClasses: '' };
-    // if (encoding === this.THROWABLE_ENCODER) {
-    //   icon += '-error';
-    // }
-    icon.cssClasses += level % 2 == 0 ? 'tree-icon-even' : 'tree-icon-odd';
-    if (this.getCheckpointType(type).toLowerCase().includes('endpoint')) icon.cssClasses += ' end-point';
-    return icon;
+  getImage(type: number, encoding: string, level: number): string {
+    const even = this.determineEvenCheckpoint(level);
+    let img = `assets/tree-icons/${this.getCheckpointType(type)}`;
+    if (encoding === this.THROWABLE_ENCODER) {
+      img += '-error';
+    }
+    if (even) {
+      return `${img}-even.gif`;
+    }
+    return `${img}-odd.gif`;
+  }
+
+  private determineEvenCheckpoint(level: number) {
+    return level % 2 == 0;
   }
 
   getCheckpointType(type: number): string {
@@ -96,12 +102,12 @@ export class HelperService {
     let parentMap: any[] = [];
 
     const showingId: string = this.getCheckpointOrStorageId(report, true);
-    let rootNode = this.createNode(report, showingId, { path: '', cssClasses: '' }, index++, -1);
+    let rootNode = this.createNode(report, showingId, '', index++, -1);
     this.createChildNodes(rootNode, index, parentMap);
     return rootNode;
   }
 
-  createNode(report: Report, showingId: string, icon: IconData, index: number, level: number) {
+  createNode(report: Report, showingId: string, icon: string, index: number, level: number) {
     const expanded: boolean = level <= 0;
     return {
       label: showingId + report.name,
@@ -131,7 +137,7 @@ export class HelperService {
 
     if (checkpoints && checkpoints.length > 0) {
       for (let checkpoint of checkpoints) {
-        const icon: IconData = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
+        const icon: string = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
         const showingId: string = this.getCheckpointOrStorageId(checkpoint, false);
         const currentNode: any = this.createNode(checkpoint, showingId, icon, index++, checkpoint.level);
         this.createHierarchy(previousNode, currentNode, parentMap);
