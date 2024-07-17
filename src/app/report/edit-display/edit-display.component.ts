@@ -137,7 +137,7 @@ export class EditDisplayComponent {
   openDifferenceModal(type: ChangesAction): void {
     let reportDifferences: ReportDifference[] = [];
     if (this.report.xml && this.editFormComponent) {
-      reportDifferences = this.getDifferences();
+      reportDifferences = this.editFormComponent.getDifferences();
     } else if (this.report.message) {
       reportDifferences.push({
         name: 'message',
@@ -150,16 +150,6 @@ export class EditDisplayComponent {
     } else {
       this.rerunReport();
     }
-  }
-
-  getDifferences(): ReportDifference[] {
-    return [
-      this.editFormComponent.getDifference('name'),
-      this.editFormComponent.getDifference('description'),
-      this.editFormComponent.getDifference('path'),
-      this.editFormComponent.getDifference('transformation'),
-      this.editFormComponent.getDifference('variableCsv'),
-    ];
   }
 
   getReportValues(checkpointId: string): UpdateReport | UpdateCheckpoint {
@@ -224,6 +214,7 @@ export class EditDisplayComponent {
     if (this.report.uid) {
       this.editor.setNewReport(this.report.message);
     }
+    this.toastService.showSuccess('Changes discarded!');
   }
 
   toggleMetadataTable(): void {

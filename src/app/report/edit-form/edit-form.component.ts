@@ -16,15 +16,20 @@ import { UpdateReport } from '../../shared/interfaces/update-report';
 export class EditFormComponent implements OnChanges {
   @Input({ required: true }) report!: Report;
   editForm!: FormGroup;
+  nameKey: string = 'name';
+  descriptionKey: string = 'description';
+  pathKey: string = 'path';
+  transformationKey: string = 'transformation';
+  variableKey: string = 'variableCsv';
 
   ngOnChanges(): void {
     this.editForm = new FormGroup(
       {
-        name: new FormControl(this.report.name),
-        description: new FormControl(this.report.description),
-        path: new FormControl(this.report.path),
-        transformation: new FormControl(this.report.transformation),
-        variableCsv: new FormControl(this.report.variableCsv),
+        [this.nameKey]: new FormControl(this.report.name),
+        [this.descriptionKey]: new FormControl(this.report.description),
+        [this.pathKey]: new FormControl(this.report.path),
+        [this.transformationKey]: new FormControl(this.report.transformation),
+        [this.variableKey]: new FormControl(this.report.variableCsv),
       },
       { updateOn: 'change' },
     );
@@ -40,13 +45,23 @@ export class EditFormComponent implements OnChanges {
     };
   }
 
+  getDifferences(): ReportDifference[] {
+    return [
+      this.getDifference(this.nameKey as keyof Report),
+      this.getDifference(this.descriptionKey as keyof Report),
+      this.getDifference(this.pathKey as keyof Report),
+      this.getDifference(this.transformationKey as keyof Report),
+      this.getDifference(this.variableKey as keyof Report),
+    ];
+  }
+
   getValues(): UpdateReport {
     return {
-      name: this.editForm.get('name')?.value,
-      path: this.editForm.get('path')?.value,
-      description: this.editForm.get('description')?.value,
-      transformation: this.editForm.get('transformation')?.value,
-      variables: this.editForm.get('variableCsv')?.value,
+      name: this.editForm.get(this.nameKey)?.value,
+      path: this.editForm.get(this.pathKey)?.value,
+      description: this.editForm.get(this.descriptionKey)?.value,
+      transformation: this.editForm.get(this.transformationKey)?.value,
+      variables: this.editForm.get(this.variableKey)?.value,
     };
   }
 }
