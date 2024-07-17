@@ -4,6 +4,8 @@ import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
 import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CloneReport } from 'src/app/shared/interfaces/clone-report';
+import { catchError } from 'rxjs';
+import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-clone-modal',
@@ -27,13 +29,17 @@ export class CloneModalComponent {
   constructor(
     private modalService: NgbModal,
     private httpService: HttpService,
+    private errorHandler: ErrorHandling,
   ) {}
 
   open(selectedReport: any) {
-    this.httpService.getReport(selectedReport.storageId, this.currentView.storageName).subscribe((report: Report) => {
-      this.report = report;
-      this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
-      this.modalService.open(this.modal);
+    this.httpService.getReport(selectedReport.storageId, this.currentView.storageName).subscribe({
+      next: (report: Report) => {
+        this.report = report;
+        this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
+        this.modalService.open(this.modal);
+      },
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -42,8 +48,9 @@ export class CloneModalComponent {
       csv: this.variableForm.value.variables,
       message: this.variableForm.value.message,
     };
-    this.httpService
-      .cloneReport(this.currentView.storageName, this.report.storageId, map)
-      .subscribe(() => this.cloneReportEvent.emit());
+    this.httpService.cloneReport(this.currentView.storageName, this.report.storageId, map).subscribe({
+      next: () => this.cloneReportEvent.emit(),
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 }
