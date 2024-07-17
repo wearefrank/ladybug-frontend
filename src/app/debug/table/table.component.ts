@@ -31,6 +31,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { View } from '../../shared/interfaces/view';
 import { OptionsSettings } from '../../shared/interfaces/options-settings';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
+import { CompareReport } from '../../shared/interfaces/compare-reports';
 
 @Component({
   selector: 'app-table',
@@ -123,6 +124,7 @@ export class TableComponent implements OnInit, OnDestroy {
   protected selectedReportStorageId?: number;
   tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
   tableDataSort?: MatSort;
+
   @ViewChild(MatSort) set matSort(sort: MatSort) {
     this.tableDataSort = sort;
     this.tableDataSource.sort = this.tableDataSort;
@@ -372,12 +374,12 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   compareTwoReports(): void {
-    let compareReports: any = {};
     const selectedReports: number[] = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .map((report) => report.storageId);
+
     this.httpService.getReports(selectedReports, this.currentView.storageName).subscribe({
-      next: (data) => {
+      next: (data: Record<string, CompareReport>) => {
         const leftObject = data[selectedReports[0]];
         const originalReport = leftObject.report;
         originalReport.xml = leftObject.xml;
@@ -387,19 +389,15 @@ export class TableComponent implements OnInit, OnDestroy {
         runResultReport.xml = rightObject.xml;
 
         const id = this.helperService.createCompareTabId(originalReport, runResultReport);
-        compareReports = {
+
+        this.tabService.openNewCompareTab({
           id: id,
           originalReport: originalReport,
           runResultReport: runResultReport,
           viewName: this.currentView.name,
-          nodeLinkStrategy: this.currentView.nodeLinkStrategy,
-        };
+        });
       },
       error: () => catchError(this.errorHandler.handleError()),
-
-      complete: () => {
-        this.tabService.openNewCompareTab(compareReports);
-      },
     });
   }
 

@@ -1,209 +1,156 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
-import { HelperService } from '../../shared/services/helper.service';
-import { jqxTreeComponent, jqxTreeModule } from 'jqwidgets-ng/jqxtree';
-import { NodeLinkStrategy } from '../../shared/enums/compare-method';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TitleCasePipe } from '@angular/common';
+
+import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
+import { ReportUtil } from '../../shared/util/report-util';
+import { CompareData } from '../compare-data';
+import { Checkpoint } from '../../shared/interfaces/checkpoint';
+import { NodeLinkStrategy } from '../../shared/enums/node-link-strategy';
+import {
+  CreateTreeItem,
+  FileTreeItem,
+  FileTreeOptions,
+  NgSimpleFileTree,
+  NgSimpleFileTreeModule,
+  OptionalParameters,
+} from 'ng-simple-file-tree';
+
+export const treeSideConst = ['left', 'right'] as const;
+export type TreeSide = (typeof treeSideConst)[number];
 
 @Component({
   selector: 'app-compare-tree',
   templateUrl: './compare-tree.component.html',
   styleUrls: ['./compare-tree.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, jqxTreeModule],
+  imports: [ReactiveFormsModule, TitleCasePipe, FormsModule, NgSimpleFileTreeModule],
 })
 export class CompareTreeComponent {
-  constructor(private helperService: HelperService) {}
-  @Output() compareEvent = new EventEmitter<any>();
-  @Output() changeNodeLinkStrategyEvent = new EventEmitter<any>();
-  @ViewChild('leftTreeReference') leftTreeReference!: jqxTreeComponent;
-  @ViewChild('rightTreeReference') rightTreeReference!: jqxTreeComponent;
-  nodeLinkStrategy: NodeLinkStrategy = NodeLinkStrategy.NONE;
-  viewName: string = '';
-  leftReport: any;
-  rightReport: any;
+  @Output() compareEvent: EventEmitter<void> = new EventEmitter<void>();
+  @ViewChild('leftTree') leftTree!: NgSimpleFileTree;
+  @ViewChild('rightTree') rightTree!: NgSimpleFileTree;
+  @Input({ required: true }) nodeLinkStrategy!: NodeLinkStrategy;
+  @Input({ required: true }) compareData!: CompareData;
+  leftReport?: Report;
+  rightReport?: Report;
+  left?: Report;
+  leftTreeOptions: FileTreeOptions = {
+    highlightOpenFolders: false,
+    folderBehaviourOnClick: 'select',
+    expandAllFolders: true,
+  };
 
-  public get NodeLinkStrategy(): typeof NodeLinkStrategy {
-    return NodeLinkStrategy;
-  }
+  rightTreeOptions: FileTreeOptions = {
+    highlightOpenFolders: false,
+    folderBehaviourOnClick: 'select',
+    expandAllFolders: true,
+    determineFontColor: (item: CreateTreeItem) => this.setRedLabels(item),
+  };
 
-  nodeSelected(data: any, left: boolean) {
-    this.selectOtherNode(data, left);
-    this.compareEvent.emit({
-      leftReport: this.leftReport,
-      rightReport: this.rightReport,
-    });
-  }
-
-  selectOtherNode(data: any, left: boolean) {
-    if (this.nodeLinkStrategy === 'NONE') {
-      this.compareOnNothing(data, left);
-    } else {
-      this.compareOnSomething(this.nodeLinkStrategy, data, left);
-    }
-  }
-  compareOnSomething(method: string, data: any, left: boolean) {
-    let treeReference: jqxTreeComponent = left ? this.rightTreeReference : this.leftTreeReference;
-    let selectedReport = data.owner.selectedItem;
-
-    let otherReport =
-      method === 'PATH'
-        ? this.getOtherReportBasedOnPath(selectedReport, treeReference)
-        : this.getOtherReportBasedOnCheckpointNumber(selectedReport, treeReference);
-
-    if (otherReport) {
-      this.unfoldTree(treeReference, otherReport, otherReport.parentId);
-      treeReference.selectItem(otherReport);
-    } else {
-      treeReference.selectItem(null);
-    }
-
-    this.leftReport = left ? selectedReport : otherReport;
-    this.rightReport = left ? otherReport : selectedReport;
-  }
-
-  getOtherReportBasedOnCheckpointNumber(selectedReport: any, treeReference: jqxTreeComponent) {
-    let checkpointNumber = selectedReport.value.index;
-    return treeReference.getItems().find((item: any) => checkpointNumber == item.value.index);
-  }
-
-  getOtherReportBasedOnPath(selectedReport: any, treeReference: jqxTreeComponent) {
-    let path = this.getFullPath(selectedReport, [selectedReport.value.name]);
-    return this.matchFullPath(treeReference.getItems()[0], path);
-  }
-  compareOnNothing(data: any, left: boolean) {
-    left ? (this.leftReport = data.owner.selectedItem) : (this.rightReport = data.owner.selectedItem);
-  }
-
-  changeNodeLinkStrategy(event: any) {
-    this.nodeLinkStrategy = event.target.value;
-    this.changeNodeLinkStrategyEvent.next(this.nodeLinkStrategy);
-    localStorage.setItem(this.viewName + '.NodeLinkStrategy', this.nodeLinkStrategy);
-  }
-  getParent(checkpoint: any, parentId: string): any {
-    let items = checkpoint.treeInstance.items;
-    return items.find((item: any) => item.id == parentId);
-  }
-
-  unfoldTree(treeReference: any, checkpoint: any, parentId: string) {
-    while (parentId.toString() !== '0') {
-      treeReference.expandItem(checkpoint);
-      parentId = checkpoint.parentId;
-      checkpoint = this.getParent(checkpoint, checkpoint.parentId);
-    }
-  }
-
-  getFullPath(checkpoint: any, pathSoFar: string[]): string[] {
-    let parent = this.getParent(checkpoint, checkpoint.parentId);
-    if (parent) {
-      pathSoFar.push(parent.value.name);
-      return this.getFullPath(parent, pathSoFar);
-    }
-
-    return pathSoFar;
-  }
-
-  matchFullPath(checkpoint: any, path: string[]): any {
-    if (path.length === 0) return checkpoint;
-
-    let toBeSelected = null;
-    let firstPart = path.shift();
-    checkpoint.treeInstance.items.every((item: any) => {
-      if (item.value.name === firstPart) {
-        let result = this.checkIfSameParents(item, item.parentId, path);
-        if (result) {
-          toBeSelected = item;
-          return false; //Breaking since we found him;
-        }
-      }
-      return true;
-    });
-
-    return toBeSelected;
-  }
-
-  checkIfSameParents(checkpoint: string, parentId: string, path: string[]): boolean {
-    if (path.length === 0) return true;
-    let parent = this.getParent(checkpoint, parentId);
-    if (parent && parent.value.name == path[0]) {
-      path.shift();
-      return this.checkIfSameParents(parent, parent.parentId, path);
-    }
-    return false;
-  }
-
-  createTrees(viewName: string, nodeLinkStrategy: NodeLinkStrategy, leftReport: Report, rightReport: Report) {
-    this.viewName = viewName;
-    this.nodeLinkStrategy = nodeLinkStrategy;
-    let nls = localStorage.getItem(this.viewName + '.NodeLinkStrategy');
-    if (nls) {
-      this.nodeLinkStrategy = NodeLinkStrategy[nls as keyof typeof NodeLinkStrategy];
-    }
-    const leftTree = this.helperService.convertReportToJqxTree(leftReport);
-    const rightTree = this.helperService.convertReportToJqxTree(rightReport);
-    const both = this.iterateToMakeLabelsRed(leftTree, rightTree);
-
-    this.leftTreeReference.createComponent({
-      height: '100%',
-      source: [both.left],
-    });
-    this.rightTreeReference.createComponent({
-      height: '100%',
-      source: [both.right],
-    });
-
+  createTrees(leftReport: Report, rightReport: Report): void {
+    this.leftReport = new ReportHierarchyTransformer().transform(leftReport);
+    this.rightReport = new ReportHierarchyTransformer().transform(rightReport);
+    const optional: OptionalParameters = { childrenKey: 'checkpoints' };
+    this.leftTree.addItem(this.leftReport, optional);
+    this.rightTree.addItem(this.rightReport, optional);
     this.selectFirstItem();
   }
 
-  selectFirstItem() {
-    this.leftReport = this.leftTreeReference.getItems()[0];
-    this.rightReport = this.rightTreeReference.getItems()[0];
-    this.leftTreeReference.selectItem(this.leftReport);
-    this.rightTreeReference.selectItem(this.rightReport);
-    this.compareEvent.emit({
-      leftReport: this.leftReport,
-      rightReport: this.rightReport,
-    });
-  }
-
-  makeLabelsRed(left: any, right: any) {
-    this.redLabel(left);
-    this.redLabel(right);
-  }
-
-  redLabel(item: any) {
-    item.label = `<span style='color: red;'>${item.label}</span>`;
-  }
-
-  iterateToMakeLabelsRed(leftItem: any, rightItem: any) {
-    let result = this.checkIfLabelsDifferent(leftItem, rightItem);
-    const shortestTreeLength = Math.min(leftItem.items.length, rightItem.items.length);
-    this.makeRestOfTreesRed(shortestTreeLength, rightItem.items, leftItem.items);
-
-    for (let i = 0; i < shortestTreeLength; i++) {
-      let both = this.iterateToMakeLabelsRed(leftItem.items[i], rightItem.items[i]);
-      leftItem.items[i] = both.left;
-      rightItem.items[i] = both.right;
+  setRedLabels(item: CreateTreeItem): string {
+    if (ReportUtil.isReport(item)) {
+      return this.namesMatch(item.name, this.leftReport?.name);
     }
-
-    return result;
+    if (ReportUtil.isCheckPoint(item)) {
+      const checkpoint: Checkpoint | undefined = this.findCorrespondingCheckpoint(item, this.leftReport);
+      return this.namesMatch(item.name, checkpoint?.name);
+    }
+    return '';
   }
 
-  makeRestOfTreesRed(startPoint: number, leftItems: any[], rightItems: any[]) {
-    let items = leftItems;
-    if (rightItems.length > leftItems.length) items = rightItems;
-    for (let i = startPoint; i < items.length; i++) {
-      this.redLabel(items[i]);
+  selectFirstItem(): void {
+    if (ReportUtil.isReport(this.leftReport!)) {
+      this.leftTree.selectItem(this.leftReport.path);
+    }
+    if (ReportUtil.isReport(this.rightReport)) {
+      this.rightTree.selectItem(this.rightReport.path);
+    }
+    this.compareEvent.emit();
+  }
+
+  syncTrees(treeSide: TreeSide): void {
+    if (treeSide === 'left') {
+      this.selectItem(this.rightTree, this.leftTree.getSelected());
+    } else if (treeSide === 'right') {
+      this.selectItem(this.leftTree, this.rightTree.getSelected());
     }
   }
 
-  checkIfLabelsDifferent(left: any, right: any): { left: any; right: any } {
-    if (left.level > -1) {
-      if (left.value.message !== right.value.message) this.makeLabelsRed(left, right);
-    } else {
-      if (left.value.xml !== right.value.xml) this.makeLabelsRed(left, right);
+  selectItem(otherSide: NgSimpleFileTree, treeItem: FileTreeItem): void {
+    switch (this.nodeLinkStrategy) {
+      case 'PATH': {
+        otherSide.selectItem(treeItem.path);
+        break;
+      }
+      case 'CHECKPOINT_NUMBER': {
+        this.selectByCheckPointNumber(otherSide, treeItem.originalValue as Report | Checkpoint);
+      }
     }
+    this.compareEvent.emit();
+  }
 
-    return { left: left, right: right };
+  selectByCheckPointNumber(tree: NgSimpleFileTree, treeItem: Report | Checkpoint): void {
+    if (ReportUtil.isReport(treeItem)) {
+      tree.selectItem(tree.getItems()[0].path);
+    } else if (ReportUtil.isCheckPoint(treeItem)) {
+      this.selectCheckpoint(tree, tree.getItems()[0], treeItem);
+    }
+  }
+
+  selectCheckpoint(tree: NgSimpleFileTree, item: FileTreeItem, checkpointToMatch: Checkpoint): void {
+    if (item.children) {
+      for (const child of item.children) {
+        const checkpoint = child.originalValue as Checkpoint;
+        if (this.getCheckpointId(checkpoint.uid) === this.getCheckpointId(checkpointToMatch.uid)) {
+          tree.selectItem(child.path);
+          return;
+        } else {
+          this.selectCheckpoint(tree, child, checkpointToMatch);
+        }
+      }
+    }
+  }
+
+  namesMatch(name1: string | undefined, name2?: string | undefined): string {
+    if (name1 && name2 && name1 === name2) {
+      return '';
+    }
+    return 'red';
+  }
+
+  findCorrespondingCheckpoint(
+    itemToMatch: Checkpoint | Report,
+    report: Report | Checkpoint | undefined,
+  ): Checkpoint | undefined {
+    if (report) {
+      const checkpoints: Checkpoint[] = report.checkpoints ?? [];
+      for (let checkpoint of checkpoints) {
+        if (
+          ReportUtil.isCheckPoint(itemToMatch) &&
+          this.getCheckpointId(checkpoint.uid) === this.getCheckpointId(itemToMatch.uid)
+        ) {
+          return checkpoint;
+        }
+        if (checkpoint.checkpoints) {
+          return this.findCorrespondingCheckpoint(itemToMatch, checkpoint);
+        }
+      }
+    }
+    return undefined;
+  }
+
+  getCheckpointId(uid: string): string {
+    return uid.split('#')[1];
   }
 }
