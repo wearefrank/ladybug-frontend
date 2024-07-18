@@ -175,8 +175,8 @@ importers:
         specifier: ^0.11.0
         version: 0.11.0(eslint@8.57.0)
       husky:
-        specifier: ^7.0.4
-        version: 7.0.4
+        specifier: ^9.0.11
+        version: 9.0.11
       jasmine-core:
         specifier: 3.9.0
         version: 3.9.0
@@ -3447,9 +3447,9 @@ packages:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
 
-  husky@7.0.4:
-    resolution: {integrity: sha512-vbaCKN2QLtP/vD4yvs6iz6hBEo6wkSzs8HpRah1Z6aGmF2KW5PdYuAd7uX5a+OyBZHBhd+TFLqgjUgytQr4RvQ==}
-    engines: {node: '>=12'}
+  husky@9.0.11:
+    resolution: {integrity: sha512-AB6lFlbwwyIqMdHYhwPe+kjOC3Oc5P3nThEoW/AaO2BX3vJDjWPFxYLxokUZOo6RNX20He3AaT8sESs9NJcmEw==}
+    engines: {node: '>=18'}
     hasBin: true
 
   iconv-lite@0.4.24:
@@ -9759,7 +9759,7 @@ snapshots:
 
   human-signals@2.1.0: {}
 
-  husky@7.0.4: {}
+  husky@9.0.11: {}
 
   iconv-lite@0.4.24:
     dependencies:
