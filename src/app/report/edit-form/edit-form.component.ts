@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
@@ -13,26 +13,28 @@ import { UpdateReport } from '../../shared/interfaces/update-report';
   templateUrl: './edit-form.component.html',
   styleUrl: './edit-form.component.css',
 })
-export class EditFormComponent implements OnChanges {
+export class EditFormComponent implements OnInit {
   @Input({ required: true }) report!: Report;
-  editForm!: FormGroup;
-  nameKey: string = 'name';
-  descriptionKey: string = 'description';
-  pathKey: string = 'path';
-  transformationKey: string = 'transformation';
-  variableKey: string = 'variableCsv';
+  protected editForm!: FormGroup;
+  protected readonly nameKey: string & keyof Report = 'name';
+  protected readonly descriptionKey: string & keyof Report = 'description';
+  protected readonly pathKey: string & keyof Report = 'path';
+  protected readonly transformationKey: string & keyof Report = 'transformation';
+  protected readonly variableKey: string & keyof Report = 'variableCsv';
 
-  ngOnChanges(): void {
-    this.editForm = new FormGroup(
-      {
-        [this.nameKey]: new FormControl(this.report.name),
-        [this.descriptionKey]: new FormControl(this.report.description),
-        [this.pathKey]: new FormControl(this.report.path),
-        [this.transformationKey]: new FormControl(this.report.transformation),
-        [this.variableKey]: new FormControl(this.report.variableCsv),
-      },
-      { updateOn: 'change' },
-    );
+  ngOnInit(): void {
+    if (this.report) {
+      this.editForm = new FormGroup(
+        {
+          [this.nameKey]: new FormControl(this.report.name),
+          [this.descriptionKey]: new FormControl(this.report.description),
+          [this.pathKey]: new FormControl(this.report.path),
+          [this.transformationKey]: new FormControl(this.report.transformation),
+          [this.variableKey]: new FormControl(this.report.variableCsv),
+        },
+        { updateOn: 'change' },
+      );
+    }
   }
 
   getDifference(name: keyof Report): ReportDifference {
@@ -47,11 +49,11 @@ export class EditFormComponent implements OnChanges {
 
   getDifferences(): ReportDifference[] {
     return [
-      this.getDifference(this.nameKey as keyof Report),
-      this.getDifference(this.descriptionKey as keyof Report),
-      this.getDifference(this.pathKey as keyof Report),
-      this.getDifference(this.transformationKey as keyof Report),
-      this.getDifference(this.variableKey as keyof Report),
+      this.getDifference(this.nameKey),
+      this.getDifference(this.descriptionKey),
+      this.getDifference(this.pathKey),
+      this.getDifference(this.transformationKey),
+      this.getDifference(this.variableKey),
     ];
   }
 
