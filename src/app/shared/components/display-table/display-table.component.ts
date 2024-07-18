@@ -31,9 +31,4 @@ export class DisplayTableComponent implements OnChanges {
         this.report.stubNotFound)
     );
   }
-
-  toggleToolTip(toolTip: MatTooltip): void {
-    toolTip.show();
-    setTimeout(() => toolTip.hide(), 2500);
-  }
 }
