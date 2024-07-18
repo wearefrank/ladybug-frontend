@@ -2,37 +2,37 @@
   @if (anyMessagesPresent) {
     <div class="my-2 mx-1">
       @if (report.noCloseReceivedForStream) {
-        <div id="noCloseReceivedLabel" class="btn btn-static px-2">
+        <div class="btn btn-static px-2">
           No close received for stream
         </div>
       }
       @if (report.streaming) {
-        <div id="waitingForMessageLabel" class="btn btn-static  px-2">
+        <div class="btn btn-static px-2">
           {{ report.waitingForStream ? 'Waiting for message to be' : 'Message is' }} captured asynchronously from
           a {{ report.streaming.toLowerCase() }} stream
         </div>
       }
 
       @if (report.message === null) {
-        <div id="nullMessageLabel" class="btn btn-static  px-2">
+        <div class="btn btn-static px-2">
           Message is null
         </div>
       }
 
       @if (report.message === '') {
-        <div id="emptyMessageLabel" class="btn btn-static  px-2">
+        <div class="btn btn-static px-2">
           Message is empty string
         </div>
       }
 
       @if (report.stubbed) {
-        <div id="stubbedMessageLabel" class="btn btn-static  px-2">
+        <div class="btn btn-static px-2">
           Message is stubbed
         </div>
       }
 
       @if (report.encoding !== null) {
-        <div id="encodedMessageLabel" class="btn btn-static px-2">
+        <div class="btn btn-static px-2">
           Message of type {{ report.messageClassName }} is encoded to string using {{ report.encoding }}
           @if (this.report.showConverted) {
             <span>and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
@@ -40,19 +40,19 @@
         </div>
       }
       @if (report.preTruncatedMessageLength > 0) {
-        <div id="truncatedMessageLabel" class="btn btn-static  px-2">
+        <div class="btn btn-static px-2">
           Message is truncated ({{ report.preTruncatedMessageLength - report.message.length }} characters removed)
         </div>
       }
 
       @if (report.stubNotFound !== null) {
-        <div id="stubNotFoundLabel" class="btn btn-static px-2">
+        <div class="btn btn-static px-2">
           Could not find stub message for {{ report.stubNotFound }}
         </div>
       }
     </div>
   }
-  <div data-cy-metadata-table="table" class="metadata-table" id="displayedNodeTable">
+  <div data-cy-metadata-table="table" class="metadata-table">
     @if (report.xml) {
       <div class="table-row">
         <div class="key">Description</div>
