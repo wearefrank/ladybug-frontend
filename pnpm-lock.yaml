@@ -86,18 +86,12 @@ importers:
       font-awesome:
         specifier: ^4.7.0
         version: 4.7.0
-      jquery:
-        specifier: ^3.7.1
-        version: 3.7.1
-      jqwidgets-ng:
-        specifier: ^14.1.17
-        version: 14.1.20
       monaco-editor:
         specifier: 0.44.0
         version: 0.44.0
       ng-simple-file-tree:
-        specifier: ^0.1.13
-        version: 0.1.14(bootstrap-icons@1.11.3)
+        specifier: ^0.1.19
+        version: 0.1.19(@angular/common@17.0.8(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.3))(rxjs@7.4.0))(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.3))(bootstrap-icons@1.11.3)
       ngx-monaco-editor-v2:
         specifier: 17.0.1
         version: 17.0.1(@angular/common@17.0.8(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.3))(rxjs@7.4.0))(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.3))(monaco-editor@0.44.0)
@@ -3717,9 +3711,6 @@ packages:
   jquery@3.7.1:
     resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
 
-  jqwidgets-ng@14.1.20:
-    resolution: {integrity: sha512-rApVo4/k1M4aj3AI5bn2nG/5pKmeCGSuCFTynLS0F0/iXYV6iegPC8bNzwui0qkQJ19a7I5IW3yyi1LaxJpttA==}
-
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -4143,9 +4134,11 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  ng-simple-file-tree@0.1.14:
-    resolution: {integrity: sha512-Hg85jSqF2YNoFsjIIiKyMFjjJpOZ5Vg3lUe8G0fE0OwFkIZGh+ub/lfRd5DMXnBd5mzQ9UEal+ygDCCrC096pw==}
+  ng-simple-file-tree@0.1.19:
+    resolution: {integrity: sha512-WtoMPalo6oLAqouaH57OJSU0csIpqDbkR7fl4udTgZYpGS9/80WJV9W4wlwXD3qGpaRw13z/HepItlrHggK7Cg==}
     peerDependencies:
+      '@angular/common': ^17.2.3
+      '@angular/core': ^17.3.2
       bootstrap-icons: ^1.11.3
 
   ngx-monaco-editor-v2@17.0.1:
@@ -10027,8 +10020,6 @@ snapshots:
 
   jquery@3.7.1: {}
 
-  jqwidgets-ng@14.1.20: {}
-
   js-tokens@4.0.0: {}
 
   js-yaml@3.14.1:
@@ -10457,8 +10448,10 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  ng-simple-file-tree@0.1.14(bootstrap-icons@1.11.3):
+  ng-simple-file-tree@0.1.19(@angular/common@17.0.8(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.3))(rxjs@7.4.0))(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.3))(bootstrap-icons@1.11.3):
     dependencies:
+      '@angular/common': 17.0.8(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.3))(rxjs@7.4.0)
+      '@angular/core': 17.0.8(rxjs@7.4.0)(zone.js@0.14.3)
       bootstrap-icons: 1.11.3
       tslib: 2.3.1
 
