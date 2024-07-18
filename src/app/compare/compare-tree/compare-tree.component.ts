@@ -63,7 +63,7 @@ export class CompareTreeComponent {
       return this.namesMatch(item.name, this.leftReport?.name);
     }
     if (ReportUtil.isCheckPoint(item)) {
-      const checkpoint: Checkpoint | undefined = this.findCorrespondingCheckpoint(item, this.leftReport);
+      const checkpoint: Checkpoint | null = this.findCorrespondingCheckpoint(item, this.leftReport);
       return this.namesMatch(item.name, checkpoint?.name);
     }
     return '';
@@ -132,7 +132,7 @@ export class CompareTreeComponent {
   findCorrespondingCheckpoint(
     itemToMatch: Checkpoint | Report,
     report: Report | Checkpoint | undefined,
-  ): Checkpoint | undefined {
+  ): Checkpoint | null {
     if (report) {
       const checkpoints: Checkpoint[] = report.checkpoints ?? [];
       for (let checkpoint of checkpoints) {
@@ -147,7 +147,7 @@ export class CompareTreeComponent {
         }
       }
     }
-    return undefined;
+    return null;
   }
 
   getCheckpointId(uid: string): string {

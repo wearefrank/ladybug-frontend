@@ -74,12 +74,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
   }
 
   private renderDiffs(leftSide: string, rightSide: string): void {
-    this.originalModel = Object.assign({}, this.originalModel, {
-      code: leftSide,
-    });
-    this.modifiedModel = Object.assign({}, this.originalModel, {
-      code: rightSide,
-    });
+    this.originalModel = { ...this.originalModel, code: leftSide };
+    this.modifiedModel = { ...this.originalModel, code: rightSide };
   }
 
   private getStrategyFromLocalStorage(): void {
