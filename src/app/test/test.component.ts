@@ -1,4 +1,4 @@
-import { AfterViewInit, OnInit, Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
@@ -12,14 +12,14 @@ import { ToastService } from '../shared/services/toast.service';
 import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
 import { ReportData } from '../shared/interfaces/report-data';
-import { NodeLinkStrategy } from '../shared/enums/compare-method';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
-import { NgIf, NgFor } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, NgModel } from '@angular/forms';
+import { FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { View } from '../shared/interfaces/view';
+import { OptionsSettings } from '../shared/interfaces/options-settings';
+import { ErrorHandling } from '../shared/classes/error-handling.service';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -34,8 +34,6 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     ButtonComponent,
     ReactiveFormsModule,
     FormsModule,
-    NgIf,
-    NgFor,
     ToastComponent,
     TestSettingsModalComponent,
     CloneModalComponent,
@@ -65,6 +63,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     private helperService: HelperService,
     private toastService: ToastService,
     private tabService: TabService,
+    private errorHandler: ErrorHandling,
   ) {
     this.getGeneratorStatus();
   }
@@ -99,9 +98,12 @@ export class TestComponent implements OnInit, AfterViewInit {
     if (generatorStatus) {
       this.generatorStatus = generatorStatus;
     } else {
-      this.httpService.getSettings().subscribe((response) => {
-        this.generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
-        localStorage.setItem('generatorEnabled', this.generatorStatus);
+      this.httpService.getSettings().subscribe({
+        next: (response: OptionsSettings) => {
+          this.generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
+          localStorage.setItem('generatorEnabled', this.generatorStatus);
+        },
+        error: () => catchError(this.errorHandler.handleError()),
       });
     }
   }
@@ -119,19 +121,23 @@ export class TestComponent implements OnInit, AfterViewInit {
   getCopiedReports(): void {
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (response: TestListItem[]) => this.addCopiedReports(response),
-      error: () => catchError(this.httpService.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
   loadData(path: string): void {
-    this.httpService.getViews().subscribe((views: Record<string, View>) => {
-      const defaultViewKey: string | undefined = Object.keys(views).find((view: string) => views[view].defaultView);
-      if (defaultViewKey) {
-        const selectedView: View = views[defaultViewKey];
-        if (selectedView.storageName) {
-          this.currentView.targetStorage = selectedView.storageName;
-        }
-      }
+    this.httpService.getViews().subscribe({
+      next: (views: View[]) => {
+        const defaultView: View | undefined = views.find((view: View) => view.defaultView);
+        console.log(defaultView);
+        /*if (defaultView) {
+          const selectedView: View = views[defaultViewKey];
+          if (selectedView.storageName) {
+            this.currentView.targetStorage = selectedView.storageName;
+          }
+        }*/
+      },
+      error: () => catchError(this.errorHandler.handleError()),
     });
     this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
       next: (value: TestListItem[]) => {
@@ -147,7 +153,7 @@ export class TestComponent implements OnInit, AfterViewInit {
           });
         }
       },
-      error: () => catchError(this.httpService.handleError()),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -155,10 +161,11 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.reranReports = [];
   }
 
-  run(reportId: string): void {
+  run(reportId: number): void {
     if (this.generatorStatus === 'Enabled') {
-      this.httpService.runReport(this.currentView.storageName, reportId).subscribe((response: TestResult): void => {
-        this.showResult(response);
+      this.httpService.runReport(this.currentView.storageName, reportId).subscribe({
+        next: (response: TestResult): void => this.showResult(response),
+        error: () => catchError(this.errorHandler.handleError()),
       });
     } else {
       this.toastService.showWarning('Generator is disabled!');
@@ -190,7 +197,7 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   showResult(result: TestResult): void {
-    const id: string = result.originalReport.storageId.toString();
+    const id: string = String(result.originalReport.storageId);
     this.removeReranReportIfExists(id);
     const reranReport: ReranReport = this.createReranReport(result, id);
     this.reranReports.push(reranReport);
@@ -200,13 +207,16 @@ export class TestComponent implements OnInit, AfterViewInit {
     return <ReranReport>this.reranReports.find((report) => report.id == id);
   }
 
-  openReport(storageId: string, name: string): void {
-    this.httpService.getReport(storageId, this.currentView.storageName).subscribe((report: Report): void => {
-      const reportData: ReportData = {
-        report: report,
-        currentView: this.currentView,
-      };
-      this.tabService.openNewTab(reportData);
+  openReport(storageId: number, name: string): void {
+    this.httpService.getReport(storageId, this.currentView.storageName).subscribe({
+      next: (report: Report): void => {
+        const reportData: ReportData = {
+          report: report,
+          currentView: this.currentView,
+        };
+        this.tabService.openNewTab(reportData);
+      },
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -220,8 +230,9 @@ export class TestComponent implements OnInit, AfterViewInit {
   deleteSelected(): void {
     this.httpService
       .deleteReport(this.helperService.getSelectedIds(this.reports), this.currentView.storageName)
-      .subscribe(() => {
-        this.loadData('');
+      .subscribe({
+        next: () => this.loadData(''),
+        error: () => catchError(this.errorHandler.handleError()),
       });
   }
 
@@ -244,7 +255,10 @@ export class TestComponent implements OnInit, AfterViewInit {
     if (file) {
       const formData: FormData = new FormData();
       formData.append('file', file);
-      this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe(() => this.loadData(''));
+      this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe({
+        next: () => this.loadData(''),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     }
   }
 
@@ -257,7 +271,6 @@ export class TestComponent implements OnInit, AfterViewInit {
       );
       this.tabService.openNewCompareTab({
         id: tabId,
-        nodeLinkStrategy: NodeLinkStrategy.NONE,
         viewName: 'compare',
         originalReport: reranReport.originalReport,
         runResultReport: reranReport.runResultReport,
@@ -266,21 +279,28 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   replaceReport(reportId: string): void {
-    this.httpService.replaceReport(reportId, this.currentView.targetStorage).subscribe(() => {
-      this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
+    this.httpService.replaceReport(reportId, this.currentView.targetStorage).subscribe({
+      next: () => {
+        this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
+      },
+      error: () => catchError(this.errorHandler.handleError()),
     });
-    this.httpService.replaceReport(reportId, this.currentView.storageName).subscribe(() => {
-      this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
+    this.httpService.replaceReport(reportId, this.currentView.storageName).subscribe({
+      next: () => {
+        this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
+      },
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
   copySelected(): void {
-    const copiedIds: string[] = this.helperService.getSelectedIds(this.reports);
-    const data: Record<string, string[]> = {
+    const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
+    const data: Record<string, number[]> = {
       [this.currentView.storageName]: copiedIds,
     };
-    this.httpService.copyReport(data, this.currentView.storageName).subscribe(() => {
-      this.loadData('');
+    this.httpService.copyReport(data, this.currentView.storageName).subscribe({
+      next: () => this.loadData(''),
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -297,12 +317,15 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   updatePath(): void {
-    const reportIds: string[] = this.helperService.getSelectedIds(this.reports);
+    const reportIds: number[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       let path: string = this.moveToInputModel.value;
       path = this.transformPath(path);
       const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
-      this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe(() => this.loadData(path));
+      this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe({
+        next: () => this.loadData(path),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     } else {
       this.toastService.showWarning('No Report Selected!');
     }

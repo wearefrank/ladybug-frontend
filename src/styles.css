@@ -139,6 +139,10 @@ html, body {
   cursor: pointer;
 }
 
+.red {
+  color: red;
+}
+
 [appCopiedTooltip] {
   position: relative;
 }

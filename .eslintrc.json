@@ -2,21 +2,16 @@
   "settings": {
     "import/resolver": {
       "node": {
-        "extensions": [
-          ".js",
-          ".jsx",
-          ".ts",
-          ".tsx"
-        ]
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     }
   },
   "root": true,
   "ignorePatterns": [
     "projects/**/*",
-    "node_modules/**",
+    "dist/**",
     "target/**",
-    "dist/**"
+    "node_modules/**"
   ],
   "overrides": [
     {
@@ -24,10 +19,7 @@
       "files": [
         "*.ts"
       ],
-      "plugins": [
-        "sonarjs",
-        "prettier"
-      ],
+      "plugins": ["sonarjs", "prettier"],
       "parserOptions": {
         "project": [
           "tsconfig.json"

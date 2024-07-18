@@ -1,7 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { CheckpointTypePipe } from '../../pipes/checkpoint-type.pipe';
 import { ClipboardModule } from '@angular/cdk/clipboard';
-import { NgIf } from '@angular/common';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { CopyTooltipDirective } from '../../directives/copy-tooltip.directive';
 
@@ -10,7 +9,7 @@ import { CopyTooltipDirective } from '../../directives/copy-tooltip.directive';
   templateUrl: './display-table.component.html',
   styleUrls: ['./display-table.component.css'],
   standalone: true,
-  imports: [NgIf, ClipboardModule, CheckpointTypePipe, MatTooltipModule, CopyTooltipDirective],
+  imports: [ClipboardModule, CheckpointTypePipe, MatTooltipModule, CopyTooltipDirective],
 })
 export class DisplayTableComponent implements OnChanges {
   @Input() report!: any;

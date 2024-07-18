@@ -5,6 +5,17 @@
   height: 94vh;
 }
 
+.compare-header {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  border-bottom: 1px solid #dee2e6;
+
+  & > label {
+    margin: 0;
+  }
+}
+
 .trees {
   resize: vertical;
   overflow: auto;

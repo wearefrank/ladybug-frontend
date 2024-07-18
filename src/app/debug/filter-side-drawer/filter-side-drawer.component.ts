@@ -1,10 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FilterService } from './filter.service';
-import { Subscription } from 'rxjs';
+import { Subscription, catchError } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FormsModule } from '@angular/forms';
 import { TitleCasePipe } from '@angular/common';
+import { View } from '../../shared/interfaces/view';
+import { Report } from '../../shared/interfaces/report';
+import { HttpService } from '../../shared/services/http.service';
+import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 
 @Component({
   standalone: true,
@@ -23,20 +27,28 @@ import { TitleCasePipe } from '@angular/common';
   imports: [MatAutocompleteModule, FormsModule, TitleCasePipe],
 })
 export class FilterSideDrawerComponent implements OnDestroy, OnInit {
+  @Input({ required: true }) currentView!: View;
+
   protected shouldShowFilter!: boolean;
   protected metadataLabels!: string[];
   protected currentRecords: Map<string, Array<string>> = new Map<string, Array<string>>();
   protected metadataTypes!: Map<string, string>;
+  protected toolTipSuggestions?: Report;
 
-  shouldShowFilterSubscription?: Subscription;
-  metadataLabelsSubscription?: Subscription;
-  currentRecordsSubscription?: Subscription;
-  metadataTypesSubscription?: Subscription;
+  private shouldShowFilterSubscription?: Subscription;
+  private metadataLabelsSubscription?: Subscription;
+  private currentRecordsSubscription?: Subscription;
+  private metadataTypesSubscription?: Subscription;
 
-  constructor(protected filterService: FilterService) {}
+  constructor(
+    protected filterService: FilterService,
+    private httpService: HttpService,
+    private errorHandler: ErrorHandling,
+  ) {}
 
   ngOnInit(): void {
     this.setSubscriptions();
+    this.getFilterToolTips();
   }
 
   ngOnDestroy(): void {
@@ -44,22 +56,22 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   setSubscriptions(): void {
-    this.shouldShowFilterSubscription = this.filterService.showFilter$.subscribe((show: boolean): void => {
-      this.shouldShowFilter = show;
+    this.shouldShowFilterSubscription = this.filterService.showFilter$.subscribe({
+      next: (show: boolean) => (this.shouldShowFilter = show),
+      error: () => catchError(this.errorHandler.handleError()),
     });
-    this.metadataLabelsSubscription = this.filterService.metadataLabels$.subscribe((metadataLabels: string[]): void => {
-      this.metadataLabels = metadataLabels;
+    this.metadataLabelsSubscription = this.filterService.metadataLabels$.subscribe({
+      next: (metadataLabels: string[]) => (this.metadataLabels = metadataLabels),
+      error: () => catchError(this.errorHandler.handleError()),
     });
-    this.currentRecordsSubscription = this.filterService.currentRecords$.subscribe(
-      (records: Map<string, Array<string>>): void => {
-        this.currentRecords = records;
-      },
-    );
-    this.metadataTypesSubscription = this.filterService.metadataTypes$.subscribe(
-      (metadataTypes: Map<string, string>): void => {
-        this.metadataTypes = metadataTypes;
-      },
-    );
+    this.currentRecordsSubscription = this.filterService.currentRecords$.subscribe({
+      next: (records: Map<string, Array<string>>) => (this.currentRecords = records),
+      error: () => catchError(this.errorHandler.handleError()),
+    });
+    this.metadataTypesSubscription = this.filterService.metadataTypes$.subscribe({
+      next: (metadataTypes: Map<string, string>) => (this.metadataTypes = metadataTypes),
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 
   unsubscribeAll(): void {
@@ -67,6 +79,13 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     this.metadataLabelsSubscription?.unsubscribe();
     this.currentRecordsSubscription?.unsubscribe();
     this.metadataTypesSubscription?.unsubscribe();
+  }
+
+  getFilterToolTips(): void {
+    this.httpService.getUserHelp(this.currentView.storageName, this.currentView.metadataNames).subscribe({
+      next: (response: Report) => (this.toolTipSuggestions = response),
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 
   closeFilter(): void {
@@ -79,5 +98,11 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
 
   removeFilter(metadataName: string): void {
     this.filterService.updateFilterContext(metadataName, '');
+  }
+
+  getTooltipSuggestion(key: string) {
+    if (this.toolTipSuggestions) {
+      return this.toolTipSuggestions[key as keyof Report];
+    }
   }
 }

@@ -67,7 +67,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   fetchAndSetAppVersion() {
-    fetch('../assets/package.json')
+    fetch('assets/package.json')
       .then((response: Response): void => {
         if (response.ok) {
           response.json().then((packageJson: { version: string }): void => {
@@ -110,22 +110,22 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   openReportInSeparateTab(data: ReportData): void {
-    const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id === data.report.storageId.toString());
+    const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id === String(data.report.storageId));
     if (tabIndex == -1) {
       this.tabs.push({
         key: data.report.name,
-        id: data.report.storageId.toString(),
+        id: String(data.report.storageId),
         data: data.report,
         path: `report/${data.report.storageId}`,
       });
     }
 
-    this.router.navigate([ReportComponent.ROUTER_PATH, data.report.storageId.toString()]);
+    this.router.navigate([ReportComponent.ROUTER_PATH, data.report.storageId]);
   }
 
   observeReportSave(): void {
     this.dynamicService.getObservable().subscribe((report: Report) => {
-      const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => Number(tab.id) == report.storageId);
+      const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id == String(report.storageId));
       this.tabs[tabIndex].data = report;
     });
   }
@@ -133,7 +133,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   openNewCompareTab(data: CompareData): void {
     const tabId = this.helperService.createCompareTabId(data.originalReport, data.runResultReport);
     const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id == tabId);
-
     if (tabIndex == -1) {
       data.id = tabId;
       this.tabs.push({

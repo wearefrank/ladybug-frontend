@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { HelperService } from '../../shared/services/helper.service';
-import { Observable, Subscription } from 'rxjs';
+import { catchError, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
 import {
@@ -21,9 +21,8 @@ import {
   NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
-import { NgIf } from '@angular/common';
-import { Checkpoint } from '../../shared/interfaces/checkpoint';
-import { CheckpointType } from '../../shared/enums/checkpoint-type';
+import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
+import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-debug-tree',
@@ -31,7 +30,6 @@ import { CheckpointType } from '../../shared/enums/checkpoint-type';
   styleUrls: ['./debug-tree.component.css'],
   standalone: true,
   imports: [
-    NgIf,
     ButtonComponent,
     NgbDropdown,
     NgbDropdownToggle,
@@ -62,6 +60,7 @@ export class DebugTreeComponent implements OnDestroy {
     private helperService: HelperService,
     private httpService: HttpService,
     private settingsService: SettingsService,
+    private errorHandler: ErrorHandling,
   ) {
     this.subscribeToSettingsServiceObservables();
   }
@@ -91,11 +90,10 @@ export class DebugTreeComponent implements OnDestroy {
   checkUnmatchedCheckpoints(reports: Report[], currentView: any) {
     for (let report of reports) {
       if (report.storageName === currentView.storageName) {
-        this.httpService
-          .getUnmatchedCheckpoints(report.storageName, report.storageId.toString(), currentView.currentViewName)
-          .subscribe((unmatched: any) => {
-            this.hideCheckpoints(unmatched, this.tree.elements.toArray());
-          });
+        this.httpService.getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name).subscribe({
+          next: (unmatched: any) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
+          error: () => catchError(this.errorHandler.handleError()),
+        });
       }
     }
   }
@@ -111,14 +109,15 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   subscribeToSettingsServiceObservables(): void {
-    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
-      (value: boolean) => {
+    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
+      next: (value: boolean) => {
         this.showMultipleAtATime = value;
         if (!this.showMultipleAtATime) {
           this.removeAllReportsButOne();
         }
       },
-    );
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 
   hideCheckpoints(unmatched: string[], items: TreeItemComponent[]): void {
@@ -145,40 +144,13 @@ export class DebugTreeComponent implements OnDestroy {
     if (!this.showMultipleAtATime) {
       this.tree.clearItems();
     }
-    const newReport: CreateTreeItem = this.transformReportToHierarchyStructure(report);
+    const newReport: CreateTreeItem = new ReportHierarchyTransformer().transform(report);
     const optional: OptionalParameters = { childrenKey: 'checkpoints', pathAttribute: 'uid' };
     const path: string = this.tree.addItem(newReport, optional);
     this.tree.selectItem(path);
     if (this.currentView) {
       this.hideOrShowCheckpointsBasedOnView(this.currentView);
     }
-  }
-
-  //Ladybug reports don't have a parent-child structure for its checkpoints, this function creates that parent-child structure
-  transformReportToHierarchyStructure(report: Report): Report {
-    const checkpoints: Checkpoint[] = report.checkpoints;
-    const checkpointsTemplate: Checkpoint[] = [];
-    let startpointCounter: number = 0;
-    const startPointList: Checkpoint[] = [checkpoints[0]];
-    for (let i = 0; i < checkpoints.length; i++) {
-      const checkpoint: Checkpoint = checkpoints[i];
-      checkpoint.icon = this.helperService.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
-      if (checkpointsTemplate.length === 0) {
-        checkpointsTemplate.push(checkpoints[0]);
-      } else {
-        const currentStartpoint: Checkpoint[] = startPointList;
-        if (!currentStartpoint[startPointList.length - 1].checkpoints) {
-          currentStartpoint[startPointList.length - 1].checkpoints = [];
-        }
-        currentStartpoint[startPointList.length - 1].checkpoints!.push(checkpoint);
-        if (checkpoint.type == CheckpointType.Startpoint) {
-          startPointList.push(checkpoint);
-          startpointCounter++;
-        }
-      }
-    }
-    report.checkpoints = checkpointsTemplate;
-    return report;
   }
 
   selectReport(value: FileTreeItem): void {
