@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
@@ -13,7 +13,7 @@ import { UpdateReport } from '../../shared/interfaces/update-report';
   templateUrl: './edit-form.component.html',
   styleUrl: './edit-form.component.css',
 })
-export class EditFormComponent implements OnInit {
+export class EditFormComponent implements OnChanges {
   @Input({ required: true }) report!: Report;
   editForm!: FormGroup;
   nameKey: string = 'name';
@@ -22,7 +22,7 @@ export class EditFormComponent implements OnInit {
   transformationKey: string = 'transformation';
   variableKey: string = 'variableCsv';
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
     this.editForm = new FormGroup(
       {
         [this.nameKey]: new FormControl(this.report.name),
