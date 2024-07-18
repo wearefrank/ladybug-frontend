@@ -78,14 +78,14 @@
     "cypress-file-upload": "^5.0.8",
     "eslint": "^8.53.0",
     "eslint-plugin-sonarjs": "^0.11.0",
-    "husky": "^7.0.4",
+    "husky": "^9.0.11",
     "jasmine-core": "3.9.0",
     "karma": "6.4.2",
     "karma-chrome-launcher": "3.1.0",
     "karma-coverage": "2.2.1",
     "karma-jasmine": "4.0.1",
     "karma-jasmine-html-reporter": "1.7.0",
-    "start-server-and-test": "^1.14.0",
+    "start-server-and-test": "^2.0.4",
     "typescript": "5.2.2"
   },
   "publishConfig": {
