@@ -85,7 +85,7 @@
     "karma-coverage": "2.2.1",
     "karma-jasmine": "4.0.1",
     "karma-jasmine-html-reporter": "1.7.0",
-    "start-server-and-test": "^1.14.0",
+    "start-server-and-test": "^2.0.4",
     "typescript": "5.2.2"
   },
   "publishConfig": {
