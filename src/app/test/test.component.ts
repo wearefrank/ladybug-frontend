@@ -12,7 +12,6 @@ import { ToastService } from '../shared/services/toast.service';
 import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
 import { ReportData } from '../shared/interfaces/report-data';
-import { NodeLinkStrategy } from '../shared/enums/compare-method';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
@@ -272,7 +271,6 @@ export class TestComponent implements OnInit, AfterViewInit {
       );
       this.tabService.openNewCompareTab({
         id: tabId,
-        nodeLinkStrategy: NodeLinkStrategy.NONE,
         viewName: 'compare',
         originalReport: reranReport.originalReport,
         runResultReport: reranReport.runResultReport,
