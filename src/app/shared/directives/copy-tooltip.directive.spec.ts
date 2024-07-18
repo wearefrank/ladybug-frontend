@@ -6,7 +6,7 @@ import { By } from '@angular/platform-browser';
 import { CopyTooltipDirective } from './copy-tooltip.directive';
 
 @Component({
-  template: ` <button matTooltip [appCopyTooltip]="value">Click me</button>`,
+  template: ` <button [appCopyTooltip]="value">Click me</button>`,
 })
 class TestComponent {
   value = '';
