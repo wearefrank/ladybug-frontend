@@ -74,7 +74,6 @@ export class EditDisplayComponent {
   metadataTableVisible: boolean = false;
   rerunResult?: TestResult;
   report: any = {};
-  uid?: string;
   displayReport: boolean = false;
 
   constructor(
@@ -88,13 +87,9 @@ export class EditDisplayComponent {
   showReport(report: Report): void {
     this.disableEditing();
     this.report = report;
-    if (report.xml) {
-      this.editor.setNewReport(report.xml);
-      this.uid = undefined;
-    } else {
-      this.editor.setNewReport(this.helperService.convertMessage(report));
-      this.uid = this.report.uid;
-    }
+    report.xml
+      ? this.editor.setNewReport(report.xml)
+      : this.editor.setNewReport(this.helperService.convertMessage(report));
     this.rerunResult = undefined;
     this.displayReport = true;
   }
