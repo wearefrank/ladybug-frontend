@@ -2,5 +2,7 @@ export interface TestListItem {
   checked: boolean;
   name: string;
   path: string;
-  storageId: string;
+  description: string;
+  storageId: number;
+  variables: string;
 }

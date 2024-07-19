@@ -4,7 +4,6 @@ export interface View {
   defaultView: boolean;
   crudStorage: boolean;
   metadataNames: string[];
-  nodeLinkStrategy: string;
   storageName: string;
   name: string;
 }

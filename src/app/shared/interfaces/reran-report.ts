@@ -1,7 +1,7 @@
 import { Report } from './report';
 
 export interface ReranReport {
-  id: string;
+  id: number;
   originalReport: Report;
   runResultReport: Report;
   color: string;
