@@ -1,3 +1,5 @@
+import { ReranReport } from './reran-report';
+
 export interface TestListItem {
   checked: boolean;
   name: string;
@@ -5,4 +7,5 @@ export interface TestListItem {
   description: string;
   storageId: number;
   variables: string;
+  reranReport?: ReranReport;
 }

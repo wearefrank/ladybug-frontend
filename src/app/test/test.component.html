@@ -4,7 +4,8 @@
   </div>
   <div class="col">
     <div class="buttons pt-1">
-      <button data-cy-test="runAll" class="btn btn-info" title="Run All" (click)="runSelected()"><i class="fa fa-play"></i></button>
+      <button data-cy-test="runAll" class="btn btn-info" title="Run All" (click)="runSelected()"><i
+        class="fa fa-play"></i></button>
       <button data-cy-test="refresh" class="btn btn-info" title="ReloadTestReports"
               (click)="loadData('')"><i class="fa fa-refresh"></i></button>
       <button class="btn btn-info" title="Reset" (click)="resetRunner()">Reset</button>
@@ -24,13 +25,15 @@
       </button>
       <button data-cy-test="deleteSelected" class="btn btn-info" title="Delete Selected"
               (click)="openDeleteModal()"><i class="fa fa-trash"></i></button>
-      <button class="btn btn-info" title="Clone report" (click)="openCloneModal()">Clone</button>
+      <button class="btn btn-info" title="Clone report"
+              (click)="openCloneModal()">Clone
+      </button>
       <button data-cy-test="copySelected" class="btn btn-info" title="Copy Selected"
               (click)="copySelected()"><i class="fa fa-copy"></i></button>
       <button data-cy-test="downloadBinary" class="btn btn-info" title="Download Binary"
               (click)="downloadSelected()"><i class="fa fa-download"></i></button>
-      <button data-cy-test="upload" type="button" class="btn btn-info"
-              title="Upload" (click)="uploadFileTest.click()">
+      <button data-cy-test="upload" type="button" class="btn btn-info" title="Upload"
+              (click)="uploadFileTest.click()">
         <i class="fa fa-upload"></i>
         <input #uploadFileTest data-cy-test="uploadFile" type="file" id="uploadFileTest"
                (change)="uploadReport($event)">
@@ -41,24 +44,26 @@
       <label for="moveToInput">Move/Copy to:</label>
       <form class="input-group" (ngSubmit)="updatePath()">
         <input #moveToInput type="text" class="form-control mr-1 my-2 py-0" id="moveToInput" name="filter"
-               [ngModel]="currentFilter"/>
+               [ngModel]="currentFilter" />
         <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="setUpdatePathAction('move')">Move</button>
         <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="setUpdatePathAction('copy')"><i
           class="fa fa-copy"></i></button>
       </form>
     </div>
-    <div>
-      @if (generatorStatus) {
-        <p>Generator is {{ generatorStatus.toLocaleLowerCase() }}</p>
-      }
-    </div>
+    @if (generatorEnabled) {
+      <p>Generator is {{ generatorEnabled|booleanToString: 'enabled':'disabled' }}</p>
+    }
+
 
     <div class="table-responsive" id="testReportTable">
       <table class="table table-hover">
         <thead>
         <tr>
-          <th><input data-cy-test="reportChecked" type="checkbox" [checked]="amountOfSelectedReports === reports?.length" (click)="setCheckedForAllReports(true)"></th>
-          @if (showStorageIds()) {
+          <th>
+            <input data-cy-test="reportChecked" type="checkbox" [checked]="amountOfSelectedReports === reports?.length"
+                   (click)="toggleSelectAll()">
+          </th>
+          @if (showStorageIds) {
             <th>StorageId</th>
           }
           <th>(Re)run/open</th>
@@ -71,55 +76,59 @@
         </thead>
         <tbody data-cy-test="table" id="testReports">
           @for (report of reports; track report.storageId) {
-            <ng-container class="form-inline">
-              @if (matches(report)) {
-                <tr>
+
+            @if (matches(report)) {
+              <tr>
+                <td>
+                  <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked"
+                         (click)="toggleCheck(report)">
+                </td>
+                @if (showStorageIds) {
                   <td>
-                    <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
+                    {{ report.storageId }}
                   </td>
-                  @if (showStorageIds()) {
-                    <td>
-                      {{ report.storageId }}
-                    </td>
-                  }
-                  <td>
-                    <div class="buttons">
-                      <button data-cy-test="runReport" title="Run report" class="btn btn-info button-width" (click)="run(report.storageId)"><i class="fa fa-play"></i></button>
-                      <button data-cy-test="openReport" title="Open report" class="btn btn-info button-width" (click)="openReport(report.storageId, report.name)"><i class="fa fa-folder-open"></i>
+                }
+                <td>
+                    <span class="buttons">
+                      <button data-cy-test="runReport" title="Run report" class="btn btn-info button-width"
+                              (click)="run(report)"><i class="fa fa-play"></i></button>
+                      <button data-cy-test="openReport" title="Open report" class="btn btn-info button-width"
+                              (click)="openReport(report.storageId, report.name)"><i class="fa fa-folder-open"></i>
                       </button>
-                    </div>
-                  </td>
-                  <td>
-                    {{ getFullPath(report.path, report.name) }}
-                  </td>
-                  <td>
-                    {{ report.description }}
-                  </td>
-                  <td>
-                    <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
-                  </td>
-                  <td>
-                    @if (getReranReport(report.storageId)) {
-                      <span data-cy-test="runResult"
-                            [id]="'runResult#' + report.storageId"
-                            [style.color]="getReranReport(report.storageId).color">
-                      {{ getReranReport(report.storageId).resultString }}
                     </span>
-                    }
-                  </td>
-                  <td>
-                    @if (getReranReport(report.storageId)) {
-                      <span>
+                </td>
+                <td>
+                  {{ getFullPath(report.path, report.name) }}
+                </td>
+                <td>
+                  {{ report.description }}
+                </td>
+                <td>
+                  @if (report.variables) {
+                    <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
+                  }
+                </td>
+                <td>
+                  @if (getReranReport(report.storageId)) {
+                    <span data-cy-test="runResult"
+                          [id]="'runResult#' + report.storageId"
+                          [style.color]="getReranReport(report.storageId)!.color">
+                      {{ getReranReport(report.storageId)!.resultString }}
+                    </span>
+                  }
+                </td>
+                <td>
+                  @if (getReranReport(report.storageId)) {
+                    <span class="buttons">
                         <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
                                 (click)="replaceReport(report.storageId)">Replace</button>
                         <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
                                 (click)="compareReports(report.storageId)">Compare</button>
-                      </span>
-                    }
-                  </td>
-                </tr>
-              }
-            </ng-container>
+                    </span>
+                  }
+                </td>
+              </tr>
+            }
           }
         </tbody>
       </table>
