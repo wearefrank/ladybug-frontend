@@ -1,115 +1,90 @@
 @if (displayReport) {
   <div class="d-flex flex-row justify-content-between align-items-center"
        id="displayButtons">
-    <div class="d-flex flex-column w-100">
-      <div class="d-flex flex-row justify-content-between w-100 align-items-center m-1">
-        <div class="d-flex flex-row">
-          <button
-            data-cy-debug-editor="close"
-            title="Close"
-            class="btn btn-info mr-1"
-            (click)="closeReport(false)"
-          ><i class="fa fa-times"></i></button>
-          @if (!newTab) {
-            <button
-              data-cy-debug-editor="copy"
-              class="btn btn-info mr-1"
-              title="Copy"
-              (click)="copyReport()"
-            ><i class="fa fa-copy"></i></button>
-          }
-          <div ngbDropdown title="Download">
-            <button ngbDropdownToggle class="btn btn-info"
-            ><i class="fa fa-download px-2"></i><span class="caret"></span></button>
-            <div ngbDropdownMenu>
-              <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
-              <button ngbDropdownItem (click)="downloadReport(false, true)">
-                XML
-                <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i>
-              </button>
-              <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
-            </div>
-          </div>
-        </div>
-
-        @if (report.name) {
-          <div class="title">
-            <h4
-              data-cy-metadata-table="reportname"
-              class="report-title"
-              title="Click to copy title"
-              [cdkCopyToClipboard]="report.name"
-              (click)="toggleToolTip(tooltip)"
-            >{{ report.name }}</h4>
-            <span
-              #tooltip="matTooltip"
-              class="copied-tooltip"
-              matTooltip="Copied"
-            ></span>
-          </div>
-        }
-        <div
-          class="mr-2 cursor-pointer"
-          title="Show possibilities with editor"
-          [style.visibility]="editingEnabled ? 'hidden' : 'visible'"
-          (click)="showEditorPossibilitiesModal(possibilitiesModal)"
-        ><i class="bi bi-info-circle info-circle-size"></i></div>
-      </div>
-
-      <div data-cy-debug-editor="buttons" class="d-flex flex-row align-items-center mb-3">
+    <div data-cy-debug-editor="buttons" class="button-row">
+      <button
+        data-cy-debug-editor="close"
+        title="Close"
+        class="btn btn-info"
+        (click)="closeReport(false)"
+      ><i class="fa fa-times"></i></button>
+      @if (!newTab) {
         <button
-          data-cy-open-metadata-table
-          class="btn btn-info mx-1 h-fit"
-          title="Open metadata table"
-          (click)="toggleMetadataTable()">
-          {{ metadataTableVisible|booleanToString:'Hide' :'Show' }} metadata
-        </button>
-        <app-toggle-button
-          data-cy-report="toggleEdit"
-          class="mx-1"
-          [labels]="{on: 'Edit', off:'View'}"
-          [value]="editingEnabled"
-          (valueChanged)="toggleEditMode($event)"
-        ></app-toggle-button>
-
-        <span class="button-divider">&#124;</span>
-        @if (report.xml) {
-          <button
-            data-cy-report="rerun"
-            class="btn btn-info mr-1"
-            [title]=" editingEnabled ? 'Please save your changes to rerun the report' : 'Rerun this report'"
-            [disabled]="editingEnabled"
-            (click)="openDifferenceModal('saveRerun')"
-          >Rerun</button>
-        }
-        @if (editingEnabled) {
-          <button
-            data-cy-report="discard"
-            class="btn btn-info mr-1"
-            title="Discard Changes"
-            (click)="openDifferenceModal('discard')"
-          ><i class="fa fa-trash"></i></button>
-          <button
-            data-cy-report="save"
-            class="btn btn-info"
-            title="Save"
-            (click)="openDifferenceModal('save')"
-          ><i class="fa fa-save"></i></button>
-        }
-        @if (report.encoding === 'Base64') {
-          <button class="btn btn-info" title="Convert to Base64" (click)="changeEncoding($event)">Base64</button>
-        }
-
-        @if (report.stub) {
-          <div class="w-fit mx-1 my-0">
-            <select class="form-control" (change)="selectStubStrategy($event)">
-              <option [value]="-1" [selected]="report.stub === -1">Use report level stub strategy</option>
-              <option [value]="0" [selected]="report.stub === 0">Always stub this checkpoint</option>
-              <option [value]="1" [selected]="report.stub === 1">Never stub this checkpoint</option>
-            </select>
-          </div>
-        }
+          data-cy-debug-editor="copy"
+          class="btn btn-info"
+          title="Copy report to test tab"
+          (click)="copyReport()"
+        ><i class="fa fa-copy"></i></button>
+      }
+      <div ngbDropdown title="Download">
+        <button ngbDropdownToggle class="btn btn-info"><i class="fa fa-download px-2"></i><span class="caret"></span></button>
+        <div ngbDropdownMenu>
+          <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
+          <button ngbDropdownItem (click)="downloadReport(false, true)">
+            XML
+            <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i>
+          </button>
+          <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
+        </div>
       </div>
+      <button
+        data-cy-open-metadata-table
+        class="btn btn-info h-fit"
+        title="Open metadata table"
+        (click)="toggleMetadataTable()">
+        {{ metadataTableVisible|booleanToString:'Hide' :'Show' }} metadata
+      </button>
+      <app-toggle-button
+        data-cy-report="toggleEdit"
+        [labels]="{on: 'Edit', off:'View'}"
+        [value]="editingEnabled"
+        (valueChanged)="toggleEditMode($event)"
+      ></app-toggle-button>
+
+      <span class="button-divider">&#124;</span>
+      @if (report.xml) {
+        <button
+          data-cy-report="rerun"
+          class="btn btn-info"
+          [title]=" editingEnabled ? 'Please save your changes to rerun the report' : 'Rerun this report'"
+          [disabled]="editingEnabled"
+          (click)="openDifferenceModal('saveRerun')"
+        >Rerun
+        </button>
+      }
+      @if (editingEnabled) {
+        <button
+          data-cy-report="discard"
+          class="btn btn-info"
+          title="Discard Changes"
+          (click)="openDifferenceModal('discard')"
+        ><i class="fa fa-trash"></i></button>
+        <button
+          data-cy-report="save"
+          class="btn btn-info"
+          title="Save"
+          (click)="openDifferenceModal('save')"
+        ><i class="fa fa-save"></i></button>
+      }
+      @if (report.encoding === 'Base64') {
+        <button class="btn btn-info" title="Convert to Base64" (click)="changeEncoding($event)">Base64</button>
+      }
+
+      @if (report.stub) {
+        <div class="w-fit mx-1 my-0">
+          <select class="form-control" (change)="selectStubStrategy($event)">
+            <option [value]="-1" [selected]="report.stub === -1">Use report level stub strategy</option>
+            <option [value]="0" [selected]="report.stub === 0">Always stub this checkpoint</option>
+            <option [value]="1" [selected]="report.stub === 1">Never stub this checkpoint</option>
+          </select>
+        </div>
+      }
+      <div
+        class="mr-2 cursor-pointer ml-auto"
+        title="Show possibilities with editor"
+        [style.visibility]="editingEnabled ? 'hidden' : 'visible'"
+        (click)="showEditorPossibilitiesModal(possibilitiesModal)"
+      ><i class="bi bi-info-circle info-circle-size"></i></div>
     </div>
   </div>
 
@@ -118,12 +93,12 @@
   }
 
   @if (metadataTableVisible) {
-    <app-display-table [report]="report" />
+    <app-display-table [report]="report"/>
   }
 }
 
 @if (editingRootNode) {
-  <app-edit-form [report]="report" />
+  <app-edit-form [report]="report"/>
 }
 <app-custom-editor
   data-cy-report="editor"
@@ -132,7 +107,7 @@
   [readOnlyMode]="!editingChildNode"
 />
 
-<app-difference-modal (saveChangesEvent)="saveChanges(report.stub)" (rerunEvent)="rerunReport()" />
+<app-difference-modal (saveChangesEvent)="saveChanges(report.stub)" (rerunEvent)="rerunReport()"/>
 
 <ng-template #possibilitiesModal let-modal>
   <div class="modal-header d-flex align-items-center">
