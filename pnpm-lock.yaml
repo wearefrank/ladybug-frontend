@@ -54,8 +54,8 @@ importers:
         specifier: ^3.2.2
         version: 3.4.1(prettier@3.3.2)
       ace-builds:
-        specifier: ^1.14.0
-        version: 1.35.2
+        specifier: ^1.35.3
+        version: 1.35.3
       angular-split:
         specifier: ^14.1.0
         version: 14.1.0(@angular/common@17.0.8(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.8))(rxjs@7.4.0))(@angular/core@17.0.8(rxjs@7.4.0)(zone.js@0.14.8))(rxjs@7.4.0)
@@ -2145,8 +2145,8 @@ packages:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
     engines: {node: '>= 0.6'}
 
-  ace-builds@1.35.2:
-    resolution: {integrity: sha512-06d00u4jDZx+ieI0jLlgy/uefx8kcgz7lhI0mCIFEu8NVWirH00U5IEP7tePHy4sjPsRcJUH4VbJZacoit2Hng==}
+  ace-builds@1.35.3:
+    resolution: {integrity: sha512-4cHLy+4L3FHOTis4IrDYsHZYhyYrIqtmA4HRiRXcxLTpmjQMbJ6Vutoc3c2uC9xS11g/rDwqcw+3zXHPSHD/qw==}
 
   acorn-import-assertions@1.9.0:
     resolution: {integrity: sha512-cmMwop9x+8KFhxvKrKfPYmN6/pKTYYHBqLa0DfvVZcKMJWNyWLnaqND7dx/qn66R7ewM1UX5XMaDVP5wlVTaVA==}
@@ -8246,7 +8246,7 @@ snapshots:
       mime-types: 2.1.35
       negotiator: 0.6.3
 
-  ace-builds@1.35.2: {}
+  ace-builds@1.35.3: {}
 
   acorn-import-assertions@1.9.0(acorn@8.12.0):
     dependencies:
