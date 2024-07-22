@@ -13,7 +13,6 @@ export class ReportHierarchyTransformer {
     for (const checkpoint of checkpoints) {
       const iconData: IconData = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
       checkpoint.icon = iconData.path;
-      checkpoint.iconClass = '';
       checkpoint.iconClass = iconData.cssClasses;
 
       if (checkpoint.type === CheckpointType.Startpoint) {

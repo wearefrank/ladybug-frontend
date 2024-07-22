@@ -56,11 +56,4 @@ export class HelperService {
   createCompareTabId(originalReport: Report, runResultReport: Report): string {
     return `${originalReport.storageId}-${runResultReport.storageId}`;
   }
-
-  conditionalCssClass(item: CreateTreeItem): string {
-    if (!item.uid || !item.iconClass) {
-      return 'bi bi-folder';
-    }
-    return item.iconClass;
-  }
 }
