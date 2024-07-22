@@ -14,12 +14,12 @@ import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 import { Report } from '../../shared/interfaces/report';
-import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
+import { MetadataTableComponent } from '../../shared/components/display-table/metadata-table.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
-import { Subject, catchError } from 'rxjs';
+import { catchError, Subject } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { EditFormComponent } from '../edit-form/edit-form.component';
 import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
@@ -46,7 +46,7 @@ import { UpdateReportUtil } from '../../shared/util/update-report-util';
     NgbDropdownItem,
     ReactiveFormsModule,
     CustomEditorComponent,
-    DisplayTableComponent,
+    MetadataTableComponent,
     BooleanToStringPipe,
     NgStyle,
     ClipboardModule,

@@ -3,3 +3,7 @@
   width: 100%;
   background-color: white;
 }
+
+.right-side {
+  overflow: hidden;
+}
