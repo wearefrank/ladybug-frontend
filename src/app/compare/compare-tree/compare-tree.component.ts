@@ -16,6 +16,7 @@ import {
   NgSimpleFileTreeModule,
   OptionalParameters,
 } from 'ng-simple-file-tree';
+import { HelperService } from '../../shared/services/helper.service';
 
 export const treeSideConst = ['left', 'right'] as const;
 export type TreeSide = (typeof treeSideConst)[number];
@@ -40,6 +41,7 @@ export class CompareTreeComponent {
     highlightOpenFolders: false,
     folderBehaviourOnClick: 'select',
     expandAllFolders: true,
+    determineIconClass: this.helperService.conditionalCssClass,
   };
 
   rightTreeOptions: FileTreeOptions = {
@@ -47,7 +49,10 @@ export class CompareTreeComponent {
     folderBehaviourOnClick: 'select',
     expandAllFolders: true,
     determineFontColor: (item: CreateTreeItem) => this.setRedLabels(item),
+    determineIconClass: this.helperService.conditionalCssClass,
   };
+
+  constructor(private helperService: HelperService) {}
 
   createTrees(leftReport: Report, rightReport: Report): void {
     this.leftReport = new ReportHierarchyTransformer().transform(leftReport);

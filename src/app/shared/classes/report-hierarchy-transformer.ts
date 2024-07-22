@@ -10,7 +10,6 @@ export class ReportHierarchyTransformer {
 
   transform(report: Report): Report {
     const checkpoints: Checkpoint[] = report.checkpoints;
-
     for (const checkpoint of checkpoints) {
       const iconData: IconData = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
       checkpoint.icon = iconData.path;
@@ -67,16 +66,11 @@ export class ReportHierarchyTransformer {
   }
 
   getImage(type: CheckpointType, encoding: string, level: number): IconData {
-    const even: boolean = this.determineEvenCheckpoint(level);
     const iconData: IconData = { ...CHECKPOINT_TYPE_STRINGS[type] };
     if (encoding === this.THROWABLE_ENCODER) {
       iconData.cssClasses += '-error';
     }
-    iconData.cssClasses += even ? '-even' : '-odd';
+    iconData.cssClasses += level % 2 == 0 ? '-even' : '-odd';
     return iconData;
-  }
-
-  private determineEvenCheckpoint(level: number): boolean {
-    return level % 2 == 0;
   }
 }

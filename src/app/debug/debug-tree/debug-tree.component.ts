@@ -54,7 +54,7 @@ export class DebugTreeComponent implements OnDestroy {
     highlightOpenFolders: false,
     folderBehaviourOnClick: 'select',
     autoOpenCondition: this.conditionalOpenFunction,
-    determineIconClass: this.conditionalCssClass,
+    determineIconClass: this.helperService.conditionalCssClass,
   };
 
   constructor(
@@ -191,12 +191,5 @@ export class DebugTreeComponent implements OnDestroy {
   conditionalOpenFunction(item: CreateTreeItem): boolean {
     const type = item['type'];
     return type === undefined || type === 1 || type === 2;
-  }
-
-  conditionalCssClass(item: CreateTreeItem): string {
-    if (!item.uid || !item.iconClass) {
-      return '';
-    }
-    return item.iconClass;
   }
 }

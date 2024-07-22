@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Report } from '../interfaces/report';
+import { CreateTreeItem } from 'ng-simple-file-tree';
 
 @Injectable({
   providedIn: 'root',
@@ -54,5 +55,12 @@ export class HelperService {
 
   createCompareTabId(originalReport: Report, runResultReport: Report): string {
     return `${originalReport.storageId}-${runResultReport.storageId}`;
+  }
+
+  conditionalCssClass(item: CreateTreeItem): string {
+    if (!item.uid || !item.iconClass) {
+      return 'bi bi-folder';
+    }
+    return item.iconClass;
   }
 }
