@@ -53,8 +53,6 @@ export class CompareTreeComponent {
     determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };
 
-  constructor(private helperService: HelperService) {}
-
   createTrees(leftReport: Report, rightReport: Report): void {
     this.leftReport = new ReportHierarchyTransformer().transform(leftReport);
     this.rightReport = new ReportHierarchyTransformer().transform(rightReport);
