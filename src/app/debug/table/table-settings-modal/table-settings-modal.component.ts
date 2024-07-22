@@ -1,9 +1,9 @@
 import { Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
 import { SettingsService } from '../../../shared/services/settings.service';
-import { Subscription, catchError } from 'rxjs';
+import { catchError, Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
 import { ToastComponent } from '../../../shared/components/toast/toast.component';
@@ -134,7 +134,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.httpService.postTransformation(form.transformation).subscribe({
       error: catchError(this.errorHandler.handleError()),
     });
-    const generatorEnabled: string = String(form.generatorEnabled === 'Enabled');
+    const generatorEnabled: boolean = form.generatorEnabled === 'Enabled';
     const data: UploadParams = {
       generatorEnabled: generatorEnabled,
       regexFilter: form.regexFilter,

@@ -1,4 +1,4 @@
 export interface UploadParams {
-  generatorEnabled: string;
+  generatorEnabled: boolean;
   regexFilter: string;
 }
