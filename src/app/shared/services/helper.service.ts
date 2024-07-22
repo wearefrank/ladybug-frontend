@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Report } from '../interfaces/report';
-import { CreateTreeItem } from 'ng-simple-file-tree';
 
 @Injectable({
   providedIn: 'root',
