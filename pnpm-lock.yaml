@@ -133,8 +133,8 @@ importers:
         specifier: 17.2.0
         version: 17.2.0(@angular/cli@17.0.9(chokidar@3.6.0))(eslint@8.57.0)(typescript@5.2.2)
       '@angular-eslint/template-parser':
-        specifier: 17.2.0
-        version: 17.2.0(eslint@8.57.0)(typescript@5.2.2)
+        specifier: 18.1.0
+        version: 18.1.0(eslint@8.57.0)(typescript@5.2.2)
       '@angular/cli':
         specifier: 17.0.9
         version: 17.0.9(chokidar@3.6.0)
@@ -322,10 +322,10 @@ packages:
     peerDependencies:
       '@angular/cli': '>= 17.0.0 < 18.0.0'
 
-  '@angular-eslint/template-parser@17.2.0':
-    resolution: {integrity: sha512-Js9w1IXWPvXEjd05bWkZzRaLw0g0mJPztAWOj3DiU7H9LKkautQq0zZu02cAAnXZim2CsAagEh2GmGjhaYvoKg==}
+  '@angular-eslint/template-parser@18.1.0':
+    resolution: {integrity: sha512-YqBNusbt3vWbm8eo2dICytU8hP8/ez4uETkwKpMvB+H1E0rYaD2F17D47YO9BBFUHCNzAGIBlA8BWDN1kLEMlw==}
     peerDependencies:
-      eslint: ^7.20.0 || ^8.0.0
+      eslint: ^8.57.0 || ^9.0.0
       typescript: '*'
 
   '@angular-eslint/utils@17.2.0':
@@ -5720,9 +5720,9 @@ snapshots:
       - supports-color
       - typescript
 
-  '@angular-eslint/template-parser@17.2.0(eslint@8.57.0)(typescript@5.2.2)':
+  '@angular-eslint/template-parser@18.1.0(eslint@8.57.0)(typescript@5.2.2)':
     dependencies:
-      '@angular-eslint/bundled-angular-compiler': 17.2.0
+      '@angular-eslint/bundled-angular-compiler': 18.1.0
       eslint: 8.57.0
       eslint-scope: 8.0.1
       typescript: 5.2.2
