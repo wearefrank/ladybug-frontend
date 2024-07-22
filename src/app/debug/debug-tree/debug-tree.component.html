@@ -1,9 +1,24 @@
-<div class="pl-2">
-  @if (tree && tree.getItems().length > 0){<div data-cy-debug-tree="buttons" class="row" id="treeButtons">
-    <app-button [icon]="'fa fa-expand'" [title]="'Expand All'" (click)="expandAll()"></app-button>
-    <app-button [icon]="'fa fa-compress'" [title]="'Collapse All'" (click)="collapseAll()"></app-button>
-    <app-button data-cy-debug-tree="closeAll" [icon]="'fa fa-times'" [title]="'Close All'" (click)="closeEntireTree()"></app-button>
-    <input class="my-2 mx-1 pl-1" type="text" name="search" placeholder="&#xF002;" (keyup)="changeSearchTerm($event)"/>
-  </div>}
-  <ng-simple-tree #tree data-cy-debug-tree="root" childrenKey="checkpoints" pathAttribute="uid" [options]="treeOptions" (itemSelected)="selectReport($event)"></ng-simple-tree>
+<div class="m-1">
+  @if (tree && tree.getItems().length > 0) {
+    <div data-cy-debug-tree="buttons" class="button-row">
+      <button data-cy-debug-tree="closeAll" class="btn btn-info" title="Close All" (click)="closeEntireTree()">
+        <i class="fa fa-times"></i>
+      </button>
+      <button class="btn btn-info" title="Expand All" (click)="expandAll()">
+        <i class="fa fa-expand"></i>
+      </button>
+      <button class="btn btn-info" title="Collapse All" (click)="collapseAll()">
+        <i class="fa fa-compress"></i>
+      </button>
+      <input type="text" name="search" placeholder="&#xF002;" (keyup)="changeSearchTerm($event)"/>
+    </div>
+  }
+  <ng-simple-tree
+    #tree
+    data-cy-debug-tree="root"
+    childrenKey="checkpoints"
+    pathAttribute="uid"
+    [options]="treeOptions"
+    (itemSelected)="selectReport($event)"
+  />
 </div>
