@@ -14,12 +14,12 @@ import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 import { Report } from '../../shared/interfaces/report';
-import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
+import { MetadataTableComponent } from '../../shared/components/display-table/metadata-table.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
-import { Subject, catchError } from 'rxjs';
+import { catchError, Subject } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { EditFormComponent } from '../edit-form/edit-form.component';
 import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
@@ -28,6 +28,9 @@ import { ToastService } from '../../shared/services/toast.service';
 import { TestResult } from '../../shared/interfaces/test-result';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
+import { UpdateReport } from '../../shared/interfaces/update-report';
+import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
+import { UpdateReportUtil } from '../../shared/util/update-report-util';
 
 @Component({
   selector: 'app-edit-display',
@@ -43,7 +46,7 @@ import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
     NgbDropdownItem,
     ReactiveFormsModule,
     CustomEditorComponent,
-    DisplayTableComponent,
+    MetadataTableComponent,
     BooleanToStringPipe,
     NgStyle,
     ClipboardModule,
@@ -110,7 +113,6 @@ export class EditDisplayComponent {
     this.displayReport = false;
     this.editingRootNode = false;
     this.editingChildNode = false;
-    this.editingRootNode = false;
     if (removeReportFromTree) {
       this.closeReportEvent.next(this.report);
     }
@@ -130,9 +132,13 @@ export class EditDisplayComponent {
   openDifferenceModal(type: ChangesAction): void {
     let reportDifferences: ReportDifference[] = [];
     if (this.report.xml && this.editFormComponent) {
-      reportDifferences = this.getDifferences();
+      reportDifferences = this.editFormComponent.getDifferences();
     } else if (this.report.message) {
-      reportDifferences.push(this.getDifference('message', this.report.message, this.editor?.getValue()));
+      reportDifferences.push({
+        name: 'message',
+        originalValue: this.report.message,
+        difference: new DiffMatchPatch().diff_main(this.report.message ?? '', this.editor?.getValue()),
+      });
     }
     if (reportDifferences.length > 0) {
       this.differenceModal.open(reportDifferences, type);
@@ -141,45 +147,20 @@ export class EditDisplayComponent {
     }
   }
 
-  getDifferences(): ReportDifference[] {
-    return [
-      this.getDifference('name', this.report.name, this.editFormComponent.name),
-      this.getDifference('description', this.report.description, this.editFormComponent.description),
-      this.getDifference('path', this.report.path, this.editFormComponent.path),
-      this.getDifference('transformation', this.report.transformation, this.editFormComponent.transformation),
-      this.getDifference('variables', this.report.variables, this.editFormComponent.variables),
-    ];
+  getReportValues(checkpointId: string): UpdateReport | UpdateCheckpoint {
+    return this.editingRootNode ? this.getReportValuesForRootNode() : this.getReportValuesForChildNode(checkpointId);
   }
 
-  getDifference(name: string, originalValue: string, newValue: string): ReportDifference {
-    const difference = new DiffMatchPatch().diff_main(originalValue ?? '', newValue ?? '');
+  getReportValuesForRootNode(): UpdateReport {
+    return this.editFormComponent.getValues();
+  }
+
+  getReportValuesForChildNode(checkpointId: string): UpdateCheckpoint {
     return {
-      name: name,
-      originalValue: originalValue,
-      difference: difference,
+      checkpointId: checkpointId,
+      // checkpointMessage can only be updated when stub is not in request body
+      checkpointMessage: this.editor.getValue(),
     };
-  }
-
-  getReportValues(checkpointId: string): any {
-    return this.editingRootNode || this.editingChildNode
-      ? {
-          name: this.editFormComponent.name,
-          path: this.editFormComponent.path,
-          description: this.editFormComponent.description,
-          transformation: this.editFormComponent.transformation,
-          checkpointId: checkpointId,
-          variables: this.editFormComponent.variables,
-          checkpointMessage: this.editor?.getValue() ?? '',
-        }
-      : {
-          name: this.report.name,
-          path: this.report.path,
-          description: this.report.description,
-          transformation: this.report.transformation,
-          checkpointId: checkpointId,
-          variables: this.report.variables,
-          checkpointMessage: this.report.checkpointMessage,
-        };
   }
 
   editReport(): void {
@@ -209,18 +190,26 @@ export class EditDisplayComponent {
       checkpointId = this.report.uid.split('#')[1];
     }
 
-    const body = { stub: stubStrategy, ...this.getReportValues(checkpointId) };
+    const body = this.getReportValues(checkpointId);
 
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
       next: (response: any) => {
         response.report.xml = response.xml;
         this.report = response.report;
         this.saveReportEvent.next(this.report);
-        this.editor.setNewReport(this.report.xml);
+        this.editor.setNewReport(UpdateReportUtil.isUpdateCheckpoint(body) ? body.checkpointMessage : this.report.xml);
         this.disableEditing();
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
+  }
+
+  discardChanges(): void {
+    this.disableEditing();
+    if (this.report.uid) {
+      this.editor.setNewReport(this.report.message);
+    }
+    this.toastService.showSuccess('Changes discarded!');
   }
 
   toggleMetadataTable(): void {

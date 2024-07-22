@@ -4,7 +4,7 @@ import { CompareData } from './compare-data';
 import { DiffEditorModel, MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TabService } from '../shared/services/tab.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DisplayTableComponent } from '../shared/components/display-table/display-table.component';
+import { MetadataTableComponent } from '../shared/components/display-table/metadata-table.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TitleCasePipe } from '@angular/common';
 import { NodeLinkStrategy, nodeLinkStrategyConst } from '../shared/enums/node-link-strategy';
@@ -20,7 +20,7 @@ import { StrReplacePipe } from '../shared/pipes/str-replace.pipe';
   standalone: true,
   imports: [
     CompareTreeComponent,
-    DisplayTableComponent,
+    MetadataTableComponent,
     MonacoEditorModule,
     ReactiveFormsModule,
     TitleCasePipe,
