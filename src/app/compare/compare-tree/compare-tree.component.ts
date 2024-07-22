@@ -16,7 +16,6 @@ import {
   NgSimpleFileTreeModule,
   OptionalParameters,
 } from 'ng-simple-file-tree';
-import { HelperService } from '../../shared/services/helper.service';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 
 export const treeSideConst = ['left', 'right'] as const;
