@@ -198,7 +198,7 @@ export class HttpService {
     return this.http.delete<void>(`api/report/${storage}`, { params: { storageIds: reportIds } });
   }
 
-  replaceReport(reportId: string, storage: string): Observable<void> {
+  replaceReport(reportId: number, storage: string): Observable<void> {
     return this.http.put<void>(`api/runner/replace/${storage}/${reportId}`, {
       headers: this.headers,
     });

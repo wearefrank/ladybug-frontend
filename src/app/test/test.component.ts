@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
@@ -20,6 +20,7 @@ import { TestListItem } from '../shared/interfaces/test-list-item';
 import { View } from '../shared/interfaces/view';
 import { OptionsSettings } from '../shared/interfaces/options-settings';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
+import { BooleanToStringPipe } from '../shared/pipes/boolean-to-string.pipe';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -38,25 +39,25 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     TestSettingsModalComponent,
     CloneModalComponent,
     DeleteModalComponent,
+    BooleanToStringPipe,
   ],
 })
-export class TestComponent implements OnInit, AfterViewInit {
+export class TestComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'test';
-  reports: any[] = [];
+  reports?: TestListItem[];
   reranReports: ReranReport[] = [];
-  generatorStatus?: string;
+  generatorEnabled?: boolean;
   currentFilter: string = '';
-  currentView: any = {
-    metadataNames: ['storageId', 'name', 'path'],
-    storageName: 'Test',
-  };
+  metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
+  storageName: string = 'Test';
   updatePathAction: UpdatePathAction = 'move';
-  @Output() openCompareReportsEvent = new EventEmitter<any>();
+  showStorageIds?: boolean;
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
   @ViewChild(TestFolderTreeComponent) testFileTreeComponent!: TestFolderTreeComponent;
   @ViewChild('moveToInput', { read: NgModel }) moveToInputModel!: NgModel;
+  amountOfSelectedReports: number = 0;
 
   constructor(
     private httpService: HttpService,
@@ -65,18 +66,58 @@ export class TestComponent implements OnInit, AfterViewInit {
     private tabService: TabService,
     private errorHandler: ErrorHandling,
   ) {
-    this.getGeneratorStatus();
+    this.setStorageIdsFromLocalStorage();
+    this.setGeneratorStatusFromLocalStorage();
   }
 
-  ngAfterViewInit(): void {
-    this.loadData('');
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  setStorageIdsFromLocalStorage(): void {
+    this.showStorageIds = localStorage.getItem('showReportStorageIds') === 'true';
+  }
+
+  setGeneratorStatusFromLocalStorage() {
+    const generatorStatus: string | null = localStorage.getItem('generatorEnabled');
+    if (generatorStatus) {
+      this.generatorEnabled = generatorStatus === 'true';
+    } else {
+      this.httpService.getSettings().subscribe({
+        next: (response: OptionsSettings) => {
+          console.log(response);
+          this.generatorEnabled = response.generatorEnabled;
+          localStorage.setItem('generatorEnabled', String(this.generatorEnabled));
+        },
+        error: () => catchError(this.errorHandler.handleError()),
+      });
+    }
+  }
+
+  loadData(path?: string): void {
+    this.httpService.getTestReports(this.metadataNames, this.storageName).subscribe({
+      next: (value: TestListItem[]) => {
+        this.reports = this.sortByName(value);
+        this.testFileTreeComponent.setData(this.reports);
+        this.setCheckedForAllReports(true);
+        this.amountOfSelectedReports = value.length;
+        if (path) {
+          this.testFileTreeComponent.selectItem(path);
+        } else {
+          this.testFileTreeComponent.selectItem(this.testFileTreeComponent.rootFolder.name);
+        }
+      },
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 
   openCloneModal(): void {
-    if (this.helperService.getSelectedReports(this.reports).length === 1) {
-      this.cloneModal.open(this.helperService.getSelectedReports(this.reports)[0]);
-    } else {
-      this.toastService.showWarning('Make sure exactly one report is selected at a time');
+    if (this.reports) {
+      if (this.getSelectedReports().length === 1) {
+        this.cloneModal.open(this.getSelectedReports()[0]);
+      } else {
+        this.toastService.showWarning('Make sure exactly one report is selected at a time');
+      }
     }
   }
 
@@ -84,75 +125,21 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.testSettingsModal.open();
   }
 
-  showStorageIds(): boolean {
-    return localStorage.getItem('showReportStorageIds') === 'true';
-  }
-
-  ngOnInit(): void {
-    this.loadData('');
-    this.getGeneratorStatus();
-  }
-
-  getGeneratorStatus() {
-    const generatorStatus = localStorage.getItem('generatorEnabled');
-    if (generatorStatus) {
-      this.generatorStatus = generatorStatus;
-    } else {
-      this.httpService.getSettings().subscribe({
-        next: (response: OptionsSettings) => {
-          this.generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
-          localStorage.setItem('generatorEnabled', this.generatorStatus);
-        },
-        error: () => catchError(this.errorHandler.handleError()),
-      });
-    }
-  }
-
-  addCopiedReports(metadata: any[]): void {
-    const amountAdded: number = metadata.length - this.reports.length;
-    if (amountAdded > 0) {
-      for (let index = this.reports.length; index <= metadata.length - 1; index++) {
-        if (this.matches(metadata[index])) metadata[index].checked = true;
-        this.reports.push(metadata[index]);
+  addCopiedReports(metadata: TestListItem[]): void {
+    if (this.reports) {
+      const amountAdded: number = metadata.length - this.reports.length;
+      if (amountAdded > 0) {
+        for (let index = this.reports.length; index <= metadata.length - 1; index++) {
+          if (this.matches(metadata[index])) metadata[index].checked = true;
+          this.reports.push(metadata[index]);
+        }
       }
     }
   }
 
   getCopiedReports(): void {
-    this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
+    this.httpService.getTestReports(this.metadataNames, this.storageName).subscribe({
       next: (response: TestListItem[]) => this.addCopiedReports(response),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-  }
-
-  loadData(path: string): void {
-    this.httpService.getViews().subscribe({
-      next: (views: View[]) => {
-        const defaultView: View | undefined = views.find((view: View) => view.defaultView);
-        console.log(defaultView);
-        /*if (defaultView) {
-          const selectedView: View = views[defaultViewKey];
-          if (selectedView.storageName) {
-            this.currentView.targetStorage = selectedView.storageName;
-          }
-        }*/
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-    this.httpService.getTestReports(this.currentView.metadataNames, this.currentView.storageName).subscribe({
-      next: (value: TestListItem[]) => {
-        this.reports = value;
-        this.testFileTreeComponent.setData(this.reports);
-        if (path) {
-          setTimeout(() => {
-            this.testFileTreeComponent.selectItem(path);
-          });
-        } else {
-          setTimeout(() => {
-            this.testFileTreeComponent.tree.selectItem(this.testFileTreeComponent.rootFolder.name);
-          });
-        }
-      },
       error: () => catchError(this.errorHandler.handleError()),
     });
   }
@@ -161,10 +148,12 @@ export class TestComponent implements OnInit, AfterViewInit {
     this.reranReports = [];
   }
 
-  run(reportId: number): void {
-    if (this.generatorStatus === 'Enabled') {
-      this.httpService.runReport(this.currentView.storageName, reportId).subscribe({
-        next: (response: TestResult): void => this.showResult(response),
+  run(report: TestListItem): void {
+    if (this.generatorEnabled) {
+      this.httpService.runReport(this.storageName, report.storageId).subscribe({
+        next: (response: TestResult): void => {
+          report.reranReport = this.createReranReport(response);
+        },
         error: () => catchError(this.errorHandler.handleError()),
       });
     } else {
@@ -173,14 +162,12 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   runSelected(): void {
-    this.helperService.getSelectedReports(this.reports).forEach((report) => this.run(report.storageId));
+    for (const report of this.getSelectedReports()) {
+      this.run(report);
+    }
   }
 
-  removeReranReportIfExists(id: string): void {
-    this.reranReports = this.reranReports.filter((report) => report.id != id);
-  }
-
-  createReranReport(result: TestResult, id: string): ReranReport {
+  createReranReport(result: TestResult): ReranReport {
     let originalReport: Report = result.originalReport;
     let runResultReport: Report = result.runResultReport;
 
@@ -188,7 +175,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     runResultReport.xml = result.runResultXml;
 
     return {
-      id: id,
+      id: result.originalReport.storageId,
       originalReport: result.originalReport,
       runResultReport: result.runResultReport,
       color: result.equal ? 'green' : 'red',
@@ -196,23 +183,16 @@ export class TestComponent implements OnInit, AfterViewInit {
     };
   }
 
-  showResult(result: TestResult): void {
-    const id: string = String(result.originalReport.storageId);
-    this.removeReranReportIfExists(id);
-    const reranReport: ReranReport = this.createReranReport(result, id);
-    this.reranReports.push(reranReport);
-  }
-
-  getReranReport(id: string): ReranReport {
-    return <ReranReport>this.reranReports.find((report) => report.id == id);
+  getReranReport(id: number): ReranReport | undefined {
+    return this.reranReports.find((report: ReranReport) => report.id === id);
   }
 
   openReport(storageId: number, name: string): void {
-    this.httpService.getReport(storageId, this.currentView.storageName).subscribe({
+    this.httpService.getReport(storageId, this.storageName).subscribe({
       next: (report: Report): void => {
         const reportData: ReportData = {
           report: report,
-          currentView: this.currentView,
+          currentView: { storageName: this.storageName, metadataNames: this.metadataNames } as View,
         };
         this.tabService.openNewTab(reportData);
       },
@@ -221,29 +201,29 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   openDeleteModal(): void {
-    let reportsToBeDeleted = this.helperService.getSelectedReports(this.reports);
+    const reportsToBeDeleted: TestListItem[] = this.getSelectedReports();
     if (reportsToBeDeleted.length > 0) {
       this.deleteModal.open(reportsToBeDeleted);
     }
   }
 
   deleteSelected(): void {
-    this.httpService
-      .deleteReport(this.helperService.getSelectedIds(this.reports), this.currentView.storageName)
-      .subscribe({
-        next: () => this.loadData(''),
+    if (this.reports) {
+      this.httpService.deleteReport(this.helperService.getSelectedIds(this.reports), this.storageName).subscribe({
+        next: () => this.loadData(),
         error: () => catchError(this.errorHandler.handleError()),
       });
+    }
   }
 
   downloadSelected(): void {
-    const selectedReports: Report[] = this.helperService.getSelectedReports(this.reports);
+    const selectedReports: TestListItem[] = this.getSelectedReports();
     if (selectedReports.length > 0) {
       let queryString: string = '';
       for (let report of selectedReports) {
         queryString += `id=${report.storageId}&`;
       }
-      this.helperService.download(queryString, this.currentView.storageName, true, false);
+      this.helperService.download(queryString, this.storageName, true, false);
     } else {
       this.toastService.showWarning('No Report Selected!');
     }
@@ -255,14 +235,14 @@ export class TestComponent implements OnInit, AfterViewInit {
     if (file) {
       const formData: FormData = new FormData();
       formData.append('file', file);
-      this.httpService.uploadReportToStorage(formData, this.currentView.storageName).subscribe({
-        next: () => this.loadData(''),
+      this.httpService.uploadReportToStorage(formData, this.storageName).subscribe({
+        next: () => this.loadData(),
         error: () => catchError(this.errorHandler.handleError()),
       });
     }
   }
 
-  compareReports(id: string): void {
+  compareReports(id: number): void {
     const reranReport = this.reranReports.find((report: ReranReport) => report.id == id);
     if (reranReport) {
       const tabId: string = this.helperService.createCompareTabId(
@@ -278,14 +258,8 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
   }
 
-  replaceReport(reportId: string): void {
-    this.httpService.replaceReport(reportId, this.currentView.targetStorage).subscribe({
-      next: () => {
-        this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-    this.httpService.replaceReport(reportId, this.currentView.storageName).subscribe({
+  replaceReport(reportId: number): void {
+    this.httpService.replaceReport(reportId, this.storageName).subscribe({
       next: () => {
         this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
       },
@@ -294,40 +268,60 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   copySelected(): void {
-    const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
-    const data: Record<string, number[]> = {
-      [this.currentView.storageName]: copiedIds,
-    };
-    this.httpService.copyReport(data, this.currentView.storageName).subscribe({
-      next: () => this.loadData(''),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    if (this.reports) {
+      const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
+      const data: Record<string, number[]> = {
+        [this.storageName]: copiedIds,
+      };
+      this.httpService.copyReport(data, this.storageName).subscribe({
+        next: () => this.loadData(),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
+    }
   }
 
-  toggleCheck(report: any): void {
+  toggleCheck(report: TestListItem): void {
     report.checked = !report.checked;
+    if (report.checked) {
+      this.amountOfSelectedReports++;
+    } else {
+      this.amountOfSelectedReports--;
+    }
   }
 
-  checkAll(): void {
-    this.reports.forEach((report) => (report.checked = true));
+  toggleSelectAll(): void {
+    if (this.reports) {
+      if (this.amountOfSelectedReports === this.reports.length) {
+        this.setCheckedForAllReports(false);
+        this.amountOfSelectedReports = 0;
+      } else {
+        this.setCheckedForAllReports(true);
+        this.amountOfSelectedReports = this.reports.length;
+      }
+    }
   }
 
-  uncheckAll(): void {
-    this.reports.forEach((report) => (report.checked = false));
+  setCheckedForAllReports(value: boolean) {
+    if (this.reports) {
+      for (const report of this.reports) {
+        report.checked = value;
+      }
+    }
   }
 
   updatePath(): void {
-    const reportIds: number[] = this.helperService.getSelectedIds(this.reports);
-    if (reportIds.length > 0) {
-      let path: string = this.moveToInputModel.value;
-      path = this.transformPath(path);
-      const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
-      this.httpService.updatePath(reportIds, this.currentView.storageName, map).subscribe({
-        next: () => this.loadData(path),
-        error: () => catchError(this.errorHandler.handleError()),
-      });
-    } else {
-      this.toastService.showWarning('No Report Selected!');
+    if (this.reports) {
+      const reportIds: number[] = this.helperService.getSelectedIds(this.reports);
+      if (reportIds.length > 0) {
+        const path: string = this.transformPath(this.moveToInputModel.value);
+        const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
+        this.httpService.updatePath(reportIds, this.storageName, map).subscribe({
+          next: () => this.loadData(path),
+          error: () => catchError(this.errorHandler.handleError()),
+        });
+      } else {
+        this.toastService.showWarning('No Report Selected!');
+      }
     }
   }
 
@@ -336,10 +330,13 @@ export class TestComponent implements OnInit, AfterViewInit {
   }
 
   changeFilter(filter: string): void {
-    filter = filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
-    this.currentFilter = filter;
-    for (const report of this.reports) {
-      report.checked = this.matches(report);
+    if (this.reports) {
+      const transformedFilter: string =
+        filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
+      this.currentFilter = transformedFilter;
+      for (const report of this.reports) {
+        report.checked = this.matches(report);
+      }
     }
   }
 
@@ -353,18 +350,18 @@ export class TestComponent implements OnInit, AfterViewInit {
     return path;
   }
 
-  matches(report: any): boolean {
-    let name = report.path + report.name;
-    return name.match(`(/)?${this.currentFilter}.*`) != undefined;
+  matches(report: TestListItem): boolean {
+    const name = report.path + report.name;
+    return new RegExp(`(/)?${this.currentFilter}.*`).test(name);
   }
 
   extractVariables(variables: string): string {
     if (!variables || variables == 'null') {
       return '';
     }
-    let map = variables.split('\n');
-    let keys = map[0].split(',');
-    let values = map[1].split(',');
+    const map = variables.split('\n');
+    const keys = map[0].split(',');
+    const values = map[1].split(',');
     let resultString = '';
     for (let i in keys) {
       resultString += keys[i] + '=' + values[i] + ', ';
@@ -372,8 +369,8 @@ export class TestComponent implements OnInit, AfterViewInit {
     return resultString.slice(0, -2);
   }
 
-  sortByName(): any[] {
-    return this.reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
+  sortByName(reports: TestListItem[]): TestListItem[] {
+    return reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
   }
 
   getFullPath(path: string, name: string): string {
@@ -381,5 +378,9 @@ export class TestComponent implements OnInit, AfterViewInit {
       return `${path.replace(this.currentFilter, '')}${name}`;
     }
     return `/${name}`;
+  }
+
+  getSelectedReports(): TestListItem[] {
+    return this.reports?.filter((item: TestListItem) => item.checked) ?? [];
   }
 }
