@@ -11,7 +11,8 @@
     "projects/**/*",
     "dist/**",
     "target/**",
-    "node_modules/**"
+    "node_modules/**",
+    "cypress/**"
   ],
   "overrides": [
     {

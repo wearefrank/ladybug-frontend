@@ -12,6 +12,38 @@
 import Chainable = Cypress.Chainable;
 import { StringMatcher } from 'cypress/types/net-stubbing';
 
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      initializeApp(): Chainable;
+      resetApp(): Chainable;
+      clearTestReports(): Chainable;
+      navigateToTestTabAndWait(): Chainable;
+      navigateToDebugTabAndWait(): Chainable;
+      createReport(): Chainable;
+      createOtherReport(): Chainable;
+      createRunningReport(): Chainable;
+      createReportWithLabelNull(): Chainable;
+      createReportWithLabelEmpty(): Chainable;
+      createReportWithInfopoint(): Chainable;
+      createReportWithMutipleStartpoints(): Chainable;
+      clearDebugStore(): Chainable;
+      clearReportsInProgress(): Chainable;
+      selectIfNotSelected(): Chainable;
+      enableShowMultipleInDebugTree(): Chainable;
+      checkTestTableNumRows(length: number): Chainable;
+      checkTestTableReportsAre(reportNames: string[]): Chainable;
+      debugTreeGuardedCopyReport(reportName: string, numExpandedNodes: number, aliasSuffix: string): Chainable;
+      clickFirstFileInFileTree(): Chainable;
+      clickRowInTable(index: number): Chainable;
+      checkFileTreeLength(length: number): Chainable;
+      refreshApp(): Chainable;
+      getTableBody(): Chainable;
+      assertDebugTableLength(length: number): Chainable;
+    }
+  }
+}
+
 Cypress.Commands.add('initializeApp' as keyof Chainable, () => {
   //Custom command to initialize app and wait for all api requests
   interceptGetApiCall(/\/api\/*?/g, 'apiCall');
@@ -40,17 +72,6 @@ Cypress.Commands.add('navigateToDebugTabAndWait' as keyof Chainable, () => {
   navigateToTabAndWait('debug');
 });
 
-//More string values can be added for each tab that can be opened
-function navigateToTabAndWait(tab: 'debug' | 'test') {
-  const apiCallAlias: string = `apiCall${tab}Tab`;
-  interceptGetApiCall(/\/api\/*?/g, apiCallAlias);
-  cy.visit('');
-  cy.get(`[data-cy-nav-tab="${tab}Tab"]`).click();
-  cy.wait(`@${apiCallAlias}`).then(() => {
-    cy.log('All api requests have completed, ');
-  });
-}
-
 Cypress.Commands.add('createReport' as keyof Chainable, () => {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Simple%20report`).then((resp) => {
@@ -58,117 +79,70 @@ Cypress.Commands.add('createReport' as keyof Chainable, () => {
   });
 });
 
-function createOtherReport() {
+Cypress.Commands.add('createOtherReport' as keyof Chainable, () => {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Another%20simple%20report`).then((resp) => {
     expect(resp.status).equal(200);
   });
-}
+});
 
-Cypress.Commands.add('createOtherReport' as keyof Chainable, createOtherReport);
-
-function createRunningReport() {
+Cypress.Commands.add('createRunningReport' as keyof Chainable, () => {
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Waiting%20for%20thread%20to%20start`).then(
     (resp) => {
       expect(resp.status).equal(200);
     },
   );
-}
+});
 
-Cypress.Commands.add('createRunningReport' as keyof Chainable, createRunningReport);
-
-function createReportWithLabelNull() {
+Cypress.Commands.add('createReportWithLabelNull' as keyof Chainable, () => {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Message%20is%20null`).then((resp) => {
     expect(resp.status).equal(200);
   });
-}
+});
 
-Cypress.Commands.add('createReportWithLabelNull' as keyof Chainable, createReportWithLabelNull);
-
-function createReportWithLabelEmpty() {
+Cypress.Commands.add('createReportWithLabelEmpty' as keyof Chainable, () => {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Message%20is%20an%20empty%20string`).then(
     (resp) => {
       expect(resp.status).equal(200);
     },
   );
-}
+});
 
-Cypress.Commands.add('createReportWithLabelEmpty' as keyof Chainable, createReportWithLabelEmpty);
-
-function createReportWithInfopoint() {
+Cypress.Commands.add('createReportWithInfopoint' as keyof Chainable, () => {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(
     `${Cypress.env('backendServer')}/index.jsp?createReport=Hide%20a%20checkpoint%20in%20blackbox%20view`,
   ).then((resp) => {
     expect(resp.status).equal(200);
   });
-}
+});
 
-Cypress.Commands.add('createReportWithInfopoint' as keyof Chainable, createReportWithInfopoint);
-
-function createReportWithMutipleStartpoints() {
+Cypress.Commands.add('createReportWithMutipleStartpoints' as keyof Chainable, () => {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Multiple%20startpoints`).then((resp) => {
     expect(resp.status).equal(200);
   });
-}
+});
 
-Cypress.Commands.add('createReportWithMutipleStartpoints' as keyof Chainable, createReportWithMutipleStartpoints);
-
-function clearDebugStore() {
+Cypress.Commands.add('clearDebugStore' as keyof Chainable, () => {
   cy.request(`${Cypress.env('backendServer')}/index.jsp?clearDebugStorage=true`).then((resp) => {
     expect(resp.status).equal(200);
   });
-}
+});
 
-Cypress.Commands.add('clearDebugStore' as keyof Chainable, clearDebugStore);
-
-Cypress.Commands.add('clearReportsInProgress' as keyof Chainable, clearReportsInProgress);
-
-function clearReportsInProgress() {
+Cypress.Commands.add('clearReportsInProgress' as keyof Chainable, () => {
   cy.request(`${Cypress.env('backendServer')}/index.jsp?removeReportsInProgress`).then((resp) => {
     expect(resp.status).equal(200);
   });
-}
-
-function waitForNumFiles(thePath: any, fileCount: number, timeLeft: number) {
-  return cy.task('downloads', thePath).then((actualFiles: any) => {
-    if (actualFiles.length >= fileCount) {
-      return true;
-    } else {
-      cy.wait(1000);
-      let nextTimeLeft = timeLeft - 1000;
-      return nextTimeLeft <= 0 ? false : waitForNumFiles(thePath, fileCount, nextTimeLeft);
-    }
-  });
-}
-
-Cypress.Commands.add('waitForNumFiles' as keyof Chainable, (thePath: any, expectedNumFiles: number) => {
-  waitForNumFiles(thePath, expectedNumFiles, 10_000);
 });
 
-function getShownMonacoModelElement() {
-  cy.get('[data-cy-report="editor"] [data-keybinding-context]').within((monacoEditor: JQuery<HTMLElement>) => {
-    const keybindingNumber = Number.parseInt(monacoEditor.attr('data-keybinding-context'));
-    // Show the number
-    cy.wrap(keybindingNumber);
-    return cy.get(`[data-uri $= ${keybindingNumber}]`);
-  });
-}
-
-Cypress.Commands.add('getShownMonacoModelElement' as keyof Chainable, getShownMonacoModelElement);
-
-function selectIfNotSelected(node: unknown) {
+Cypress.Commands.add('selectIfNotSelected' as keyof Chainable, { prevSubject: 'element' }, (node) => {
   if (!node.hasClass('node-selected')) {
     cy.wrap(node).click();
   }
-}
-
-Cypress.Commands.add('selectIfNotSelected' as keyof Chainable, { prevSubject: 'element' }, (node) =>
-  selectIfNotSelected(node),
-);
+});
 
 Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
   cy.get('[data-cy-debug="openSettings"]').click();
@@ -176,18 +150,18 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
   cy.get('[data-cy-settings="saveChanges"]').click();
 });
 
-Cypress.Commands.add('checkTestTableNumRows', (n) => {
-  cy.get('[data-cy-test="table"] tr').should('have.length', n);
+Cypress.Commands.add('checkTestTableNumRows', (length: number): void => {
+  cy.get('[data-cy-test="table"] tr').should('have.length', length);
 });
 
-Cypress.Commands.add('checkTestTableReportsAre', (reportNames) => {
+Cypress.Commands.add('checkTestTableReportsAre' as keyof Chainable, (reportNames: string[]): void => {
   cy.checkTestTableNumRows(reportNames.length);
   reportNames.forEach((reportName) => {
     cy.get('[data-cy-test="table"]').find('tr').contains(`/${reportName}`).should('have.length', 1);
   });
 });
 
-Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName, numExpandedNodes, aliasSuffix) => {
+Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName: string, numExpandedNodes: number, aliasSuffix: string) => {
   const alias = `debugTreeGuardedCopyReport_${aliasSuffix}`;
   cy.get('[data-cy-debug-tree="root"]')
     .find(`app-tree-item .item-name:contains(${reportName})`)
@@ -212,29 +186,25 @@ Cypress.Commands.add('clickFirstFileInFileTree' as keyof Chainable, () => {
   cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('app-tree-item').eq(0).click();
 });
 
-Cypress.Commands.add('clickFirstChildInFileTree' as keyof Chainable, () => {
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item app-tree-item').find('div > div').eq(0).click();
-});
-
 Cypress.Commands.add('clickRowInTable', (index: number) => {
   cy.get('[data-cy-debug="tableBody"]').get('tbody').find('tr').eq(index).click();
 });
 
-Cypress.Commands.add('checkFileTreeLength', (n: number) => {
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item').should('have.length', n);
+Cypress.Commands.add('checkFileTreeLength', (length: number) => {
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').should('have.length', length);
 });
 
-Cypress.Commands.add('refreshApp', () => {
+Cypress.Commands.add('refreshApp' as keyof Chainable, () => {
   interceptGetApiCall(/\/api\/*?/g, 'apiCall');
   cy.get('[data-cy-debug="refresh"]').click();
   cy.wait('@apiCall').then(() => cy.log('All api requests have completed'));
 });
 
-Cypress.Commands.add('getTableBody', () => {
+Cypress.Commands.add('getTableBody' as keyof Chainable, () => {
   return cy.get('[data-cy-debug="tableBody"]').get('tbody');
 });
 
-Cypress.Commands.add('assertDebugTableLength', (length: number) => {
+Cypress.Commands.add('assertDebugTableLength' as keyof Chainable, (length: number) => {
   length === 0
     ? cy.getTableBody().find('tr').should('not.exist')
     : cy.getTableBody().find('tr').should('have.length', length);
@@ -246,4 +216,15 @@ function interceptGetApiCall(url: StringMatcher, alias: string): void {
     hostname: 'localhost',
     url: url,
   }).as(alias);
+}
+
+//More string values can be added for each tab that can be opened
+function navigateToTabAndWait(tab: 'debug' | 'test'): void {
+  const apiCallAlias: string = `apiCall${tab}Tab`;
+  interceptGetApiCall(/\/api\/*?/g, apiCallAlias);
+  cy.visit('');
+  cy.get(`[data-cy-nav-tab="${tab}Tab"]`).click();
+  cy.wait(`@${apiCallAlias}`).then(() => {
+    cy.log('All api requests have completed, ');
+  });
 }
