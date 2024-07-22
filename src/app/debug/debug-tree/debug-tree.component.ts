@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { HelperService } from '../../shared/services/helper.service';
-import { Observable, Subscription } from 'rxjs';
+import { catchError, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
 import {
@@ -22,6 +22,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
+import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-debug-tree',
@@ -60,6 +61,7 @@ export class DebugTreeComponent implements OnDestroy {
     private helperService: HelperService,
     private httpService: HttpService,
     private settingsService: SettingsService,
+    private errorHandler: ErrorHandling,
   ) {
     this.subscribeToSettingsServiceObservables();
   }
@@ -89,11 +91,10 @@ export class DebugTreeComponent implements OnDestroy {
   checkUnmatchedCheckpoints(reports: Report[], currentView: any) {
     for (let report of reports) {
       if (report.storageName === currentView.storageName) {
-        this.httpService
-          .getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name)
-          .subscribe((unmatched: any) => {
-            this.hideCheckpoints(unmatched, this.tree.elements.toArray());
-          });
+        this.httpService.getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name).subscribe({
+          next: (unmatched: any) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
+          error: () => catchError(this.errorHandler.handleError()),
+        });
       }
     }
   }
@@ -109,14 +110,15 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   subscribeToSettingsServiceObservables(): void {
-    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe(
-      (value: boolean) => {
+    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
+      next: (value: boolean) => {
         this.showMultipleAtATime = value;
         if (!this.showMultipleAtATime) {
           this.removeAllReportsButOne();
         }
       },
-    );
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 
   hideCheckpoints(unmatched: string[], items: TreeItemComponent[]): void {

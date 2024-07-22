@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CompareTreeComponent } from './compare-tree.component';
-import { jqxTreeModule } from 'jqwidgets-ng/jqxtree';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
 
 describe('CompareTreeComponent', () => {
   let component: CompareTreeComponent;
@@ -10,7 +10,7 @@ describe('CompareTreeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [jqxTreeModule, CompareTreeComponent, HttpClientTestingModule],
+      imports: [NgSimpleFileTreeModule, CompareTreeComponent, HttpClientTestingModule],
     }).compileComponents();
   });
 

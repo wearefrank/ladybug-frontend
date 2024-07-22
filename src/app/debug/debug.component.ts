@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
-import { Subscription } from 'rxjs';
+import { Subscription, catchError } from 'rxjs';
 import { DebugReportService } from './debug-report.service';
 import { AngularSplitModule } from 'angular-split';
 import { TableComponent } from './table/table.component';
@@ -8,6 +8,7 @@ import { ReportComponent } from '../report/report.component';
 import { ToastService } from '../shared/services/toast.service';
 import { HttpService } from '../shared/services/http.service';
 import { View } from '../shared/interfaces/view';
+import { ErrorHandling } from '../shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-debug',
@@ -29,6 +30,7 @@ export class DebugComponent implements OnInit, OnDestroy {
     private debugReportService: DebugReportService,
     private httpService: HttpService,
     private toastService: ToastService,
+    private errorHandler: ErrorHandling,
   ) {}
 
   ngOnInit(): void {
@@ -42,16 +44,22 @@ export class DebugComponent implements OnInit, OnDestroy {
   }
 
   retrieveViews(): void {
-    this.httpService.getViews().subscribe((views: View[]): void => {
-      this.views = views;
-      if (!this.currentView) {
-        this.currentView = this.views.find((v: View) => v.defaultView);
-      }
+    this.httpService.getViews().subscribe({
+      next: (views: View[]) => {
+        this.views = views;
+        if (!this.currentView) {
+          this.currentView = this.views.find((v: View) => v.defaultView);
+        }
+      },
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
   subscribeToServices(): void {
-    this.viewSubscription = this.debugReportService.changeViewObservable.subscribe((view) => (this.currentView = view));
+    this.viewSubscription = this.debugReportService.changeViewObservable.subscribe({
+      next: (view) => (this.currentView = view),
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 
   unsubscribeAll(): void {
@@ -71,13 +79,14 @@ export class DebugComponent implements OnInit, OnDestroy {
 
   retrieveErrorsAndWarnings(): void {
     if (this.currentView) {
-      this.httpService
-        .getWarningsAndErrors(this.currentView.storageName)
-        .subscribe((value: string | undefined): void => {
+      this.httpService.getWarningsAndErrors(this.currentView.storageName).subscribe({
+        next: (value: string | undefined): void => {
           if (value) {
             this.showErrorsAndWarnings(value);
           }
-        });
+        },
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     }
   }
 
