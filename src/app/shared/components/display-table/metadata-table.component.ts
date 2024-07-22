@@ -1,15 +1,17 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { CheckpointTypePipe } from '../../pipes/checkpoint-type.pipe';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { CopyTooltipDirective } from '../../directives/copy-tooltip.directive';
 
 @Component({
   selector: 'app-display-table',
-  templateUrl: './display-table.component.html',
-  styleUrls: ['./display-table.component.css'],
+  templateUrl: './metadata-table.component.html',
+  styleUrls: ['./metadata-table.component.css'],
   standalone: true,
-  imports: [ClipboardModule, CheckpointTypePipe],
+  imports: [ClipboardModule, CheckpointTypePipe, MatTooltipModule, CopyTooltipDirective],
 })
-export class DisplayTableComponent implements OnChanges {
+export class MetadataTableComponent implements OnChanges {
   @Input() report!: any;
   anyMessagesPresent: boolean = false;
 

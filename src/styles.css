@@ -142,3 +142,7 @@ html, body {
 .red {
   color: red;
 }
+
+[appCopiedTooltip] {
+  position: relative;
+}
