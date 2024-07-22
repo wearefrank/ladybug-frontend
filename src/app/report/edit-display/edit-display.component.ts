@@ -9,7 +9,6 @@ import {
   NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
-// @ts-expect-error no default export
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
@@ -137,6 +136,7 @@ export class EditDisplayComponent {
       reportDifferences.push({
         name: 'message',
         originalValue: this.report.message,
+        // @ts-ignore
         difference: new DiffMatchPatch().diff_main(this.report.message ?? '', this.editor?.getValue()),
       });
     }
