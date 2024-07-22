@@ -7,7 +7,7 @@
       <button data-cy-test="runAll" class="btn btn-info" title="Run All" (click)="runSelected()"><i
         class="fa fa-play"></i></button>
       <button data-cy-test="refresh" class="btn btn-info" title="ReloadTestReports"
-              (click)="loadData('')"><i class="fa fa-refresh"></i></button>
+              (click)="loadData()"><i class="fa fa-refresh"></i></button>
       <button class="btn btn-info" title="Reset" (click)="resetRunner()">Reset</button>
       <button class="btn btn-info" title="Options" (click)="openSettingsModal()"><i class="fa fa-cog"></i></button>
       <button
@@ -44,7 +44,7 @@
       <label for="moveToInput">Move/Copy to:</label>
       <form class="input-group" (ngSubmit)="updatePath()">
         <input #moveToInput type="text" class="form-control mr-1 my-2 py-0" id="moveToInput" name="filter"
-               [ngModel]="currentFilter" />
+               [ngModel]="currentFilter"/>
         <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="setUpdatePathAction('move')">Move</button>
         <button type="submit" class="btn btn-info my-2 mx-1 px-3" (click)="setUpdatePathAction('copy')"><i
           class="fa fa-copy"></i></button>

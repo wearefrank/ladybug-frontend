@@ -71,7 +71,7 @@ export class TestComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadData('');
+    this.loadData();
   }
 
   setStorageIdsFromLocalStorage(): void {
@@ -94,7 +94,7 @@ export class TestComponent implements OnInit {
     }
   }
 
-  loadData(path: string): void {
+  loadData(path?: string): void {
     this.httpService.getTestReports(this.metadataNames, this.storageName).subscribe({
       next: (value: TestListItem[]) => {
         this.reports = this.sortByName(value);
@@ -210,7 +210,7 @@ export class TestComponent implements OnInit {
   deleteSelected(): void {
     if (this.reports) {
       this.httpService.deleteReport(this.helperService.getSelectedIds(this.reports), this.storageName).subscribe({
-        next: () => this.loadData(''),
+        next: () => this.loadData(),
         error: () => catchError(this.errorHandler.handleError()),
       });
     }
@@ -236,7 +236,7 @@ export class TestComponent implements OnInit {
       const formData: FormData = new FormData();
       formData.append('file', file);
       this.httpService.uploadReportToStorage(formData, this.storageName).subscribe({
-        next: () => this.loadData(''),
+        next: () => this.loadData(),
         error: () => catchError(this.errorHandler.handleError()),
       });
     }
@@ -274,7 +274,7 @@ export class TestComponent implements OnInit {
         [this.storageName]: copiedIds,
       };
       this.httpService.copyReport(data, this.storageName).subscribe({
-        next: () => this.loadData(''),
+        next: () => this.loadData(),
         error: () => catchError(this.errorHandler.handleError()),
       });
     }
