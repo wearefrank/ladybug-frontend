@@ -2,7 +2,7 @@ import { Report } from '../interfaces/report';
 import { Checkpoint } from '../interfaces/checkpoint';
 import { CreateTreeItem, FileTreeItem } from 'ng-simple-file-tree';
 
-type ReportOrCheckpoint = Report | Checkpoint | CreateTreeItem | FileTreeItem | undefined;
+export type ReportOrCheckpoint = Report | Checkpoint | CreateTreeItem | FileTreeItem | undefined;
 
 export const ReportUtil = {
   isReport(node: ReportOrCheckpoint): node is Report {

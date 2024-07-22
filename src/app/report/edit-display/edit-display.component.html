@@ -42,7 +42,7 @@
       ></app-toggle-button>
 
       <span class="button-divider">&#124;</span>
-      @if (report.xml) {
+      @if (ReportUtil.isReport(selectedNode)) {
         <button
           data-cy-report="rerun"
           class="btn btn-info"
@@ -66,16 +66,16 @@
           (click)="openDifferenceModal('save')"
         ><i class="fa fa-save"></i></button>
       }
-      @if (report.encoding === 'Base64') {
+      @if (ReportUtil.isCheckPoint(selectedNode) && selectedNode.encoding === 'Base64') {
         <button class="btn btn-info" title="Convert to Base64" (click)="changeEncoding($event)">Base64</button>
       }
 
-      @if (report.stub) {
+      @if ((ReportUtil.isReport(selectedNode) || ReportUtil.isCheckPoint(selectedNode)) && selectedNode.stub) {
         <div class="w-fit mx-1 my-0">
           <select class="form-control" (change)="selectStubStrategy($event)">
-            <option [value]="-1" [selected]="report.stub === -1">Use report level stub strategy</option>
-            <option [value]="0" [selected]="report.stub === 0">Always stub this checkpoint</option>
-            <option [value]="1" [selected]="report.stub === 1">Never stub this checkpoint</option>
+            <option [value]="-1" [selected]="selectedNode.stub === -1">Use report level stub strategy</option>
+            <option [value]="0" [selected]="selectedNode.stub === 0">Always stub this checkpoint</option>
+            <option [value]="1" [selected]="selectedNode.stub === 1">Never stub this checkpoint</option>
           </select>
         </div>
       }
@@ -93,12 +93,12 @@
   }
 
   @if (metadataTableVisible) {
-    <app-display-table [report]="report"/>
+    <app-display-table [report]="selectedNode"/>
   }
 }
 
-@if (editingRootNode) {
-  <app-edit-form [report]="report"/>
+@if (editingRootNode && ReportUtil.isReport(selectedNode)) {
+  <app-edit-form [report]="selectedNode"/>
 }
 <app-custom-editor
   data-cy-report="editor"
@@ -107,7 +107,9 @@
   [readOnlyMode]="!editingChildNode"
 />
 
-<app-difference-modal (saveChangesEvent)="saveChanges(report.stub)" (discardChangesEvent)="discardChanges()" (rerunEvent)="rerunReport()"/>
+@if (ReportUtil.isReport(selectedNode) || ReportUtil.isCheckPoint(selectedNode)) {
+  <app-difference-modal (saveChangesEvent)="saveChanges(selectedNode.stub)" (discardChangesEvent)="discardChanges()" (rerunEvent)="rerunReport()"/>
+}
 
 <ng-template #possibilitiesModal let-modal>
   <div class="modal-header d-flex align-items-center">

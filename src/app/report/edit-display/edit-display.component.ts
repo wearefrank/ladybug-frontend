@@ -29,8 +29,7 @@ import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
-import { UpdateReportUtil } from '../../shared/util/update-report-util';
-import { Checkpoint } from '../../shared/interfaces/checkpoint';
+import { ReportOrCheckpoint, ReportUtil } from '../../shared/util/report-util';
 
 @Component({
   selector: 'app-edit-display',
@@ -74,7 +73,7 @@ export class EditDisplayComponent {
   editingRootNode: boolean = false;
   metadataTableVisible: boolean = false;
   rerunResult?: TestResult;
-  selectedNode?: Report | Checkpoint;
+  selectedNode?: ReportOrCheckpoint;
   displayReport: boolean = false;
 
   constructor(
@@ -85,7 +84,7 @@ export class EditDisplayComponent {
     private errorHandler: ErrorHandling,
   ) {}
 
-  showReport(node: Report | Checkpoint): void {
+  showReport(node: ReportOrCheckpoint): void {
     this.disableEditing();
     this.selectedNode = node;
     if (ReportUtil.isReport(this.selectedNode)) {
@@ -98,7 +97,7 @@ export class EditDisplayComponent {
   }
 
   changeEncoding(button: MouseEvent): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: ReportOrCheckpoint = this.selectedNode;
     if (!node || !ReportUtil.isCheckPoint(node)) {
       this.toastService.showDanger('Could not find report to change encoding');
       return;
@@ -107,7 +106,12 @@ export class EditDisplayComponent {
   }
 
   rerunReport(): void {
-    const reportId: number = this.report.storageId;
+    const node: ReportOrCheckpoint = this.selectedNode;
+    if (!node || !ReportUtil.isReport(node)) {
+      this.toastService.showDanger('Could not find report to rerun');
+      return;
+    }
+    const reportId: number = node.storageId;
     this.httpService.runReport(this.currentView.storageName, reportId).subscribe({
       next: (response: TestResult): void => {
         this.toastService.showSuccess('Report rerun successful');
@@ -118,7 +122,7 @@ export class EditDisplayComponent {
   }
 
   closeReport(removeReportFromTree: boolean): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: ReportOrCheckpoint = this.selectedNode;
     if (!node || !ReportUtil.isReport(node)) {
       this.toastService.showDanger('Could not find report to close');
       return;
@@ -133,13 +137,21 @@ export class EditDisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: ReportOrCheckpoint = this.selectedNode;
     if (!node) {
       this.toastService.showDanger('Could not find report to download');
       return;
     }
     let queryString: string;
-    queryString = ReportUtil.isReport(node) ? node.storageId.toString() : node.uid.split('#')[0];
+    queryString = ReportUtil.isReport(node)
+      ? node.storageId.toString()
+      : ReportUtil.isCheckPoint(node)
+        ? node.uid.split('#')[0]
+        : '';
+    if (!queryString) {
+      this.toastService.showDanger('Could not find report to download');
+      return;
+    }
     this.helperService.download(`${queryString}&`, this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
   }
@@ -149,18 +161,18 @@ export class EditDisplayComponent {
   }
 
   openDifferenceModal(type: ChangesAction): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: ReportOrCheckpoint = this.selectedNode;
     if (!node) {
       this.toastService.showDanger('Could not find report to open difference modal');
       return;
     }
     let reportDifferences: ReportDifference[] = [];
-    if (this.report.xml && this.editFormComponent) {
+    if (ReportUtil.isReport(node) && this.editFormComponent) {
       reportDifferences = this.editFormComponent.getDifferences();
-    } else if (this.report.message) {
+    } else if (ReportUtil.isCheckPoint(node)) {
       reportDifferences.push({
         name: 'message',
-        originalValue: this.report.message,
+        originalValue: node.message,
         // @ts-ignore
         difference: new DiffMatchPatch().diff_main(this.report.message ?? '', this.editor?.getValue()),
       });
@@ -189,7 +201,7 @@ export class EditDisplayComponent {
   }
 
   editReport(): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: ReportOrCheckpoint = this.selectedNode;
     if (node && ReportUtil.isReport(node)) {
       this.editingRootNode = true;
     } else {
@@ -207,12 +219,12 @@ export class EditDisplayComponent {
   }
 
   saveChanges(stubStrategy: number): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: ReportOrCheckpoint = this.selectedNode;
     let checkpointId: string = '';
     let storageId: string;
     if (node && ReportUtil.isReport(node)) {
       storageId = String(node.storageId);
-    } else if (node) {
+    } else if (node && ReportUtil.isCheckPoint(node)) {
       storageId = node.uid.split('#')[0];
       checkpointId = node.uid.split('#')[1];
     } else {
@@ -221,13 +233,14 @@ export class EditDisplayComponent {
     }
 
     const body = this.getReportValues(checkpointId);
+    const message: string = ReportUtil.isReport(node) ? node.xml : node.message;
 
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
       next: (response: any) => {
         response.report.xml = response.xml;
-        this.report = response.report;
-        this.saveReportEvent.next(this.report);
-        this.editor.setNewReport(UpdateReportUtil.isUpdateCheckpoint(body) ? body.checkpointMessage : this.report.xml);
+        this.selectedNode = response.report;
+        this.saveReportEvent.next(this.selectedNode);
+        this.editor.setNewReport(message);
         this.disableEditing();
       },
       error: () => catchError(this.errorHandler.handleError()),
@@ -235,9 +248,10 @@ export class EditDisplayComponent {
   }
 
   discardChanges(): void {
+    const node: ReportOrCheckpoint = this.selectedNode;
     this.disableEditing();
-    if (this.report.uid) {
-      this.editor.setNewReport(this.report.message);
+    if (ReportUtil.isCheckPoint(node)) {
+      this.editor.setNewReport(node.message);
     }
     this.toastService.showSuccess('Changes discarded!');
   }
@@ -255,16 +269,20 @@ export class EditDisplayComponent {
   }
 
   copyReport(): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: ReportOrCheckpoint = this.selectedNode;
     if (!node) {
       this.toastService.showDanger('Could not find report to copy');
       return;
     }
-    const storageId: number = ReportUtil.isReport(node)
-      ? node.storageId
-      : node.storageId
-        ? Number.parseInt(node.storageId)
-        : Number.parseInt(node.uid.split('#')[0]);
+    let storageId: number;
+    if (ReportUtil.isReport(node)) {
+      storageId = node.storageId;
+    } else if (ReportUtil.isCheckPoint(node)) {
+      storageId = node.storageId ? Number.parseInt(node.storageId) : Number.parseInt(node.uid.split('#')[0]);
+    } else {
+      this.toastService.showDanger('Could not find report to copy');
+      return;
+    }
     const data: Record<string, number[]> = {
       [this.currentView.storageName]: [storageId],
     };
