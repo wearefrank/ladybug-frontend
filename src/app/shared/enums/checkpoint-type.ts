@@ -13,6 +13,7 @@ export const enum CheckpointType {
 }
 
 export const CHECKPOINT_TYPE_STRINGS: { [key in CheckpointType]: IconData } = {
+  //For the css classes, the tree-checkpoint should be at the end so that 'even' or 'odd' can be added to the class name; 'tree-checkpoint-even'.
   [CheckpointType.Startpoint]: { path: 'assets/tree-icons/startpoint.svg', cssClasses: 'tree-checkpoint' },
   [CheckpointType.Endpoint]: { path: 'assets/tree-icons/startpoint.svg', cssClasses: 'endpoint tree-checkpoint' },
   [CheckpointType.Abortpoint]: { path: 'assets/tree-icons/abortpoint.svg', cssClasses: 'tree-checkpoint' },
@@ -31,22 +32,4 @@ export const CHECKPOINT_TYPE_STRINGS: { [key in CheckpointType]: IconData } = {
     path: 'assets/tree-icons/threadStartPoint.svg',
     cssClasses: 'endpoint tree-checkpoint',
   },
-  // [CheckpointType.Startpoint]: { path: 'assets/tree-icons/startpoint.svg', cssClasses: 'startpoint' },
-  // [CheckpointType.Endpoint]: { path: 'assets/tree-icons/startpoint.svg', cssClasses: 'endpoint startpoint' },
-  // [CheckpointType.Abortpoint]: { path: 'assets/tree-icons/abortpoint.svg', cssClasses: 'abortpoint' },
-  // [CheckpointType.Inputpoint]: { path: 'assets/tree-icons/inputpoint.svg', cssClasses: 'inputpoint' },
-  // [CheckpointType.Outputpoint]: { path: 'assets/tree-icons/inputpoint.svg', cssClasses: 'endpoint inputpoint' },
-  // [CheckpointType.Infopoint]: { path: 'assets/tree-icons/infopoint.svg', cssClasses: 'infopoint' },
-  // [CheckpointType.ThreadStartpointError]: {
-  //   path: 'assets/tree-icons/threadStartPoint.svg',
-  //   cssClasses: 'startpoint-error',
-  // },
-  // [CheckpointType.ThreadStartpoint]: {
-  //   path: 'assets/tree-icons/threadStartPoint.svg',
-  //   cssClasses: 'endpoint startpoint',
-  // },
-  // [CheckpointType.ThreadEndpoint]: {
-  //   path: 'assets/tree-icons/threadStartPoint.svg',
-  //   cssClasses: 'endpoint startpoint',
-  // },
 };
