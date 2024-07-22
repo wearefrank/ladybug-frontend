@@ -69,6 +69,18 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: ladybug-frontend
 
+      - name: Install Cypress
+        run: npx cypress install
+        working-directory: ladybug-frontend
+
+      - uses: actions/cache@v4
+        name: Cache Cypress
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
       - name: Set Cypress environment variables
         run: cp cypress.env.json.cicd cypress.env.json
         working-directory: ladybug-frontend

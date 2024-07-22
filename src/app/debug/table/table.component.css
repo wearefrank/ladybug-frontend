@@ -22,7 +22,7 @@ th {
   padding: 0 0 0 0;
 }
 
-.table-row:hover {
+.table-col:hover {
   cursor: pointer;
   filter: brightness(85%);
 }
@@ -59,6 +59,7 @@ th {
 .vertical-middle {
   vertical-align: middle;
 }
+
 .input-field {
   width: 4rem;
 }

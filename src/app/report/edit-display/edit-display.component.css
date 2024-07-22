@@ -27,8 +27,11 @@
   width: fit-content;
 }
 
-.copied-tooltip {
-  position: absolute;
-  left: 50%;
-  right: 50%;
+.button-row {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  margin: 0.25rem 0.25rem 0.75rem 0.25rem;
+  gap: 0 0.25rem;
 }

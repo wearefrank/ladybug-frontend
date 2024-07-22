@@ -9,17 +9,16 @@ import {
   NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
-// @ts-expect-error no default export
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 import { Report } from '../../shared/interfaces/report';
-import { DisplayTableComponent } from '../../shared/components/display-table/display-table.component';
+import { MetadataTableComponent } from '../../shared/components/display-table/metadata-table.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
-import { Subject } from 'rxjs';
+import { catchError, Subject } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { EditFormComponent } from '../edit-form/edit-form.component';
 import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
@@ -27,8 +26,11 @@ import { ToggleButtonComponent } from '../../shared/components/button/toggle-but
 import { ToastService } from '../../shared/services/toast.service';
 import { TestResult } from '../../shared/interfaces/test-result';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
+import { UpdateReport } from '../../shared/interfaces/update-report';
+import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
+import { UpdateReportUtil } from '../../shared/util/update-report-util';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
-import { ReportUtil } from '../../shared/util/report-util';
 
 @Component({
   selector: 'app-edit-display',
@@ -44,7 +46,7 @@ import { ReportUtil } from '../../shared/util/report-util';
     NgbDropdownItem,
     ReactiveFormsModule,
     CustomEditorComponent,
-    DisplayTableComponent,
+    MetadataTableComponent,
     BooleanToStringPipe,
     NgStyle,
     ClipboardModule,
@@ -58,7 +60,6 @@ import { ReportUtil } from '../../shared/util/report-util';
 })
 export class EditDisplayComponent {
   protected readonly ReportUtil = ReportUtil;
-
   @Input() id: string = '';
   @Input() containerHeight!: number;
   @Input() currentView: any = {};
@@ -81,6 +82,7 @@ export class EditDisplayComponent {
     private httpService: HttpService,
     private helperService: HelperService,
     private toastService: ToastService,
+    private errorHandler: ErrorHandling,
   ) {}
 
   showReport(node: Report | Checkpoint): void {
@@ -105,15 +107,13 @@ export class EditDisplayComponent {
   }
 
   rerunReport(): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
-    if (!node || !ReportUtil.isReport(node)) {
-      this.toastService.showDanger('Could not find report to rerun');
-      return;
-    }
-    const reportId: number = node.storageId;
-    this.httpService.runReport(this.currentView.storageName, reportId).subscribe((response: TestResult): void => {
-      this.toastService.showSuccess('Report rerun successful');
-      this.rerunResult = response;
+    const reportId: number = this.report.storageId;
+    this.httpService.runReport(this.currentView.storageName, reportId).subscribe({
+      next: (response: TestResult): void => {
+        this.toastService.showSuccess('Report rerun successful');
+        this.rerunResult = response;
+      },
+      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -126,7 +126,6 @@ export class EditDisplayComponent {
     this.displayReport = false;
     this.editingRootNode = false;
     this.editingChildNode = false;
-    this.editingRootNode = false;
     if (removeReportFromTree) {
       this.closeReportEvent.next(node);
     }
@@ -156,10 +155,15 @@ export class EditDisplayComponent {
       return;
     }
     let reportDifferences: ReportDifference[] = [];
-    if (ReportUtil.isReport(node) && this.editFormComponent) {
-      reportDifferences = this.getDifferences();
-    } else if (ReportUtil.isCheckPoint(node)) {
-      reportDifferences.push(this.getDifference('message', node.message, this.editor?.getValue()));
+    if (this.report.xml && this.editFormComponent) {
+      reportDifferences = this.editFormComponent.getDifferences();
+    } else if (this.report.message) {
+      reportDifferences.push({
+        name: 'message',
+        originalValue: this.report.message,
+        // @ts-ignore
+        difference: new DiffMatchPatch().diff_main(this.report.message ?? '', this.editor?.getValue()),
+      });
     }
     if (reportDifferences.length > 0) {
       this.differenceModal.open(reportDifferences, type);
@@ -168,57 +172,20 @@ export class EditDisplayComponent {
     }
   }
 
-  getDifferences(): ReportDifference[] {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
-    if (!node) return [];
-    if (ReportUtil.isReport(node)) {
-      return [
-        this.getDifference('name', node.name, this.editFormComponent.name),
-        this.getDifference('description', node.description, this.editFormComponent.description),
-        this.getDifference('path', node.path, this.editFormComponent.path),
-        this.getDifference('transformation', node.transformation, this.editFormComponent.transformation),
-        this.getDifference('variables', node.variableCsv, this.editFormComponent.variables),
-      ];
-    }
-    return [];
+  getReportValues(checkpointId: string): UpdateReport | UpdateCheckpoint {
+    return this.editingRootNode ? this.getReportValuesForRootNode() : this.getReportValuesForChildNode(checkpointId);
   }
 
-  getDifference(name: string, originalValue: string, newValue: string): ReportDifference {
-    const difference = new DiffMatchPatch().diff_main(originalValue ?? '', newValue ?? '');
+  getReportValuesForRootNode(): UpdateReport {
+    return this.editFormComponent.getValues();
+  }
+
+  getReportValuesForChildNode(checkpointId: string): UpdateCheckpoint {
     return {
-      name: name,
-      originalValue: originalValue,
-      difference: difference,
+      checkpointId: checkpointId,
+      // checkpointMessage can only be updated when stub is not in request body
+      checkpointMessage: this.editor.getValue(),
     };
-  }
-
-  getReportValues(checkpointId: string): any {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
-    if (!node) {
-      this.toastService.showDanger('Could not find report to get values from');
-      return;
-    }
-    if (ReportUtil.isReport(node)) {
-      return this.editingRootNode || this.editingChildNode
-        ? {
-            name: this.editFormComponent.name,
-            path: this.editFormComponent.path,
-            description: this.editFormComponent.description,
-            transformation: this.editFormComponent.transformation,
-            checkpointId: checkpointId,
-            variables: this.editFormComponent.variables,
-            checkpointMessage: this.editor?.getValue() ?? '',
-          }
-        : {
-            name: node.name,
-            path: node.path,
-            description: node.description,
-            transformation: node.transformation,
-            checkpointId: checkpointId,
-            variables: node.variableCsv,
-            checkpointMessage: node.inputCheckpoint.message,
-          };
-    }
   }
 
   editReport(): void {
@@ -252,16 +219,27 @@ export class EditDisplayComponent {
       this.toastService.showDanger('Could not find report to save');
       return;
     }
-    const body = { stub: stubStrategy, ...this.getReportValues(checkpointId) };
-    const message: string = ReportUtil.isReport(node) ? node.xml : node.message;
 
-    this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe((response: any) => {
-      response.report.xml = response.xml;
-      this.selectedNode = response.report;
-      this.saveReportEvent.next(node);
-      this.editor.setNewReport(message);
-      this.disableEditing();
+    const body = this.getReportValues(checkpointId);
+
+    this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
+      next: (response: any) => {
+        response.report.xml = response.xml;
+        this.report = response.report;
+        this.saveReportEvent.next(this.report);
+        this.editor.setNewReport(UpdateReportUtil.isUpdateCheckpoint(body) ? body.checkpointMessage : this.report.xml);
+        this.disableEditing();
+      },
+      error: () => catchError(this.errorHandler.handleError()),
     });
+  }
+
+  discardChanges(): void {
+    this.disableEditing();
+    if (this.report.uid) {
+      this.editor.setNewReport(this.report.message);
+    }
+    this.toastService.showSuccess('Changes discarded!');
   }
 
   toggleMetadataTable(): void {
@@ -290,7 +268,9 @@ export class EditDisplayComponent {
     const data: Record<string, number[]> = {
       [this.currentView.storageName]: [storageId],
     };
-    this.httpService.copyReport(data, 'Test').subscribe(); // TODO: storage is hardcoded, fix issue #196 for this
+    this.httpService.copyReport(data, 'Test').subscribe({
+      error: catchError(this.errorHandler.handleError()),
+    }); // TODO: storage is hardcoded, fix issue #196 for this
   }
 
   toggleEditMode(value: boolean): void {

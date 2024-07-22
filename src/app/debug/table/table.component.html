@@ -75,7 +75,7 @@
           </div>
           <div class="col input-group my-2 mx-1 px-2">
             <input #openIndex type="number" min="0" class="form-control" data-cy-debug="openInProgressNo"
-                   [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" />
+                   [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress"/>
             <div class="input-group-append">
               <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton"
                       (click)="openReportInProgress(+openIndex.value)">Open
@@ -84,7 +84,7 @@
           </div>
           <div class="col input-group my-2 mx-1 px-2">
             <input #deleteIndex type="number" min="0" class="form-control" id="deleteInProgressNo"
-                   [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress" />
+                   [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress"/>
             <div class="input-group-append">
               <button class="btn btn-info" type="button" id="deleteReportInProgressButton"
                       (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
@@ -106,7 +106,7 @@
           </button>
         }
         @case (2) {
-          <button class="btn btn-info btn-table" title="Compare" (click)="compareTwoReports()">
+          <button data-cy-debug="compare" class="btn btn-info btn-table" title="Compare" (click)="compareTwoReports()">
             Compare
           </button>
         }
@@ -117,8 +117,9 @@
       <table data-cy-debug="tableBody" mat-table class="table mb-0" matSort [style.font-size]="getFontSize()" [dataSource]="tableDataSource">
         <!--Header and row container for checkboxes-->
         <ng-container matColumnDef="select">
-          <th mat-header-cell class="table-row-checkbox header-padding" *matHeaderCellDef >
-            <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="allRowsSelected" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="selectAllRows()">
+          <th mat-header-cell class="table-row-checkbox header-padding" *matHeaderCellDef>
+            <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="allRowsSelected" [style.width]="getCheckBoxSize()"
+                   [style.height]="getCheckBoxSize()" (click)="selectAllRows()">
           </th>
           <td mat-cell class="table-row-checkbox" *matCellDef="let row" [style.padding]="getTableSpacing()">
             <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row)">
@@ -136,10 +137,11 @@
               {{ getShortenedTableHeaderNames(header) }}
             </th>
             <td mat-cell class="table-cell"
-              *matCellDef="let row"
-              [style.padding]="getTableSpacing()"
-              [title]="header">
-              {{ getMetadata(row, getMetadataNameFromHeader(header))|tableCellShortener }}</td>
+                *matCellDef="let row"
+                [style.padding]="getTableSpacing()"
+                [title]="header">
+              {{ getMetadata(row, getMetadataNameFromHeader(header))|tableCellShortener }}
+            </td>
           </ng-container>
         }
 
