@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
-// @ts-expect-error no default export
 import DiffMatchPatch from 'diff-match-patch';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 
@@ -39,6 +38,7 @@ export class EditFormComponent implements OnInit {
 
   getDifference(name: keyof Report): ReportDifference {
     const originalValue = this.report[name] ?? '';
+    // @ts-ignore
     const difference = new DiffMatchPatch().diff_main(originalValue, this.editForm.get(name)?.value ?? '');
     return {
       name: name,
