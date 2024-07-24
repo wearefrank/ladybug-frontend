@@ -22,7 +22,6 @@ export class MetadataTableComponent implements OnChanges {
 
   ngOnChanges(): void {
     this.checkIfAnyMessagesPresent();
-    console.log(this.report);
   }
 
   checkIfAnyMessagesPresent(): void {
