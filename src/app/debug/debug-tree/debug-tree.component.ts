@@ -23,6 +23,7 @@ import {
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
+import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 
 @Component({
   selector: 'app-debug-tree',
@@ -54,6 +55,7 @@ export class DebugTreeComponent implements OnDestroy {
     highlightOpenFolders: false,
     folderBehaviourOnClick: 'select',
     autoOpenCondition: this.conditionalOpenFunction,
+    determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };
 
   constructor(

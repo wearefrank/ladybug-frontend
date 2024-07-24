@@ -1,6 +1,7 @@
 import { Report } from '../interfaces/report';
 import { Checkpoint } from '../interfaces/checkpoint';
 import { CHECKPOINT_TYPE_STRINGS, CheckpointType } from '../enums/checkpoint-type';
+import { IconData } from '../interfaces/icon-data';
 
 export class ReportHierarchyTransformer {
   private readonly THROWABLE_ENCODER: string = 'printStackTrace()';
@@ -9,9 +10,10 @@ export class ReportHierarchyTransformer {
 
   transform(report: Report): Report {
     const checkpoints: Checkpoint[] = report.checkpoints;
-
     for (const checkpoint of checkpoints) {
-      checkpoint.icon = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
+      const iconData: IconData = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
+      checkpoint.icon = iconData.path;
+      checkpoint.iconClass = iconData.cssClasses;
 
       if (checkpoint.type === CheckpointType.Startpoint) {
         this.handleStartpoint(checkpoint);
@@ -62,20 +64,12 @@ export class ReportHierarchyTransformer {
     parentStartpoint.checkpoints.push(checkpoint);
   }
 
-  getImage(type: CheckpointType, encoding: string, level: number): string {
-    const even: boolean = this.determineEvenCheckpoint(level);
-    let img = `assets/tree-icons/${CHECKPOINT_TYPE_STRINGS[type]}`;
+  getImage(type: CheckpointType, encoding: string, level: number): IconData {
+    const iconData: IconData = { ...CHECKPOINT_TYPE_STRINGS[type] };
     if (encoding === this.THROWABLE_ENCODER) {
-      img += '-error';
+      iconData.cssClasses += '-error';
     }
-
-    if (even) {
-      return `${img}-even.gif`;
-    }
-    return `${img}-odd.gif`;
-  }
-
-  private determineEvenCheckpoint(level: number): boolean {
-    return level % 2 == 0;
+    iconData.cssClasses += level % 2 == 0 ? '-even' : '-odd';
+    return iconData;
   }
 }
