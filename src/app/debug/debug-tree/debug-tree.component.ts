@@ -49,7 +49,7 @@ export class DebugTreeComponent implements OnDestroy {
   showMultipleAtATimeSubscription!: Subscription;
 
   private _currentView: any;
-  private lastReport?: Report;
+  private lastReport?: Report | null;
 
   treeOptions: FileTreeOptions = {
     highlightOpenFolders: false,
@@ -136,6 +136,9 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   removeAllReportsButOne(): void {
+    if (this.tree) {
+      this.tree.clearItems();
+    }
     if (this.lastReport) {
       this.addReportToTree(this.lastReport);
     }
@@ -169,6 +172,7 @@ export class DebugTreeComponent implements OnDestroy {
   closeEntireTree(): void {
     this.closeEntireTreeEvent.emit();
     this.tree.clearItems();
+    this.lastReport = null;
   }
 
   expandAll(): void {
