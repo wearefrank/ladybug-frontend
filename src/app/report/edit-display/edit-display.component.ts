@@ -31,6 +31,7 @@ import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
 import { UpdateReportUtil } from '../../shared/util/update-report-util';
 import { UpdateReportResponse } from '../../shared/interfaces/update-report-response';
+import { View } from '../../shared/interfaces/view';
 
 @Component({
   selector: 'app-edit-display',
@@ -61,7 +62,7 @@ import { UpdateReportResponse } from '../../shared/interfaces/update-report-resp
 export class EditDisplayComponent {
   @Input() id: string = '';
   @Input() containerHeight!: number;
-  @Input() currentView: any = {};
+  @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
   @Output() saveReportEvent: Subject<any> = new Subject<any>();
   @Output() closeReportEvent: Subject<void> = new Subject<void>();

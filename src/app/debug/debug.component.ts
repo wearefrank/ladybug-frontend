@@ -21,7 +21,7 @@ export class DebugComponent implements OnInit, OnDestroy {
   static readonly ROUTER_PATH: string = 'debug';
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @ViewChild('reportComponent') customReportComponent!: ReportComponent;
-  currentView?: View;
+  currentView!: View;
   views?: View[];
 
   private viewSubscription!: Subscription;
@@ -48,7 +48,7 @@ export class DebugComponent implements OnInit, OnDestroy {
       next: (views: View[]) => {
         this.views = views;
         if (!this.currentView) {
-          this.currentView = this.views.find((v: View) => v.defaultView);
+          this.currentView = this.views.find((v: View) => v.defaultView)!;
         }
       },
       error: () => catchError(this.errorHandler.handleError()),
