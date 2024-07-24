@@ -14,6 +14,7 @@ import { TestResult } from '../interfaces/test-result';
 import { UpdateReport } from '../interfaces/update-report';
 import { UpdateCheckpoint } from '../interfaces/update-checkpoint';
 import { UpdateReportResponse } from '../interfaces/update-report-response';
+import { Transformation } from '../interfaces/transformation';
 
 @Injectable({
   providedIn: 'root',
@@ -167,8 +168,8 @@ export class HttpService {
     // .pipe(tap(() => this.handleSuccess('Transformation saved!')))
   }
 
-  getTransformation(defaultTransformation: boolean): Observable<Record<string, string>> {
-    return this.http.get<Record<string, string>>(`api/testtool/transformation/${defaultTransformation}`);
+  getTransformation(defaultTransformation: boolean): Observable<Transformation> {
+    return this.http.get<Transformation>(`api/testtool/transformation/${defaultTransformation}`);
   }
 
   getSettings(): Observable<OptionsSettings> {
