@@ -23,6 +23,7 @@ import {
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
+import { CurrentView } from '../../shared/interfaces/current-view';
 
 @Component({
   selector: 'app-debug-tree',
@@ -47,7 +48,7 @@ export class DebugTreeComponent implements OnDestroy {
   showMultipleAtATime!: boolean;
   showMultipleAtATimeSubscription!: Subscription;
 
-  private _currentView: any;
+  private _currentView?: CurrentView;
   private lastReport?: Report;
 
   treeOptions: FileTreeOptions = {
@@ -69,7 +70,7 @@ export class DebugTreeComponent implements OnDestroy {
     this.showMultipleAtATimeSubscription.unsubscribe();
   }
 
-  @Input() set currentView(value: any) {
+  @Input() set currentView(value: CurrentView) {
     if (this._currentView !== value) {
       // TODO: Check if the current reports are part of the view
       this.hideOrShowCheckpointsBasedOnView(value);
@@ -77,21 +78,21 @@ export class DebugTreeComponent implements OnDestroy {
     this._currentView = value;
   }
 
-  get currentView(): any {
+  get currentView(): CurrentView | undefined {
     return this._currentView;
   }
 
-  hideOrShowCheckpointsBasedOnView(currentView: any): void {
+  hideOrShowCheckpointsBasedOnView(currentView: CurrentView): void {
     if (this.tree) {
       this.checkUnmatchedCheckpoints(this.getTreeReports(), currentView);
     }
   }
 
-  checkUnmatchedCheckpoints(reports: Report[], currentView: any) {
+  checkUnmatchedCheckpoints(reports: Report[], currentView: CurrentView) {
     for (let report of reports) {
       if (report.storageName === currentView.storageName) {
         this.httpService.getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name).subscribe({
-          next: (unmatched: any) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
+          next: (unmatched: string[]) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
           error: () => catchError(this.errorHandler.handleError()),
         });
       }
@@ -179,7 +180,9 @@ export class DebugTreeComponent implements OnDestroy {
     for (let treeReport of this.getTreeReports()) {
       queryString += `id=${treeReport.storageId}&`;
     }
-    this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
+    if (this.currentView) {
+      this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
+    }
   }
 
   changeSearchTerm(event: KeyboardEvent): void {
