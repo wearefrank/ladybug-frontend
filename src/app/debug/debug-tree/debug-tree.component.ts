@@ -50,7 +50,7 @@ export class DebugTreeComponent implements OnDestroy {
   showMultipleAtATimeSubscription!: Subscription;
 
   private _currentView!: View;
-  private lastReport?: Report;
+  private lastReport?: Report | null;
 
   treeOptions: FileTreeOptions = {
     highlightOpenFolders: false,
@@ -137,18 +137,24 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   removeAllReportsButOne(): void {
+    if (this.tree) {
+      this.tree.clearItems();
+    }
     if (this.lastReport) {
       this.addReportToTree(this.lastReport);
     }
   }
 
   addReportToTree(report: Report): void {
+    if (this.selectReportIfPresent(report)) {
+      return;
+    }
     this.lastReport = report;
     if (!this.showMultipleAtATime) {
       this.tree.clearItems();
     }
     const newReport: CreateTreeItem = new ReportHierarchyTransformer().transform(report);
-    const optional: OptionalParameters = { childrenKey: 'checkpoints', pathAttribute: 'uid' };
+    const optional: OptionalParameters = { childrenKey: 'checkpoints', pathAttributes: ['name', 'storageId', 'uid'] };
     const path: string = this.tree.addItem(newReport, optional);
     this.tree.selectItem(path);
     if (this.currentView) {
@@ -167,6 +173,7 @@ export class DebugTreeComponent implements OnDestroy {
   closeEntireTree(): void {
     this.closeEntireTreeEvent.emit();
     this.tree.clearItems();
+    this.lastReport = null;
   }
 
   expandAll(): void {
@@ -177,16 +184,6 @@ export class DebugTreeComponent implements OnDestroy {
     this.tree.collapseAll();
   }
 
-  downloadReports(exportBinary: boolean, exportXML: boolean): void {
-    let queryString = '';
-    for (let treeReport of this.getTreeReports()) {
-      queryString += `id=${treeReport.storageId}&`;
-    }
-    if (this.currentView) {
-      this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
-    }
-  }
-
   changeSearchTerm(event: KeyboardEvent): void {
     const term: string = (event.target as HTMLInputElement).value;
     this.tree.searchTree(term);
@@ -195,5 +192,16 @@ export class DebugTreeComponent implements OnDestroy {
   conditionalOpenFunction(item: CreateTreeItem): boolean {
     const type = item['type'];
     return type === undefined || type === 1 || type === 2;
+  }
+
+  selectReportIfPresent(report: Report): boolean {
+    for (let item of this.tree.getItems()) {
+      const treeReport = item.originalValue as Report;
+      if (treeReport.storageId === report.storageId) {
+        this.tree.selectItem(item.path);
+        return true;
+      }
+    }
+    return false;
   }
 }

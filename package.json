@@ -48,7 +48,7 @@
     "eslint-plugin-unicorn": "^54.0.0",
     "font-awesome": "^4.7.0",
     "monaco-editor": "0.44.0",
-    "ng-simple-file-tree": "^0.1.19",
+    "ng-simple-file-tree": "^0.1.20",
     "ngx-monaco-editor-v2": "17.0.1",
     "path": "^0.12.7",
     "popper.js": "^1.16.1",
