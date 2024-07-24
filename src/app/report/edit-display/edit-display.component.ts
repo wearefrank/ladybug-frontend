@@ -30,6 +30,8 @@ import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
 import { UpdateReportUtil } from '../../shared/util/update-report-util';
+import { UpdateReportResponse } from '../../shared/interfaces/update-report-response';
+import { View } from '../../shared/interfaces/view';
 
 @Component({
   selector: 'app-edit-display',
@@ -60,7 +62,7 @@ import { UpdateReportUtil } from '../../shared/util/update-report-util';
 export class EditDisplayComponent {
   @Input() id: string = '';
   @Input() containerHeight!: number;
-  @Input() currentView: any = {};
+  @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
   @Output() saveReportEvent: Subject<any> = new Subject<any>();
   @Output() closeReportEvent: Subject<void> = new Subject<void>();
@@ -193,7 +195,7 @@ export class EditDisplayComponent {
     const body = this.getReportValues(checkpointId);
 
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
-      next: (response: any) => {
+      next: (response: UpdateReportResponse) => {
         response.report.xml = response.xml;
         this.report = response.report;
         this.saveReportEvent.next(this.report);
