@@ -30,6 +30,7 @@ import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
 import { UpdateReportUtil } from '../../shared/util/update-report-util';
+import { UpdateReportResponse } from '../../shared/interfaces/update-report-response';
 
 @Component({
   selector: 'app-edit-display',
@@ -193,7 +194,7 @@ export class EditDisplayComponent {
     const body = this.getReportValues(checkpointId);
 
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
-      next: (response: any) => {
+      next: (response: UpdateReportResponse) => {
         response.report.xml = response.xml;
         this.report = response.report;
         this.saveReportEvent.next(this.report);
