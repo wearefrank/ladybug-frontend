@@ -40,13 +40,22 @@ function testTreeView(reportName, labelString) {
 
   cy.get('@tree-icons').eq(0)
     .invoke('attr', 'src')
-    .should('eq', 'assets/tree-icons/startpoint-even.gif');
+    .should('eq', 'assets/tree-icons/startpoint.svg');
+
+  cy.get('@tree-icons').eq(0)
+    .should('have.class', 'tree-checkpoint-even');
 
   cy.get('@tree-icons').eq(1)
     .invoke('attr', 'src')
-    .should('eq', 'assets/tree-icons/infopoint-odd.gif');
+    .should('eq', 'assets/tree-icons/infopoint.svg');
+
+  cy.get('@tree-icons').eq(1)
+    .should('have.class', 'tree-checkpoint-odd');
 
   cy.get('@tree-icons').eq(2)
     .invoke('attr', 'src')
-    .should('equal', 'assets/tree-icons/endpoint-odd.gif');
+    .should('equal', 'assets/tree-icons/startpoint.svg');
+
+  cy.get('@tree-icons').eq(2)
+    .should('have.class', 'endpoint');
 }
