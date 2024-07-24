@@ -142,12 +142,15 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   addReportToTree(report: Report): void {
+    if (this.selectReportIfPresent(report)) {
+      return;
+    }
     this.lastReport = report;
     if (!this.showMultipleAtATime) {
       this.tree.clearItems();
     }
     const newReport: CreateTreeItem = new ReportHierarchyTransformer().transform(report);
-    const optional: OptionalParameters = { childrenKey: 'checkpoints', pathAttribute: 'uid' };
+    const optional: OptionalParameters = { childrenKey: 'checkpoints', pathAttributes: ['name', 'storageId', 'uid'] };
     const path: string = this.tree.addItem(newReport, optional);
     this.tree.selectItem(path);
     if (this.currentView) {
@@ -184,5 +187,16 @@ export class DebugTreeComponent implements OnDestroy {
   conditionalOpenFunction(item: CreateTreeItem): boolean {
     const type = item['type'];
     return type === undefined || type === 1 || type === 2;
+  }
+
+  selectReportIfPresent(report: Report): boolean {
+    for (let item of this.tree.getItems()) {
+      const treeReport = item.originalValue as Report;
+      if (treeReport.storageId === report.storageId) {
+        this.tree.selectItem(item.path);
+        return true;
+      }
+    }
+    return false;
   }
 }
