@@ -33,11 +33,24 @@ function testTreeView(reportName: string): void {
       cy.wrap($node).should('contain', reportName);
     });
 
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item > div').eq(0).get('div > app-tree-icon img').as('tree-icons');
+  cy.get('@tree-icons').eq(0)
+    .invoke('attr', 'src')
+    .should('eq', 'assets/tree-icons/startpoint.svg');
 
-  cy.get('@tree-icons').eq(0).invoke('attr', 'src').should('eq', 'assets/tree-icons/startpoint-even.gif');
+  cy.get('@tree-icons').eq(0)
+    .should('have.class', 'tree-checkpoint-even');
 
-  cy.get('@tree-icons').eq(1).invoke('attr', 'src').should('eq', 'assets/tree-icons/infopoint-odd.gif');
+  cy.get('@tree-icons').eq(1)
+    .invoke('attr', 'src')
+    .should('eq', 'assets/tree-icons/infopoint.svg');
 
-  cy.get('@tree-icons').eq(2).invoke('attr', 'src').should('equal', 'assets/tree-icons/endpoint-odd.gif');
+  cy.get('@tree-icons').eq(1)
+    .should('have.class', 'tree-checkpoint-odd');
+
+  cy.get('@tree-icons').eq(2)
+    .invoke('attr', 'src')
+    .should('equal', 'assets/tree-icons/startpoint.svg');
+
+  cy.get('@tree-icons').eq(2)
+    .should('have.class', 'endpoint');
 }

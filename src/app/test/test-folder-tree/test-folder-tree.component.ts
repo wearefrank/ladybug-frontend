@@ -1,5 +1,5 @@
 import { Component, Output, ViewChild } from '@angular/core';
-import { Child, CreateTreeItem, FileTreeOptions, NgSimpleFileTree, NgSimpleFileTreeModule } from 'ng-simple-file-tree';
+import { CreateTreeItem, FileTreeOptions, NgSimpleFileTree, NgSimpleFileTreeModule } from 'ng-simple-file-tree';
 import { Subject } from 'rxjs';
 
 @Component({
