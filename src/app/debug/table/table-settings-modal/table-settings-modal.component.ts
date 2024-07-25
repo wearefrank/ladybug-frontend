@@ -8,6 +8,8 @@ import { ToastService } from '../../../shared/services/toast.service';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
 import { ToastComponent } from '../../../shared/components/toast/toast.component';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
+import { OptionsSettings } from '../../../shared/interfaces/options-settings';
+import { Transformation } from '../../../shared/interfaces/transformation';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -155,25 +157,25 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.settingsForm.reset();
     this.settingsService.setShowMultipleAtATime();
     this.httpService.resetSettings().subscribe({
-      next: (response) => this.saveResponseSetting(response),
+      next: (response: OptionsSettings) => this.saveResponseSetting(response),
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.httpService.getTransformation(true).subscribe({
-      next: (res) => this.settingsForm.get('transformation')?.setValue(res.transformation),
+      next: (res: Transformation) => this.settingsForm.get('transformation')?.setValue(res.transformation),
       error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
   loadSettings(): void {
     this.httpService.getSettings().subscribe({
-      next: (response) => this.saveResponseSetting(response),
+      next: (response: OptionsSettings) => this.saveResponseSetting(response),
       error: () => catchError(this.errorHandler.handleError()),
     });
     if (localStorage.getItem('transformationEnabled')) {
       this.settingsForm.get('transformationEnabled')?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }
     this.httpService.getTransformation(false).subscribe({
-      next: (response) => this.settingsForm.get('transformation')?.setValue(response.transformation),
+      next: (response: Transformation) => this.settingsForm.get('transformation')?.setValue(response.transformation),
       error: () => catchError(this.errorHandler.handleError()),
     });
   }

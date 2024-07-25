@@ -29,6 +29,9 @@ import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
+import { UpdateReportUtil } from '../../shared/util/update-report-util';
+import { UpdateReportResponse } from '../../shared/interfaces/update-report-response';
+import { View } from '../../shared/interfaces/view';
 import { ReportOrCheckpoint, ReportUtil } from '../../shared/util/report-util';
 import { EncodingButtonComponent } from './encoding-button/encoding-button.component';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
@@ -64,7 +67,7 @@ export class EditDisplayComponent {
   protected readonly ReportUtil = ReportUtil;
   @Input() id: string = '';
   @Input() containerHeight!: number;
-  @Input() currentView: any = {};
+  @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
   @Output() saveReportEvent: Subject<any> = new Subject<any>();
   @Output() closeReportEvent: Subject<Report> = new Subject<Report>();
@@ -238,7 +241,7 @@ export class EditDisplayComponent {
     const message: string = ReportUtil.isReport(node) ? node.xml : node.message;
 
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
-      next: (response: any) => {
+      next: (response: UpdateReportResponse) => {
         response.report.xml = response.xml;
         this.selectedNode = response.report;
         this.saveReportEvent.next(this.selectedNode);
