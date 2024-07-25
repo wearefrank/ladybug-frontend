@@ -24,6 +24,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
+import { View } from '../../shared/interfaces/view';
 
 @Component({
   selector: 'app-debug-tree',
@@ -48,8 +49,8 @@ export class DebugTreeComponent implements OnDestroy {
   showMultipleAtATime!: boolean;
   showMultipleAtATimeSubscription!: Subscription;
 
-  private _currentView: any;
-  private lastReport?: Report;
+  private _currentView!: View;
+  private lastReport?: Report | null;
 
   treeOptions: FileTreeOptions = {
     highlightOpenFolders: false,
@@ -71,7 +72,7 @@ export class DebugTreeComponent implements OnDestroy {
     this.showMultipleAtATimeSubscription.unsubscribe();
   }
 
-  @Input() set currentView(value: any) {
+  @Input({ required: true }) set currentView(value: View) {
     if (this._currentView !== value) {
       // TODO: Check if the current reports are part of the view
       this.hideOrShowCheckpointsBasedOnView(value);
@@ -79,21 +80,21 @@ export class DebugTreeComponent implements OnDestroy {
     this._currentView = value;
   }
 
-  get currentView(): any {
+  get currentView(): View {
     return this._currentView;
   }
 
-  hideOrShowCheckpointsBasedOnView(currentView: any): void {
+  hideOrShowCheckpointsBasedOnView(currentView: View): void {
     if (this.tree) {
       this.checkUnmatchedCheckpoints(this.getTreeReports(), currentView);
     }
   }
 
-  checkUnmatchedCheckpoints(reports: Report[], currentView: any) {
+  checkUnmatchedCheckpoints(reports: Report[], currentView: View) {
     for (let report of reports) {
       if (report.storageName === currentView.storageName) {
         this.httpService.getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name).subscribe({
-          next: (unmatched: any) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
+          next: (unmatched: string[]) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
           error: () => catchError(this.errorHandler.handleError()),
         });
       }
@@ -136,18 +137,24 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   removeAllReportsButOne(): void {
+    if (this.tree) {
+      this.tree.clearItems();
+    }
     if (this.lastReport) {
       this.addReportToTree(this.lastReport);
     }
   }
 
   addReportToTree(report: Report): void {
+    if (this.selectReportIfPresent(report)) {
+      return;
+    }
     this.lastReport = report;
     if (!this.showMultipleAtATime) {
       this.tree.clearItems();
     }
     const newReport: CreateTreeItem = new ReportHierarchyTransformer().transform(report);
-    const optional: OptionalParameters = { childrenKey: 'checkpoints', pathAttribute: 'uid' };
+    const optional: OptionalParameters = { childrenKey: 'checkpoints', pathAttributes: ['name', 'storageId', 'uid'] };
     const path: string = this.tree.addItem(newReport, optional);
     this.tree.selectItem(path);
     if (this.currentView) {
@@ -166,6 +173,7 @@ export class DebugTreeComponent implements OnDestroy {
   closeEntireTree(): void {
     this.closeEntireTreeEvent.emit();
     this.tree.clearItems();
+    this.lastReport = null;
   }
 
   expandAll(): void {
@@ -176,14 +184,6 @@ export class DebugTreeComponent implements OnDestroy {
     this.tree.collapseAll();
   }
 
-  downloadReports(exportBinary: boolean, exportXML: boolean): void {
-    let queryString = '';
-    for (let treeReport of this.getTreeReports()) {
-      queryString += `id=${treeReport.storageId}&`;
-    }
-    this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
-  }
-
   changeSearchTerm(event: KeyboardEvent): void {
     const term: string = (event.target as HTMLInputElement).value;
     this.tree.searchTree(term);
@@ -192,5 +192,16 @@ export class DebugTreeComponent implements OnDestroy {
   conditionalOpenFunction(item: CreateTreeItem): boolean {
     const type = item['type'];
     return type === undefined || type === 1 || type === 2;
+  }
+
+  selectReportIfPresent(report: Report): boolean {
+    for (let item of this.tree.getItems()) {
+      const treeReport = item.originalValue as Report;
+      if (treeReport.storageId === report.storageId) {
+        this.tree.selectItem(item.path);
+        return true;
+      }
+    }
+    return false;
   }
 }

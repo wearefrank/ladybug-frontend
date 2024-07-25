@@ -13,6 +13,8 @@ import { UpdatePathSettings } from '../interfaces/update-path-settings';
 import { TestResult } from '../interfaces/test-result';
 import { UpdateReport } from '../interfaces/update-report';
 import { UpdateCheckpoint } from '../interfaces/update-checkpoint';
+import { UpdateReportResponse } from '../interfaces/update-report-response';
+import { Transformation } from '../interfaces/transformation';
 
 @Injectable({
   providedIn: 'root',
@@ -119,9 +121,13 @@ export class HttpService {
     );
   }
 
-  updateReport(reportId: string, body: UpdateReport | UpdateCheckpoint, storage: string): Observable<void> {
+  updateReport(
+    reportId: string,
+    body: UpdateReport | UpdateCheckpoint,
+    storage: string,
+  ): Observable<UpdateReportResponse> {
     return this.http
-      .post<void>(`api/report/${storage}/${reportId}`, body)
+      .post<UpdateReportResponse>(`api/report/${storage}/${reportId}`, body)
       .pipe(tap(() => this.handleSuccess('Report updated!')));
   }
 
@@ -162,8 +168,8 @@ export class HttpService {
     // .pipe(tap(() => this.handleSuccess('Transformation saved!')))
   }
 
-  getTransformation(defaultTransformation: boolean): Observable<Record<string, string>> {
-    return this.http.get<Record<string, string>>(`api/testtool/transformation/${defaultTransformation}`);
+  getTransformation(defaultTransformation: boolean): Observable<Transformation> {
+    return this.http.get<Transformation>(`api/testtool/transformation/${defaultTransformation}`);
   }
 
   getSettings(): Observable<OptionsSettings> {
@@ -204,14 +210,14 @@ export class HttpService {
     });
   }
 
-  getUnmatchedCheckpoints(storageName: string, storageId: number, viewName: string): Observable<void> {
-    return this.http.get<void>(`api/report/${storageName}/${storageId}/checkpoints/uids`, {
+  getUnmatchedCheckpoints(storageName: string, storageId: number, viewName: string): Observable<string[]> {
+    return this.http.get<string[]>(`api/report/${storageName}/${storageId}/checkpoints/uids`, {
       params: { view: viewName, invert: true },
     });
   }
 
   getWarningsAndErrors(storageName: string): Observable<string | undefined> {
-    const cleanStorageName = storageName.replaceAll(' ', '');
+    const cleanStorageName: string = storageName.replaceAll(' ', '');
     return this.http.get(`api/report/warningsAndErrors/${cleanStorageName}`, { responseType: 'text' });
   }
 }
