@@ -120,7 +120,7 @@ Cypress.Commands.add('createReportWithInfopoint' as keyof Chainable, () => {
   });
 });
 
-Cypress.Commands.add('createReportWithMultipleStandpoints' as keyof Chainable, () => {
+Cypress.Commands.add('createReportWithMultipleStartpoints' as keyof Chainable, () => {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Multiple%20startpoints`).then((resp) => {
     expect(resp.status).equal(200);
