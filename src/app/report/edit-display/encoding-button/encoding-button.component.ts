@@ -1,7 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ReportOrCheckpoint, ReportUtil } from '../../../shared/util/report-util';
 import { ToastService } from '../../../shared/services/toast.service';
-import { Checkpoint } from '../../../shared/interfaces/checkpoint';
 import { CustomEditorComponent } from '../../../custom-editor/custom-editor.component';
 
 @Component({
@@ -11,41 +10,41 @@ import { CustomEditorComponent } from '../../../custom-editor/custom-editor.comp
   templateUrl: './encoding-button.component.html',
   styleUrl: './encoding-button.component.css',
 })
-export class EncodingButtonComponent {
+export class EncodingButtonComponent implements OnChanges {
   @Input({ required: true }) selectedNode!: ReportOrCheckpoint;
   @Input({ required: true }) editor!: CustomEditorComponent;
+  buttonType: string = 'Base64';
+  buttonTitle: string = `Convert to ${this.buttonType}`;
+  showEncodingButton: boolean = false;
 
   constructor(private toastService: ToastService) {}
 
-  changeEncoding(button: MouseEvent): void {
+  ngOnChanges(changes: SimpleChanges) {
+    this.showEncodingButton = ReportUtil.isCheckPoint(this.selectedNode) && this.selectedNode.encoding === 'Base64';
+  }
+
+  changeEncoding(): void {
     const node: ReportOrCheckpoint = this.selectedNode;
     if (!node || !ReportUtil.isCheckPoint(node)) {
       this.toastService.showDanger('Could not find report to change encoding');
       return;
     }
-    this.editor.setNewReport(this.setEncoding(node, button));
-  }
 
-  setEncoding(checkpoint: Checkpoint, button: MouseEvent): string {
     let message: string;
-    const target: HTMLElement | null = button.target as HTMLElement;
-    if (target && target.innerHTML.includes('Base64')) {
-      message = checkpoint.message;
-      this.setButtonHtml(checkpoint, button, 'utf8', false);
+
+    if (this.buttonType == 'Base64') {
+      message = node.message;
+      this.updateButton(true);
     } else {
-      message = btoa(checkpoint.message);
-      this.setButtonHtml(checkpoint, button, 'Base64', true);
+      message = btoa(node.message);
+      this.buttonTitle = 'Convert to Base64';
+      this.updateButton(false);
     }
-
-    return message;
+    this.editor.setNewReport(message);
   }
 
-  setButtonHtml(checkpoint: Checkpoint, button: MouseEvent, type: string, showConverted: boolean): void {
-    checkpoint.showConverted = showConverted;
-    const target: HTMLElement | null = button.target as HTMLElement;
-    target.title = `Convert to ${type}`;
-    target.innerHTML = type;
+  updateButton(isConverted: boolean): void {
+    this.buttonType = isConverted ? 'utf8' : 'Base64';
+    this.buttonTitle = `Convert to ${this.buttonType}`;
   }
-
-  protected readonly ReportUtil = ReportUtil;
 }
