@@ -63,7 +63,7 @@ describe('About opened reports', () => {
   });
 
   it('Correct nesting in debug tree for report with multiple startpoints', () => {
-    cy.createReportWithMutipleStartpoints();
+    cy.createReportWithMultipleStartpoints();
     cy.initializeApp();
     cy.getTableBody().get('tr td:contains("Multiple startpoints")').first().click();
     cy.checkFileTreeLength(1);

@@ -7,16 +7,6 @@ describe('About the Test tab', () => {
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
-    const storageIds: string[] = [];
-    cy.getTableBody().find('tr').each($row => {
-      cy.wrap($row).find('td:eq(1)').invoke('text').then(s => {
-        storageIds.push(s);
-        cy.log(`Table has storage id ${s}`);
-      });
-    });
-    cy.getTableBody().find('tr').then(() => {
-      cy.log(`Table has storage ids: [${storageIds}]`);
-    });
     // When making videos is enabled, the number of frames is limited.
     // We want to see these storage ids. This is the reason for this wait.
     cy.wait(2000);

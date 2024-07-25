@@ -11,6 +11,7 @@
 
 import Chainable = Cypress.Chainable;
 import { StringMatcher } from 'cypress/types/net-stubbing';
+import JQueryWithSelector = Cypress.JQueryWithSelector;
 
 declare global {
   namespace Cypress {
@@ -26,7 +27,7 @@ declare global {
       createReportWithLabelNull(): Chainable;
       createReportWithLabelEmpty(): Chainable;
       createReportWithInfopoint(): Chainable;
-      createReportWithMutipleStartpoints(): Chainable;
+      createReportWithMultipleStartpoints(): Chainable;
       clearDebugStore(): Chainable;
       clearReportsInProgress(): Chainable;
       selectIfNotSelected(): Chainable;
@@ -119,7 +120,7 @@ Cypress.Commands.add('createReportWithInfopoint' as keyof Chainable, () => {
   });
 });
 
-Cypress.Commands.add('createReportWithMutipleStartpoints' as keyof Chainable, () => {
+Cypress.Commands.add('createReportWithMultipleStandpoints' as keyof Chainable, () => {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Multiple%20startpoints`).then((resp) => {
     expect(resp.status).equal(200);
@@ -138,9 +139,9 @@ Cypress.Commands.add('clearReportsInProgress' as keyof Chainable, () => {
   });
 });
 
-Cypress.Commands.add('selectIfNotSelected' as keyof Chainable, { prevSubject: 'element' }, (node) => {
-  if (!node.hasClass('node-selected')) {
-    cy.wrap(node).click();
+Cypress.Commands.add('selectIfNotSelected' as keyof Chainable, { prevSubject: 'element' }, (node: JQueryWithSelector<HTMLElement>) => {
+  if (!node[0].classList.contains("selected")) {
+    cy.wrap(node).click()
   }
 });
 
@@ -150,7 +151,7 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, () => {
   cy.get('[data-cy-settings="saveChanges"]').click();
 });
 
-Cypress.Commands.add('checkTestTableNumRows', (length: number): void => {
+Cypress.Commands.add('checkTestTableNumRows' as keyof Chainable, (length: number): void => {
   cy.get('[data-cy-test="table"] tr').should('have.length', length);
 });
 
@@ -161,7 +162,7 @@ Cypress.Commands.add('checkTestTableReportsAre' as keyof Chainable, (reportNames
   });
 });
 
-Cypress.Commands.add('debugTreeGuardedCopyReport', (reportName: string, numExpandedNodes: number, aliasSuffix: string) => {
+Cypress.Commands.add('debugTreeGuardedCopyReport' as keyof Chainable, (reportName: string, numExpandedNodes: number, aliasSuffix: string) => {
   const alias = `debugTreeGuardedCopyReport_${aliasSuffix}`;
   cy.get('[data-cy-debug-tree="root"]')
     .find(`app-tree-item .item-name:contains(${reportName})`)
@@ -186,11 +187,11 @@ Cypress.Commands.add('clickFirstFileInFileTree' as keyof Chainable, () => {
   cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('app-tree-item').eq(0).click();
 });
 
-Cypress.Commands.add('clickRowInTable', (index: number) => {
+Cypress.Commands.add('clickRowInTable' as keyof Chainable, (index: number) => {
   cy.get('[data-cy-debug="tableBody"]').get('tbody').find('tr').eq(index).click();
 });
 
-Cypress.Commands.add('checkFileTreeLength', (length: number) => {
+Cypress.Commands.add('checkFileTreeLength' as keyof Chainable, (length: number) => {
   cy.get('[data-cy-debug-tree="root"] > app-tree-item').should('have.length', length);
 });
 
