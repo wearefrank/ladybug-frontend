@@ -104,7 +104,7 @@ export class TableComponent implements OnInit, OnDestroy {
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
   tableSpacing!: number;
-  genaralTableSubscription?: Subscription;
+  genaralTableSubscription: Subscription = new Subscription();
   showMultipleFiles!: boolean;
   viewDropdownBoxWidth!: string;
   currentFilters: Map<string, string> = new Map<string, string>();

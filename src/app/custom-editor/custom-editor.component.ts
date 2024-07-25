@@ -49,7 +49,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   isPrettified: boolean = false;
   currentView: EditorView = 'raw';
   editorFocused: boolean = false;
-  generalEditorSubscription!: Subscription;
+  generalEditorSubscription: Subscription = new Subscription();
   editorChangesSubject: Subject<string> = new Subject<string>();
 
   //Settings attributes

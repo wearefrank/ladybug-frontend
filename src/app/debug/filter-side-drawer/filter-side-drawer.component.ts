@@ -35,7 +35,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected metadataTypes!: Map<string, string>;
   protected toolTipSuggestions?: Report;
 
-  private genaralFilterSubscription?: Subscription;
+  private genaralFilterSubscription: Subscription = new Subscription();
 
   constructor(
     protected filterService: FilterService,

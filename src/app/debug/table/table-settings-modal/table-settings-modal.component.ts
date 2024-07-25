@@ -21,7 +21,7 @@ import { Transformation } from '../../../shared/interfaces/transformation';
 export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;
   showMultipleAtATime: boolean = false;
-  genaralSettingsSubscription!: Subscription;
+  genaralSettingsSubscription: Subscription = new Subscription();
   tableSpacing: number = 1;
   spacingOptions: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   showSearchWindowOnLoad: boolean = true;
