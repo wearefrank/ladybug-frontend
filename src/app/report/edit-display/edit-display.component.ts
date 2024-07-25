@@ -103,7 +103,7 @@ export class EditDisplayComponent {
   }
 
   convertMessage(checkpoint: Checkpoint): string {
-    let message: string = checkpoint.message ?? '';
+    let message: string = checkpoint.message;
     if (checkpoint.encoding == 'Base64') {
       message = btoa(message);
     }
