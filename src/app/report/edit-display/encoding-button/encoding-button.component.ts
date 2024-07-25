@@ -1,7 +1,6 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ReportOrCheckpoint, ReportUtil } from '../../../shared/util/report-util';
 import { ToastService } from '../../../shared/services/toast.service';
-import { CustomEditorComponent } from '../../../custom-editor/custom-editor.component';
 
 @Component({
   selector: 'app-encoding-button',
@@ -12,7 +11,7 @@ import { CustomEditorComponent } from '../../../custom-editor/custom-editor.comp
 })
 export class EncodingButtonComponent implements OnChanges {
   @Input({ required: true }) selectedNode!: ReportOrCheckpoint;
-  @Input({ required: true }) editor!: CustomEditorComponent;
+  @Output() updatedMessageEvent: EventEmitter<string> = new EventEmitter<string>();
   buttonType: string = 'Base64';
   showEncodingButton: boolean = false;
 
@@ -38,7 +37,7 @@ export class EncodingButtonComponent implements OnChanges {
       message = btoa(node.message);
       this.updateButton(false);
     }
-    this.editor.setNewReport(message);
+    this.updatedMessageEvent.emit(message);
   }
 
   updateButton(isConverted: boolean): void {

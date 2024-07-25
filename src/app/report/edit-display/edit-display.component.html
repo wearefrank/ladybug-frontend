@@ -66,7 +66,7 @@
           (click)="openDifferenceModal('save')"
         ><i class="fa fa-save"></i></button>
       }
-      <app-encoding-button [selectedNode]="selectedNode" [editor]="editor"></app-encoding-button>
+      <app-encoding-button [selectedNode]="selectedNode" (updatedMessageEvent)="setNewReport($event)"></app-encoding-button>
 
       @if ((ReportUtil.isReport(selectedNode) || ReportUtil.isCheckPoint(selectedNode)) && selectedNode.stub) {
         <div class="w-fit mx-1 my-0">

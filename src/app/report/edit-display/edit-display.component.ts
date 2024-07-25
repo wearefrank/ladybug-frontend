@@ -103,7 +103,7 @@ export class EditDisplayComponent {
   }
 
   convertMessage(checkpoint: Checkpoint): string {
-    let message: string = checkpoint.message === null ? '' : checkpoint.message;
+    let message: string = checkpoint.message ?? '';
     if (checkpoint.encoding == 'Base64') {
       message = btoa(message);
     }
@@ -307,5 +307,9 @@ export class EditDisplayComponent {
   toggleToolTip(toolTip: MatTooltip): void {
     toolTip.show();
     setTimeout(() => toolTip.hide(), 2500);
+  }
+
+  setNewReport(message: string) {
+    this.editor.setNewReport(message);
   }
 }
