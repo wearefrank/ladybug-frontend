@@ -16,7 +16,7 @@ import { ReportUtil } from '../../util/report-util';
 export class MetadataTableComponent implements OnChanges {
   protected readonly ReportUtil = ReportUtil;
 
-  @Input() report!: Report | Checkpoint;
+  @Input({ required: true }) report!: Report | Checkpoint;
 
   anyMessagesPresent: boolean = false;
 
