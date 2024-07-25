@@ -10,19 +10,6 @@
               (click)="loadData()"><i class="fa fa-refresh"></i></button>
       <button class="btn btn-info" title="Reset" (click)="resetRunner()">Reset</button>
       <button class="btn btn-info" title="Options" (click)="openSettingsModal()"><i class="fa fa-cog"></i></button>
-      <button
-        data-cy-test="selectAll"
-        class="btn btn-info"
-        title="Select All"
-        (click)="setCheckedForAllReports(true)"
-      >Select All
-      </button>
-      <button data-cy-test="deselectAll"
-              class="btn btn-info"
-              title="Deselect All"
-              (click)="setCheckedForAllReports(false)">
-        Deselect All
-      </button>
       <button data-cy-test="deleteSelected" class="btn btn-info" title="Delete Selected"
               (click)="openDeleteModal()"><i class="fa fa-trash"></i></button>
       <button class="btn btn-info" title="Clone report"
@@ -75,61 +62,11 @@
         </tr>
         </thead>
         <tbody data-cy-test="table" id="testReports">
-          @for (report of reports; track report.storageId) {
-
-            @if (matches(report)) {
-              <tr>
-                <td>
-                  <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked"
-                         (click)="toggleCheck(report)">
-                </td>
-                @if (showStorageIds) {
-                  <td>
-                    {{ report.storageId }}
-                  </td>
-                }
-                <td>
-                    <span class="buttons">
-                      <button data-cy-test="runReport" title="Run report" class="btn btn-info button-width"
-                              (click)="run(report)"><i class="fa fa-play"></i></button>
-                      <button data-cy-test="openReport" title="Open report" class="btn btn-info button-width"
-                              (click)="openReport(report.storageId, report.name)"><i class="fa fa-folder-open"></i>
-                      </button>
-                    </span>
-                </td>
-                <td>
-                  {{ getFullPath(report.path, report.name) }}
-                </td>
-                <td>
-                  {{ report.description }}
-                </td>
-                <td>
-                  @if (report.variables) {
-                    <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
-                  }
-                </td>
-                <td>
-                  @if (getReranReport(report.storageId)) {
-                    <span data-cy-test="runResult"
-                          [id]="'runResult#' + report.storageId"
-                          [style.color]="getReranReport(report.storageId)!.color">
-                      {{ getReranReport(report.storageId)!.resultString }}
-                    </span>
-                  }
-                </td>
-                <td>
-                  @if (getReranReport(report.storageId)) {
-                    <span class="buttons">
-                        <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
-                                (click)="replaceReport(report.storageId)">Replace</button>
-                        <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
-                                (click)="compareReports(report.storageId)">Compare</button>
-                    </span>
-                  }
-                </td>
-              </tr>
-            }
-          }
+        <app-test-table-body
+          [reports]="reports" [currentFilter]="currentFilter" [showStorageIds]="showStorageIds"
+          [reranReports]="reranReports" [storageName]="storageName" [metadataNames]="metadataNames"
+          (toggleCheckEvent)="toggleCheck($event)" (runEvent)="run($event)">
+        </app-test-table-body>
         </tbody>
       </table>
     </div>

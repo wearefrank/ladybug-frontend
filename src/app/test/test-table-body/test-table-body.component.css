@@ -1,0 +1,29 @@
+td {
+  border: 0;
+  vertical-align: middle;
+  height: fit-content;
+}
+
+tr {
+  line-height: 20px;
+  height: 100%;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  width: fit-content;
+}
+
+.button-width {
+  width: 2.2rem;
+  height: 2rem;
+}
+
+button {
+  height: fit-content;
+}

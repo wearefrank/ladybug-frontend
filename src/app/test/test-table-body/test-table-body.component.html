@@ -1,0 +1,52 @@
+@for (report of reports; let index = $index; track report.storageId) {
+  @if (showReport[index]) {
+    <tr>
+      <td>
+        <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked"
+               (click)="toggleCheck(report)">
+      </td>
+      @if (showStorageIds) {
+        <td>
+          {{ report.storageId }}
+        </td>
+      }
+      <td>
+        <span class="buttons">
+          <button data-cy-test="runReport" title="Run report" class="btn btn-info button-width"
+                  (click)="run(report)"><i class="fa fa-play"></i></button>
+          <button data-cy-test="openReport" title="Open report" class="btn btn-info button-width"
+                  (click)="openReport(report.storageId, report.name)"><i class="fa fa-folder-open"></i>
+          </button>
+        </span>
+      </td>
+      <td>
+        {{ getFullPath(report.path, report.name) }}
+      </td>
+      <td>
+        {{ report.description }}
+      </td>
+      <td>
+        @if (report.variables) {
+          <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
+        }
+      </td>
+      @if (getReranReport(+report.storageId); as reranReport) {
+        <td>
+            <span data-cy-test="runResult"
+                  [id]="'runResult#' + report.storageId"
+                  [style.color]="reranReport.color">
+                        {{ reranReport.resultString }}
+            </span>
+        </td>
+        <td>
+            <span class="buttons">
+              <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
+                      (click)="replaceReport(report.storageId)">Replace</button>
+              <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
+                      (click)="compareReports(report.storageId)">Compare</button>
+            </span>
+        </td>
+      }
+    </tr>
+  }
+}

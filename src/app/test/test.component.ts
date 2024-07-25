@@ -11,16 +11,15 @@ import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { ToastService } from '../shared/services/toast.service';
 import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
-import { ReportData } from '../shared/interfaces/report-data';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
 import { TestListItem } from '../shared/interfaces/test-list-item';
-import { View } from '../shared/interfaces/view';
 import { OptionsSettings } from '../shared/interfaces/options-settings';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
 import { BooleanToStringPipe } from '../shared/pipes/boolean-to-string.pipe';
+import { TestTableBodyComponent } from './test-table-body/test-table-body.component';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -40,6 +39,7 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     CloneModalComponent,
     DeleteModalComponent,
     BooleanToStringPipe,
+    TestTableBodyComponent,
   ],
 })
 export class TestComponent implements OnInit {
@@ -72,6 +72,7 @@ export class TestComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+    localStorage.removeItem('generatorEnabled');
   }
 
   setStorageIdsFromLocalStorage(): void {
@@ -85,7 +86,6 @@ export class TestComponent implements OnInit {
     } else {
       this.httpService.getSettings().subscribe({
         next: (response: OptionsSettings) => {
-          console.log(response);
           this.generatorEnabled = response.generatorEnabled;
           localStorage.setItem('generatorEnabled', String(this.generatorEnabled));
         },
@@ -152,7 +152,8 @@ export class TestComponent implements OnInit {
     if (this.generatorEnabled) {
       this.httpService.runReport(this.storageName, report.storageId).subscribe({
         next: (response: TestResult): void => {
-          report.reranReport = this.createReranReport(response);
+          //Needs to be a clone, otherwise the ngOnChanges in test-table-body component will not trigger
+          this.reranReports.push({ ...this.createReranReport(response) });
         },
         error: () => catchError(this.errorHandler.handleError()),
       });
@@ -181,23 +182,6 @@ export class TestComponent implements OnInit {
       color: result.equal ? 'green' : 'red',
       resultString: result.info,
     };
-  }
-
-  getReranReport(id: number): ReranReport | undefined {
-    return this.reranReports.find((report: ReranReport) => report.id === id);
-  }
-
-  openReport(storageId: number, name: string): void {
-    this.httpService.getReport(storageId, this.storageName).subscribe({
-      next: (report: Report): void => {
-        const reportData: ReportData = {
-          report: report,
-          currentView: { storageName: this.storageName, metadataNames: this.metadataNames } as View,
-        };
-        this.tabService.openNewTab(reportData);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
   }
 
   openDeleteModal(): void {
@@ -240,31 +224,6 @@ export class TestComponent implements OnInit {
         error: () => catchError(this.errorHandler.handleError()),
       });
     }
-  }
-
-  compareReports(id: number): void {
-    const reranReport = this.reranReports.find((report: ReranReport) => report.id == id);
-    if (reranReport) {
-      const tabId: string = this.helperService.createCompareTabId(
-        reranReport?.originalReport,
-        reranReport?.runResultReport,
-      );
-      this.tabService.openNewCompareTab({
-        id: tabId,
-        viewName: 'compare',
-        originalReport: reranReport.originalReport,
-        runResultReport: reranReport.runResultReport,
-      });
-    }
-  }
-
-  replaceReport(reportId: number): void {
-    this.httpService.replaceReport(reportId, this.storageName).subscribe({
-      next: () => {
-        this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
   }
 
   copySelected(): void {
@@ -331,9 +290,7 @@ export class TestComponent implements OnInit {
 
   changeFilter(filter: string): void {
     if (this.reports) {
-      const transformedFilter: string =
-        filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
-      this.currentFilter = transformedFilter;
+      this.currentFilter = filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
       for (const report of this.reports) {
         report.checked = this.matches(report);
       }
@@ -355,29 +312,8 @@ export class TestComponent implements OnInit {
     return new RegExp(`(/)?${this.currentFilter}.*`).test(name);
   }
 
-  extractVariables(variables: string): string {
-    if (!variables || variables == 'null') {
-      return '';
-    }
-    const map = variables.split('\n');
-    const keys = map[0].split(',');
-    const values = map[1].split(',');
-    let resultString = '';
-    for (let i in keys) {
-      resultString += keys[i] + '=' + values[i] + ', ';
-    }
-    return resultString.slice(0, -2);
-  }
-
   sortByName(reports: TestListItem[]): TestListItem[] {
     return reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
-  }
-
-  getFullPath(path: string, name: string): string {
-    if (path) {
-      return `${path.replace(this.currentFilter, '')}${name}`;
-    }
-    return `/${name}`;
   }
 
   getSelectedReports(): TestListItem[] {
