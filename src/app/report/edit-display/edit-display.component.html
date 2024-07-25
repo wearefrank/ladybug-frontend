@@ -66,9 +66,7 @@
           (click)="openDifferenceModal('save')"
         ><i class="fa fa-save"></i></button>
       }
-      @if (ReportUtil.isCheckPoint(selectedNode) && selectedNode.encoding === 'Base64') {
-        <button class="btn btn-info" title="Convert to Base64" (click)="changeEncoding($event)">Base64</button>
-      }
+      <app-encoding-button [selectedNode]="selectedNode" [editor]="editor"></app-encoding-button>
 
       @if ((ReportUtil.isReport(selectedNode) || ReportUtil.isCheckPoint(selectedNode)) && selectedNode.stub) {
         <div class="w-fit mx-1 my-0">

@@ -30,6 +30,8 @@ import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
 import { ReportOrCheckpoint, ReportUtil } from '../../shared/util/report-util';
+import { EncodingButtonComponent } from './encoding-button/encoding-button.component';
+import { Checkpoint } from '../../shared/interfaces/checkpoint';
 
 @Component({
   selector: 'app-edit-display',
@@ -55,6 +57,7 @@ import { ReportOrCheckpoint, ReportUtil } from '../../shared/util/report-util';
     ToggleButtonComponent,
     MatTooltipModule,
     NgClass,
+    EncodingButtonComponent,
   ],
 })
 export class EditDisplayComponent {
@@ -90,19 +93,18 @@ export class EditDisplayComponent {
     if (ReportUtil.isReport(this.selectedNode)) {
       this.editor.setNewReport(this.selectedNode.xml);
     } else if (ReportUtil.isCheckPoint(this.selectedNode)) {
-      this.editor.setNewReport(this.helperService.convertMessage(this.selectedNode));
+      this.editor.setNewReport(this.convertMessage(this.selectedNode));
     }
     this.rerunResult = undefined;
     this.displayReport = true;
   }
 
-  changeEncoding(button: MouseEvent): void {
-    const node: ReportOrCheckpoint = this.selectedNode;
-    if (!node || !ReportUtil.isCheckPoint(node)) {
-      this.toastService.showDanger('Could not find report to change encoding');
-      return;
+  convertMessage(checkpoint: Checkpoint): string {
+    let message: string = checkpoint.message === null ? '' : checkpoint.message;
+    if (checkpoint.encoding == 'Base64') {
+      message = btoa(message);
     }
-    this.editor.setNewReport(this.helperService.changeEncoding(node, button));
+    return message;
   }
 
   rerunReport(): void {

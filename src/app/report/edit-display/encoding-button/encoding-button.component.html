@@ -1,0 +1,3 @@
+@if (ReportUtil.isCheckPoint(selectedNode) && selectedNode.encoding === 'Base64') {
+  <button class="btn btn-info" title="Convert to Base64" (click)="changeEncoding($event)">Base64</button>
+}
