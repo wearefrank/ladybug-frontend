@@ -104,14 +104,10 @@ export class TableComponent implements OnInit, OnDestroy {
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
   tableSpacing!: number;
-  tableSpacingSubscription?: Subscription;
+  genaralTableSubscription?: Subscription;
   showMultipleFiles!: boolean;
-  showMultipleFilesSubscription?: Subscription;
   viewDropdownBoxWidth!: string;
   currentFilters: Map<string, string> = new Map<string, string>();
-  showFilterSubscription?: Subscription;
-  filterContextSubscription?: Subscription;
-  filterErrorSubscription?: Subscription;
   showFilterError: boolean = false;
   filterErrorDetails: Map<string, string> = new Map<string, string>();
 
@@ -150,41 +146,43 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribeFromObservables();
+    this.genaralTableSubscription?.unsubscribe();
   }
 
   subscribeToObservables(): void {
-    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe({
-      next: (value: number) => (this.tableSpacing = value),
-      error: () => catchError(this.errorHandler.handleError()),
+    this.genaralTableSubscription?.add(() => {
+      this.settingsService.tableSpacingObservable.subscribe({
+        next: (value: number) => (this.tableSpacing = value),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     });
-    this.showMultipleFilesSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
-      next: (value: boolean) => (this.showMultipleFiles = value),
-      error: () => catchError(this.errorHandler.handleError()),
+    this.genaralTableSubscription?.add(() => {
+      this.settingsService.showMultipleAtATimeObservable.subscribe({
+        next: (value: boolean) => (this.showMultipleFiles = value),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     });
-    this.showFilterSubscription = this.filterService.showFilter$.subscribe({
-      next: (show: boolean) => (this.tableSettings.showFilter = show),
-      error: () => catchError(this.errorHandler.handleError()),
+    this.genaralTableSubscription?.add(() => {
+      this.filterService.showFilter$.subscribe({
+        next: (show: boolean) => (this.tableSettings.showFilter = show),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     });
-    this.filterErrorSubscription = this.filterService.filterError$.subscribe({
-      next: (filterError: [boolean, Map<string, string>]): void => {
-        this.showFilterError = filterError[0];
-        this.filterErrorDetails = filterError[1];
-      },
-      error: () => catchError(this.errorHandler.handleError()),
+    this.genaralTableSubscription?.add(() => {
+      this.filterService.filterError$.subscribe({
+        next: (filterError: [boolean, Map<string, string>]): void => {
+          this.showFilterError = filterError[0];
+          this.filterErrorDetails = filterError[1];
+        },
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     });
-    this.filterContextSubscription = this.filterService.filterContext$.subscribe({
-      next: (context: Map<string, string>) => this.changeFilter(context),
-      error: () => catchError(this.errorHandler.handleError()),
+    this.genaralTableSubscription?.add(() => {
+      this.filterService.filterContext$.subscribe({
+        next: (context: Map<string, string>) => this.changeFilter(context),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     });
-  }
-
-  unsubscribeFromObservables(): void {
-    this.showFilterSubscription?.unsubscribe();
-    this.filterContextSubscription?.unsubscribe();
-    this.tableSpacingSubscription?.unsubscribe();
-    this.showMultipleFilesSubscription?.unsubscribe();
-    this.filterErrorSubscription?.unsubscribe();
   }
 
   retrieveRecords(): void {

@@ -35,10 +35,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected metadataTypes!: Map<string, string>;
   protected toolTipSuggestions?: Report;
 
-  private shouldShowFilterSubscription?: Subscription;
-  private metadataLabelsSubscription?: Subscription;
-  private currentRecordsSubscription?: Subscription;
-  private metadataTypesSubscription?: Subscription;
+  private genaralFilterSubscription?: Subscription;
 
   constructor(
     protected filterService: FilterService,
@@ -52,33 +49,34 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribeAll();
+    this.genaralFilterSubscription?.unsubscribe();
   }
 
   setSubscriptions(): void {
-    this.shouldShowFilterSubscription = this.filterService.showFilter$.subscribe({
-      next: (show: boolean) => (this.shouldShowFilter = show),
-      error: () => catchError(this.errorHandler.handleError()),
+    this.genaralFilterSubscription?.add(() => {
+      this.filterService.showFilter$.subscribe({
+        next: (show: boolean) => (this.shouldShowFilter = show),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     });
-    this.metadataLabelsSubscription = this.filterService.metadataLabels$.subscribe({
-      next: (metadataLabels: string[]) => (this.metadataLabels = metadataLabels),
-      error: () => catchError(this.errorHandler.handleError()),
+    this.genaralFilterSubscription?.add(() => {
+      this.filterService.metadataLabels$.subscribe({
+        next: (metadataLabels: string[]) => (this.metadataLabels = metadataLabels),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     });
-    this.currentRecordsSubscription = this.filterService.currentRecords$.subscribe({
-      next: (records: Map<string, Array<string>>) => (this.currentRecords = records),
-      error: () => catchError(this.errorHandler.handleError()),
+    this.genaralFilterSubscription?.add(() => {
+      this.filterService.currentRecords$.subscribe({
+        next: (records: Map<string, Array<string>>) => (this.currentRecords = records),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     });
-    this.metadataTypesSubscription = this.filterService.metadataTypes$.subscribe({
-      next: (metadataTypes: Map<string, string>) => (this.metadataTypes = metadataTypes),
-      error: () => catchError(this.errorHandler.handleError()),
+    this.genaralFilterSubscription?.add(() => {
+      this.filterService.metadataTypes$.subscribe({
+        next: (metadataTypes: Map<string, string>) => (this.metadataTypes = metadataTypes),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     });
-  }
-
-  unsubscribeAll(): void {
-    this.shouldShowFilterSubscription?.unsubscribe();
-    this.metadataLabelsSubscription?.unsubscribe();
-    this.currentRecordsSubscription?.unsubscribe();
-    this.metadataTypesSubscription?.unsubscribe();
   }
 
   getFilterToolTips(): void {
