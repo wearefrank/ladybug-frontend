@@ -33,6 +33,11 @@ function testTreeView(reportName: string): void {
       cy.wrap($node).should('contain', reportName);
     });
 
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item > div')
+    .eq(0)
+    .get('div > app-tree-icon img')
+    .as('tree-icons');
+
   cy.get('@tree-icons').eq(0)
     .invoke('attr', 'src')
     .should('eq', 'assets/tree-icons/startpoint.svg');
