@@ -14,7 +14,6 @@ export class EncodingButtonComponent implements OnChanges {
   @Input({ required: true }) selectedNode!: ReportOrCheckpoint;
   @Input({ required: true }) editor!: CustomEditorComponent;
   buttonType: string = 'Base64';
-  buttonTitle: string = `Convert to ${this.buttonType}`;
   showEncodingButton: boolean = false;
 
   constructor(private toastService: ToastService) {}
@@ -37,7 +36,6 @@ export class EncodingButtonComponent implements OnChanges {
       this.updateButton(true);
     } else {
       message = btoa(node.message);
-      this.buttonTitle = 'Convert to Base64';
       this.updateButton(false);
     }
     this.editor.setNewReport(message);
@@ -45,6 +43,5 @@ export class EncodingButtonComponent implements OnChanges {
 
   updateButton(isConverted: boolean): void {
     this.buttonType = isConverted ? 'utf8' : 'Base64';
-    this.buttonTitle = `Convert to ${this.buttonType}`;
   }
 }
