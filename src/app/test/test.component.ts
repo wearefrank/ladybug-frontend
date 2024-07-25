@@ -46,7 +46,7 @@ export class TestComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'test';
   reports?: TestListItem[];
   reranReports: ReranReport[] = [];
-  generatorEnabled?: boolean;
+  generatorEnabled: boolean = false;
   currentFilter: string = '';
   metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
   storageName: string = 'Test';
@@ -101,11 +101,7 @@ export class TestComponent implements OnInit {
         this.testFileTreeComponent.setData(this.reports);
         this.setCheckedForAllReports(true);
         this.amountOfSelectedReports = value.length;
-        if (path) {
-          this.testFileTreeComponent.selectItem(path);
-        } else {
-          this.testFileTreeComponent.selectItem(this.testFileTreeComponent.rootFolder.name);
-        }
+        this.testFileTreeComponent.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -116,7 +112,7 @@ export class TestComponent implements OnInit {
       if (this.getSelectedReports().length === 1) {
         this.cloneModal.open(this.getSelectedReports()[0]);
       } else {
-        this.toastService.showWarning('Make sure exactly one report is selected at a time');
+        this.toastService.showWarning('Make sure only one report is selected at a time');
       }
     }
   }
