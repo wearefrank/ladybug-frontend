@@ -12,7 +12,8 @@
     <revision>0.1.0-SNAPSHOT</revision>
     <!-- For pom.properties -->
     <version>${project.version}</version>
-    <compiled.frontend.location>${basedir}/dist</compiled.frontend.location>
+    <compiled.project.location>${basedir}/dist</compiled.project.location>
+    <compiled.frontend.location>${compiled.project.location}/ladybug/browser</compiled.frontend.location>
     <meta-inf.frontend.output>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}/</meta-inf.frontend.output>
   </properties>
 
@@ -28,7 +29,7 @@
               <directory>${project.build.directory}</directory>
             </fileset>
             <fileset>
-              <directory>${compiled.frontend.location}</directory>
+              <directory>${compiled.project.location}</directory>
             </fileset>
           </filesets>
         </configuration>
@@ -101,7 +102,7 @@
               <outputDirectory>${meta-inf.frontend.output}</outputDirectory>
               <resources>
                 <resource>
-                  <directory>${compiled.frontend.location}/ladybug</directory>
+                  <directory>${compiled.frontend.location}</directory>
                   <filtering>false</filtering>
                   <excludes>
                     <exclude>package.json</exclude>
@@ -120,7 +121,7 @@
               <outputDirectory>${meta-inf.frontend.output}/assets/</outputDirectory>
               <resources>
                 <resource>
-                  <directory>${compiled.frontend.location}/ladybug</directory>
+                  <directory>${compiled.frontend.location}</directory>
                   <filtering>true</filtering>
                   <includes>
                     <include>package.json</include>

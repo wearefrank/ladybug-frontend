@@ -24,6 +24,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
+import { View } from '../../shared/interfaces/view';
 
 @Component({
   selector: 'app-debug-tree',
@@ -48,7 +49,7 @@ export class DebugTreeComponent implements OnDestroy {
   showMultipleAtATime!: boolean;
   showMultipleAtATimeSubscription!: Subscription;
 
-  private _currentView: any;
+  private _currentView!: View;
   private lastReport?: Report | null;
 
   treeOptions: FileTreeOptions = {
@@ -71,7 +72,7 @@ export class DebugTreeComponent implements OnDestroy {
     this.showMultipleAtATimeSubscription.unsubscribe();
   }
 
-  @Input() set currentView(value: any) {
+  @Input({ required: true }) set currentView(value: View) {
     if (this._currentView !== value) {
       // TODO: Check if the current reports are part of the view
       this.hideOrShowCheckpointsBasedOnView(value);
@@ -79,21 +80,21 @@ export class DebugTreeComponent implements OnDestroy {
     this._currentView = value;
   }
 
-  get currentView(): any {
+  get currentView(): View {
     return this._currentView;
   }
 
-  hideOrShowCheckpointsBasedOnView(currentView: any): void {
+  hideOrShowCheckpointsBasedOnView(currentView: View): void {
     if (this.tree) {
       this.checkUnmatchedCheckpoints(this.getTreeReports(), currentView);
     }
   }
 
-  checkUnmatchedCheckpoints(reports: Report[], currentView: any) {
+  checkUnmatchedCheckpoints(reports: Report[], currentView: View) {
     for (let report of reports) {
       if (report.storageName === currentView.storageName) {
         this.httpService.getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name).subscribe({
-          next: (unmatched: any) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
+          next: (unmatched: string[]) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
           error: () => catchError(this.errorHandler.handleError()),
         });
       }

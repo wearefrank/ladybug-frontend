@@ -359,10 +359,12 @@ export class TableComponent implements OnInit, OnDestroy {
 
   deleteSelected(): void {
     const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
-    this.httpService.deleteReport(reportIds, this.currentView.storageName).subscribe({
-      next: () => this.retrieveRecords(),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    if (reportIds.length > 0) {
+      this.httpService.deleteReport(reportIds, this.currentView.storageName).subscribe({
+        next: () => this.retrieveRecords(),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
+    }
   }
 
   selectAll(): void {
@@ -455,10 +457,10 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openLatestReports(amount: number): void {
     this.httpService.getLatestReports(amount, this.currentView.storageName).subscribe({
-      next: (data) => {
-        data.forEach((report: any) => {
+      next: (data: Report[]) => {
+        for (let report of data) {
           this.openReportEvent.next(report);
-        });
+        }
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -466,7 +468,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openReportInProgress(index: number): void {
     this.httpService.getReportInProgress(index).subscribe({
-      next: (report) => {
+      next: (report: Report) => {
         this.openReportEvent.next(report);
       },
       error: () => catchError(this.errorHandler.handleError()),
@@ -496,18 +498,19 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  uploadReports(event: any): void {
-    const file: File = event.target.files[0];
+  uploadReports(event: Event): void {
+    const eventTarget = event.target as HTMLInputElement;
+    const file: File | undefined = eventTarget.files?.[0];
     if (file) {
-      const formData: any = new FormData();
+      const formData: FormData = new FormData();
       formData.append('file', file);
       this.showUploadedReports(formData);
     }
   }
 
-  showUploadedReports(formData: any): void {
+  showUploadedReports(formData: FormData): void {
     this.httpService.uploadReport(formData).subscribe({
-      next: (data) => {
+      next: (data: Report[]) => {
         for (let report of data) {
           const reportData: ReportData = {
             report: report,

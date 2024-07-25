@@ -8,6 +8,7 @@ import { DebugComponent } from '../debug/debug.component';
 import { TabService } from '../shared/services/tab.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReportData } from '../shared/interfaces/report-data';
+import { View } from '../shared/interfaces/view';
 
 @Component({
   selector: 'app-report',
@@ -21,7 +22,7 @@ export class ReportComponent implements AfterViewInit, OnInit {
   @ViewChild(SplitComponent) splitter!: SplitComponent;
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
   @ViewChild(EditDisplayComponent) displayComponent!: EditDisplayComponent;
-  @Input() currentView?: any;
+  @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
   calculatedHeight!: number;
   treeWidth: Subject<void> = new Subject<void>();
