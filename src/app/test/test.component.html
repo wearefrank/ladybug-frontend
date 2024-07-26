@@ -50,9 +50,8 @@
           class="fa fa-copy"></i></button>
       </form>
     </div>
-    @if (generatorEnabled) {
-      <p>Generator is {{ generatorEnabled|booleanToString: 'enabled':'disabled' }}</p>
-    }
+
+    <p>Generator is {{ generatorEnabled|booleanToString: 'enabled':'disabled' }}</p>
 
 
     <div class="table-responsive" id="testReportTable">
