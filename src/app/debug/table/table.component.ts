@@ -338,14 +338,14 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openSelected(): void {
+    if (this.getAmountOfReportsSelected() > 1 && !this.showMultipleFiles) {
+      this.toastService.showWarning(
+        'Please enable show multiple files in settings to open multiple files in the debug tree',
+      );
+      return;
+    }
     for (const report of this.tableSettings.reportMetadata) {
       if (report.checked) {
-        if (!this.showMultipleFiles) {
-          this.toastService.showWarning(
-            'Please enable show multiple files in settings to open multiple files in the debug tree',
-          );
-          break;
-        }
         this.openReport(report.storageId);
       }
     }
