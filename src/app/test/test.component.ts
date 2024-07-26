@@ -79,7 +79,7 @@ export class TestComponent implements OnInit {
 
   setGeneratorStatusFromLocalStorage(): void {
     const generatorStatus: string | null = localStorage.getItem('generatorEnabled');
-    if (generatorStatus) {
+    if (generatorStatus && generatorStatus.length <= 5) {
       this.generatorEnabled = generatorStatus === 'true';
     } else {
       this.httpService.getSettings().subscribe({
