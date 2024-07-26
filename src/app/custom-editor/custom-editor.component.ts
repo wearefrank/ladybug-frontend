@@ -49,7 +49,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   isPrettified: boolean = false;
   currentView: EditorView = 'raw';
   editorFocused: boolean = false;
-  generalEditorSubscription: Subscription = new Subscription();
+  private subscriptions: Subscription = new Subscription();
   editorChangesSubject: Subject<string> = new Subject<string>();
 
   //Settings attributes
@@ -80,7 +80,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-    this.generalEditorSubscription.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -94,24 +94,25 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   subscribeToSettings(): void {
-    this.generalEditorSubscription.add(() => {
-      this.settingsService.showSearchWindowOnLoadObservable.subscribe((value: boolean) => {
+    const showSearchWindowOnLoad: Subscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe(
+      (value: boolean) => {
         this.showSearchWindowOnLoad = value;
-      });
+      },
+    );
+    this.subscriptions.add(showSearchWindowOnLoad);
+    const prettifyOnLoad: Subscription = this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
+      this.showPrettifyOnLoad = value;
     });
-    this.generalEditorSubscription.add(() => {
-      this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
-        this.showPrettifyOnLoad = value;
-      });
-    });
+    this.subscriptions.add(prettifyOnLoad);
   }
 
   subscribeToEditorChanges(): void {
-    this.generalEditorSubscription.add(() => {
-      this.editorChangesSubject.pipe(debounceTime(300)).subscribe((value: string) => {
+    const editorChangesSubscription: Subscription = this.editorChangesSubject
+      .pipe(debounceTime(300))
+      .subscribe((value: string) => {
         this.checkIfTextIsPretty();
       });
-    });
+    this.subscriptions.add(editorChangesSubscription);
   }
 
   initEditor(editor: any): void {
