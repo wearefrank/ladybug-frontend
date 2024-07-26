@@ -35,10 +35,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected metadataTypes!: Map<string, string>;
   protected toolTipSuggestions?: Report;
 
-  private shouldShowFilterSubscription?: Subscription;
-  private metadataLabelsSubscription?: Subscription;
-  private currentRecordsSubscription?: Subscription;
-  private metadataTypesSubscription?: Subscription;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     protected filterService: FilterService,
@@ -52,33 +49,30 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribeAll();
+    this.subscriptions.unsubscribe();
   }
 
   setSubscriptions(): void {
-    this.shouldShowFilterSubscription = this.filterService.showFilter$.subscribe({
+    const showFilterSubscription: Subscription = this.filterService.showFilter$.subscribe({
       next: (show: boolean) => (this.shouldShowFilter = show),
       error: () => catchError(this.errorHandler.handleError()),
     });
-    this.metadataLabelsSubscription = this.filterService.metadataLabels$.subscribe({
+    this.subscriptions.add(showFilterSubscription);
+    const metadataLabelsSubscription: Subscription = this.filterService.metadataLabels$.subscribe({
       next: (metadataLabels: string[]) => (this.metadataLabels = metadataLabels),
       error: () => catchError(this.errorHandler.handleError()),
     });
-    this.currentRecordsSubscription = this.filterService.currentRecords$.subscribe({
+    this.subscriptions.add(metadataLabelsSubscription);
+    const currentRecordSubscription: Subscription = this.filterService.currentRecords$.subscribe({
       next: (records: Map<string, Array<string>>) => (this.currentRecords = records),
       error: () => catchError(this.errorHandler.handleError()),
     });
-    this.metadataTypesSubscription = this.filterService.metadataTypes$.subscribe({
+    this.subscriptions.add(currentRecordSubscription);
+    const metadataTypesSubscription: Subscription = this.filterService.metadataTypes$.subscribe({
       next: (metadataTypes: Map<string, string>) => (this.metadataTypes = metadataTypes),
       error: () => catchError(this.errorHandler.handleError()),
     });
-  }
-
-  unsubscribeAll(): void {
-    this.shouldShowFilterSubscription?.unsubscribe();
-    this.metadataLabelsSubscription?.unsubscribe();
-    this.currentRecordsSubscription?.unsubscribe();
-    this.metadataTypesSubscription?.unsubscribe();
+    this.subscriptions.add(metadataTypesSubscription);
   }
 
   getFilterToolTips(): void {
