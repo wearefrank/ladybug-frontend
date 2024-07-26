@@ -104,14 +104,10 @@ export class TableComponent implements OnInit, OnDestroy {
   @ViewChild(TableSettingsModalComponent)
   tableSettingsModal!: TableSettingsModalComponent;
   tableSpacing!: number;
-  tableSpacingSubscription?: Subscription;
+  private subscriptions: Subscription = new Subscription();
   showMultipleFiles!: boolean;
-  showMultipleFilesSubscription?: Subscription;
   viewDropdownBoxWidth!: string;
   currentFilters: Map<string, string> = new Map<string, string>();
-  showFilterSubscription?: Subscription;
-  filterContextSubscription?: Subscription;
-  filterErrorSubscription?: Subscription;
   showFilterError: boolean = false;
   filterErrorDetails: Map<string, string> = new Map<string, string>();
 
@@ -150,41 +146,38 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribeFromObservables();
+    this.subscriptions.unsubscribe();
   }
 
   subscribeToObservables(): void {
-    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe({
+    const tableSpacingSubscription: Subscription = this.settingsService.tableSpacingObservable.subscribe({
       next: (value: number) => (this.tableSpacing = value),
       error: () => catchError(this.errorHandler.handleError()),
     });
-    this.showMultipleFilesSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
+    this.subscriptions.add(tableSpacingSubscription);
+    const showMultipleSubscription: Subscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
       next: (value: boolean) => (this.showMultipleFiles = value),
       error: () => catchError(this.errorHandler.handleError()),
     });
-    this.showFilterSubscription = this.filterService.showFilter$.subscribe({
+    this.subscriptions.add(showMultipleSubscription);
+    const showFilterSubscription: Subscription = this.filterService.showFilter$.subscribe({
       next: (show: boolean) => (this.tableSettings.showFilter = show),
       error: () => catchError(this.errorHandler.handleError()),
     });
-    this.filterErrorSubscription = this.filterService.filterError$.subscribe({
+    this.subscriptions.add(showFilterSubscription);
+    const filterErrorSubscription: Subscription = this.filterService.filterError$.subscribe({
       next: (filterError: [boolean, Map<string, string>]): void => {
         this.showFilterError = filterError[0];
         this.filterErrorDetails = filterError[1];
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
-    this.filterContextSubscription = this.filterService.filterContext$.subscribe({
+    this.subscriptions.add(filterErrorSubscription);
+    const filterContextSubscription: Subscription = this.filterService.filterContext$.subscribe({
       next: (context: Map<string, string>) => this.changeFilter(context),
       error: () => catchError(this.errorHandler.handleError()),
     });
-  }
-
-  unsubscribeFromObservables(): void {
-    this.showFilterSubscription?.unsubscribe();
-    this.filterContextSubscription?.unsubscribe();
-    this.tableSpacingSubscription?.unsubscribe();
-    this.showMultipleFilesSubscription?.unsubscribe();
-    this.filterErrorSubscription?.unsubscribe();
+    this.subscriptions.add(filterContextSubscription);
   }
 
   retrieveRecords(): void {
