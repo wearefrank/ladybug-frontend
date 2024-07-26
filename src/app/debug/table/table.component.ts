@@ -272,7 +272,8 @@ export class TableComponent implements OnInit, OnDestroy {
     this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
   }
 
-  toggleCheck(report: any): void {
+  toggleCheck(report: any, event: MouseEvent): void {
+    event.stopPropagation();
     report.checked = !report.checked;
     if (this.allRowsSelected && !report.checked) {
       this.allRowsSelected = false;
@@ -339,13 +340,13 @@ export class TableComponent implements OnInit, OnDestroy {
   openSelected(): void {
     for (const report of this.tableSettings.reportMetadata) {
       if (report.checked) {
-        this.openReport(report.storageId);
         if (!this.showMultipleFiles) {
           this.toastService.showWarning(
             'Please enable show multiple files in settings to open multiple files in the debug tree',
           );
           break;
         }
+        this.openReport(report.storageId);
       }
     }
   }
