@@ -146,29 +146,29 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.genaralTableSubscription?.unsubscribe();
+    this.genaralTableSubscription.unsubscribe();
   }
 
   subscribeToObservables(): void {
-    this.genaralTableSubscription?.add(() => {
+    this.genaralTableSubscription.add(() => {
       this.settingsService.tableSpacingObservable.subscribe({
         next: (value: number) => (this.tableSpacing = value),
         error: () => catchError(this.errorHandler.handleError()),
       });
     });
-    this.genaralTableSubscription?.add(() => {
+    this.genaralTableSubscription.add(() => {
       this.settingsService.showMultipleAtATimeObservable.subscribe({
         next: (value: boolean) => (this.showMultipleFiles = value),
         error: () => catchError(this.errorHandler.handleError()),
       });
     });
-    this.genaralTableSubscription?.add(() => {
+    this.genaralTableSubscription.add(() => {
       this.filterService.showFilter$.subscribe({
         next: (show: boolean) => (this.tableSettings.showFilter = show),
         error: () => catchError(this.errorHandler.handleError()),
       });
     });
-    this.genaralTableSubscription?.add(() => {
+    this.genaralTableSubscription.add(() => {
       this.filterService.filterError$.subscribe({
         next: (filterError: [boolean, Map<string, string>]): void => {
           this.showFilterError = filterError[0];
@@ -177,7 +177,7 @@ export class TableComponent implements OnInit, OnDestroy {
         error: () => catchError(this.errorHandler.handleError()),
       });
     });
-    this.genaralTableSubscription?.add(() => {
+    this.genaralTableSubscription.add(() => {
       this.filterService.filterContext$.subscribe({
         next: (context: Map<string, string>) => this.changeFilter(context),
         error: () => catchError(this.errorHandler.handleError()),

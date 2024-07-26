@@ -49,29 +49,29 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    this.genaralFilterSubscription?.unsubscribe();
+    this.genaralFilterSubscription.unsubscribe();
   }
 
   setSubscriptions(): void {
-    this.genaralFilterSubscription?.add(() => {
+    this.genaralFilterSubscription.add(() => {
       this.filterService.showFilter$.subscribe({
         next: (show: boolean) => (this.shouldShowFilter = show),
         error: () => catchError(this.errorHandler.handleError()),
       });
     });
-    this.genaralFilterSubscription?.add(() => {
+    this.genaralFilterSubscription.add(() => {
       this.filterService.metadataLabels$.subscribe({
         next: (metadataLabels: string[]) => (this.metadataLabels = metadataLabels),
         error: () => catchError(this.errorHandler.handleError()),
       });
     });
-    this.genaralFilterSubscription?.add(() => {
+    this.genaralFilterSubscription.add(() => {
       this.filterService.currentRecords$.subscribe({
         next: (records: Map<string, Array<string>>) => (this.currentRecords = records),
         error: () => catchError(this.errorHandler.handleError()),
       });
     });
-    this.genaralFilterSubscription?.add(() => {
+    this.genaralFilterSubscription.add(() => {
       this.filterService.metadataTypes$.subscribe({
         next: (metadataTypes: Map<string, string>) => (this.metadataTypes = metadataTypes),
         error: () => catchError(this.errorHandler.handleError()),
