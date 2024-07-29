@@ -110,7 +110,7 @@ export class EditDisplayComponent {
   }
 
   rerunReport(): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: Report | Checkpoint | undefined = this.getSelectedNode();
     if (!ReportUtil.isReport(node)) {
       this.toastService.showDanger('Could not find report to rerun');
       return;
@@ -126,7 +126,7 @@ export class EditDisplayComponent {
   }
 
   closeReport(removeReportFromTree: boolean): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: Report | Checkpoint | undefined = this.getSelectedNode();
     if (!ReportUtil.isReport(node)) {
       this.toastService.showDanger('Could not find report to close');
       return;
@@ -141,7 +141,7 @@ export class EditDisplayComponent {
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: Report | Checkpoint | undefined = this.getSelectedNode();
     if (!node) return;
     let queryString: string;
     if (ReportUtil.isReport(node)) {
@@ -164,7 +164,7 @@ export class EditDisplayComponent {
   }
 
   openDifferenceModal(type: ChangesAction): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: Report | Checkpoint | undefined = this.getSelectedNode();
     if (!node) return;
     let reportDifferences: ReportDifference[] = [];
     if (ReportUtil.isReport(node) && this.editFormComponent) {
@@ -201,7 +201,7 @@ export class EditDisplayComponent {
   }
 
   editReport(): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: Report | Checkpoint | undefined = this.getSelectedNode();
     if (ReportUtil.isReport(node)) {
       this.editingRootNode = true;
     } else {
