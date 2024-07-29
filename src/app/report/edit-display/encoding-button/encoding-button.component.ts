@@ -12,7 +12,7 @@ import { Report } from '../../../shared/interfaces/report';
   styleUrl: './encoding-button.component.css',
 })
 export class EncodingButtonComponent implements OnChanges {
-  @Input({ required: true }) selectedNode?: Report | Checkpoint;
+  @Input({ required: true }) selectedNode!: Report | Checkpoint;
   @Output() updatedMessageEvent: EventEmitter<string> = new EventEmitter<string>();
   buttonType: string = 'Base64';
   showEncodingButton: boolean = false;
