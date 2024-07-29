@@ -45,7 +45,6 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
 export class TestComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'test';
   reports?: TestListItem[];
-  reranReports: ReranReport[] = [];
   generatorEnabled: boolean = false;
   currentFilter: string = '';
   metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
@@ -78,9 +77,9 @@ export class TestComponent implements OnInit {
     this.showStorageIds = localStorage.getItem('showReportStorageIds') === 'true';
   }
 
-  setGeneratorStatusFromLocalStorage() {
+  setGeneratorStatusFromLocalStorage(): void {
     const generatorStatus: string | null = localStorage.getItem('generatorEnabled');
-    if (generatorStatus) {
+    if (generatorStatus && generatorStatus.length <= 5) {
       this.generatorEnabled = generatorStatus === 'true';
     } else {
       this.httpService.getSettings().subscribe({
@@ -141,7 +140,11 @@ export class TestComponent implements OnInit {
   }
 
   resetRunner(): void {
-    this.reranReports = [];
+    if (this.reports) {
+      for (const report of this.reports) {
+        report.reranReport = null;
+      }
+    }
   }
 
   run(report: TestListItem): void {
@@ -177,10 +180,6 @@ export class TestComponent implements OnInit {
       color: result.equal ? 'green' : 'red',
       resultString: result.info,
     };
-  }
-
-  getReranReport(id: number): ReranReport | undefined {
-    return this.reranReports.find((report: ReranReport) => report.id === id);
   }
 
   openReport(storageId: number, name: string): void {
@@ -238,29 +237,33 @@ export class TestComponent implements OnInit {
     }
   }
 
-  compareReports(id: number): void {
-    const reranReport = this.reranReports.find((report: ReranReport) => report.id == id);
-    if (reranReport) {
+  compareReports(report: TestListItem): void {
+    if (report.reranReport) {
       const tabId: string = this.helperService.createCompareTabId(
-        reranReport?.originalReport,
-        reranReport?.runResultReport,
+        report.reranReport.originalReport,
+        report.reranReport.runResultReport,
       );
       this.tabService.openNewCompareTab({
         id: tabId,
         viewName: 'compare',
-        originalReport: reranReport.originalReport,
-        runResultReport: reranReport.runResultReport,
+        originalReport: report.reranReport.originalReport,
+        runResultReport: report.reranReport.runResultReport,
       });
     }
   }
 
-  replaceReport(reportId: number): void {
-    this.httpService.replaceReport(reportId, this.storageName).subscribe({
-      next: () => {
-        this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+  replaceReport(report: TestListItem): void {
+    this.toastService.showWarning('Sorry this is not implemented as of now');
+    // this.httpService.replaceReport(report.storageId, this.storageName).subscribe({
+    //   next: (value) => {
+    //     this.httpService.getReport(report.storageId, this.storageName).subscribe({
+    //       next: (response: Report): void => {
+    //         report = { ...response };
+    //       },
+    //     });
+    //   },
+    //   error: () => catchError(this.errorHandler.handleError()),
+    // });
   }
 
   copySelected(): void {
@@ -297,7 +300,7 @@ export class TestComponent implements OnInit {
     }
   }
 
-  setCheckedForAllReports(value: boolean) {
+  setCheckedForAllReports(value: boolean): void {
     if (this.reports) {
       for (const report of this.reports) {
         report.checked = value;

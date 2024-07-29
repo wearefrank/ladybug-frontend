@@ -89,11 +89,18 @@
                 }
                 <td>
                     <span class="buttons">
-                      <button data-cy-test="runReport" title="Run report" class="btn btn-info button-width"
-                              (click)="run(report)"><i class="fa fa-play"></i></button>
-                      <button data-cy-test="openReport" title="Open report" class="btn btn-info button-width"
-                              (click)="openReport(report.storageId, report.name)"><i class="fa fa-folder-open"></i>
-                      </button>
+                      <button
+                        data-cy-test="runReport"
+                        title="Run report"
+                        class="btn btn-info button-width"
+                        (click)="run(report)"
+                      ><i class="fa fa-play"></i></button>
+                      <button
+                        data-cy-test="openReport"
+                        title="Open report"
+                        class="btn btn-info button-width"
+                        (click)="openReport(report.storageId, report.name)"
+                      ><i class="fa fa-folder-open"></i></button>
                     </span>
                 </td>
                 <td>
@@ -108,21 +115,20 @@
                   }
                 </td>
                 <td>
-                  @if (getReranReport(report.storageId)) {
+                  @if (report.reranReport) {
                     <span data-cy-test="runResult"
-                          [id]="'runResult#' + report.storageId"
-                          [style.color]="getReranReport(report.storageId)!.color">
-                      {{ getReranReport(report.storageId)!.resultString }}
+                          [style.color]="report.reranReport.color">
+                      {{ report.reranReport.resultString }}
                     </span>
                   }
                 </td>
                 <td>
-                  @if (getReranReport(report.storageId)) {
+                  @if (report.reranReport) {
                     <span class="buttons">
                         <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
-                                (click)="replaceReport(report.storageId)">Replace</button>
+                                disabled (click)="replaceReport(report)">Replace</button>
                         <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
-                                (click)="compareReports(report.storageId)">Compare</button>
+                                (click)="compareReports(report)">Compare</button>
                     </span>
                   }
                 </td>
