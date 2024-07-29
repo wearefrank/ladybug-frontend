@@ -122,7 +122,7 @@
                    [style.height]="getCheckBoxSize()" (click)="selectAllRows()">
           </th>
           <td mat-cell class="table-row-checkbox" *matCellDef="let row" [style.padding]="getTableSpacing()">
-            <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row)">
+            <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row, $event)">
           </td>
         </ng-container>
 
