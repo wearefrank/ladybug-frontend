@@ -1,18 +1,20 @@
 import { CheckpointType } from '../enums/checkpoint-type';
 
 export interface Checkpoint {
-  encoding: string;
+  encoding?: string;
   estimatedMemoryUsage: number;
   index: number;
   level: number;
   message: string;
-  messageClassName: string;
+  messageClassName?: string;
   name: string;
+  noCloseReceivedForStream?: boolean;
   preTruncatedMessageLength: number;
-  sourceClassName: number;
-  streaming: string;
+  sourceClassName?: number;
+  showConverted?: boolean;
+  streaming?: string;
   stub: number;
-  stubNotFound: string;
+  stubNotFound?: string;
   stubbed: boolean;
   threadName: string;
   type: CheckpointType;

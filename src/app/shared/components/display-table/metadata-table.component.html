@@ -1,6 +1,6 @@
 <div class="d-flex flex-column mb-2">
-  @if (anyMessagesPresent) {
-    <div class="my-2 mx-1">
+  @if (anyMessagesPresent && ReportUtil.isCheckPoint(report)) {
+    <div class="mb-2 mx-1">
       @if (report.noCloseReceivedForStream) {
         <div class="btn btn-static px-2">
           No close received for stream
@@ -13,7 +13,7 @@
         </div>
       }
 
-      @if (report.message === null) {
+      @if (!report.message) {
         <div class="btn btn-static px-2">
           Message is null
         </div>
@@ -31,11 +31,12 @@
         </div>
       }
 
-      @if (report.encoding !== null) {
-        <div class="btn btn-static px-2">
+      @if (report.encoding && report.messageClassName) {
+        <div class="btn btn-static px-2 text-break">
           Message of type {{ report.messageClassName }} is encoded to string using {{ report.encoding }}
-          @if (this.report.showConverted) {
-            <span>and displayed using Base64 decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
+          @if (report.showConverted) {
+            <span>and displayed using Base64
+              decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
           }
         </div>
       }
@@ -45,7 +46,7 @@
         </div>
       }
 
-      @if (report.stubNotFound !== null) {
+      @if (report.stubNotFound) {
         <div class="btn btn-static px-2">
           Could not find stub message for {{ report.stubNotFound }}
         </div>
@@ -53,7 +54,7 @@
     </div>
   }
   <div data-cy-metadata-table="table" class="metadata-table">
-    @if (report.xml) {
+    @if (ReportUtil.isReport(report)) {
       <div class="table-col first-table-col">
         <div class="key">Name</div>
         <div data-cy-metadata-table="reportname" class="value" [appCopyTooltip]="report.name">{{ report.name }}</div>
@@ -61,6 +62,10 @@
       <div class="table-col">
         <div class="key">Description</div>
         <div class="value" [appCopyTooltip]="report.description">{{ report.description }}</div>
+      </div>
+      <div class="table-col">
+        <div class="key">Path</div>
+        <div class="value" [appCopyTooltip]="report.path">{{ report.path }}</div>
       </div>
       <div class="table-col">
         <div class="key">Transformation</div>
@@ -72,7 +77,7 @@
       </div>
       <div class="table-col">
         <div class="key">Storage</div>
-        <div class="value" [appCopyTooltip]="report.storage">{{ report.storage }}</div>
+        <div class="value" [appCopyTooltip]="report.storageName">{{ report.storageName }}</div>
       </div>
       <div class="table-col">
         <div class="key">Estimated memory usage</div>
@@ -82,10 +87,10 @@
         <div class="key">CorrelationId</div>
         <div class="value" [appCopyTooltip]="report.correlationId">{{ report.correlationId }}</div>
       </div>
-    } @else {
+    } @else if (ReportUtil.isCheckPoint(report)) {
       <div class="table-col first-table-col">
         <div class="key">Type</div>
-        <div class="value" [appCopyTooltip]="report.type">{{ report.type|checkpointType }}</div>
+        <div class="value" [appCopyTooltip]="report.typeAsString">{{ report.typeAsString }}</div>
       </div>
       <div class="table-col">
         <div class="key">Thread name</div>
@@ -98,10 +103,6 @@
       <div class="table-col">
         <div class="key">Message class name</div>
         <div class="value" [appCopyTooltip]="report.messageClassName">{{ report.messageClassName }}</div>
-      </div>
-      <div class="table-col">
-        <div class="key">Path</div>
-        <div class="value" [appCopyTooltip]="report.path">{{ report.path }}</div>
       </div>
       <div class="table-col">
         <div class="key">CheckpointUID</div>
