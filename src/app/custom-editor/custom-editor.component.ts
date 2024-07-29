@@ -49,13 +49,12 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   isPrettified: boolean = false;
   currentView: EditorView = 'raw';
   editorFocused: boolean = false;
+  private subscriptions: Subscription = new Subscription();
   editorChangesSubject: Subject<string> = new Subject<string>();
 
   //Settings attributes
   showPrettifyOnLoad: boolean = true;
-  showPrettifyOnLoadSubscription!: Subscription;
   showSearchWindowOnLoad: boolean = true;
-  showSearchWindowOnLoadSubscription!: Subscription;
   availableViews!: EditorView[];
   contentType!: EditorView;
 
@@ -81,7 +80,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-    this.showPrettifyOnLoadSubscription.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -95,20 +94,25 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   subscribeToSettings(): void {
-    this.showSearchWindowOnLoadSubscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe(
+    const showSearchWindowOnLoad: Subscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe(
       (value: boolean) => {
         this.showSearchWindowOnLoad = value;
       },
     );
-    this.showPrettifyOnLoadSubscription = this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
+    this.subscriptions.add(showSearchWindowOnLoad);
+    const prettifyOnLoad: Subscription = this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
       this.showPrettifyOnLoad = value;
     });
+    this.subscriptions.add(prettifyOnLoad);
   }
 
   subscribeToEditorChanges(): void {
-    this.editorChangesSubject.pipe(debounceTime(300)).subscribe((value: string) => {
-      this.checkIfTextIsPretty();
-    });
+    const editorChangesSubscription: Subscription = this.editorChangesSubject
+      .pipe(debounceTime(300))
+      .subscribe((value: string) => {
+        this.checkIfTextIsPretty();
+      });
+    this.subscriptions.add(editorChangesSubscription);
   }
 
   initEditor(editor: any): void {

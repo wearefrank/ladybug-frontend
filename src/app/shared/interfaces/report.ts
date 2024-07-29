@@ -10,7 +10,7 @@ export interface Report {
   inputCheckpoint: Checkpoint;
   name: string;
   numberOfCheckpoints: number;
-  originalEndpointOrAbortpointForCurrentLevel: Checkpoint;
+  originalEndpointOrAbortpointForCurrentLevel?: Checkpoint;
   originalReport: Report;
   path: string;
   reportFilterMatching: boolean;

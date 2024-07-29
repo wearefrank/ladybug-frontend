@@ -204,11 +204,12 @@ export class HttpService {
     return this.http.delete<void>(`api/report/${storage}`, { params: { storageIds: reportIds } });
   }
 
-  replaceReport(reportId: number, storage: string): Observable<void> {
-    return this.http.put<void>(`api/runner/replace/${storage}/${reportId}`, {
-      headers: this.headers,
-    });
-  }
+  //This endpoint never existed in the backend, so this needs to be refactored
+  // replaceReport(reportId: number, storage: string): Observable<void> {
+  //   return this.http.put<void>(`api/runner/replace/${storage}/${reportId}`, {
+  //     headers: this.headers,
+  //   });
+  // }
 
   getUnmatchedCheckpoints(storageName: string, storageId: number, viewName: string): Observable<string[]> {
     return this.http.get<string[]>(`api/report/${storageName}/${storageId}/checkpoints/uids`, {
