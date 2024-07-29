@@ -8,7 +8,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
   standalone: true,
 })
 export class CopyTooltipDirective {
-  @Input({ required: true, alias: 'appCopyTooltip' }) value!: string;
+  @Input({ required: true, alias: 'appCopyTooltip' }) value!: string | number | undefined;
 
   constructor(
     private tooltipInstance: MatTooltip,
@@ -19,15 +19,14 @@ export class CopyTooltipDirective {
 
   @HostListener('click')
   showTooltip(): void {
-    //Some weird javascript string assertion happens here, so all these checks are necessary
     if (this.valueNotNullOrEmpty()) {
-      this.clipboard.copy(this.value);
+      this.clipboard.copy(String(this.value));
       this.tooltipInstance.show();
       setTimeout(() => this.tooltipInstance.hide(), 2000);
     }
   }
 
   private valueNotNullOrEmpty(): boolean {
-    return this.value !== undefined && this.value !== null && this.value !== '';
+    return !!this.value && this.value !== '';
   }
 }

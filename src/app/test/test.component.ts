@@ -20,6 +20,8 @@ import { OptionsSettings } from '../shared/interfaces/options-settings';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
 import { BooleanToStringPipe } from '../shared/pipes/boolean-to-string.pipe';
 import { TestTableBodyComponent } from './test-table-body/test-table-body.component';
+import { ReportData } from '../shared/interfaces/report-data';
+import { View } from '../shared/interfaces/view';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -45,8 +47,7 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
 export class TestComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'test';
   reports?: TestListItem[];
-  reranReports: ReranReport[] = [];
-  generatorEnabled?: boolean;
+  generatorEnabled: boolean = false;
   currentFilter: string = '';
   metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
   storageName: string = 'Test';
@@ -79,9 +80,9 @@ export class TestComponent implements OnInit {
     this.showStorageIds = localStorage.getItem('showReportStorageIds') === 'true';
   }
 
-  setGeneratorStatusFromLocalStorage() {
+  setGeneratorStatusFromLocalStorage(): void {
     const generatorStatus: string | null = localStorage.getItem('generatorEnabled');
-    if (generatorStatus) {
+    if (generatorStatus && generatorStatus.length <= 5) {
       this.generatorEnabled = generatorStatus === 'true';
     } else {
       this.httpService.getSettings().subscribe({
@@ -101,11 +102,7 @@ export class TestComponent implements OnInit {
         this.testFileTreeComponent.setData(this.reports);
         this.setCheckedForAllReports(true);
         this.amountOfSelectedReports = value.length;
-        if (path) {
-          this.testFileTreeComponent.selectItem(path);
-        } else {
-          this.testFileTreeComponent.selectItem(this.testFileTreeComponent.rootFolder.name);
-        }
+        this.testFileTreeComponent.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -116,7 +113,7 @@ export class TestComponent implements OnInit {
       if (this.getSelectedReports().length === 1) {
         this.cloneModal.open(this.getSelectedReports()[0]);
       } else {
-        this.toastService.showWarning('Make sure exactly one report is selected at a time');
+        this.toastService.showWarning('Make sure only one report is selected at a time');
       }
     }
   }
@@ -145,15 +142,18 @@ export class TestComponent implements OnInit {
   }
 
   resetRunner(): void {
-    this.reranReports = [];
+    if (this.reports) {
+      for (const report of this.reports) {
+        report.reranReport = null;
+      }
+    }
   }
 
   run(report: TestListItem): void {
     if (this.generatorEnabled) {
       this.httpService.runReport(this.storageName, report.storageId).subscribe({
         next: (response: TestResult): void => {
-          //Needs to be a clone, otherwise the ngOnChanges in test-table-body component will not trigger
-          this.reranReports.push({ ...this.createReranReport(response) });
+          report.reranReport = this.createReranReport(response);
         },
         error: () => catchError(this.errorHandler.handleError()),
       });
@@ -182,6 +182,19 @@ export class TestComponent implements OnInit {
       color: result.equal ? 'green' : 'red',
       resultString: result.info,
     };
+  }
+
+  openReport(storageId: number, name: string): void {
+    this.httpService.getReport(storageId, this.storageName).subscribe({
+      next: (report: Report): void => {
+        const reportData: ReportData = {
+          report: report,
+          currentView: { storageName: this.storageName, metadataNames: this.metadataNames } as View,
+        };
+        this.tabService.openNewTab(reportData);
+      },
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 
   openDeleteModal(): void {
@@ -226,6 +239,35 @@ export class TestComponent implements OnInit {
     }
   }
 
+  compareReports(report: TestListItem): void {
+    if (report.reranReport) {
+      const tabId: string = this.helperService.createCompareTabId(
+        report.reranReport.originalReport,
+        report.reranReport.runResultReport,
+      );
+      this.tabService.openNewCompareTab({
+        id: tabId,
+        viewName: 'compare',
+        originalReport: report.reranReport.originalReport,
+        runResultReport: report.reranReport.runResultReport,
+      });
+    }
+  }
+
+  replaceReport(report: TestListItem): void {
+    this.toastService.showWarning('Sorry this is not implemented as of now');
+    // this.httpService.replaceReport(report.storageId, this.storageName).subscribe({
+    //   next: (value) => {
+    //     this.httpService.getReport(report.storageId, this.storageName).subscribe({
+    //       next: (response: Report): void => {
+    //         report = { ...response };
+    //       },
+    //     });
+    //   },
+    //   error: () => catchError(this.errorHandler.handleError()),
+    // });
+  }
+
   copySelected(): void {
     if (this.reports) {
       const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
@@ -260,7 +302,7 @@ export class TestComponent implements OnInit {
     }
   }
 
-  setCheckedForAllReports(value: boolean) {
+  setCheckedForAllReports(value: boolean): void {
     if (this.reports) {
       for (const report of this.reports) {
         report.checked = value;

@@ -162,3 +162,7 @@ html, body {
 [appCopiedTooltip] {
   position: relative;
 }
+
+.icon-size {
+  font-size: 1rem;
+}

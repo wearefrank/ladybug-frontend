@@ -1,6 +1,7 @@
 import { Component, Output, ViewChild } from '@angular/core';
 import { CreateTreeItem, FileTreeOptions, NgSimpleFileTree, NgSimpleFileTreeModule } from 'ng-simple-file-tree';
 import { Subject } from 'rxjs';
+import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 
 @Component({
   standalone: true,
@@ -14,13 +15,13 @@ export class TestFolderTreeComponent {
   @Output() changeFolderEvent: Subject<string> = new Subject<string>();
   rootFolder: CreateTreeItem = {
     name: 'Reports',
-    icon: 'assets/tree-icons/folder.svg',
   };
   treeOptions: FileTreeOptions = {
     folderBehaviourOnClick: 'select',
     expandAllFolders: true,
     highlightOpenFolders: false,
     autoSelectCondition: (item: CreateTreeItem) => this.autoSelectItem(item),
+    determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };
   originalItems?: CreateTreeItem[];
 
@@ -83,7 +84,7 @@ export class TestFolderTreeComponent {
     if (folderName.startsWith('/')) {
       folderName = folderName.slice(1);
     }
-    const treeItem: CreateTreeItem = { name: folderName, icon: 'assets/tree-icons/folder.svg' };
+    const treeItem: CreateTreeItem = { name: folderName };
     if (remainingPath && remainingPath !== '/' && remainingPath !== '') {
       const child = this.createFolderFromPath(remainingPath);
       if (child) {
