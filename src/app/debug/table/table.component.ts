@@ -521,14 +521,6 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  //TODO: fix on backend
-  getShortenedTableHeaderNames(fullName: string): string {
-    if (this.shortenedTableHeaders.has(fullName)) {
-      return this.shortenedTableHeaders.get(fullName) as string;
-    }
-    return fullName;
-  }
-
   getTableSpacing(): string {
     return `${this.tableSpacing * 0.25}em 0 ${this.tableSpacing * 0.25}em 0`;
   }
