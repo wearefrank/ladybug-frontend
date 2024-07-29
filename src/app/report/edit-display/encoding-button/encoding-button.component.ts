@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ReportOrCheckpoint, ReportUtil } from '../../../shared/util/report-util';
+import { ReportUtil } from '../../../shared/util/report-util';
 import { ToastService } from '../../../shared/services/toast.service';
+import { Checkpoint } from '../../../shared/interfaces/checkpoint';
+import { Report } from '../../../shared/interfaces/report';
 
 @Component({
   selector: 'app-encoding-button',
@@ -10,7 +12,7 @@ import { ToastService } from '../../../shared/services/toast.service';
   styleUrl: './encoding-button.component.css',
 })
 export class EncodingButtonComponent implements OnChanges {
-  @Input({ required: true }) selectedNode!: ReportOrCheckpoint;
+  @Input({ required: true }) selectedNode?: Report | Checkpoint;
   @Output() updatedMessageEvent: EventEmitter<string> = new EventEmitter<string>();
   buttonType: string = 'Base64';
   showEncodingButton: boolean = false;
@@ -22,14 +24,12 @@ export class EncodingButtonComponent implements OnChanges {
   }
 
   changeEncoding(): void {
-    const node: ReportOrCheckpoint = this.selectedNode;
-    if (!node || !ReportUtil.isCheckPoint(node)) {
+    const node: Report | Checkpoint | undefined = this.selectedNode;
+    if (!ReportUtil.isCheckPoint(node)) {
       this.toastService.showDanger('Could not find report to change encoding');
       return;
     }
-
     let message: string;
-
     if (this.buttonType == 'Base64') {
       message = node.message;
       this.updateButton(true);

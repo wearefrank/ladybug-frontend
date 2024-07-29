@@ -25,5 +25,4 @@ export interface Checkpoint {
   checkpoints?: Checkpoint[];
   icon?: string;
   iconClass?: string;
-  showConverted?: boolean;
 }
