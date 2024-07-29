@@ -69,7 +69,7 @@
       @if (selectedNode) {
       <app-encoding-button [selectedNode]="selectedNode" (updatedMessageEvent)="setNewReport($event)"></app-encoding-button>
       }
-      @if (ReportUtil.isCheckPoint(selectedNode) && selectedNode.stub) {
+      @if (ReportUtil.isCheckPoint(selectedNode)) {
         <div class="w-fit mx-1 my-0">
           <select class="form-control" (change)="selectStubStrategy($event)">
             <option [value]="-1" [selected]="selectedNode.stub === -1">Use report level stub strategy</option>
