@@ -69,7 +69,7 @@ export class EditDisplayComponent {
   @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
   @Output() saveReportEvent: Subject<any> = new Subject<any>();
-  @Output() closeReportEvent: Subject<Report> = new Subject<Report>();
+  @Output() closeReportEvent: Subject<void> = new Subject<void>();
   @ViewChild(CustomEditorComponent) editor!: CustomEditorComponent;
   @ViewChild(EditFormComponent) editFormComponent!: EditFormComponent;
   @ViewChild(DifferenceModalComponent) differenceModal!: DifferenceModalComponent;
@@ -135,17 +135,14 @@ export class EditDisplayComponent {
     this.editingRootNode = false;
     this.editingChildNode = false;
     if (removeReportFromTree) {
-      this.closeReportEvent.next(node);
+      this.closeReportEvent.next();
     }
     this.editor.setNewReport('');
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
     const node: Report | Checkpoint | undefined = this.selectedNode;
-    if (!node) {
-      this.toastService.showDanger('Could not find report to download');
-      return;
-    }
+    if (!node) return;
     let queryString: string;
     if (ReportUtil.isReport(node)) {
       queryString = String(node.storageId);
@@ -168,10 +165,7 @@ export class EditDisplayComponent {
 
   openDifferenceModal(type: ChangesAction): void {
     const node: Report | Checkpoint | undefined = this.selectedNode;
-    if (!node) {
-      this.toastService.showDanger('Could not find report to open difference modal');
-      return;
-    }
+    if (!node) return;
     let reportDifferences: ReportDifference[] = [];
     if (ReportUtil.isReport(node) && this.editFormComponent) {
       reportDifferences = this.editFormComponent.getDifferences();
@@ -225,7 +219,7 @@ export class EditDisplayComponent {
   }
 
   saveChanges(stubStrategy: number): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: Report | Checkpoint | undefined = this.getSelectedNode();
     let checkpointId: string = '';
     let storageId: string;
     if (ReportUtil.isReport(node)) {
@@ -234,7 +228,6 @@ export class EditDisplayComponent {
       storageId = node.uid.split('#')[0];
       checkpointId = node.uid.split('#')[1];
     } else {
-      this.toastService.showDanger('Could not find report to save');
       return;
     }
 
@@ -254,7 +247,7 @@ export class EditDisplayComponent {
   }
 
   discardChanges(): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
+    const node: Report | Checkpoint | undefined = this.getSelectedNode();
     this.disableEditing();
     if (ReportUtil.isCheckPoint(node)) {
       this.editor.setNewReport(node.message);
@@ -275,18 +268,13 @@ export class EditDisplayComponent {
   }
 
   copyReport(): void {
-    const node: Report | Checkpoint | undefined = this.selectedNode;
-    if (!node) {
-      this.toastService.showDanger('Could not find report to copy');
-      return;
-    }
+    const node: Report | Checkpoint | undefined = this.getSelectedNode();
     let storageId: number;
     if (ReportUtil.isReport(node)) {
       storageId = node.storageId;
     } else if (ReportUtil.isCheckPoint(node)) {
       storageId = node.storageId ? Number.parseInt(node.storageId) : Number.parseInt(node.uid.split('#')[0]);
     } else {
-      this.toastService.showDanger('Could not find report to copy');
       return;
     }
     const data: Record<string, number[]> = {
@@ -312,5 +300,13 @@ export class EditDisplayComponent {
 
   setNewReport(message: string) {
     this.editor.setNewReport(message);
+  }
+
+  getSelectedNode(): Report | Checkpoint | undefined {
+    const node: Report | Checkpoint | undefined = this.selectedNode;
+    if (!node) {
+      this.toastService.showDanger('Selected report was undefined');
+    }
+    return node;
   }
 }
