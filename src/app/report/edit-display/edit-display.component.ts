@@ -272,11 +272,9 @@ export class EditDisplayComponent {
       storageId = node.storageId;
     } else if (ReportUtil.isCheckPoint(node)) {
       storageId = node.storageId ? Number.parseInt(node.storageId) : Number.parseInt(node.uid.split('#')[0]);
-    } else {
-      return;
     }
     const data: Record<string, number[]> = {
-      [this.currentView.storageName]: [storageId],
+      [this.currentView.storageName]: [storageId!],
     };
     this.httpService.copyReport(data, 'Test').subscribe({
       error: catchError(this.errorHandler.handleError()),
