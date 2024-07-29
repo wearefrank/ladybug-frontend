@@ -6,7 +6,6 @@ import { TestComponent } from './test/test.component';
 import { DynamicService } from './shared/services/dynamic.service';
 import { CompareData } from './compare/compare-data';
 import { SettingsService } from './shared/services/settings.service';
-import { DebugReportService } from './debug/debug-report.service';
 import { TabService } from './shared/services/tab.service';
 import { Subscription } from 'rxjs';
 import { DebugComponent } from './debug/debug.component';
@@ -45,7 +44,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     private dynamicService: DynamicService,
     //make sure settings are retrieved from localstorage on startup by initializing the service on startup
     private settingsService: SettingsService,
-    private debugReportService: DebugReportService,
     private tabService: TabService,
     private router: Router,
     private helperService: HelperService,

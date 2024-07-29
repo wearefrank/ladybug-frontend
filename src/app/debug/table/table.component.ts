@@ -7,7 +7,6 @@ import { catchError, Subject, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
-import { DebugReportService } from '../debug-report.service';
 import { TabService } from '../../shared/services/tab.service';
 import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
@@ -32,6 +31,7 @@ import { View } from '../../shared/interfaces/view';
 import { OptionsSettings } from '../../shared/interfaces/options-settings';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { CompareReport } from '../../shared/interfaces/compare-reports';
+import { DebugTabService } from '../debug-tab.service';
 
 @Component({
   selector: 'app-table',
@@ -60,15 +60,24 @@ import { CompareReport } from '../../shared/interfaces/compare-reports';
   ],
 })
 export class TableComponent implements OnInit, OnDestroy {
-  DEFAULT_DISPLAY_AMOUNT: number = 10;
-  metadataCount: number = 0;
+  private readonly DEFAULT_DISPLAY_AMOUNT: number = 10;
 
   @Input({ required: true }) views!: View[];
   @Input({ required: true }) currentView!: View;
-  //Temporary fix, issue has been created (https://github.com/wearefrank/ladybug-frontend/issues/383) to refactor this and the debug component
-  @Output() viewChange: Subject<View> = new Subject<View>();
 
-  allRowsSelected: boolean = false;
+  @Output() viewChange: Subject<View> = new Subject<View>();
+  @Output() openReportEvent: EventEmitter<any> = new EventEmitter<any>();
+
+  @ViewChild(TableSettingsModalComponent) tableSettingsModal!: TableSettingsModalComponent;
+
+  @ViewChild(MatSort) set matSort(sort: MatSort) {
+    this.tableDataSort = sort;
+    this.tableDataSource.sort = this.tableDataSort;
+  }
+
+  protected metadataCount: number = 0;
+
+  protected allRowsSelected: boolean = false;
 
   shortenedTableHeaders: Map<string, string> = new Map([
     ['Storage Id', 'Storage Id'],
@@ -88,7 +97,6 @@ export class TableComponent implements OnInit, OnDestroy {
     ['NR OF CHECKPOINTS', 'NR OF CHECKPOINTS'],
     ['STATUS', 'STATUS'],
   ]);
-
   tableSettings: TableSettings = {
     reportMetadata: [],
     tableLoaded: false,
@@ -100,9 +108,6 @@ export class TableComponent implements OnInit, OnDestroy {
     estimatedMemoryUsage: '',
     uniqueValues: new Map<string, Array<string>>(),
   };
-  @Output() openReportEvent: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild(TableSettingsModalComponent)
-  tableSettingsModal!: TableSettingsModalComponent;
   tableSpacing!: number;
   private subscriptions: Subscription = new Subscription();
   showMultipleFiles!: boolean;
@@ -121,20 +126,15 @@ export class TableComponent implements OnInit, OnDestroy {
   tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
   tableDataSort?: MatSort;
 
-  @ViewChild(MatSort) set matSort(sort: MatSort) {
-    this.tableDataSort = sort;
-    this.tableDataSource.sort = this.tableDataSort;
-  }
-
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
     private settingsService: SettingsService,
     private toastService: ToastService,
-    private debugReportService: DebugReportService,
     private tabService: TabService,
     private filterService: FilterService,
     private errorHandler: ErrorHandling,
+    private debugTab: DebugTabService,
   ) {}
 
   ngOnInit(): void {
@@ -178,6 +178,11 @@ export class TableComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(filterContextSubscription);
+    const refreshSubscription: Subscription = this.debugTab.refresh$.subscribe({
+      next: () => this.refresh(),
+      error: () => catchError(this.errorHandler.handleError()),
+    });
+    this.subscriptions.add(refreshSubscription);
   }
 
   retrieveRecords(): void {
@@ -206,7 +211,6 @@ export class TableComponent implements OnInit, OnDestroy {
     this.currentView = this.views[index];
     this.retrieveRecords();
     this.allRowsSelected = false;
-    this.debugReportService.changeView(this.currentView);
     this.filterService.setMetadataLabels(this.currentView.metadataLabels);
     this.viewChange.next(this.currentView);
   }
