@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
-import { HelperService } from '../../shared/services/helper.service';
 import { catchError, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
@@ -60,7 +59,6 @@ export class DebugTreeComponent implements OnDestroy {
   };
 
   constructor(
-    private helperService: HelperService,
     private httpService: HttpService,
     private settingsService: SettingsService,
     private errorHandler: ErrorHandling,

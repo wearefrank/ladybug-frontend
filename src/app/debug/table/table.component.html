@@ -11,7 +11,7 @@
         <i class="fa fa-refresh"></i>
       </button>
       <button data-cy-debug="openSettings" class="btn btn-info btn-table" title="Settings"
-              (click)="openSettingsModal()">
+              (click)="tableSettingsModal.open()">
         <i class="fa fa-cog"></i>
       </button>
       <button data-cy-debug="filter" class="btn btn-info btn-table" title="Filter" (click)="toggleFilter()">
@@ -112,8 +112,9 @@
         <!--Header and row container for checkboxes-->
         <ng-container matColumnDef="select">
           <th mat-header-cell class="table-row-checkbox header-padding" *matHeaderCellDef>
-            <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="allRowsSelected" [style.width]="getCheckBoxSize()"
-                   [style.height]="getCheckBoxSize()" (click)="selectAllRows()">
+            <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="amountOfSelectedReports === tableSettings.reportMetadata.length"
+                   [style.width]="getCheckBoxSize()"
+                   [style.height]="getCheckBoxSize()" (click)="toggleSelectAll()">
           </th>
           <td mat-cell class="table-row-checkbox" *matCellDef="let row" [style.padding]="getTableSpacing()">
             <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row, $event)">
