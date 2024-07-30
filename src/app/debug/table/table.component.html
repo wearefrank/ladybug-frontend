@@ -108,16 +108,16 @@
       <app-active-filters class="ml-2" [activeFilters]="currentFilters" (click)="toggleFilter()"></app-active-filters>
     </div>
     <div data-cy-debug="table" class="table-responsive" id="metadataTable">
-      <table data-cy-debug="tableBody" mat-table class="table mb-0" matSort [style.font-size]="getFontSize()" [dataSource]="tableDataSource">
+      <table data-cy-debug="tableBody" mat-table class="table mb-0" matSort [style.font-size]="fontSize" [dataSource]="tableDataSource">
         <!--Header and row container for checkboxes-->
         <ng-container matColumnDef="select">
           <th mat-header-cell class="table-row-checkbox header-padding" *matHeaderCellDef>
             <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="amountOfSelectedReports === tableSettings.reportMetadata.length"
-                   [style.width]="getCheckBoxSize()"
-                   [style.height]="getCheckBoxSize()" (click)="toggleSelectAll()">
+                   [style.width]="checkboxSize"
+                   [style.height]="checkboxSize" (click)="toggleSelectAll()">
           </th>
-          <td mat-cell class="table-row-checkbox" *matCellDef="let row" [style.padding]="getTableSpacing()">
-            <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row, $event)">
+          <td mat-cell class="table-row-checkbox" *matCellDef="let row" [style.padding]="tableSpacing">
+            <input type="checkbox" [checked]="row.checked" [style.width]="checkboxSize" [style.height]="checkboxSize" (click)="toggleCheck(row, $event)">
           </td>
         </ng-container>
 
@@ -133,7 +133,7 @@
             </th>
             <td mat-cell class="table-cell"
                 *matCellDef="let row"
-                [style.padding]="getTableSpacing()"
+                [style.padding]="tableSpacing"
                 [title]="header">
               {{ getMetadata(row, getMetadataNameFromHeader(header))|tableCellShortener }}
             </td>

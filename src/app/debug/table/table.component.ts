@@ -79,6 +79,9 @@ export class TableComponent implements OnInit, OnDestroy {
 
   protected metadataCount: number = 0;
   protected amountOfSelectedReports: number = 0;
+  protected tableSpacing?: string;
+  protected fontSize?: string;
+  protected checkboxSize?: string;
 
   protected shortenedTableHeaders: Map<string, string> = new Map([
     ['Storage Id', 'Storage Id'],
@@ -111,22 +114,18 @@ export class TableComponent implements OnInit, OnDestroy {
     uniqueValues: new Map<string, Array<string>>(),
   };
 
-  tableSpacing!: number;
-  showMultipleFiles!: boolean;
+  showMultipleFiles?: boolean;
   currentFilters: Map<string, string> = new Map<string, string>();
   showFilterError: boolean = false;
   filterErrorDetails: Map<string, string> = new Map<string, string>();
-  defaultCheckBoxSize: number = 13;
-  defaultFontSize: number = 8;
   hasTimedOut: boolean = false;
   reportsInProgress: Record<string, number> = {};
   reportsInProgressThreshold!: number;
-  protected selectedReportStorageId?: number;
   tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
   tableDataSort?: MatSort;
+  protected selectedReportStorageId?: number;
 
   private readonly subscriptions: Subscription = new Subscription();
-  private readonly fontSizeSpacingModifier: number = 1.2;
 
   constructor(
     private httpService: HttpService,
@@ -152,7 +151,11 @@ export class TableComponent implements OnInit, OnDestroy {
 
   subscribeToObservables(): void {
     const tableSpacingSubscription: Subscription = this.settingsService.tableSpacingObservable.subscribe({
-      next: (value: number) => (this.tableSpacing = value),
+      next: (value: number) => {
+        this.setTableSpacing(value);
+        this.setFontSize(value);
+        this.setCheckBoxSize(value);
+      },
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(tableSpacingSubscription);
@@ -184,6 +187,21 @@ export class TableComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(refreshSubscription);
+  }
+
+  setTableSpacing(value: number): void {
+    this.tableSpacing = `${value * 0.25}em 0 ${value * 0.25}em 0`;
+  }
+
+  setFontSize(value: number): void {
+    const fontSizeSpacingModifier: number = 1.2;
+    const defaultFontSize: number = 8;
+    this.fontSize = `${defaultFontSize + value * fontSizeSpacingModifier}pt`;
+  }
+
+  setCheckBoxSize(value: number): void {
+    const defaultCheckBoxSize: number = 13;
+    this.checkboxSize = `${defaultCheckBoxSize + value}px`;
   }
 
   retrieveRecords(reopenReport: boolean = false): void {
@@ -415,7 +433,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.retrieveRecords();
   }
 
-  refresh(reopenReport: boolean = false): void {
+  refresh(): void {
     this.filterService.setShowFilter(false);
     this.tableSettings.displayAmount = 10;
     if (this.tableDataSort) {
@@ -508,18 +526,6 @@ export class TableComponent implements OnInit, OnDestroy {
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
-  }
-
-  getTableSpacing(): string {
-    return `${this.tableSpacing * 0.25}em 0 ${this.tableSpacing * 0.25}em 0`;
-  }
-
-  getFontSize(): string {
-    return `${this.defaultFontSize + this.tableSpacing * this.fontSizeSpacingModifier}pt`;
-  }
-
-  getCheckBoxSize(): string {
-    return `${this.defaultCheckBoxSize + this.tableSpacing}px`;
   }
 
   setUniqueOptions(data: any): void {
