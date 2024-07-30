@@ -90,27 +90,6 @@ html, body {
   cursor: default !important;
 }
 
-.btn-static:active .btn-static:focus, .btn-static:visited {
-  outline: none !important;
-}
-
-.jqx-widget {
-  border: none !important;
-}
-
-.jqx-tree-item-selected {
-  border-color: #17a2b8 !important;
-  background-color: #1ab394 !important;
-}
-
-.jqx-tree-item-hover {
-  background-color: #23c6c8 !important;
-}
-
-.jqx-tree-item {
-  padding: 0 !important;
-}
-
 .as-split-gutter {
   flex-basis: 5px !important;
 }

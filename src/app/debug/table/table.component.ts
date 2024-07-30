@@ -107,8 +107,7 @@ export class TableComponent implements OnInit, OnDestroy {
     tableLoaded: false,
     displayAmount: this.DEFAULT_DISPLAY_AMOUNT,
     showFilter: false,
-    filterValues: [],
-    filterHeaders: [],
+    currentFilters: new Map<string, string>(),
     numberOfReportsInProgress: 0,
     estimatedMemoryUsage: '',
     uniqueValues: new Map<string, Array<string>>(),
@@ -141,8 +140,8 @@ export class TableComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     localStorage.setItem('transformationEnabled', 'true');
     this.filterService.setMetadataTypes(this.currentView.metadataTypes);
-    this.loadData();
     this.subscribeToObservables();
+    this.loadData();
   }
 
   ngOnDestroy(): void {
@@ -182,11 +181,6 @@ export class TableComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(filterContextSubscription);
-    const refreshSubscription: Subscription = this.debugTab.refresh$.subscribe({
-      next: () => this.refreshTriggeredByChild(),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-    this.subscriptions.add(refreshSubscription);
   }
 
   setTableSpacing(value: number): void {
@@ -204,29 +198,35 @@ export class TableComponent implements OnInit, OnDestroy {
     this.checkboxSize = `${defaultCheckBoxSize + value}px`;
   }
 
-  retrieveRecords(reopenReport: boolean = false): void {
-    this.httpService
-      .getMetadataReports(
-        this.tableSettings.displayAmount,
-        this.tableSettings.filterValues,
-        this.tableSettings.filterHeaders,
-        this.currentView.metadataNames,
-        this.currentView.storageName,
-      )
-      .subscribe({
-        next: (value: Report[]) => {
-          this.setUniqueOptions(value);
-          this.tableSettings.reportMetadata = value;
-          this.tableDataSource.data = value;
-          this.tableSettings.tableLoaded = true;
-          this.toastService.showSuccess('Data loaded!');
-          if (reopenReport) {
-            this.reopenReport();
-          }
-        },
-        error: () => catchError(this.errorHandler.handleError()),
-      });
+  changeFilter(filters: Map<string, string>): void {
+    for (let value of filters.values()) {
+      if (!value) {
+        value = '';
+      }
+    }
+    this.tableSettings.currentFilters = filters;
+
+    this.retrieveRecords();
+  }
+
+  loadData(): void {
+    this.retrieveRecords();
     this.loadMetadataCount();
+    this.loadReportInProgressThreshold();
+    this.loadReportInProgressSettings();
+  }
+
+  retrieveRecords() {
+    this.httpService.getMetadataReports(this.tableSettings, this.currentView).subscribe({
+      next: (value: Report[]) => {
+        this.setUniqueOptions(value);
+        this.tableSettings.reportMetadata = value;
+        this.tableDataSource.data = value;
+        this.tableSettings.tableLoaded = true;
+        this.toastService.showSuccess('Data loaded!');
+      },
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 
   changeView(view: View): void {
@@ -236,15 +236,16 @@ export class TableComponent implements OnInit, OnDestroy {
     this.viewChange.next(this.currentView);
   }
 
-  loadData(reopenReport: boolean = false): void {
-    this.loadReportInProgressThreshold();
-    this.loadReportInProgressSettings();
-    this.retrieveRecords(reopenReport);
-  }
-
   loadMetadataCount(): void {
     this.httpService.getMetadataCount(this.currentView.storageName).subscribe({
       next: (count: number) => (this.metadataCount = count),
+      error: () => catchError(this.errorHandler.handleError()),
+    });
+  }
+
+  loadReportInProgressThreshold(): void {
+    this.httpService.getReportsInProgressThresholdTime().subscribe({
+      next: (time: number) => (this.reportsInProgressThreshold = time),
       error: () => catchError(this.errorHandler.handleError()),
     });
   }
@@ -293,7 +294,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
   }
 
-  toggleCheck(report: any, event: MouseEvent): void {
+  toggleCheck(report: Report, event: MouseEvent): void {
     event.stopPropagation();
     report.checked = !report.checked;
     if (report.checked) {
@@ -335,10 +336,6 @@ export class TableComponent implements OnInit, OnDestroy {
     return 'none';
   }
 
-  getAmountOfReportsSelected(): number {
-    return this.tableSettings.reportMetadata.filter((report: Report) => report.checked).length;
-  }
-
   openReportInTab(): void {
     const reportTab: Report | undefined = this.tableSettings.reportMetadata.find((report: Report) => report.checked);
     if (!reportTab) {
@@ -358,7 +355,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openSelected(): void {
-    if (this.getAmountOfReportsSelected() > 1 && !this.showMultipleFiles) {
+    if (this.amountOfSelectedReports > 1 && !this.showMultipleFiles) {
       this.toastService.showWarning(
         'Please enable show multiple files in settings to open multiple files in the debug tree',
       );
@@ -407,25 +404,6 @@ export class TableComponent implements OnInit, OnDestroy {
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
-  }
-
-  changeFilter(filters: Map<string, string>): void {
-    if (filters.size === 0) {
-      this.tableSettings.filterValues = [];
-      this.tableSettings.filterHeaders = [];
-      this.currentFilters = new Map<string, string>();
-    } else {
-      this.tableSettings.filterValues = [...filters.values()];
-      this.tableSettings.filterHeaders = [...filters.keys()];
-      let current: Map<string, string> = new Map<string, string>();
-      for (const [key, value] of filters.entries()) {
-        if (key) {
-          current.set(key, value ?? '');
-        }
-      }
-      this.currentFilters = current;
-    }
-    this.retrieveRecords();
   }
 
   changeTableLimit(event: any): void {
@@ -569,13 +547,6 @@ export class TableComponent implements OnInit, OnDestroy {
         return 1;
       }
       return a.localeCompare(b);
-    });
-  }
-
-  loadReportInProgressThreshold(): void {
-    this.httpService.getReportsInProgressThresholdTime().subscribe({
-      next: (time: number) => (this.reportsInProgressThreshold = time),
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
