@@ -13,7 +13,7 @@ import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 import { Report } from '../../shared/interfaces/report';
-import { MetadataTableComponent } from '../../shared/components/display-table/metadata-table.component';
+import { MetadataTableComponent } from '../../shared/components/metadata-table/metadata-table.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
