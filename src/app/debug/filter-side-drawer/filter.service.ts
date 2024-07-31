@@ -30,7 +30,11 @@ export class FilterService {
       let errorFound: boolean = false;
       this.filterErrors.clear();
       for (let [key, value] of context) {
-        if (this.isInValidTimestamp(value, key) || this.isInValidNumber(value, key)) {
+        const metadataType: string | undefined = this.metadataTypes.get(key);
+        if (
+          (metadataType == 'timestamp' && !this.isValidTimestamp(value)) ||
+          ((metadataType == 'int' || metadataType == 'long') && !this.isValidNumber(value))
+        ) {
           this.filterErrors.set(<string>this.metadataTypes.get(key), value);
           errorFound = true;
         }
@@ -86,16 +90,13 @@ export class FilterService {
     this.filterErrorSubject.next([true, this.filterErrors]);
   }
 
-  isInValidTimestamp(userInput: string, metadataName: string): boolean {
-    return this.metadataTypes.get(metadataName) == 'timestamp' && Number.isNaN(Date.parse(userInput));
+  isValidTimestamp(userInput: string): boolean {
+    const regex: RegExp = /^(\*|[\d :\-]*\*?)+$/;
+    return regex.test(userInput) && length < 20;
   }
 
-  isInValidNumber(userInput: string, metadataName: string): boolean {
-    const regex: RegExp = /^-?\d+(\.\d+)?$/;
-    const metadataType = this.metadataTypes.get(metadataName);
-    return (
-      (metadataType == 'int' || metadataType == 'long') &&
-      (Number.isNaN(Number.parseFloat(userInput)) || !regex.test(userInput))
-    );
+  isValidNumber(userInput: string): boolean {
+    const regex: RegExp = /^\*?-?\d*(\.\d*)?\*?$/;
+    return regex.test(userInput);
   }
 }
