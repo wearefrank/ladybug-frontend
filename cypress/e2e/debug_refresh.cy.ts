@@ -16,4 +16,3 @@ describe('Refresh', () => {
     cy.get('[data-cy-debug="amountShown"]').invoke('text').should('contain', '1');
   });
 });
-``

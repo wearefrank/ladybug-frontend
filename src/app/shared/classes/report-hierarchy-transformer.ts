@@ -17,7 +17,7 @@ export class ReportHierarchyTransformer {
 
       if (checkpoint.type === CheckpointType.Startpoint) {
         this.handleStartpoint(checkpoint);
-      } else if (checkpoint.type === CheckpointType.Endpoint) {
+      } else if (checkpoint.type === CheckpointType.Endpoint || checkpoint.type === CheckpointType.Abortpoint) {
         this.handleEndpoint(checkpoint);
       } else {
         this.handleIntermediatePoint(checkpoint);
