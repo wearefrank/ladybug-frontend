@@ -142,7 +142,7 @@
         }
 
         <!--Values are passed to their respective header and row elements-->
-        <tr mat-header-row *matHeaderRowDef="getDisplayedColumnNames(currentView.metadataLabels)"></tr>
+        <tr mat-header-row *matHeaderRowDef="getDisplayedColumnNames(currentView.metadataLabels); sticky: true"></tr>
         <tr mat-row class="table-row"
             *matRowDef="let row; let rowIndex = index; columns: getDisplayedColumnNames(currentView.metadataLabels)"
             [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"
