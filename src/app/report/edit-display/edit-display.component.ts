@@ -14,7 +14,7 @@ import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 import { Report } from '../../shared/interfaces/report';
 import { MetadataTableComponent } from '../../shared/components/display-table/metadata-table.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
@@ -57,6 +57,7 @@ import { View } from '../../shared/interfaces/view';
     ToggleButtonComponent,
     MatTooltipModule,
     NgClass,
+    FormsModule,
   ],
 })
 export class EditDisplayComponent {
@@ -76,6 +77,7 @@ export class EditDisplayComponent {
   rerunResult?: TestResult;
   report: any = {};
   displayReport: boolean = false;
+  stubStrategy?: number;
 
   constructor(
     private modalService: NgbModal,
@@ -88,6 +90,7 @@ export class EditDisplayComponent {
   showReport(report: Report): void {
     this.disableEditing();
     this.report = report;
+    this.stubStrategy = report.stub;
     report.xml
       ? this.editor.setNewReport(report.xml)
       : this.editor.setNewReport(this.helperService.convertMessage(report));
@@ -124,10 +127,6 @@ export class EditDisplayComponent {
     const queryString: string = this.report.xml ? this.report.storageId.toString() : this.report.uid.split('#')[0];
     this.helperService.download(`${queryString}&`, this.currentView.storageName, exportBinary, exportXML);
     this.httpService.handleSuccess('Report Downloaded!');
-  }
-
-  selectStubStrategy(event: Event): void {
-    this.saveChanges((event.target as HTMLOptionElement).value);
   }
 
   openDifferenceModal(type: ChangesAction): void {
@@ -182,7 +181,7 @@ export class EditDisplayComponent {
     this.editingEnabled = false;
   }
 
-  saveChanges(stubStrategy: string): void {
+  saveChanges(): void {
     let checkpointId: string = '';
     let storageId: string;
     if (this.report.xml) {
