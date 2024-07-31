@@ -24,4 +24,5 @@
 .text-diff-container {
   border-top: 1px solid #dee2e6;
   padding-top: 1.25rem;
+  height: 100%;
 }
