@@ -1,26 +1,25 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { catchError } from 'rxjs';
+import { catchError, Subscription } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { ToastService } from '../shared/services/toast.service';
 import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
-import { ReportData } from '../shared/interfaces/report-data';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
 import { TestListItem } from '../shared/interfaces/test-list-item';
-import { View } from '../shared/interfaces/view';
 import { OptionsSettings } from '../shared/interfaces/options-settings';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
 import { BooleanToStringPipe } from '../shared/pipes/boolean-to-string.pipe';
+import { TestTableBodyComponent } from './test-table-body/test-table-body.component';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -40,6 +39,7 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     CloneModalComponent,
     DeleteModalComponent,
     BooleanToStringPipe,
+    TestTableBodyComponent,
   ],
 })
 export class TestComponent implements OnInit {
@@ -182,19 +182,6 @@ export class TestComponent implements OnInit {
     };
   }
 
-  openReport(storageId: number, name: string): void {
-    this.httpService.getReport(storageId, this.storageName).subscribe({
-      next: (report: Report): void => {
-        const reportData: ReportData = {
-          report: report,
-          currentView: { storageName: this.storageName, metadataNames: this.metadataNames } as View,
-        };
-        this.tabService.openNewTab(reportData);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-  }
-
   openDeleteModal(): void {
     const reportsToBeDeleted: TestListItem[] = this.getSelectedReports();
     if (reportsToBeDeleted.length > 0) {
@@ -235,35 +222,6 @@ export class TestComponent implements OnInit {
         error: () => catchError(this.errorHandler.handleError()),
       });
     }
-  }
-
-  compareReports(report: TestListItem): void {
-    if (report.reranReport) {
-      const tabId: string = this.helperService.createCompareTabId(
-        report.reranReport.originalReport,
-        report.reranReport.runResultReport,
-      );
-      this.tabService.openNewCompareTab({
-        id: tabId,
-        viewName: 'compare',
-        originalReport: report.reranReport.originalReport,
-        runResultReport: report.reranReport.runResultReport,
-      });
-    }
-  }
-
-  replaceReport(report: TestListItem): void {
-    this.toastService.showWarning('Sorry this is not implemented as of now');
-    // this.httpService.replaceReport(report.storageId, this.storageName).subscribe({
-    //   next: (value) => {
-    //     this.httpService.getReport(report.storageId, this.storageName).subscribe({
-    //       next: (response: Report): void => {
-    //         report = { ...response };
-    //       },
-    //     });
-    //   },
-    //   error: () => catchError(this.errorHandler.handleError()),
-    // });
   }
 
   copySelected(): void {
@@ -332,7 +290,6 @@ export class TestComponent implements OnInit {
     if (this.reports) {
       const transformedFilter: string =
         filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
-      this.currentFilter = transformedFilter;
       for (const report of this.reports) {
         report.checked = this.matches(report);
       }
@@ -354,29 +311,8 @@ export class TestComponent implements OnInit {
     return new RegExp(`(/)?${this.currentFilter}.*`).test(name);
   }
 
-  extractVariables(variables: string): string {
-    if (!variables || variables == 'null') {
-      return '';
-    }
-    const map = variables.split('\n');
-    const keys = map[0].split(',');
-    const values = map[1].split(',');
-    let resultString = '';
-    for (let i in keys) {
-      resultString += keys[i] + '=' + values[i] + ', ';
-    }
-    return resultString.slice(0, -2);
-  }
-
   sortByName(reports: TestListItem[]): TestListItem[] {
     return reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
-  }
-
-  getFullPath(path: string, name: string): string {
-    if (path) {
-      return `${path.replace(this.currentFilter, '')}${name}`;
-    }
-    return `/${name}`;
   }
 
   getSelectedReports(): TestListItem[] {

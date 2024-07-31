@@ -73,69 +73,20 @@
           <th>Options</th>
         </tr>
         </thead>
-        <tbody data-cy-test="table" id="testReports">
-          @for (report of reports; track report.storageId) {
-
-            @if (matches(report)) {
-              <tr>
-                <td>
-                  <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked"
-                         (click)="toggleCheck(report)">
-                </td>
-                @if (showStorageIds) {
-                  <td>
-                    {{ report.storageId }}
-                  </td>
-                }
-                <td>
-                    <span class="buttons">
-                      <button
-                        data-cy-test="runReport"
-                        title="Run report"
-                        class="btn btn-info button-width"
-                        (click)="run(report)"
-                      ><i class="fa fa-play"></i></button>
-                      <button
-                        data-cy-test="openReport"
-                        title="Open report"
-                        class="btn btn-info button-width"
-                        (click)="openReport(report.storageId, report.name)"
-                      ><i class="fa fa-folder-open"></i></button>
-                    </span>
-                </td>
-                <td>
-                  {{ getFullPath(report.path, report.name) }}
-                </td>
-                <td>
-                  {{ report.description }}
-                </td>
-                <td>
-                  @if (report.variables) {
-                    <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
-                  }
-                </td>
-                <td>
-                  @if (report.reranReport) {
-                    <span data-cy-test="runResult"
-                          [style.color]="report.reranReport.color">
-                      {{ report.reranReport.resultString }}
-                    </span>
-                  }
-                </td>
-                <td>
-                  @if (report.reranReport) {
-                    <span class="buttons">
-                        <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
-                                disabled (click)="replaceReport(report)">Replace</button>
-                        <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
-                                (click)="compareReports(report)">Compare</button>
-                    </span>
-                  }
-                </td>
-              </tr>
+        @if (reports) {
+          <tbody data-cy-test="table" id="testReports">
+            @for (report of reports; track report.storageId) {
+              @if (matches(report)) {
+                <div class="test-table-body-container">
+                  <app-test-table-body [report]="report" [storageName]="storageName" [currentFilter]="currentFilter"
+                                       [metadataNames]="metadataNames" [showStorageIds]="showStorageIds"
+                                       (runSubject)="run($event)">
+                  </app-test-table-body>
+                </div>
+              }
             }
-          }
-        </tbody>
+          </tbody>
+        }
       </table>
     </div>
   </div>
