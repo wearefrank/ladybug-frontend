@@ -25,7 +25,7 @@ import { ChangesAction, DifferenceModalComponent } from '../difference-modal/dif
 import { ToggleButtonComponent } from '../../shared/components/button/toggle-button/toggle-button.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { TestResult } from '../../shared/interfaces/test-result';
-import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
