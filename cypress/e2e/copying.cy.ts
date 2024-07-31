@@ -1,4 +1,4 @@
-describe('Tests about copying', function() {
+describe('Tests about copying', () => {
   before(() => {
     cy.resetApp();
   });

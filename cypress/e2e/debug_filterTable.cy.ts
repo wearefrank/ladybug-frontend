@@ -1,5 +1,5 @@
 describe('Table size and toggle filter', () => {
-  before(() => cy.resetApp())
+  before(() => cy.resetApp());
 
   beforeEach(() => {
     cy.createReport();
