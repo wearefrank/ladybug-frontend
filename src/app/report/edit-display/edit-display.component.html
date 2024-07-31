@@ -10,7 +10,7 @@
           (click)="closeReport(false)"
         ><i class="fa fa-times"></i></button>
         <!--This if condition is necessary to avoid a race condition where storageId will be null-->
-        @if (!newTab && (selectedNode.storageId || (ReportUtil.isCheckPoint(selectedNode) && selectedNode.uid))) {
+        @if (!newTab && (!Number.isNaN(selectedNode.storageId) || (ReportUtil.isCheckPoint(selectedNode) && selectedNode.uid))) {
           <button
             data-cy-debug-editor="copy"
             class="btn btn-info"

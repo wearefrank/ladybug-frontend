@@ -288,4 +288,6 @@ export class EditDisplayComponent {
   setNewReport(message: string) {
     this.editor.setNewReport(message);
   }
+
+  protected readonly Number: NumberConstructor = Number;
 }
