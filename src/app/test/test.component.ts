@@ -4,7 +4,7 @@ import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { catchError } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
@@ -21,6 +21,7 @@ import { View } from '../shared/interfaces/view';
 import { OptionsSettings } from '../shared/interfaces/options-settings';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
 import { BooleanToStringPipe } from '../shared/pipes/boolean-to-string.pipe';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -153,7 +154,11 @@ export class TestComponent implements OnInit {
         next: (response: TestResult): void => {
           report.reranReport = this.createReranReport(response);
         },
-        error: () => catchError(this.errorHandler.handleError()),
+        error: () =>
+          catchError((error: HttpErrorResponse): Observable<any> => {
+            report.error = error.message;
+            return of(error);
+          }),
       });
     } else {
       this.toastService.showWarning('Generator is disabled!');

@@ -121,6 +121,11 @@
                       {{ report.reranReport.resultString }}
                     </span>
                   }
+                  @if (report.error) {
+                    <span style="color: red">
+                      {{ report.error }}
+                    </span>
+                  }
                 </td>
                 <td>
                   @if (report.reranReport) {
