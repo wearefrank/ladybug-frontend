@@ -17,13 +17,9 @@ describe('Report transformation', () => {
     cy.get('[data-cy-debug="openSettings"]').click();
     cy.get('textarea[formcontrolname=transformation]').type('{selectAll}{del}');
     cy.get('textarea[formcontrolname=transformation]').within((textArea) => {
-      cy.fixture('ignoreName.xslt').then((newText) =>
-        cy.wrap(textArea).type(newText),
-      );
+      cy.fixture('ignoreName.xslt').then((newText) => cy.wrap(textArea).type(newText));
     });
-    cy.get(
-      'input[type=checkbox][formcontrolname=transformationEnabled]',
-    ).check();
+    cy.get('input[type=checkbox][formcontrolname=transformationEnabled]').check();
     cy.get('[data-cy-settings="saveChanges"]').click();
     cy.createOtherReport();
     cy.get('[data-cy-debug="refresh"]').click();
@@ -35,9 +31,6 @@ describe('Report transformation', () => {
     cy.get('[data-cy-open-metadata-table]').click();
     cy.get('[data-cy-element-name="editor"]').contains('Name="IGNORED"');
     // The transformation should not affect the report table, only the XML in the Monaco editor
-    cy.get('[data-cy-metadata-table="reportname"]').should(
-      'have.text',
-      'Another simple report',
-    );
+    cy.get('[data-cy-metadata-table="reportname"]').should('have.text', 'Another simple report');
   });
 });

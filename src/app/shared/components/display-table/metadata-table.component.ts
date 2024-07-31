@@ -7,7 +7,7 @@ import { Checkpoint } from '../../interfaces/checkpoint';
 import { ReportUtil } from '../../util/report-util';
 
 @Component({
-  selector: 'app-display-table',
+  selector: 'app-metadata-table',
   templateUrl: './metadata-table.component.html',
   styleUrls: ['./metadata-table.component.css'],
   standalone: true,

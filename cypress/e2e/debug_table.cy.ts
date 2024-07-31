@@ -2,7 +2,7 @@ describe('Testing table', () => {
   before(() => cy.resetApp());
 
   beforeEach(() => {
-    cy.createReport()
+    cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
   });

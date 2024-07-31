@@ -43,6 +43,9 @@ export class CompareComponent implements AfterViewInit, OnInit {
   protected originalModel: DiffEditorModel = { code: '', language: 'xml' };
   protected modifiedModel: DiffEditorModel = { code: '', language: 'xml' };
 
+  protected leftNode?: Report | Checkpoint;
+  protected rightNode?: Report | Checkpoint;
+
   protected compareData?: CompareData;
 
   constructor(
@@ -89,10 +92,18 @@ export class CompareComponent implements AfterViewInit, OnInit {
     this.compareTreeComponent.createTrees(this.compareData!.originalReport, this.compareData!.runResultReport);
   }
 
+  protected syncLeftAndRight(): void {
+    this.leftNode = this.compareTreeComponent.leftTree.getSelected().originalValue;
+    this.rightNode = this.compareTreeComponent.rightTree.getSelected().originalValue;
+    this.showDifference();
+  }
+
   protected showDifference(): void {
-    const leftSide = this.extractMessage(this.compareTreeComponent.leftTree.getSelected().originalValue);
-    const rightSide = this.extractMessage(this.compareTreeComponent.rightTree.getSelected().originalValue);
-    this.renderDiffs(leftSide, rightSide);
+    if (this.leftNode && this.rightNode) {
+      const leftSide: string = this.extractMessage(this.leftNode);
+      const rightSide: string = this.extractMessage(this.rightNode);
+      this.renderDiffs(leftSide, rightSide);
+    }
   }
 
   private extractMessage(selectedNode: Report | Checkpoint): string {
