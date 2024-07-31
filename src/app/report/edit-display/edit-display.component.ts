@@ -270,7 +270,7 @@ export class EditDisplayComponent {
     let storageId: number;
     if (ReportUtil.isReport(node)) {
       storageId = node.storageId;
-    } else if (ReportUtil.isCheckPoint(node)) {
+    } else {
       storageId = node.storageId ? Number.parseInt(node.storageId) : Number.parseInt(node.uid.split('#')[0]);
     }
     const data: Record<string, number[]> = {
