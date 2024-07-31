@@ -84,7 +84,6 @@ export class TestComponent implements OnInit {
     } else {
       this.httpService.getSettings().subscribe({
         next: (response: OptionsSettings) => {
-          console.log(response);
           this.generatorEnabled = response.generatorEnabled;
           localStorage.setItem('generatorEnabled', String(this.generatorEnabled));
         },
