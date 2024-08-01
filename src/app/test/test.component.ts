@@ -46,17 +46,19 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
 })
 export class TestComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'test';
+
   protected reports?: TestListItem[];
   protected generatorEnabled: boolean = false;
   protected currentFilter: string = '';
-  updatePathAction: UpdatePathAction = 'move';
-  showStorageIds?: boolean;
+  protected showStorageIds?: boolean;
+  protected amountOfSelectedReports: number = 0;
+
+  private updatePathAction: UpdatePathAction = 'move';
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
   @ViewChild(TestFolderTreeComponent) testFileTreeComponent!: TestFolderTreeComponent;
   @ViewChild('moveToInput', { read: NgModel }) moveToInputModel!: NgModel;
-  protected amountOfSelectedReports: number = 0;
 
   constructor(
     private httpService: HttpService,
