@@ -173,8 +173,8 @@ export class TestComponent implements OnInit {
   }
 
   createReranReport(result: TestResult): ReranReport {
-    let originalReport: Report = result.originalReport;
-    let runResultReport: Report = result.runResultReport;
+    const originalReport: Report = result.originalReport;
+    const runResultReport: Report = result.runResultReport;
 
     originalReport.xml = result.originalXml;
     runResultReport.xml = result.runResultXml;
@@ -216,7 +216,7 @@ export class TestComponent implements OnInit {
       this.httpService
         .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
         .subscribe({
-          next: () => this.loadData(),
+          next: () => this.testReportsService.getReports(),
           error: () => catchError(this.errorHandler.handleError()),
         });
     }

@@ -40,7 +40,7 @@
         <thead>
         <tr>
           <th>
-            <input data-cy-test="reportChecked" type="checkbox" [checked]="amountOfSelectedReports === reports?.length && amountOfSelectedReports > 0"
+            <input data-cy-test="toggleSelectAll" type="checkbox" [checked]="amountOfSelectedReports === reports?.length && amountOfSelectedReports > 0"
                    (click)="toggleSelectAll()">
           </th>
           @if (showStorageIds) {

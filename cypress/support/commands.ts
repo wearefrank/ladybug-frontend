@@ -10,8 +10,8 @@
 // ***********************************************
 
 import Chainable = Cypress.Chainable;
-import { Interception } from 'cypress/types/net-stubbing';
 import JQueryWithSelector = Cypress.JQueryWithSelector;
+import { Interception } from 'cypress/types/net-stubbing';
 
 declare global {
   namespace Cypress {
@@ -77,6 +77,7 @@ Cypress.Commands.add('createReport' as keyof Chainable, (): void => {
   // No cy.visit because then the API call can happen multiple times.
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Simple%20report`).then((resp: Cypress.Response<ApiResponse>) => {
     expect(resp.status).equal(200);
+    console.log(resp);
   });
 });
 
