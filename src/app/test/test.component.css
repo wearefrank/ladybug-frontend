@@ -3,14 +3,6 @@
   --border-color: #dee2e6;
 }
 
-#uploadFileTest {
-  display: none;
-}
-
-#testContent {
-  height: 100% !important;
-}
-
 td {
   border: 0;
   vertical-align: middle;

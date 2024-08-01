@@ -22,10 +22,6 @@ html, body {
   overflow: hidden;
 }
 
-#testReportTable button {
-  margin-top: 0 !important;
-}
-
 .tab-content {
   height: 100% !important;
   min-height: 0 !important;

@@ -22,6 +22,7 @@ import { OptionsSettings } from '../shared/interfaces/options-settings';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
 import { BooleanToStringPipe } from '../shared/pipes/boolean-to-string.pipe';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TestReportsService } from './test-reports.service';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -45,11 +46,10 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
 })
 export class TestComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'test';
-  reports?: TestListItem[];
-  generatorEnabled: boolean = false;
-  currentFilter: string = '';
-  metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
-  storageName: string = 'Test';
+  protected reports?: TestListItem[];
+  protected generatorEnabled: boolean = false;
+  protected currentFilter: string = '';
+  // protected storageName: string = 'Test';
   updatePathAction: UpdatePathAction = 'move';
   showStorageIds?: boolean;
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
@@ -57,7 +57,7 @@ export class TestComponent implements OnInit {
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
   @ViewChild(TestFolderTreeComponent) testFileTreeComponent!: TestFolderTreeComponent;
   @ViewChild('moveToInput', { read: NgModel }) moveToInputModel!: NgModel;
-  amountOfSelectedReports: number = 0;
+  protected amountOfSelectedReports: number = 0;
 
   constructor(
     private httpService: HttpService,
@@ -65,6 +65,7 @@ export class TestComponent implements OnInit {
     private toastService: ToastService,
     private tabService: TabService,
     private errorHandler: ErrorHandling,
+    private testReportsService: TestReportsService,
   ) {
     this.setStorageIdsFromLocalStorage();
     this.setGeneratorStatusFromLocalStorage();
@@ -85,7 +86,6 @@ export class TestComponent implements OnInit {
     } else {
       this.httpService.getSettings().subscribe({
         next: (response: OptionsSettings) => {
-          console.log(response);
           this.generatorEnabled = response.generatorEnabled;
           localStorage.setItem('generatorEnabled', String(this.generatorEnabled));
         },
@@ -95,13 +95,15 @@ export class TestComponent implements OnInit {
   }
 
   loadData(path?: string): void {
-    this.httpService.getTestReports(this.metadataNames, this.storageName).subscribe({
+    this.testReportsService.testReports$.subscribe({
       next: (value: TestListItem[]) => {
-        this.reports = this.sortByName(value);
-        this.testFileTreeComponent.setData(this.reports);
+        this.reports = value;
         this.setCheckedForAllReports(true);
         this.amountOfSelectedReports = value.length;
-        this.testFileTreeComponent.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
+        if (this.testFileTreeComponent) {
+          this.testFileTreeComponent.setData(this.reports);
+          this.testFileTreeComponent.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
+        }
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -117,10 +119,6 @@ export class TestComponent implements OnInit {
     }
   }
 
-  openSettingsModal(): void {
-    this.testSettingsModal.open();
-  }
-
   addCopiedReports(metadata: TestListItem[]): void {
     if (this.reports) {
       const amountAdded: number = metadata.length - this.reports.length;
@@ -134,10 +132,12 @@ export class TestComponent implements OnInit {
   }
 
   getCopiedReports(): void {
-    this.httpService.getTestReports(this.metadataNames, this.storageName).subscribe({
-      next: (response: TestListItem[]) => this.addCopiedReports(response),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getTestReports(this.testReportsService.metadataNames, this.testReportsService.storageName)
+      .subscribe({
+        next: (response: TestListItem[]) => this.addCopiedReports(response),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
   }
 
   resetRunner(): void {
@@ -150,7 +150,7 @@ export class TestComponent implements OnInit {
 
   run(report: TestListItem): void {
     if (this.generatorEnabled) {
-      this.httpService.runReport(this.storageName, report.storageId).subscribe({
+      this.httpService.runReport(this.testReportsService.storageName, report.storageId).subscribe({
         next: (response: TestResult): void => {
           report.reranReport = this.createReranReport(response);
         },
@@ -187,12 +187,15 @@ export class TestComponent implements OnInit {
     };
   }
 
-  openReport(storageId: number, name: string): void {
-    this.httpService.getReport(storageId, this.storageName).subscribe({
+  openReport(storageId: number): void {
+    this.httpService.getReport(storageId, this.testReportsService.storageName).subscribe({
       next: (report: Report): void => {
         const reportData: ReportData = {
           report: report,
-          currentView: { storageName: this.storageName, metadataNames: this.metadataNames } as View,
+          currentView: {
+            storageName: this.testReportsService.storageName,
+            metadataNames: this.testReportsService.metadataNames,
+          } as View,
         };
         this.tabService.openNewTab(reportData);
       },
@@ -209,10 +212,12 @@ export class TestComponent implements OnInit {
 
   deleteSelected(): void {
     if (this.reports) {
-      this.httpService.deleteReport(this.helperService.getSelectedIds(this.reports), this.storageName).subscribe({
-        next: () => this.loadData(),
-        error: () => catchError(this.errorHandler.handleError()),
-      });
+      this.httpService
+        .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
+        .subscribe({
+          next: () => this.loadData(),
+          error: () => catchError(this.errorHandler.handleError()),
+        });
     }
   }
 
@@ -223,7 +228,7 @@ export class TestComponent implements OnInit {
       for (let report of selectedReports) {
         queryString += `id=${report.storageId}&`;
       }
-      this.helperService.download(queryString, this.storageName, true, false);
+      this.helperService.download(queryString, this.testReportsService.storageName, true, false);
     } else {
       this.toastService.showWarning('No Report Selected!');
     }
@@ -235,7 +240,7 @@ export class TestComponent implements OnInit {
     if (file) {
       const formData: FormData = new FormData();
       formData.append('file', file);
-      this.httpService.uploadReportToStorage(formData, this.storageName).subscribe({
+      this.httpService.uploadReportToStorage(formData, this.testReportsService.storageName).subscribe({
         next: () => this.loadData(),
         error: () => catchError(this.errorHandler.handleError()),
       });
@@ -275,9 +280,9 @@ export class TestComponent implements OnInit {
     if (this.reports) {
       const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
       const data: Record<string, number[]> = {
-        [this.storageName]: copiedIds,
+        [this.testReportsService.storageName]: copiedIds,
       };
-      this.httpService.copyReport(data, this.storageName).subscribe({
+      this.httpService.copyReport(data, this.testReportsService.storageName).subscribe({
         next: () => this.loadData(),
         error: () => catchError(this.errorHandler.handleError()),
       });
@@ -319,7 +324,7 @@ export class TestComponent implements OnInit {
       if (reportIds.length > 0) {
         const path: string = this.transformPath(this.moveToInputModel.value);
         const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
-        this.httpService.updatePath(reportIds, this.storageName, map).subscribe({
+        this.httpService.updatePath(reportIds, this.testReportsService.storageName, map).subscribe({
           next: () => this.loadData(path),
           error: () => catchError(this.errorHandler.handleError()),
         });
@@ -371,10 +376,6 @@ export class TestComponent implements OnInit {
       resultString += keys[i] + '=' + values[i] + ', ';
     }
     return resultString.slice(0, -2);
-  }
-
-  sortByName(reports: TestListItem[]): TestListItem[] {
-    return reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
   }
 
   getFullPath(path: string, name: string): string {
