@@ -49,7 +49,6 @@ export class TestComponent implements OnInit {
   protected reports?: TestListItem[];
   protected generatorEnabled: boolean = false;
   protected currentFilter: string = '';
-  // protected storageName: string = 'Test';
   updatePathAction: UpdatePathAction = 'move';
   showStorageIds?: boolean;
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
