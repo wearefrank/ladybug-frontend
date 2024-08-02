@@ -99,7 +99,7 @@
       <app-active-filters class="ml-2" [activeFilters]="tableSettings.currentFilters" (click)="toggleFilter()"></app-active-filters>
     </div>
     @if (hasTimedOut) {
-      <h4 class="progress-report-timout">[One or more reports are in progress for more
+      <h4 class="progress-report-timeout">[One or more reports are in progress for more
         than {{ this.reportsInProgressThreshold / 1000 / 60 }} minutes]</h4>
     }
     <div data-cy-debug="table" class="table-responsive table-container">
