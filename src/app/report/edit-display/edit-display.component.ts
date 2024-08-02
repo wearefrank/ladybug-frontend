@@ -32,6 +32,7 @@ import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
 import { UpdateReportUtil } from '../../shared/util/update-report-util';
 import { UpdateReportResponse } from '../../shared/interfaces/update-report-response';
 import { View } from '../../shared/interfaces/view';
+import { TestReportsService } from '../../test/test-reports.service';
 import { DebugTabService } from '../../debug/debug-tab.service';
 
 @Component({
@@ -84,6 +85,7 @@ export class EditDisplayComponent {
     private helperService: HelperService,
     private toastService: ToastService,
     private errorHandler: ErrorHandling,
+    private testReportsService: TestReportsService,
     private debugTab: DebugTabService,
   ) {}
 
@@ -235,6 +237,7 @@ export class EditDisplayComponent {
       [this.currentView.storageName]: [storageId],
     };
     this.httpService.copyReport(data, 'Test').subscribe({
+      next: () => this.testReportsService.getReports(),
       error: catchError(this.errorHandler.handleError()),
     }); // TODO: storage is hardcoded, fix issue #196 for this
   }
