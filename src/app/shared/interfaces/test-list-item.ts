@@ -8,4 +8,5 @@ export interface TestListItem {
   storageId: number;
   variables?: string;
   reranReport?: ReranReport | null;
+  error?: string;
 }

@@ -36,7 +36,7 @@ export class CompareTreeComponent {
   @Input({ required: true }) compareData!: CompareData;
   leftReport?: Report;
   rightReport?: Report;
-  left?: Report;
+
   leftTreeOptions: FileTreeOptions = {
     highlightOpenFolders: false,
     folderBehaviourOnClick: 'select',
@@ -45,11 +45,8 @@ export class CompareTreeComponent {
   };
 
   rightTreeOptions: FileTreeOptions = {
-    highlightOpenFolders: false,
-    folderBehaviourOnClick: 'select',
-    expandAllFolders: true,
+    ...this.leftTreeOptions,
     determineFontColor: (item: CreateTreeItem) => this.setRedLabels(item),
-    determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };
 
   createTrees(leftReport: Report, rightReport: Report): void {
