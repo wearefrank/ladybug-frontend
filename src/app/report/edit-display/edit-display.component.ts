@@ -13,7 +13,7 @@ import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 import { Report } from '../../shared/interfaces/report';
-import { MetadataTableComponent } from '../../shared/components/display-table/metadata-table.component';
+import { MetadataTableComponent } from '../../shared/components/metadata-table/metadata-table.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
@@ -32,6 +32,7 @@ import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
 import { UpdateReportUtil } from '../../shared/util/update-report-util';
 import { UpdateReportResponse } from '../../shared/interfaces/update-report-response';
 import { View } from '../../shared/interfaces/view';
+import { DebugTabService } from '../../debug/debug-tab.service';
 
 @Component({
   selector: 'app-edit-display',
@@ -83,6 +84,7 @@ export class EditDisplayComponent {
     private helperService: HelperService,
     private toastService: ToastService,
     private errorHandler: ErrorHandling,
+    private debugTab: DebugTabService,
   ) {}
 
   showReport(report: Report): void {
@@ -105,6 +107,7 @@ export class EditDisplayComponent {
       next: (response: TestResult): void => {
         this.toastService.showSuccess('Report rerun successful');
         this.rerunResult = response;
+        this.debugTab.refresh();
       },
       error: () => catchError(this.errorHandler.handleError()),
     });

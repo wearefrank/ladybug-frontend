@@ -7,7 +7,6 @@ import { catchError, Subject, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
-import { DebugReportService } from '../debug-report.service';
 import { TabService } from '../../shared/services/tab.service';
 import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
@@ -32,6 +31,8 @@ import { View } from '../../shared/interfaces/view';
 import { OptionsSettings } from '../../shared/interfaces/options-settings';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { CompareReport } from '../../shared/interfaces/compare-reports';
+import { DebugTabService } from '../debug-tab.service';
+import { ViewDropdownComponent } from '../../shared/components/view-dropdown/view-dropdown.component';
 
 @Component({
   selector: 'app-table',
@@ -57,20 +58,32 @@ import { CompareReport } from '../../shared/interfaces/compare-reports';
     KeyValuePipe,
     TableCellShortenerPipe,
     MatTableModule,
+    ViewDropdownComponent,
   ],
 })
 export class TableComponent implements OnInit, OnDestroy {
-  DEFAULT_DISPLAY_AMOUNT: number = 10;
-  metadataCount: number = 0;
+  private readonly DEFAULT_DISPLAY_AMOUNT: number = 10;
 
   @Input({ required: true }) views!: View[];
   @Input({ required: true }) currentView!: View;
-  //Temporary fix, issue has been created (https://github.com/wearefrank/ladybug-frontend/issues/383) to refactor this and the debug component
+
   @Output() viewChange: Subject<View> = new Subject<View>();
+  @Output() openReportEvent: EventEmitter<any> = new EventEmitter<any>();
 
-  allRowsSelected: boolean = false;
+  @ViewChild(TableSettingsModalComponent) tableSettingsModal!: TableSettingsModalComponent;
 
-  shortenedTableHeaders: Map<string, string> = new Map([
+  @ViewChild(MatSort) set matSort(sort: MatSort) {
+    this.tableDataSort = sort;
+    this.tableDataSource.sort = this.tableDataSort;
+  }
+
+  protected metadataCount: number = 0;
+  protected amountOfSelectedReports: number = 0;
+  protected tableSpacing?: string;
+  protected fontSize?: string;
+  protected checkboxSize?: string;
+
+  protected shortenedTableHeaders: Map<string, string> = new Map([
     ['Storage Id', 'Storage Id'],
     ['End time', 'End time'],
     ['Duration', 'Duration'],
@@ -89,60 +102,46 @@ export class TableComponent implements OnInit, OnDestroy {
     ['STATUS', 'STATUS'],
   ]);
 
-  tableSettings: TableSettings = {
+  protected tableSettings: TableSettings = {
     reportMetadata: [],
     tableLoaded: false,
     displayAmount: this.DEFAULT_DISPLAY_AMOUNT,
     showFilter: false,
-    filterValues: [],
-    filterHeaders: [],
+    currentFilters: new Map<string, string>(),
     numberOfReportsInProgress: 0,
     estimatedMemoryUsage: '',
     uniqueValues: new Map<string, Array<string>>(),
   };
-  @Output() openReportEvent: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild(TableSettingsModalComponent)
-  tableSettingsModal!: TableSettingsModalComponent;
-  tableSpacing!: number;
-  private subscriptions: Subscription = new Subscription();
-  showMultipleFiles!: boolean;
-  viewDropdownBoxWidth!: string;
+
+  showMultipleFiles?: boolean;
   currentFilters: Map<string, string> = new Map<string, string>();
   showFilterError: boolean = false;
   filterErrorDetails: Map<string, string> = new Map<string, string>();
-
-  defaultCheckBoxSize: number = 13;
-  defaultFontSize: number = 8;
-  fontSizeSpacingModifier: number = 1.2;
   hasTimedOut: boolean = false;
   reportsInProgress: Record<string, number> = {};
   reportsInProgressThreshold!: number;
-  protected selectedReportStorageId?: number;
   tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
   tableDataSort?: MatSort;
+  protected selectedReportStorageId?: number;
 
-  @ViewChild(MatSort) set matSort(sort: MatSort) {
-    this.tableDataSort = sort;
-    this.tableDataSource.sort = this.tableDataSort;
-  }
+  private readonly subscriptions: Subscription = new Subscription();
 
   constructor(
     private httpService: HttpService,
     public helperService: HelperService,
     private settingsService: SettingsService,
     private toastService: ToastService,
-    private debugReportService: DebugReportService,
     private tabService: TabService,
     private filterService: FilterService,
     private errorHandler: ErrorHandling,
+    private debugTab: DebugTabService,
   ) {}
 
   ngOnInit(): void {
     localStorage.setItem('transformationEnabled', 'true');
-    this.calculateViewDropDownWidth();
     this.filterService.setMetadataTypes(this.currentView.metadataTypes);
-    this.loadData();
     this.subscribeToObservables();
+    this.loadData();
   }
 
   ngOnDestroy(): void {
@@ -151,7 +150,11 @@ export class TableComponent implements OnInit, OnDestroy {
 
   subscribeToObservables(): void {
     const tableSpacingSubscription: Subscription = this.settingsService.tableSpacingObservable.subscribe({
-      next: (value: number) => (this.tableSpacing = value),
+      next: (value: number) => {
+        this.setTableSpacing(value);
+        this.setFontSize(value);
+        this.setCheckBoxSize(value);
+      },
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(tableSpacingSubscription);
@@ -180,46 +183,69 @@ export class TableComponent implements OnInit, OnDestroy {
     this.subscriptions.add(filterContextSubscription);
   }
 
-  retrieveRecords(): void {
-    this.httpService
-      .getMetadataReports(
-        this.tableSettings.displayAmount,
-        this.tableSettings.filterValues,
-        this.tableSettings.filterHeaders,
-        this.currentView.metadataNames,
-        this.currentView.storageName,
-      )
-      .subscribe({
-        next: (value: Report[]) => {
-          this.setUniqueOptions(value);
-          this.tableSettings.reportMetadata = value;
-          this.tableDataSource.data = value;
-          this.tableSettings.tableLoaded = true;
-          this.toastService.showSuccess('Data loaded!');
-        },
-        error: () => catchError(this.errorHandler.handleError()),
-      });
-    this.loadMetadataCount();
+  setTableSpacing(value: number): void {
+    this.tableSpacing = `${value * 0.25}em 0 ${value * 0.25}em 0`;
   }
 
-  changeView(index: number): void {
-    this.currentView = this.views[index];
+  setFontSize(value: number): void {
+    const fontSizeSpacingModifier: number = 1.2;
+    const defaultFontSize: number = 8;
+    this.fontSize = `${defaultFontSize + value * fontSizeSpacingModifier}pt`;
+  }
+
+  setCheckBoxSize(value: number): void {
+    const defaultCheckBoxSize: number = 13;
+    this.checkboxSize = `${defaultCheckBoxSize + value}px`;
+  }
+
+  changeFilter(filters: Map<string, string>): void {
+    for (let value of filters.values()) {
+      if (!value) {
+        value = '';
+      }
+    }
+    this.tableSettings.currentFilters = filters;
+
     this.retrieveRecords();
-    this.allRowsSelected = false;
-    this.debugReportService.changeView(this.currentView);
-    this.filterService.setMetadataLabels(this.currentView.metadataLabels);
-    this.viewChange.next(this.currentView);
   }
 
   loadData(): void {
+    this.retrieveRecords();
+    this.loadMetadataCount();
     this.loadReportInProgressThreshold();
     this.loadReportInProgressSettings();
+  }
+
+  retrieveRecords() {
+    this.httpService.getMetadataReports(this.tableSettings, this.currentView).subscribe({
+      next: (value: Report[]) => {
+        this.setUniqueOptions(value);
+        this.tableSettings.reportMetadata = value;
+        this.tableDataSource.data = value;
+        this.tableSettings.tableLoaded = true;
+        this.toastService.showSuccess('Data loaded!');
+      },
+      error: () => catchError(this.errorHandler.handleError()),
+    });
+  }
+
+  changeView(view: View): void {
+    this.currentView = view;
     this.retrieveRecords();
+    this.filterService.setMetadataLabels(this.currentView.metadataLabels);
+    this.viewChange.next(this.currentView);
   }
 
   loadMetadataCount(): void {
     this.httpService.getMetadataCount(this.currentView.storageName).subscribe({
       next: (count: number) => (this.metadataCount = count),
+      error: () => catchError(this.errorHandler.handleError()),
+    });
+  }
+
+  loadReportInProgressThreshold(): void {
+    this.httpService.getReportsInProgressThresholdTime().subscribe({
+      next: (time: number) => (this.reportsInProgressThreshold = time),
       error: () => catchError(this.errorHandler.handleError()),
     });
   }
@@ -260,10 +286,6 @@ export class TableComponent implements OnInit, OnDestroy {
     );
   }
 
-  openSettingsModal(): void {
-    this.tableSettingsModal.open();
-  }
-
   toggleFilter(): void {
     this.filterService.setMetadataLabels(this.currentView.metadataNames);
     this.filterService.setMetadataTypes(this.currentView.metadataTypes);
@@ -272,30 +294,29 @@ export class TableComponent implements OnInit, OnDestroy {
     this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
   }
 
-  toggleCheck(report: any, event: MouseEvent): void {
+  toggleCheck(report: Report, event: MouseEvent): void {
     event.stopPropagation();
     report.checked = !report.checked;
-    if (this.allRowsSelected && !report.checked) {
-      this.allRowsSelected = false;
-    }
-    this.allRowsSelected = this.checkIfAllRowsSelected();
-  }
-
-  checkIfAllRowsSelected(): boolean {
-    for (let reportMetadata of this.tableSettings.reportMetadata) {
-      if (!reportMetadata.checked) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  selectAllRows(): void {
-    this.allRowsSelected = !this.allRowsSelected;
-    if (this.allRowsSelected) {
-      this.selectAll();
+    if (report.checked) {
+      this.amountOfSelectedReports++;
     } else {
-      this.deselectAll();
+      this.amountOfSelectedReports--;
+    }
+  }
+
+  toggleSelectAll(): void {
+    if (this.amountOfSelectedReports === this.tableSettings.reportMetadata.length) {
+      this.setCheckedForAllReports(false);
+      this.amountOfSelectedReports = 0;
+    } else {
+      this.setCheckedForAllReports(true);
+      this.amountOfSelectedReports = this.tableSettings.reportMetadata.length;
+    }
+  }
+
+  setCheckedForAllReports(value: boolean): void {
+    for (const report of this.tableSettings.reportMetadata) {
+      report.checked = value;
     }
   }
 
@@ -313,10 +334,6 @@ export class TableComponent implements OnInit, OnDestroy {
       }
     }
     return 'none';
-  }
-
-  getAmountOfReportsSelected(): number {
-    return this.tableSettings.reportMetadata.filter((report: Report) => report.checked).length;
   }
 
   openReportInTab(): void {
@@ -338,7 +355,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openSelected(): void {
-    if (this.getAmountOfReportsSelected() > 1 && !this.showMultipleFiles) {
+    if (this.amountOfSelectedReports > 1 && !this.showMultipleFiles) {
       this.toastService.showWarning(
         'Please enable show multiple files in settings to open multiple files in the debug tree',
       );
@@ -359,14 +376,6 @@ export class TableComponent implements OnInit, OnDestroy {
         error: () => catchError(this.errorHandler.handleError()),
       });
     }
-  }
-
-  selectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report) => (report.checked = true));
-  }
-
-  deselectAll(): void {
-    this.tableSettings.reportMetadata.forEach((report) => (report.checked = false));
   }
 
   compareTwoReports(): void {
@@ -397,29 +406,9 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeFilter(filters: Map<string, string>): void {
-    if (filters.size === 0) {
-      this.tableSettings.filterValues = [];
-      this.tableSettings.filterHeaders = [];
-      this.currentFilters = new Map<string, string>();
-    } else {
-      this.tableSettings.filterValues = [...filters.values()];
-      this.tableSettings.filterHeaders = [...filters.keys()];
-      let current: Map<string, string> = new Map<string, string>();
-      for (const [key, value] of filters.entries()) {
-        if (key) {
-          current.set(key, value ?? '');
-        }
-      }
-      this.currentFilters = current;
-    }
-    this.retrieveRecords();
-  }
-
   changeTableLimit(event: any): void {
     this.tableSettings.displayAmount = event.target.value === '' ? 0 : event.target.value;
     this.retrieveRecords();
-    this.allRowsSelected = false;
   }
 
   refresh(): void {
@@ -517,26 +506,6 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
-  //TODO: fix on backend
-  getShortenedTableHeaderNames(fullName: string): string {
-    if (this.shortenedTableHeaders.has(fullName)) {
-      return this.shortenedTableHeaders.get(fullName) as string;
-    }
-    return fullName;
-  }
-
-  getTableSpacing(): string {
-    return `${this.tableSpacing * 0.25}em 0 ${this.tableSpacing * 0.25}em 0`;
-  }
-
-  getFontSize(): string {
-    return `${this.defaultFontSize + this.tableSpacing * this.fontSizeSpacingModifier}pt`;
-  }
-
-  getCheckBoxSize(): string {
-    return `${this.defaultCheckBoxSize + this.tableSpacing}px`;
-  }
-
   setUniqueOptions(data: any): void {
     for (const headerName of this.currentView.metadataNames as string[]) {
       const lowerHeaderName = headerName.toLowerCase();
@@ -578,25 +547,6 @@ export class TableComponent implements OnInit, OnDestroy {
         return 1;
       }
       return a.localeCompare(b);
-    });
-  }
-
-  calculateViewDropDownWidth(): void {
-    if (this.views) {
-      let longestViewName: string = '';
-      for (const view of this.views) {
-        if (view.name.length > longestViewName.length) {
-          longestViewName = view.name;
-        }
-      }
-      this.viewDropdownBoxWidth = `${longestViewName.length / 2}rem`;
-    }
-  }
-
-  loadReportInProgressThreshold(): void {
-    this.httpService.getReportsInProgressThresholdTime().subscribe({
-      next: (time: number) => (this.reportsInProgressThreshold = time),
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
