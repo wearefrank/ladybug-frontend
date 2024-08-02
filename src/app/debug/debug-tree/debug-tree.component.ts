@@ -1,12 +1,10 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
-import { HelperService } from '../../shared/services/helper.service';
 import { catchError, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
 import {
   CreateTreeItem,
-  FileTreeItem,
   FileTreeOptions,
   NgSimpleFileTree,
   NgSimpleFileTreeModule,
@@ -60,7 +58,6 @@ export class DebugTreeComponent implements OnDestroy {
   };
 
   constructor(
-    private helperService: HelperService,
     private httpService: HttpService,
     private settingsService: SettingsService,
     private errorHandler: ErrorHandling,
@@ -78,10 +75,6 @@ export class DebugTreeComponent implements OnDestroy {
       this.hideOrShowCheckpointsBasedOnView(value);
     }
     this._currentView = value;
-  }
-
-  get currentView(): View {
-    return this._currentView;
   }
 
   hideOrShowCheckpointsBasedOnView(currentView: View): void {
@@ -102,12 +95,12 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   getTreeReports(): Report[] {
-    let reports: any[] = [];
-    this.tree.getItems().forEach((item: FileTreeItem) => {
+    const reports: Report[] = [];
+    for (const item of this.tree.getItems()) {
       if (item.originalValue.storageId != undefined) {
         reports.push(item.originalValue);
       }
-    });
+    }
     return reports;
   }
 
@@ -119,7 +112,6 @@ export class DebugTreeComponent implements OnDestroy {
           this.removeAllReportsButOne();
         }
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -157,13 +149,9 @@ export class DebugTreeComponent implements OnDestroy {
     const optional: OptionalParameters = { childrenKey: 'checkpoints', pathAttributes: ['name', 'storageId', 'uid'] };
     const path: string = this.tree.addItem(newReport, optional);
     this.tree.selectItem(path);
-    if (this.currentView) {
-      this.hideOrShowCheckpointsBasedOnView(this.currentView);
+    if (this._currentView) {
+      this.hideOrShowCheckpointsBasedOnView(this._currentView);
     }
-  }
-
-  selectReport(value: FileTreeItem): void {
-    this.selectReportEvent.emit(value.originalValue);
   }
 
   removeReport(report: any): void {
@@ -174,14 +162,6 @@ export class DebugTreeComponent implements OnDestroy {
     this.closeEntireTreeEvent.emit();
     this.tree.clearItems();
     this.lastReport = null;
-  }
-
-  expandAll(): void {
-    this.tree.expandAll();
-  }
-
-  collapseAll(): void {
-    this.tree.collapseAll();
   }
 
   changeSearchTerm(event: KeyboardEvent): void {
