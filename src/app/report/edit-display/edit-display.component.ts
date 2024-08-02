@@ -109,7 +109,7 @@ export class EditDisplayComponent {
       next: (response: TestResult): void => {
         this.toastService.showSuccess('Report rerun successful');
         this.rerunResult = response;
-        this.debugTab.refresh();
+        this.debugTab.refresh([reportId]);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -204,8 +204,8 @@ export class EditDisplayComponent {
         response.report.xml = response.xml;
         this.report = response.report;
         this.saveReportEvent.next(this.report);
-        this.editor.setNewReport(UpdateReportUtil.isUpdateCheckpoint(body) ? body.checkpointMessage : this.report.xml);
         this.disableEditing();
+        this.debugTab.refresh([+storageId]);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });

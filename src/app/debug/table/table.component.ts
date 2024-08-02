@@ -114,7 +114,6 @@ export class TableComponent implements OnInit, OnDestroy {
   };
 
   showMultipleFiles?: boolean;
-  currentFilters: Map<string, string> = new Map<string, string>();
   showFilterError: boolean = false;
   filterErrorDetails: Map<string, string> = new Map<string, string>();
   hasTimedOut: boolean = false;
@@ -181,6 +180,8 @@ export class TableComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(filterContextSubscription);
+    const refresh = this.debugTab.refresh$.subscribe(() => this.refresh());
+    this.subscriptions.add(refresh);
   }
 
   setTableSpacing(value: number): void {
