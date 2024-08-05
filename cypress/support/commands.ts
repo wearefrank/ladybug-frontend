@@ -39,8 +39,8 @@ declare global {
       clickRowInTable(index: number): Chainable;
       checkFileTreeLength(length: number): Chainable;
       refreshApp(): Chainable;
-      getTableBody(): Chainable;
       assertDebugTableLength(length: number): Chainable;
+      getTableRows(): Chainable;
     }
   }
 }
@@ -188,7 +188,7 @@ Cypress.Commands.add('clickFirstFileInFileTree' as keyof Chainable, (): void => 
 });
 
 Cypress.Commands.add('clickRowInTable' as keyof Chainable, (index: number): void => {
-  cy.get('[data-cy-debug="tableBody"]').get('tbody').find('tr').eq(index).click();
+  cy.getTableRows().eq(index).click();
 });
 
 Cypress.Commands.add('checkFileTreeLength' as keyof Chainable, (length: number): void => {
@@ -201,14 +201,14 @@ Cypress.Commands.add('refreshApp' as keyof Chainable, (): void => {
   cy.wait('@apiCall').then(() => cy.log('All api requests have completed'));
 });
 
-Cypress.Commands.add('getTableBody' as keyof Chainable, (): Chainable => {
-  return cy.get('[data-cy-debug="tableBody"]').get('tbody');
+Cypress.Commands.add('getTableRows' as keyof Chainable, (): Chainable => {
+  return cy.get('[data-cy-debug="tableRow"]');
 });
 
 Cypress.Commands.add('assertDebugTableLength' as keyof Chainable, (length: number): void => {
   length === 0
-    ? cy.getTableBody().find('tr').should('not.exist')
-    : cy.getTableBody().find('tr').should('have.length', length);
+    ? cy.getTableRows().should('not.exist')
+    : cy.getTableRows().should('have.length', length);
 });
 
 function interceptGetApiCall(alias: string): void {
