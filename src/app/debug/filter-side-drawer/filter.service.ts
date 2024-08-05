@@ -32,8 +32,8 @@ export class FilterService {
       for (let [key, value] of context) {
         const metadataType: string | undefined = this.metadataTypes.get(key);
         if (
-          (metadataType == 'timestamp' && !this.isValidTimestamp(value)) ||
-          ((metadataType == 'int' || metadataType == 'long') && !this.isValidNumber(value))
+          (this.isTimestamp(metadataType) && !this.isValidTimestamp(value)) ||
+          (this.isNumber(metadataType) && !this.isValidNumber(value))
         ) {
           this.filterErrors.set(<string>this.metadataTypes.get(key), value);
           errorFound = true;
@@ -88,6 +88,14 @@ export class FilterService {
   enableFilterError(inputFilter: Map<string, string>): void {
     this.filterErrors = inputFilter;
     this.filterErrorSubject.next([true, this.filterErrors]);
+  }
+
+  isTimestamp(metadataType: string | undefined): boolean {
+    return metadataType === 'timestamp';
+  }
+
+  isNumber(metadataType: string | undefined): boolean {
+    return metadataType === 'int' || metadataType === 'long';
   }
 
   isValidTimestamp(userInput: string): boolean {
