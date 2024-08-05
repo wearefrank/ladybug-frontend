@@ -10,17 +10,17 @@ describe('Testing table', () => {
   afterEach(() => cy.resetApp());
 
   it('Sorting the table by column name', () => {
-    cy.getTableRow(0).contains("Simple report");
+    cy.getTableRows().first().contains("Simple report");
     cy.get('[data-cy-debug="metadataLabel"]').eq(3).click();
-    cy.getTableRow(0).contains("Another simple report");
+    cy.getTableRows().first().contains("Another simple report");
     cy.get('[data-cy-debug="metadataLabel"]').eq(3).click();
-    cy.getTableRow(0).contains("Simple report");
+    cy.getTableRows().first().contains("Simple report");
   });
 
   it('Refresh to reset table to default', () => {
-    cy.getTableRow(0).contains("Simple report");
+    cy.getTableRows().first().contains("Simple report");
     cy.get('[data-cy-debug="metadataLabel"]').eq(3).click();
     cy.get('[data-cy-debug="refresh"]').click()
-    cy.getTableRow(0).contains("Simple report");
+    cy.getTableRows().first().contains("Simple report");
   })
 });
