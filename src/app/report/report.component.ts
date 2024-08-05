@@ -80,8 +80,8 @@ export class ReportComponent implements AfterViewInit, OnInit {
     this.displayComponent.closeReport(false);
   }
 
-  closeReport(currentReport: any): void {
-    this.debugTreeComponent.removeReport(currentReport);
+  closeReport(): void {
+    this.debugTreeComponent.removeReport(this.reportData?.report);
   }
 
   getIdFromPath(): string {
