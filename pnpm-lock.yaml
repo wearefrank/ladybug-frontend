@@ -145,8 +145,8 @@ importers:
         specifier: ^4
         version: 4.6.6
       '@types/diff-match-patch':
-        specifier: 1.0.32
-        version: 1.0.32
+        specifier: 1.0.36
+        version: 1.0.36
       '@types/jasmine':
         specifier: 5.1.4
         version: 5.1.4
@@ -1906,8 +1906,8 @@ packages:
   '@types/cors@2.8.17':
     resolution: {integrity: sha512-8CGDvrBj1zgo2qE+oS3pOCyYNqCPryMWY2bGfwA0dcfopWGgxs+78df0Rs3rc9THP4JkOhLsAa+15VdpAqkcUA==}
 
-  '@types/diff-match-patch@1.0.32':
-    resolution: {integrity: sha512-bPYT5ECFiblzsVzyURaNhljBH2Gh1t9LowgUwciMrNAhFewLkHT2H0Mto07Y4/3KCOGZHRQll3CTtQZ0X11D/A==}
+  '@types/diff-match-patch@1.0.36':
+    resolution: {integrity: sha512-xFdR6tkm0MWvBfO8xXCSsinYxHcqkQUlcHeSpMC2ukzOb6lwQAfDmW+Qt0AvlGd8HpsS28qKsB+oPeJn9I39jg==}
 
   '@types/eslint-scope@3.7.7':
     resolution: {integrity: sha512-MzMFlSLBqNF2gcHWO0G1vP/YQyfvrxZ0bF+u7mzUdZ1/xK4A4sru+nraZz5i3iEIk1l1uyicaDVTB4QbbEkAYg==}
@@ -8013,7 +8013,7 @@ snapshots:
     dependencies:
       '@types/node': 20.14.11
 
-  '@types/diff-match-patch@1.0.32': {}
+  '@types/diff-match-patch@1.0.36': {}
 
   '@types/eslint-scope@3.7.7':
     dependencies:
