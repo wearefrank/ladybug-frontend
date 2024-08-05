@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError, Observable, of, Subscription } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
@@ -21,9 +21,7 @@ import { ErrorHandling } from '../shared/classes/error-handling.service';
 import { BooleanToStringPipe } from '../shared/pipes/boolean-to-string.pipe';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestReportsService } from './test-reports.service';
-import { TestTableBodyComponent } from './test-table-body/test-table-body.component';
-import { ReportData } from '../shared/interfaces/report-data';
-import { View } from '../shared/interfaces/view';
+import { TestTableComponent } from './test-table/test-table.component';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -43,10 +41,10 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     CloneModalComponent,
     DeleteModalComponent,
     BooleanToStringPipe,
-    TestTableBodyComponent,
+    TestTableComponent,
   ],
 })
-export class TestComponent implements OnInit {
+export class TestComponent implements OnInit, OnDestroy {
   static readonly ROUTER_PATH: string = 'test';
 
   protected reports?: TestListItem[];
@@ -56,6 +54,7 @@ export class TestComponent implements OnInit {
   protected amountOfSelectedReports: number = 0;
 
   private updatePathAction: UpdatePathAction = 'move';
+  private subscriptions: Subscription = new Subscription();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
@@ -66,7 +65,6 @@ export class TestComponent implements OnInit {
     private httpService: HttpService,
     private helperService: HelperService,
     private toastService: ToastService,
-    private tabService: TabService,
     private errorHandler: ErrorHandling,
     private testReportsService: TestReportsService,
   ) {
@@ -75,8 +73,32 @@ export class TestComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.subscribeToSubscriptions();
     this.loadData();
     localStorage.removeItem('generatorEnabled');
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribeFromSubscriptions();
+  }
+
+  subscribeToSubscriptions(): void {
+    const amountSelectedSubscription: Subscription = this.testReportsService.amountSelected$.subscribe({
+      next: (amount: number): void => {
+        this.amountOfSelectedReports = amount;
+        if (this.amountOfSelectedReports === this.reports?.length) {
+          this.setCheckedForAllReports(true);
+        } else {
+          this.setCheckedForAllReports(false);
+        }
+      },
+      error: () => catchError(this.errorHandler.handleError()),
+    });
+    this.subscriptions.add(amountSelectedSubscription);
+  }
+
+  unsubscribeFromSubscriptions(): void {
+    this.subscriptions.unsubscribe();
   }
 
   setStorageIdsFromLocalStorage(): void {
@@ -191,22 +213,6 @@ export class TestComponent implements OnInit {
     };
   }
 
-  openReport(storageId: number): void {
-    this.httpService.getReport(storageId, this.testReportsService.storageName).subscribe({
-      next: (report: Report): void => {
-        const reportData: ReportData = {
-          report: report,
-          currentView: {
-            storageName: this.testReportsService.storageName,
-            metadataNames: this.testReportsService.metadataNames,
-          } as View,
-        };
-        this.tabService.openNewTab(reportData);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-  }
-
   openDeleteModal(): void {
     const reportsToBeDeleted: TestListItem[] = this.getSelectedReports();
     if (reportsToBeDeleted.length > 0) {
@@ -251,35 +257,6 @@ export class TestComponent implements OnInit {
     }
   }
 
-  compareReports(report: TestListItem): void {
-    if (report.reranReport) {
-      const tabId: string = this.helperService.createCompareTabId(
-        report.reranReport.originalReport,
-        report.reranReport.runResultReport,
-      );
-      this.tabService.openNewCompareTab({
-        id: tabId,
-        viewName: 'compare',
-        originalReport: report.reranReport.originalReport,
-        runResultReport: report.reranReport.runResultReport,
-      });
-    }
-  }
-
-  replaceReport(report: TestListItem): void {
-    this.toastService.showWarning('Sorry this is not implemented as of now');
-    // this.httpService.replaceReport(report.storageId, this.storageName).subscribe({
-    //   next: (value) => {
-    //     this.httpService.getReport(report.storageId, this.storageName).subscribe({
-    //       next: (response: Report): void => {
-    //         report = { ...response };
-    //       },
-    //     });
-    //   },
-    //   error: () => catchError(this.errorHandler.handleError()),
-    // });
-  }
-
   copySelected(): void {
     if (this.reports) {
       const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
@@ -299,18 +276,6 @@ export class TestComponent implements OnInit {
       this.amountOfSelectedReports++;
     } else {
       this.amountOfSelectedReports--;
-    }
-  }
-
-  toggleSelectAll(): void {
-    if (this.reports) {
-      if (this.amountOfSelectedReports === this.reports.length) {
-        this.setCheckedForAllReports(false);
-        this.amountOfSelectedReports = 0;
-      } else {
-        this.setCheckedForAllReports(true);
-        this.amountOfSelectedReports = this.reports.length;
-      }
     }
   }
 
@@ -364,10 +329,6 @@ export class TestComponent implements OnInit {
   matches(report: TestListItem): boolean {
     const name = report.path + report.name;
     return new RegExp(`(/)?${this.currentFilter}.*`).test(name);
-  }
-
-  sortByName(reports: TestListItem[]): TestListItem[] {
-    return reports.sort((a, b) => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
   }
 
   getSelectedReports(): TestListItem[] {

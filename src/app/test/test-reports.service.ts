@@ -7,18 +7,20 @@ import { Observable, ReplaySubject, Subject } from 'rxjs';
   providedIn: 'root',
 })
 export class TestReportsService {
+  private testReportsSubject: Subject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
+  private amountSelectedSubject: Subject<number> = new Subject<number>();
   metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
   storageName: string = 'Test';
-  private testReportsSubject: Subject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
   testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
+  amountSelected$: Observable<number> = this.amountSelectedSubject.asObservable();
 
   constructor(private httpService: HttpService) {
     this.getReports();
   }
 
-  getReports() {
+  getReports(): void {
     this.httpService.getTestReports(this.metadataNames, this.storageName).subscribe({
-      next: (response: TestListItem[]) => {
+      next: (response: TestListItem[]): void => {
         this.testReportsSubject.next(this.sortByName(response));
       },
     });
@@ -28,5 +30,9 @@ export class TestReportsService {
     return reports.sort((a: TestListItem, b: TestListItem): number =>
       a.name > b.name ? 1 : a.name === b.name ? 0 : -1,
     );
+  }
+
+  setAmountSelected(amount: number): void {
+    this.amountSelectedSubject.next(amount);
   }
 }

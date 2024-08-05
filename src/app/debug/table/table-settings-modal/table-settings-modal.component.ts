@@ -170,7 +170,7 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   saveResponseSetting(response: any): void {
-    const generatorStatus = response.generatorEnabled ? 'true' : 'false';
+    const generatorStatus = response.generatorEnabled ? 'Enabled' : 'Disabled';
     localStorage.setItem('generatorEnabled', generatorStatus);
     this.settingsForm.get('generatorEnabled')?.setValue(generatorStatus);
     this.settingsForm.get('regexFilter')?.setValue(response.regexFilter);
