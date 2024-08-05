@@ -1,27 +1,27 @@
 @if (tableSettings.tableLoaded) {
-  <div data-cy-debug="root" class="row" id="tableContent">
+  <div data-cy-debug="root" class="table-wrapper">
     <app-filter-side-drawer [currentView]="currentView"></app-filter-side-drawer>
     @if (this.showFilterError) {
       <div class="alert alert-danger" role="alert" data-cy-debug="filter-error-message">
         Filter Error: {{ this.handleFilterErrorContext() }}
       </div>
     }
-    <div class="row d-flex align-items-center">
+    <div class="button-row">
       <button data-cy-debug="refresh" class="btn btn-info btn-table" title="Refresh" (click)="refresh()">
         <i class="fa fa-refresh"></i>
       </button>
       <button data-cy-debug="openSettings" class="btn btn-info btn-table" title="Settings"
-              (click)="openSettingsModal()">
+              (click)="tableSettingsModal.open()">
         <i class="fa fa-cog"></i>
       </button>
       <button data-cy-debug="filter" class="btn btn-info btn-table" title="Filter" (click)="toggleFilter()">
         <i class="fa fa-filter"></i>
       </button>
       <div ngbDropdown title="Download">
-        <button data-cy-debug="download" class="btn btn-info my-2 mx-1" id="dropdownDownloadTable" ngbDropdownToggle>
+        <button ngbDropdownToggle data-cy-debug="download" class="btn btn-info">
           <i class="fa fa-download px-2"></i><span class="caret"></span>
         </button>
-        <div ngbDropdownMenu aria-labelledby="dropdownDownloadTable">
+        <div ngbDropdownMenu>
           <button ngbDropdownItem (click)="downloadReports(true, true)">
             XML & Binary
           </button>
@@ -33,20 +33,18 @@
           </button>
         </div>
       </div>
-      <button data-cy-debug="upload" id="UploadButton" class="btn btn-info my-2 mx-1 px-3"
-              title="Upload" (click)="uploadFileTable.click()">
+      <button data-cy-debug="upload" class="btn btn-info" title="Upload" (click)="uploadFileTable.click()">
         <i class="fa fa-upload"></i>
-        <input #uploadFileTable type="file" id="uploadFileTable" (change)="uploadReports($event)">
+        <input #uploadFileTable type="file" class="upload" (change)="uploadReports($event)">
       </button>
-      <button data-cy-debug="openSelected" class="btn btn-info btn-table" title="Open Selected Reports"
-              (click)="openSelected()">
+      <button data-cy-debug="openSelected" class="btn btn-info btn-table" title="Open Selected Reports" (click)="openSelected()">
         Open Selected
       </button>
       <button data-cy-debug="delete" class="btn btn-info btn-table" title="Delete selected reports" (click)="deleteSelected()">
         <i class="fa fa-trash"></i>
       </button>
 
-      <div class="input-group input-group-container">
+      <div class="input-group w-auto">
         <input data-cy-debug="displayAmount" type="number" class="form-control input-field"
                [ngModel]="tableSettings.displayAmount" (keydown.enter)="changeTableLimit($event)"
                (blur)="changeTableLimit($event)">
@@ -55,50 +53,37 @@
         </div>
       </div>
 
-      <div class="my-2 mx-1 px-2">
-        <select #dropdown data-cy-change-view-dropdown class="form-control" (change)="changeView(+dropdown.value)">
-          @for (view of views; track view.name; let index = $index) {
-            <option [style.width]="viewDropdownBoxWidth" [selected]="currentView.name === view.name"
-                    [value]="index">{{ view.name }}
-            </option>
-          }
-        </select>
-      </div>
+      <app-view-dropdown [currentView]="currentView" [views]="views" (viewChanged)="changeView($event)"/>
 
-      <div data-cy-debug-in-progress-counter class="btn btn-static my-2 mx-1 px-2"
+      <div data-cy-debug-in-progress-counter class="btn btn-static"
       >Reports in progress: {{ tableSettings.numberOfReportsInProgress }}
       </div>
       @if (tableSettings.numberOfReportsInProgress > 0) {
-        <div class="row">
-          <div class="btn btn-static my-2 mx-1 px-2"> Estimated memory usage of reports in
+        <span class="progress-buttons">
+          <div class="btn btn-static "> Estimated memory usage of reports in
             progress: {{ tableSettings.estimatedMemoryUsage }} Bytes
           </div>
-          <div class="col input-group my-2 mx-1 px-2">
-            <input #openIndex type="number" min="0" class="form-control" data-cy-debug="openInProgressNo"
+          <div class="input-group w-auto h-auto">
+            <input #openIndex type="number" min="0" class="form-control input-field" data-cy-debug="openInProgressNo"
                    [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress"/>
             <div class="input-group-append">
-              <button data-cy-debug="openInProgress" class="btn btn-info" type="button" id="openReportInProgressButton"
+              <button data-cy-debug="openInProgress" class="btn btn-info" type="button"
                       (click)="openReportInProgress(+openIndex.value)">Open
               </button>
             </div>
           </div>
-          <div class="col input-group my-2 mx-1 px-2">
-            <input #deleteIndex type="number" min="0" class="form-control" id="deleteInProgressNo"
+          <div class="input-group w-auto">
+            <input #deleteIndex type="number" min="0" class="form-control input-field"
                    [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress"/>
             <div class="input-group-append">
-              <button class="btn btn-info" type="button" id="deleteReportInProgressButton"
+              <button class="btn btn-info" type="button"
                       (click)="deleteReportInProgress(+deleteIndex.value)"><i class="fa fa-trash"></i></button>
             </div>
           </div>
-        </div>
+        </span>
       }
 
-      @if (hasTimedOut) {
-        <h4 class="progress-report-timout">[One or more reports are in progress for more
-          than {{ this.reportsInProgressThreshold / 1000 / 60 }} minutes]</h4>
-      }
-
-      @switch (getAmountOfReportsSelected()) {
+      @switch (amountOfSelectedReports) {
         @case (1) {
           <button data-cy-debug="openReportTab" class="btn btn-info btn-table" title="Open In New Tab"
                   (click)="openReportInTab()">
@@ -111,18 +96,29 @@
           </button>
         }
       }
-      <app-active-filters class="ml-2" [activeFilters]="currentFilters" (click)="toggleFilter()"></app-active-filters>
+      <app-active-filters class="ml-2" [activeFilters]="tableSettings.currentFilters" (click)="toggleFilter()"></app-active-filters>
     </div>
-    <div data-cy-debug="table" class="table-responsive" id="metadataTable">
-      <table data-cy-debug="tableBody" mat-table class="table mb-0" matSort [style.font-size]="getFontSize()" [dataSource]="tableDataSource">
+    @if (hasTimedOut) {
+      <h4 class="progress-report-timeout">[One or more reports are in progress for more
+        than {{ this.reportsInProgressThreshold / 1000 / 60 }} minutes]</h4>
+    }
+    <div data-cy-debug="table" class="table-responsive table-container">
+      <table data-cy-debug="tableBody" mat-table class="table mb-0" matSort [style.font-size]="fontSize" [dataSource]="tableDataSource">
         <!--Header and row container for checkboxes-->
         <ng-container matColumnDef="select">
           <th mat-header-cell class="table-row-checkbox header-padding" *matHeaderCellDef>
-            <input data-cy-debug="selectAll" type="checkbox" class="vertical-middle" title="Select all rows" [checked]="allRowsSelected" [style.width]="getCheckBoxSize()"
-                   [style.height]="getCheckBoxSize()" (click)="selectAllRows()">
+            <input
+              data-cy-debug="selectAll"
+              type="checkbox"
+              class="vertical-middle"
+              title="Select all rows"
+              [checked]="amountOfSelectedReports === tableSettings.reportMetadata.length && amountOfSelectedReports > 0"
+              [style.width]="checkboxSize"
+              [style.height]="checkboxSize"
+              (click)="toggleSelectAll()">
           </th>
-          <td mat-cell class="table-row-checkbox" *matCellDef="let row" [style.padding]="getTableSpacing()">
-            <input type="checkbox" [checked]="row.checked" [style.width]="getCheckBoxSize()" [style.height]="getCheckBoxSize()" (click)="toggleCheck(row, $event)">
+          <td mat-cell class="table-row-checkbox" *matCellDef="let row" [style.padding]="tableSpacing">
+            <input type="checkbox" [checked]="row.checked" [style.width]="checkboxSize" [style.height]="checkboxSize" (click)="toggleCheck(row, $event)">
           </td>
         </ng-container>
 
@@ -134,11 +130,11 @@
                 class="table-id-cell header-cell header-padding"
                 *matHeaderCellDef
                 [title]="header">
-              {{ getShortenedTableHeaderNames(header) }}
+              {{ shortenedTableHeaders.get(header) ?? header }}
             </th>
             <td mat-cell class="table-cell"
                 *matCellDef="let row"
-                [style.padding]="getTableSpacing()"
+                [style.padding]="tableSpacing"
                 [title]="header">
               {{ getMetadata(row, getMetadataNameFromHeader(header))|tableCellShortener }}
             </td>
@@ -146,7 +142,7 @@
         }
 
         <!--Values are passed to their respective header and row elements-->
-        <tr mat-header-row *matHeaderRowDef="getDisplayedColumnNames(currentView.metadataLabels)"></tr>
+        <tr mat-header-row *matHeaderRowDef="getDisplayedColumnNames(currentView.metadataLabels); sticky: true"></tr>
         <tr mat-row class="table-row"
             *matRowDef="let row; let rowIndex = index; columns: getDisplayedColumnNames(currentView.metadataLabels)"
             [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"
@@ -160,4 +156,3 @@
 }
 
 <app-table-settings-modal (openLatestReportsEvent)="openLatestReports($event)"></app-table-settings-modal>
-<app-toast></app-toast>

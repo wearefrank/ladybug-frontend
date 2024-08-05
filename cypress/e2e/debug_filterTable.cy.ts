@@ -1,5 +1,5 @@
-describe('Table size and toggle filter', () => {
-  before(() => cy.resetApp())
+describe('Tests for table filter', () => {
+  before(() => cy.resetApp());
 
   beforeEach(() => {
     cy.createReport();
@@ -7,11 +7,9 @@ describe('Table size and toggle filter', () => {
     cy.initializeApp();
   });
 
-  afterEach(() => {
-    cy.resetApp();
-  });
+  afterEach(() => cy.resetApp());
 
-  it('Typing in a table size and retyping it', () => {
+  it('Should change table size when changing display amount', () => {
     // We only assume here that the default is two or more.
     cy.assertDebugTableLength(2);
     cy.get('[data-cy-debug="displayAmount"]').type('{selectAll}{del}{enter}');
@@ -30,7 +28,7 @@ describe('Table size and toggle filter', () => {
     cy.assertDebugTableLength(2);
   });
 
-  it('After clicking filter button, the filter side drawer should appear', () => {
+  it('Should show filter side drawer when clicking the filter button', () => {
     cy.get('[data-cy-debug="filter-side-drawer"]').should('not.exist');
     cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="filter-side-drawer"]').should('be.visible');
@@ -42,7 +40,7 @@ describe('Table size and toggle filter', () => {
     cy.get('[data-cy-debug="filter-side-drawer"]').should('not.exist');
   });
 
-  it('Type in a filter parameter should limit the records viewed in the record table', () => {
+  it('Should limit viewed records in table when entering value in filter parameter', () => {
     cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="tableFilter"]').eq(3).type('(Simple report){enter}');
     cy.assertDebugTableLength(1);
@@ -54,14 +52,14 @@ describe('Table size and toggle filter', () => {
     cy.assertDebugTableLength(2);
   });
 
-  it('After clicking or typing in the filter text field, an autocomplete menu should show that displays the options of the current filter', () => {
+  it('Should show autocomplete options when partially filling entering the filter parameter', () => {
     cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="tableFilter"]').eq(3).type('test');
     cy.get('[data-cy-debug="matAutocompleteOption"]').should('be.visible');
     cy.assertDebugTableLength(2);
   });
 
-  it('Giving a wrong type for the filter field should display an error', () => {
+  it('Should display error when entering wrong type for filter header', () => {
     cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="tableFilter"]').eq(0).type('test');
     cy.get('[data-cy-debug="filter-error-message"]').should('be.visible');
@@ -69,7 +67,7 @@ describe('Table size and toggle filter', () => {
     cy.get('[data-cy-debug="filter"]').click();
   });
 
-  it('Selecting an option should update the table and selecting the empty option should reset the text field of the selected filter', () => {
+  it('Should update table when choosing the autocomplete options', () => {
     cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="tableFilter"]').eq(3).type('test');
     cy.get('[data-cy-debug="matAutocompleteOption"]').first().click();
@@ -79,4 +77,13 @@ describe('Table size and toggle filter', () => {
     cy.assertDebugTableLength(2);
     cy.get('[data-cy-debug="filter"]').click();
   });
+
+  it('Should show Simple report when using a wildcard with the input in the filter', () => {
+    cy.get('[data-cy-debug="filter"]').click();
+    cy.get('[data-cy-debug="tableFilter"]').eq(3).type('Simple*');
+    cy.assertDebugTableLength(1);
+    cy.get('[data-cy-debug="clear-filter-btn"]').click()
+    cy.get('[data-cy-debug="tableFilter"]').eq(3).type('*Simple*');
+    cy.assertDebugTableLength(2);
+  })
 });
