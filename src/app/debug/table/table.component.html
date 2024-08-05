@@ -103,7 +103,7 @@
         than {{ this.reportsInProgressThreshold / 1000 / 60 }} minutes]</h4>
     }
     <div data-cy-debug="table" class="table-responsive table-container">
-      <table data-cy-debug="tableBody" mat-table class="table mb-0" matSort [style.font-size]="fontSize" [dataSource]="tableDataSource">
+      <table mat-table class="table mb-0" matSort [style.font-size]="fontSize" [dataSource]="tableDataSource">
         <!--Header and row container for checkboxes-->
         <ng-container matColumnDef="select">
           <th mat-header-cell class="table-row-checkbox header-padding" *matHeaderCellDef>
