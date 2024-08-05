@@ -35,6 +35,7 @@ export class TestTableBodyComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    console.log(this.report);
     if (!this.showStorageIds) {
       this.showStorageIds = false;
     }

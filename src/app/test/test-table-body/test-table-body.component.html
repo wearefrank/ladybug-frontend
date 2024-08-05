@@ -1,56 +1,58 @@
-<tr>
-  <td>
-    <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked"
-           (click)="toggleCheck(report)">
-  </td>
-  @if (showStorageIds) {
+@if (report) {
+  <tr>
     <td>
-      {{ report.storageId }}
+      <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked"
+             (click)="toggleCheck(report)">
     </td>
-  }
-  <td>
-              <span class="buttons">
-                <button
-                  data-cy-test="runReport"
-                  title="Run report"
-                  class="btn btn-info button-width"
-                  (click)="runSubject.next(report)"
-                ><i class="fa fa-play"></i></button>
-                <button
-                  data-cy-test="openReport"
-                  title="Open report"
-                  class="btn btn-info button-width"
-                  (click)="openReport(report.storageId, report.name)"
-                ><i class="fa fa-folder-open"></i></button>
-              </span>
-  </td>
-  <td>
-    {{ getFullPath(report.path, report.name) }}
-  </td>
-  <td>
-    {{ report.description }}
-  </td>
-  <td>
-    @if (report.variables) {
-      <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
+    @if (showStorageIds) {
+      <td>
+        {{ report.storageId }}
+      </td>
     }
-  </td>
-  <td>
-    @if (report.reranReport) {
-      <span data-cy-test="runResult"
-            [style.color]="report.reranReport.color">
-                {{ report.reranReport.resultString }}
-              </span>
-    }
-  </td>
-  <td>
-    @if (report.reranReport) {
+    <td>
       <span class="buttons">
-                  <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
-                          disabled (click)="replaceReport(report)">Replace</button>
-                  <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
-                          (click)="compareReports(report)">Compare</button>
-              </span>
-    }
-  </td>
-</tr>
+        <button
+          data-cy-test="runReport"
+          title="Run report"
+          class="btn btn-info button-width"
+          (click)="runSubject.next(report)"
+        ><i class="fa fa-play"></i></button>
+        <button
+          data-cy-test="openReport"
+          title="Open report"
+          class="btn btn-info button-width"
+          (click)="openReport(report.storageId, report.name)"
+        ><i class="fa fa-folder-open"></i></button>
+      </span>
+    </td>
+    <td>
+      {{ getFullPath(report.path, report.name) }}
+    </td>
+    <td>
+      {{ report.description }}
+    </td>
+    <td>
+      @if (report.variables) {
+        <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
+      }
+    </td>
+    <td>
+      @if (report.reranReport) {
+        <span data-cy-test="runResult"
+              [style.color]="report.reranReport.color">
+                  {{ report.reranReport.resultString }}
+                </span>
+      }
+    </td>
+    <td>
+      @if (report.reranReport) {
+        <span class="buttons">
+                    <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
+                            disabled (click)="replaceReport(report)">Replace</button>
+                    <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
+                            (click)="compareReports(report)">Compare</button>
+                </span>
+      }
+    </td>
+  </tr>
+}
