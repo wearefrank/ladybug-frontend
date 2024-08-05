@@ -1,4 +1,4 @@
-<div class="row" id="testContent">
+<div class="row h-100" >
   <div class="col-3 resizable-horizontal p-2 border-right">
     <app-test-folder-tree (changeFolderEvent)="changeFilter($event)"></app-test-folder-tree>
   </div>
@@ -9,33 +9,15 @@
       <button data-cy-test="refresh" class="btn btn-info" title="ReloadTestReports"
               (click)="loadData()"><i class="fa fa-refresh"></i></button>
       <button class="btn btn-info" title="Reset" (click)="resetRunner()">Reset</button>
-      <button class="btn btn-info" title="Options" (click)="openSettingsModal()"><i class="fa fa-cog"></i></button>
-      <button
-        data-cy-test="selectAll"
-        class="btn btn-info"
-        title="Select All"
-        (click)="setCheckedForAllReports(true)"
-      >Select All
-      </button>
-      <button data-cy-test="deselectAll"
-              class="btn btn-info"
-              title="Deselect All"
-              (click)="setCheckedForAllReports(false)">
-        Deselect All
-      </button>
-      <button data-cy-test="deleteSelected" class="btn btn-info" title="Delete Selected"
-              (click)="openDeleteModal()"><i class="fa fa-trash"></i></button>
-      <button class="btn btn-info" title="Clone report"
-              (click)="openCloneModal()">Clone
-      </button>
-      <button data-cy-test="copySelected" class="btn btn-info" title="Copy Selected"
-              (click)="copySelected()"><i class="fa fa-copy"></i></button>
-      <button data-cy-test="downloadBinary" class="btn btn-info" title="Download Binary"
-              (click)="downloadSelected()"><i class="fa fa-download"></i></button>
+      <button class="btn btn-info" title="Options" (click)="testSettingsModal.open()"><i class="fa fa-cog"></i></button>
+      <button data-cy-test="deleteSelected" class="btn btn-info" title="Delete Selected" (click)="openDeleteModal()"><i class="fa fa-trash"></i></button>
+      <button class="btn btn-info" title="Clone report" (click)="openCloneModal()">Clone</button>
+      <button data-cy-test="copySelected" class="btn btn-info" title="Copy Selected" (click)="copySelected()"><i class="fa fa-copy"></i></button>
+      <button data-cy-test="downloadBinary" class="btn btn-info" title="Download Binary" (click)="downloadSelected()"><i class="fa fa-download"></i></button>
       <button data-cy-test="upload" type="button" class="btn btn-info" title="Upload"
               (click)="uploadFileTest.click()">
         <i class="fa fa-upload"></i>
-        <input #uploadFileTest data-cy-test="uploadFile" type="file" id="uploadFileTest"
+        <input #uploadFileTest data-cy-test="uploadFile" type="file" [hidden]="true"
                (change)="uploadReport($event)">
       </button>
     </div>
@@ -50,17 +32,15 @@
           class="fa fa-copy"></i></button>
       </form>
     </div>
-    @if (generatorEnabled) {
-      <p>Generator is {{ generatorEnabled|booleanToString: 'enabled':'disabled' }}</p>
-    }
 
+    <p>Generator is {{ generatorEnabled|booleanToString: 'enabled':'disabled' }}</p>
 
-    <div class="table-responsive" id="testReportTable">
+    <div class="table-responsive">
       <table class="table table-hover">
         <thead>
         <tr>
           <th>
-            <input data-cy-test="reportChecked" type="checkbox" [checked]="amountOfSelectedReports === reports?.length"
+            <input data-cy-test="toggleSelectAll" type="checkbox" [checked]="amountOfSelectedReports === reports?.length && amountOfSelectedReports > 0"
                    (click)="toggleSelectAll()">
           </th>
           @if (showStorageIds) {
@@ -74,7 +54,7 @@
           <th>Options</th>
         </tr>
         </thead>
-        <tbody data-cy-test="table" id="testReports">
+        <tbody data-cy-test="table">
           @for (report of reports; track report.storageId) {
 
             @if (matches(report)) {
@@ -90,11 +70,18 @@
                 }
                 <td>
                     <span class="buttons">
-                      <button data-cy-test="runReport" title="Run report" class="btn btn-info button-width"
-                              (click)="run(report)"><i class="fa fa-play"></i></button>
-                      <button data-cy-test="openReport" title="Open report" class="btn btn-info button-width"
-                              (click)="openReport(report.storageId, report.name)"><i class="fa fa-folder-open"></i>
-                      </button>
+                      <button
+                        data-cy-test="runReport"
+                        title="Run report"
+                        class="btn btn-info button-width"
+                        (click)="run(report)"
+                      ><i class="fa fa-play"></i></button>
+                      <button
+                        data-cy-test="openReport"
+                        title="Open report"
+                        class="btn btn-info button-width"
+                        (click)="openReport(report.storageId)"
+                      ><i class="fa fa-folder-open"></i></button>
                     </span>
                 </td>
                 <td>
@@ -109,21 +96,25 @@
                   }
                 </td>
                 <td>
-                  @if (getReranReport(report.storageId)) {
+                  @if (report.reranReport) {
                     <span data-cy-test="runResult"
-                          [id]="'runResult#' + report.storageId"
-                          [style.color]="getReranReport(report.storageId)!.color">
-                      {{ getReranReport(report.storageId)!.resultString }}
+                          [style.color]="report.reranReport.color">
+                      {{ report.reranReport.resultString }}
+                    </span>
+                  }
+                  @if (report.error) {
+                    <span style="color: red">
+                      {{ report.error }}
                     </span>
                   }
                 </td>
                 <td>
-                  @if (getReranReport(report.storageId)) {
+                  @if (report.reranReport) {
                     <span class="buttons">
                         <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
-                                (click)="replaceReport(report.storageId)">Replace</button>
+                                disabled (click)="replaceReport(report)">Replace</button>
                         <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
-                                (click)="compareReports(report.storageId)">Compare</button>
+                                (click)="compareReports(report)">Compare</button>
                     </span>
                   }
                 </td>
@@ -134,7 +125,6 @@
       </table>
     </div>
   </div>
-  <app-toast></app-toast>
 </div>
 
 <app-test-settings-modal></app-test-settings-modal>

@@ -1,5 +1,5 @@
 describe('Tests for table filter', () => {
-  before(() => cy.resetApp())
+  before(() => cy.resetApp());
 
   beforeEach(() => {
     cy.createReport();

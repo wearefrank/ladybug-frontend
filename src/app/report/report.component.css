@@ -5,5 +5,5 @@
 }
 
 .right-side {
-  overflow: hidden;
+  overflow-y: hidden !important;
 }

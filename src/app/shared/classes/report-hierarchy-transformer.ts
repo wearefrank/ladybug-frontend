@@ -11,13 +11,13 @@ export class ReportHierarchyTransformer {
   transform(report: Report): Report {
     const checkpoints: Checkpoint[] = report.checkpoints;
     for (const checkpoint of checkpoints) {
-      const iconData: IconData = this.getImage(checkpoint.type, checkpoint.encoding, checkpoint.level);
+      const iconData: IconData = this.getImage(checkpoint.type, checkpoint.encoding ?? '', checkpoint.level);
       checkpoint.icon = iconData.path;
       checkpoint.iconClass = iconData.cssClasses;
 
       if (checkpoint.type === CheckpointType.Startpoint) {
         this.handleStartpoint(checkpoint);
-      } else if (checkpoint.type === CheckpointType.Endpoint) {
+      } else if (checkpoint.type === CheckpointType.Endpoint || checkpoint.type === CheckpointType.Abortpoint) {
         this.handleEndpoint(checkpoint);
       } else {
         this.handleIntermediatePoint(checkpoint);

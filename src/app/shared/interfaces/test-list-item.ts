@@ -6,6 +6,7 @@ export interface TestListItem {
   path: string;
   description: string;
   storageId: number;
-  variables: string;
-  reranReport?: ReranReport;
+  variables?: string;
+  reranReport?: ReranReport | null;
+  error?: string;
 }

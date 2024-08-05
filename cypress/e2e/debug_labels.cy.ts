@@ -13,7 +13,7 @@ describe('Test labels', () => {
     cy.get('[data-cy-debug="openSelected"]').click();
     cy.wait(300);
     cy.checkFileTreeLength(1);
-    testTreeView('Message is null', 'Null String');
+    testTreeView('Message is null');
   });
 
   it('Test label empty string', () => {
@@ -22,16 +22,16 @@ describe('Test labels', () => {
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();
     cy.checkFileTreeLength(1);
-    testTreeView('Message is an empty string', 'Empty String');
+    testTreeView('Message is an empty string');
   });
 });
 
-function testTreeView(reportName, labelString) {
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item .item-name').eq(0).within(
-    function($node) {
+function testTreeView(reportName: string): void {
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item .item-name')
+    .eq(0)
+    .within(function ($node) {
       cy.wrap($node).should('contain', reportName);
-    },
-  );
+    });
 
   cy.get('[data-cy-debug-tree="root"] > app-tree-item > div')
     .eq(0)

@@ -21,14 +21,11 @@ import { Transformation } from '../../../shared/interfaces/transformation';
 export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;
   showMultipleAtATime: boolean = false;
-  showMultipleAtATimeSubscription!: Subscription;
+  private subscriptions: Subscription = new Subscription();
   tableSpacing: number = 1;
   spacingOptions: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-  tableSpacingSubscription!: Subscription;
   showSearchWindowOnLoad: boolean = true;
-  showSearchWindowOnLoadSubscription!: Subscription;
   prettifyOnLoad: boolean = true;
-  prettifyOnLoadSubscription!: Subscription;
   settingsForm: UntypedFormGroup = new UntypedFormGroup({
     showMultipleFilesAtATime: new UntypedFormControl(this.showMultipleAtATime),
     showSearchWindowOnLoad: new UntypedFormControl(this.showSearchWindowOnLoad),
@@ -53,50 +50,42 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribeAll();
+    this.subscriptions.unsubscribe();
   }
 
   subscribeToSettingsServiceObservables(): void {
-    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
+    const showMultipleSubscription: Subscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
       next: (value: boolean): void => {
         this.showMultipleAtATime = value;
         this.settingsForm.get('showMultipleFilesAtATime')?.setValue(this.showMultipleAtATime);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
-    this.tableSpacingSubscription = this.settingsService.tableSpacingObservable.subscribe({
+    this.subscriptions.add(showMultipleSubscription);
+    const tableSpacingSubscription: Subscription = this.settingsService.tableSpacingObservable.subscribe({
       next: (value: number): void => {
         this.tableSpacing = value;
         this.settingsForm.get('tableSpacing')?.setValue(this.tableSpacing);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
-    this.showSearchWindowOnLoadSubscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe({
+    this.subscriptions.add(tableSpacingSubscription);
+    const showSearchWindowOnLoad: Subscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe({
       next: (value: boolean): void => {
         this.showSearchWindowOnLoad = value;
         this.settingsForm.get('showSearchWindowOnLoad')?.setValue(this.showSearchWindowOnLoad);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
-    this.prettifyOnLoadSubscription = this.settingsService.prettifyOnLoadObservable.subscribe({
+    this.subscriptions.add(showSearchWindowOnLoad);
+    const prettifyOnLoad: Subscription = this.settingsService.prettifyOnLoadObservable.subscribe({
       next: (value: boolean) => {
         this.prettifyOnLoad = value;
         this.settingsForm.get('prettifyOnLoad')?.setValue(this.prettifyOnLoad);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
-  }
-
-  unsubscribeAll() {
-    if (this.showMultipleAtATimeSubscription) {
-      this.showMultipleAtATimeSubscription.unsubscribe();
-    }
-    if (this.tableSpacingSubscription) {
-      this.tableSpacingSubscription.unsubscribe();
-    }
-    if (this.showSearchWindowOnLoadSubscription) {
-      this.showSearchWindowOnLoadSubscription.unsubscribe();
-    }
+    this.subscriptions.add(prettifyOnLoad);
   }
 
   setShowMultipleAtATime(): void {
