@@ -64,6 +64,7 @@ import { Checkpoint } from '../../shared/interfaces/checkpoint';
 })
 export class EditDisplayComponent {
   protected readonly ReportUtil = ReportUtil;
+  protected readonly Number: NumberConstructor = Number;
   @Input() id: string = '';
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
@@ -284,10 +285,4 @@ export class EditDisplayComponent {
       this.disableEditing();
     }
   }
-
-  setNewReport(message: string) {
-    this.editor.setNewReport(message);
-  }
-
-  protected readonly Number: NumberConstructor = Number;
 }
