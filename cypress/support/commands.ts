@@ -10,8 +10,8 @@
 // ***********************************************
 
 import Chainable = Cypress.Chainable;
-import { Interception } from 'cypress/types/net-stubbing';
 import JQueryWithSelector = Cypress.JQueryWithSelector;
+import { Interception } from 'cypress/types/net-stubbing';
 
 declare global {
   namespace Cypress {

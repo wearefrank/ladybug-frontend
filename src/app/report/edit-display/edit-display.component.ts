@@ -13,7 +13,7 @@ import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 import { Report } from '../../shared/interfaces/report';
-import { MetadataTableComponent } from '../../shared/components/display-table/metadata-table.component';
+import { MetadataTableComponent } from '../../shared/components/metadata-table/metadata-table.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
@@ -34,6 +34,8 @@ import { View } from '../../shared/interfaces/view';
 import { ReportUtil } from '../../shared/util/report-util';
 import { EncodingButtonComponent } from './encoding-button/encoding-button.component';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
+import { TestReportsService } from '../../test/test-reports.service';
+import { DebugTabService } from '../../debug/debug-tab.service';
 
 @Component({
   selector: 'app-edit-display',
@@ -88,6 +90,8 @@ export class EditDisplayComponent {
     private helperService: HelperService,
     private toastService: ToastService,
     private errorHandler: ErrorHandling,
+    private testReportsService: TestReportsService,
+    private debugTab: DebugTabService,
   ) {}
 
   showReport(node: Report | Checkpoint): void {
@@ -121,6 +125,7 @@ export class EditDisplayComponent {
       next: (response: TestResult): void => {
         this.toastService.showSuccess('Report rerun successful');
         this.rerunResult = response;
+        this.debugTab.refresh([reportId]);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -240,6 +245,7 @@ export class EditDisplayComponent {
         this.saveReportEvent.next(this.selectedNode);
         this.editor.setNewReport(message);
         this.disableEditing();
+        this.debugTab.refresh([+storageId]);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -274,6 +280,7 @@ export class EditDisplayComponent {
       [this.currentView.storageName]: [storageId!],
     };
     this.httpService.copyReport(data, 'Test').subscribe({
+      next: () => this.testReportsService.getReports(),
       error: catchError(this.errorHandler.handleError()),
     }); // TODO: storage is hardcoded, fix issue #196 for this
   }

@@ -4,8 +4,7 @@ export interface TableSettings {
   reportMetadata: Report[];
   displayAmount: number;
   showFilter: boolean;
-  filterHeaders: string[];
-  filterValues: string[];
+  currentFilters: Map<string, string>;
   tableLoaded: boolean;
   numberOfReportsInProgress: number;
   estimatedMemoryUsage: string;

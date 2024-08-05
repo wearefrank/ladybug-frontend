@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
-import { HelperService } from '../../shared/services/helper.service';
-import { catchError, Observable, Subscription } from 'rxjs';
+import { catchError, firstValueFrom, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
 import {
@@ -10,7 +9,6 @@ import {
   FileTreeOptions,
   NgSimpleFileTree,
   NgSimpleFileTreeModule,
-  OptionalParameters,
   TreeItemComponent,
 } from 'ng-simple-file-tree';
 import {
@@ -25,6 +23,7 @@ import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarch
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 import { View } from '../../shared/interfaces/view';
+import { DebugTabService } from '../debug-tab.service';
 
 @Component({
   selector: 'app-debug-tree',
@@ -46,8 +45,9 @@ export class DebugTreeComponent implements OnDestroy {
   @Input() adjustWidth: Observable<void> = {} as Observable<void>;
   @Output() selectReportEvent = new EventEmitter<Report>();
   @Output() closeEntireTreeEvent = new EventEmitter<any>();
+
   showMultipleAtATime!: boolean;
-  showMultipleAtATimeSubscription!: Subscription;
+  subscriptions: Subscription = new Subscription();
 
   private _currentView!: View;
   private lastReport?: Report | null;
@@ -60,16 +60,30 @@ export class DebugTreeComponent implements OnDestroy {
   };
 
   constructor(
-    private helperService: HelperService,
     private httpService: HttpService,
     private settingsService: SettingsService,
     private errorHandler: ErrorHandling,
+    private debugTab: DebugTabService,
   ) {
-    this.subscribeToSettingsServiceObservables();
+    this.subscribeToSubscriptions();
   }
 
   ngOnDestroy() {
-    this.showMultipleAtATimeSubscription.unsubscribe();
+    this.subscriptions.unsubscribe();
+  }
+
+  subscribeToSubscriptions(): void {
+    const showMultipleSubscription: Subscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
+      next: (value: boolean) => {
+        this.showMultipleAtATime = value;
+        if (!this.showMultipleAtATime) {
+          this.removeAllReportsButOne();
+        }
+      },
+    });
+    this.subscriptions.add(showMultipleSubscription);
+    const refresh: Subscription = this.debugTab.refresh$.subscribe((ids: number[]) => this.refreshReports(ids));
+    this.subscriptions.add(refresh);
   }
 
   @Input({ required: true }) set currentView(value: View) {
@@ -78,10 +92,6 @@ export class DebugTreeComponent implements OnDestroy {
       this.hideOrShowCheckpointsBasedOnView(value);
     }
     this._currentView = value;
-  }
-
-  get currentView(): View {
-    return this._currentView;
   }
 
   hideOrShowCheckpointsBasedOnView(currentView: View): void {
@@ -102,25 +112,13 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   getTreeReports(): Report[] {
-    let reports: any[] = [];
-    this.tree.getItems().forEach((item: FileTreeItem) => {
+    const reports: Report[] = [];
+    for (const item of this.tree.items) {
       if (item.originalValue.storageId != undefined) {
         reports.push(item.originalValue);
       }
-    });
+    }
     return reports;
-  }
-
-  subscribeToSettingsServiceObservables(): void {
-    this.showMultipleAtATimeSubscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
-      next: (value: boolean) => {
-        this.showMultipleAtATime = value;
-        if (!this.showMultipleAtATime) {
-          this.removeAllReportsButOne();
-        }
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
   }
 
   hideCheckpoints(unmatched: string[], items: TreeItemComponent[]): void {
@@ -154,16 +152,11 @@ export class DebugTreeComponent implements OnDestroy {
       this.tree.clearItems();
     }
     const newReport: CreateTreeItem = new ReportHierarchyTransformer().transform(report);
-    const optional: OptionalParameters = { childrenKey: 'checkpoints', pathAttributes: ['name', 'storageId', 'uid'] };
-    const path: string = this.tree.addItem(newReport, optional);
+    const path: string = this.tree.addItem(newReport);
     this.tree.selectItem(path);
-    if (this.currentView) {
-      this.hideOrShowCheckpointsBasedOnView(this.currentView);
+    if (this._currentView) {
+      this.hideOrShowCheckpointsBasedOnView(this._currentView);
     }
-  }
-
-  selectReport(value: FileTreeItem): void {
-    this.selectReportEvent.emit(value.originalValue);
   }
 
   removeReport(report: any): void {
@@ -174,14 +167,6 @@ export class DebugTreeComponent implements OnDestroy {
     this.closeEntireTreeEvent.emit();
     this.tree.clearItems();
     this.lastReport = null;
-  }
-
-  expandAll(): void {
-    this.tree.expandAll();
-  }
-
-  collapseAll(): void {
-    this.tree.collapseAll();
   }
 
   changeSearchTerm(event: KeyboardEvent): void {
@@ -195,13 +180,37 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   selectReportIfPresent(report: Report): boolean {
-    for (let item of this.tree.getItems()) {
-      const treeReport = item.originalValue as Report;
+    for (let item of this.tree.items) {
+      const treeReport: Report = item.originalValue;
       if (treeReport.storageId === report.storageId) {
         this.tree.selectItem(item.path);
         return true;
       }
     }
     return false;
+  }
+
+  async refreshReports(ids: number[]): Promise<void> {
+    const selectedReportId = this.tree.getSelected().originalValue.storageId;
+    let lastSelectedReport: FileTreeItem | undefined;
+    for (let i = 0; i < this.tree.items.length; i++) {
+      const report: Report = this.tree.items[i].originalValue as Report;
+      if (ids.includes(report.storageId)) {
+        const fileItem: FileTreeItem = await this.getNewReport(report);
+        if (selectedReportId === report.storageId) {
+          lastSelectedReport = fileItem;
+        }
+        this.tree.items[i] = fileItem;
+      }
+    }
+    if (lastSelectedReport) {
+      this.tree.selectItem(lastSelectedReport.path);
+    }
+  }
+
+  async getNewReport(report: Report): Promise<FileTreeItem> {
+    const response: Report = await firstValueFrom(this.httpService.getReport(report.storageId, report.storageName));
+    const transformedReport: Report = new ReportHierarchyTransformer().transform(response);
+    return this.tree.createItemToFileItem(transformedReport);
   }
 }
