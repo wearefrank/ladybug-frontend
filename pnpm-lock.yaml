@@ -121,8 +121,8 @@ importers:
         specifier: ^18.1.1
         version: 18.1.1(@angular/compiler-cli@18.1.1(@angular/compiler@18.1.1(@angular/core@18.1.1(rxjs@7.4.0)(zone.js@0.14.8)))(typescript@5.5.4))(@angular/localize@18.1.1(@angular/compiler-cli@18.1.1(@angular/compiler@18.1.1(@angular/core@18.1.1(rxjs@7.4.0)(zone.js@0.14.8)))(typescript@5.5.4))(@angular/compiler@18.1.1(@angular/core@18.1.1(rxjs@7.4.0)(zone.js@0.14.8))))(@types/node@20.14.11)(chokidar@3.6.0)(karma@6.4.2)(typescript@5.5.4)
       '@angular-eslint/builder':
-        specifier: 18.1.0
-        version: 18.1.0(eslint@8.57.0)(typescript@5.5.4)
+        specifier: 18.2.0
+        version: 18.2.0(eslint@8.57.0)(typescript@5.5.4)
       '@angular-eslint/eslint-plugin':
         specifier: 18.1.0
         version: 18.1.0(@typescript-eslint/utils@7.16.1(eslint@8.57.0)(typescript@5.5.4))(eslint@8.57.0)(typescript@5.5.4)
@@ -286,8 +286,8 @@ packages:
     resolution: {integrity: sha512-ElzCfiYW9P3xPRNRbPRSrOTGm+G7X8ta1ce3srqi00yPX39Y0WSM95SACqqF8j9dxL6BqazBMyAgNQUaVSbWjw==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
-  '@angular-eslint/builder@18.1.0':
-    resolution: {integrity: sha512-ttcp+M3XDqt4lpj4C9XWO/JJY5iC1kNWmK1FUtd1YR0+1mLhrZTbakFYFe06qoiRqb4MX0WW2oUvonh52y5/NQ==}
+  '@angular-eslint/builder@18.2.0':
+    resolution: {integrity: sha512-2NsrYqvVVha2XUUXm1T0XshW0d1TzYU6rXNCTut1t8qS/uinbxNiszKzJN1TuUsXFwpZfITRnEY3cjaqJDlsdA==}
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0
       typescript: '*'
@@ -5694,7 +5694,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-eslint/builder@18.1.0(eslint@8.57.0)(typescript@5.5.4)':
+  '@angular-eslint/builder@18.2.0(eslint@8.57.0)(typescript@5.5.4)':
     dependencies:
       '@nx/devkit': 19.5.1(nx@19.5.1)
       eslint: 8.57.0
