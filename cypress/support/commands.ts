@@ -41,6 +41,7 @@ declare global {
       refreshApp(): Chainable;
       getTableBody(): Chainable;
       assertDebugTableLength(length: number): Chainable;
+      getTableRow(index: number): Chainable;
     }
   }
 }
@@ -203,6 +204,10 @@ Cypress.Commands.add('refreshApp' as keyof Chainable, (): void => {
 
 Cypress.Commands.add('getTableBody' as keyof Chainable, (): Chainable => {
   return cy.get('[data-cy-debug="tableBody"]').get('tbody');
+});
+
+Cypress.Commands.add('getTableRow' as keyof Chainable, (index: number): Chainable => {
+  return cy.get('[data-cy-debug="tableRow"]').eq(index);
 });
 
 Cypress.Commands.add('assertDebugTableLength' as keyof Chainable, (length: number): void => {

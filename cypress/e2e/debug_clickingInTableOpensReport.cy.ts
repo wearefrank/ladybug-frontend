@@ -13,14 +13,14 @@ describe('Clicking a report', () => {
 
   it('Selecting report should show a tree', () => {
     cy.get('[data-cy-debug-tree="buttons"]').should('not.exist');
-    cy.getTableBody().find('tr').first().click();
+    cy.getTableRow(0).click();
     cy.get('[data-cy-debug-tree="buttons"]').should('be.visible');
   });
 
   it('Selecting report should show display', () => {
     cy.get('[data-cy-debug-editor="buttons"]').should('not.exist');
     cy.get('[data-cy-element-name="editor"]').should('not.exist');
-    cy.getTableBody().find('tr').first().click();
+    cy.getTableRow(0).click();
     cy.get('[data-cy-debug-editor="buttons"]').should('be.visible');
     cy.get('[data-cy-element-name="editor"]').should('be.visible');
   });
