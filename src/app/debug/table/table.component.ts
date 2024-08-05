@@ -362,11 +362,19 @@ export class TableComponent implements OnInit, OnDestroy {
       );
       return;
     }
-    for (const report of this.tableSettings.reportMetadata) {
-      if (report.checked) {
-        this.openReport(report.storageId);
-      }
-    }
+    const selectedReports: number[] = this.tableSettings.reportMetadata
+      .filter((report: Report) => report.checked)
+      .map((report: Report) => report.storageId);
+    this.httpService.getReports(selectedReports, this.currentView.storageName).subscribe({
+      next: (data: Record<string, CompareReport>) => {
+        for (const report of selectedReports) {
+          data[report].report.xml = data[report].xml;
+          data[report].report.storageName = this.currentView.storageName;
+          this.openReportEvent.next(data[report].report);
+        }
+      },
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 
   deleteSelected(): void {
