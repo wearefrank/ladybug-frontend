@@ -67,7 +67,7 @@ export class TestComponent implements OnInit, OnDestroy {
     private errorHandler: ErrorHandling,
     private testReportsService: TestReportsService,
   ) {
-    this.setStorageIdsFromLocalStorage();
+    this.getStorageIdsFromLocalStorage();
     this.setGeneratorStatusFromLocalStorage();
   }
 
@@ -100,8 +100,12 @@ export class TestComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  setStorageIdsFromLocalStorage(): void {
+  getStorageIdsFromLocalStorage(): void {
     this.showStorageIds = localStorage.getItem('showReportStorageIds') === 'true';
+  }
+
+  updateShowStorageIds(show: boolean): void {
+    this.showStorageIds = show;
   }
 
   setGeneratorStatusFromLocalStorage(): void {

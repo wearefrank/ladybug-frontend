@@ -42,6 +42,6 @@
   </div>
 </div>
 
-<app-test-settings-modal></app-test-settings-modal>
+<app-test-settings-modal (updateShowStorageIds)="updateShowStorageIds($event)"></app-test-settings-modal>
 <app-clone-modal (cloneReportEvent)="getCopiedReports()"></app-clone-modal>
 <app-delete-modal (confirmDeleteEvent)="deleteSelected()"></app-delete-modal>

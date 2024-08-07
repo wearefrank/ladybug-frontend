@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 
@@ -15,6 +15,8 @@ export class TestSettingsModalComponent {
     showReportStorageIds: new UntypedFormControl(false),
     showCheckpointIds: new UntypedFormControl(false),
   });
+  @Output() updateShowStorageIds: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() updateShowCheckpointIds: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private modalService: NgbModal) {}
 
@@ -24,13 +26,19 @@ export class TestSettingsModalComponent {
   }
 
   saveSettings(): void {
-    localStorage.setItem('showReportStorageIds', this.settingsForm.get('showReportStorageIds')?.value.toString());
-    localStorage.setItem('showCheckpointIds', this.settingsForm.get('showCheckpointIds')?.value.toString());
+    const showStorageIds: string = this.settingsForm.get('showReportStorageIds')?.value.toString();
+    const showCheckpointIds: string = this.settingsForm.get('showCheckpointIds')?.value.toString();
+    localStorage.setItem('showReportStorageIds', showStorageIds);
+    localStorage.setItem('showCheckpointIds', showCheckpointIds);
+    this.updateShowStorageIds.next(showStorageIds === 'true');
+    this.updateShowCheckpointIds.next(showCheckpointIds === 'true');
   }
 
   resetSettings(): void {
     this.settingsForm.get('showReportStorageIds')?.setValue(false);
     this.settingsForm.get('showCheckpointIds')?.setValue(false);
+    this.updateShowStorageIds.next(false);
+    this.updateShowCheckpointIds.next(false);
   }
 
   loadSettings(): void {
