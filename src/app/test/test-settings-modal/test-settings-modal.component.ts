@@ -16,7 +16,6 @@ export class TestSettingsModalComponent {
     showCheckpointIds: new UntypedFormControl(false),
   });
   @Output() updateShowStorageIds: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() updateShowCheckpointIds: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private modalService: NgbModal) {}
 
@@ -31,14 +30,12 @@ export class TestSettingsModalComponent {
     localStorage.setItem('showReportStorageIds', showStorageIds);
     localStorage.setItem('showCheckpointIds', showCheckpointIds);
     this.updateShowStorageIds.next(showStorageIds === 'true');
-    this.updateShowCheckpointIds.next(showCheckpointIds === 'true');
   }
 
   resetSettings(): void {
     this.settingsForm.get('showReportStorageIds')?.setValue(false);
     this.settingsForm.get('showCheckpointIds')?.setValue(false);
     this.updateShowStorageIds.next(false);
-    this.updateShowCheckpointIds.next(false);
   }
 
   loadSettings(): void {
