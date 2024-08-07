@@ -177,7 +177,7 @@ export class EditDisplayComponent {
         name: 'message',
         originalValue: node.message,
         // @ts-ignore
-        difference: new DiffMatchPatch().diff_main(this.report.message ?? '', this.editor?.getValue()),
+        difference: new DiffMatchPatch().diff_main(node.message ?? '', this.editor?.getValue()),
       });
     }
     if (reportDifferences.length > 0) {
@@ -223,18 +223,25 @@ export class EditDisplayComponent {
 
   openStubDifferenceModal(stubStrategy: number): void {
     let reportDifferences: ReportDifference[] = [];
-    if (this.selectedNode) {
+    const stubStrategies: string[] = [
+      'Use report level stub strategy',
+      'Always stub this checkpoint',
+      'Never stub this checkpoint',
+    ];
+    if (this.selectedNode && this.selectedNode.stub !== +stubStrategy) {
       reportDifferences.push({
         name: 'message',
-        originalValue: this.selectedNode.stub.toString(),
+        originalValue: stubStrategies[this.selectedNode.stub + 1],
         // @ts-ignore
-        difference: new DiffMatchPatch().diff_main(this.report.stub.toString() ?? '', stubStrategy),
+        difference: stubStrategies[+stubStrategy + 1],
       });
     }
-    this.differenceModal.open(reportDifferences, 'save');
+    if (reportDifferences.length > 0) {
+      this.differenceModal.open(reportDifferences, 'save', true);
+    }
   }
 
-  saveChanges(): void {
+  saveChanges(stubChange: boolean): void {
     const node: Report | Checkpoint = this.selectedNode!;
     let checkpointId: string = '';
     let storageId: string;

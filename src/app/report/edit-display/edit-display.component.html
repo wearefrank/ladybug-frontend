@@ -108,7 +108,7 @@
 />
 
 @if (selectedNode) {
-  <app-difference-modal (saveChangesEvent)="saveChanges()" (discardChangesEvent)="discardChanges()" (rerunEvent)="rerunReport()"/>
+  <app-difference-modal (saveChangesEvent)="saveChanges($event)" (discardChangesEvent)="discardChanges()" (rerunEvent)="rerunReport()"/>
 }
 
 <ng-template #possibilitiesModal let-modal>
