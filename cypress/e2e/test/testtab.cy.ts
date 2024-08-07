@@ -1,4 +1,4 @@
-describe('About the Test tab', () => {
+describe('Test the Test tab', () => {
   before(() => {
     cy.resetApp();
   });
@@ -13,7 +13,7 @@ describe('About the Test tab', () => {
 
   afterEach(() => cy.resetApp());
 
-  it('Test deleting a report', () => {
+  it('Should delete a report', () => {
     cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="table"]').contains('Simple report').parent('tr').find('[data-cy-test="reportChecked"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
@@ -23,13 +23,13 @@ describe('About the Test tab', () => {
     cy.get('[data-cy-delete-modal="confirm"]').click();
   });
 
-  it('Test select all by deleting', () => {
+  it('Should delete selected reports', () => {
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
     cy.checkTestTableNumRows(0);
   });
 
-  it('Test deselect all', () => {
+  it('Should delete nothing when deselecting all reports', () => {
     cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.checkTestTableNumRows(2);

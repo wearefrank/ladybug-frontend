@@ -1,28 +1,26 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError, Observable, of, Subscription } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { ToastService } from '../shared/services/toast.service';
-import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
-import { ReportData } from '../shared/interfaces/report-data';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../shared/components/button/button.component';
 import { TestListItem } from '../shared/interfaces/test-list-item';
-import { View } from '../shared/interfaces/view';
 import { OptionsSettings } from '../shared/interfaces/options-settings';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
 import { BooleanToStringPipe } from '../shared/pipes/boolean-to-string.pipe';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestReportsService } from './test-reports.service';
+import { TestTableComponent } from './test-table/test-table.component';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -42,18 +40,20 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     CloneModalComponent,
     DeleteModalComponent,
     BooleanToStringPipe,
+    TestTableComponent,
   ],
 })
-export class TestComponent implements OnInit {
+export class TestComponent implements OnInit, OnDestroy {
   static readonly ROUTER_PATH: string = 'test';
 
-  protected reports?: TestListItem[];
+  protected reports: TestListItem[] = new Array<TestListItem>();
   protected generatorEnabled: boolean = false;
   protected currentFilter: string = '';
   protected showStorageIds?: boolean;
   protected amountOfSelectedReports: number = 0;
 
   private updatePathAction: UpdatePathAction = 'move';
+  private subscriptions: Subscription = new Subscription();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
@@ -64,20 +64,49 @@ export class TestComponent implements OnInit {
     private httpService: HttpService,
     private helperService: HelperService,
     private toastService: ToastService,
-    private tabService: TabService,
     private errorHandler: ErrorHandling,
     private testReportsService: TestReportsService,
   ) {
-    this.setStorageIdsFromLocalStorage();
+    this.getStorageIdsFromLocalStorage();
     this.setGeneratorStatusFromLocalStorage();
   }
 
   ngOnInit(): void {
+    this.subscribeToSubscriptions();
     this.loadData();
+    this.matches();
+    localStorage.removeItem('generatorEnabled');
   }
 
-  setStorageIdsFromLocalStorage(): void {
+  ngOnDestroy(): void {
+    this.unsubscribeFromSubscriptions();
+  }
+
+  subscribeToSubscriptions(): void {
+    const amountSelectedSubscription: Subscription = this.testReportsService.amountSelected$.subscribe({
+      next: (amount: number): void => {
+        this.amountOfSelectedReports = amount;
+        if (this.amountOfSelectedReports === this.reports.length) {
+          this.setCheckedForAllReports(true);
+        } else if (this.amountOfSelectedReports === 0) {
+          this.setCheckedForAllReports(false);
+        }
+      },
+      error: () => catchError(this.errorHandler.handleError()),
+    });
+    this.subscriptions.add(amountSelectedSubscription);
+  }
+
+  unsubscribeFromSubscriptions(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  getStorageIdsFromLocalStorage(): void {
     this.showStorageIds = localStorage.getItem('showReportStorageIds') === 'true';
+  }
+
+  updateShowStorageIds(show: boolean): void {
+    this.showStorageIds = show;
   }
 
   setGeneratorStatusFromLocalStorage(): void {
@@ -105,30 +134,29 @@ export class TestComponent implements OnInit {
           this.testFileTreeComponent.setData(this.reports);
           this.testFileTreeComponent.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
         }
+        this.matches();
+        this.refresh();
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
   openCloneModal(): void {
-    if (this.reports) {
-      if (this.getSelectedReports().length === 1) {
-        this.cloneModal.open(this.getSelectedReports()[0]);
-      } else {
-        this.toastService.showWarning('Make sure only one report is selected at a time');
-      }
+    if (this.getSelectedReports().length === 1) {
+      this.cloneModal.open(this.getSelectedReports()[0]);
+    } else {
+      this.toastService.showWarning('Make sure only one report is selected at a time');
     }
   }
 
   addCopiedReports(metadata: TestListItem[]): void {
-    if (this.reports) {
-      const amountAdded: number = metadata.length - this.reports.length;
-      if (amountAdded > 0) {
-        for (let index = this.reports.length; index <= metadata.length - 1; index++) {
-          if (this.matches(metadata[index])) metadata[index].checked = true;
-          this.reports.push(metadata[index]);
-        }
+    const amountAdded: number = metadata.length - this.reports.length;
+    if (amountAdded > 0) {
+      for (let index = this.reports.length; index <= metadata.length - 1; index++) {
+        if (metadata[index].showReport) metadata[index].checked = true;
+        this.reports.push(metadata[index]);
       }
+      this.refresh();
     }
   }
 
@@ -142,11 +170,10 @@ export class TestComponent implements OnInit {
   }
 
   resetRunner(): void {
-    if (this.reports) {
-      for (const report of this.reports) {
-        report.reranReport = null;
-      }
+    for (const report of this.reports) {
+      report.reranReport = null;
     }
+    this.refresh();
   }
 
   run(report: TestListItem): void {
@@ -170,6 +197,7 @@ export class TestComponent implements OnInit {
     for (const report of this.getSelectedReports()) {
       this.run(report);
     }
+    this.refresh();
   }
 
   createReranReport(result: TestResult): ReranReport {
@@ -188,22 +216,6 @@ export class TestComponent implements OnInit {
     };
   }
 
-  openReport(storageId: number): void {
-    this.httpService.getReport(storageId, this.testReportsService.storageName).subscribe({
-      next: (report: Report): void => {
-        const reportData: ReportData = {
-          report: report,
-          currentView: {
-            storageName: this.testReportsService.storageName,
-            metadataNames: this.testReportsService.metadataNames,
-          } as View,
-        };
-        this.tabService.openNewTab(reportData);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-  }
-
   openDeleteModal(): void {
     const reportsToBeDeleted: TestListItem[] = this.getSelectedReports();
     if (reportsToBeDeleted.length > 0) {
@@ -212,14 +224,12 @@ export class TestComponent implements OnInit {
   }
 
   deleteSelected(): void {
-    if (this.reports) {
-      this.httpService
-        .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
-        .subscribe({
-          next: () => this.testReportsService.getReports(),
-          error: () => catchError(this.errorHandler.handleError()),
-        });
-    }
+    this.httpService
+      .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
+      .subscribe({
+        next: () => this.testReportsService.getReports(),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
   }
 
   downloadSelected(): void {
@@ -246,48 +256,19 @@ export class TestComponent implements OnInit {
         error: () => catchError(this.errorHandler.handleError()),
       });
     }
-  }
-
-  compareReports(report: TestListItem): void {
-    if (report.reranReport) {
-      const tabId: string = this.helperService.createCompareTabId(
-        report.reranReport.originalReport,
-        report.reranReport.runResultReport,
-      );
-      this.tabService.openNewCompareTab({
-        id: tabId,
-        viewName: 'compare',
-        originalReport: report.reranReport.originalReport,
-        runResultReport: report.reranReport.runResultReport,
-      });
-    }
-  }
-
-  replaceReport(report: TestListItem): void {
-    this.toastService.showWarning('Sorry this is not implemented as of now');
-    // this.httpService.replaceReport(report.storageId, this.storageName).subscribe({
-    //   next: (value) => {
-    //     this.httpService.getReport(report.storageId, this.storageName).subscribe({
-    //       next: (response: Report): void => {
-    //         report = { ...response };
-    //       },
-    //     });
-    //   },
-    //   error: () => catchError(this.errorHandler.handleError()),
-    // });
+    this.refresh();
   }
 
   copySelected(): void {
-    if (this.reports) {
-      const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
-      const data: Record<string, number[]> = {
-        [this.testReportsService.storageName]: copiedIds,
-      };
-      this.httpService.copyReport(data, this.testReportsService.storageName).subscribe({
-        next: () => this.loadData(),
-        error: () => catchError(this.errorHandler.handleError()),
-      });
-    }
+    const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
+    const data: Record<string, number[]> = {
+      [this.testReportsService.storageName]: copiedIds,
+    };
+    this.httpService.copyReport(data, this.testReportsService.storageName).subscribe({
+      next: () => this.loadData(),
+      error: () => catchError(this.errorHandler.handleError()),
+    });
+    this.testReportsService.getReports();
   }
 
   toggleCheck(report: TestListItem): void {
@@ -299,39 +280,27 @@ export class TestComponent implements OnInit {
     }
   }
 
-  toggleSelectAll(): void {
-    if (this.reports) {
-      if (this.amountOfSelectedReports === this.reports.length) {
-        this.setCheckedForAllReports(false);
-        this.amountOfSelectedReports = 0;
-      } else {
-        this.setCheckedForAllReports(true);
-        this.amountOfSelectedReports = this.reports.length;
-      }
-    }
-  }
-
   setCheckedForAllReports(value: boolean): void {
-    if (this.reports) {
-      for (const report of this.reports) {
-        report.checked = value;
-      }
+    for (const report of this.reports) {
+      report.checked = value;
     }
+    this.refresh();
   }
 
   updatePath(): void {
-    if (this.reports) {
-      const reportIds: number[] = this.helperService.getSelectedIds(this.reports);
-      if (reportIds.length > 0) {
-        const path: string = this.transformPath(this.moveToInputModel.value);
-        const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
-        this.httpService.updatePath(reportIds, this.testReportsService.storageName, map).subscribe({
-          next: () => this.loadData(path),
-          error: () => catchError(this.errorHandler.handleError()),
-        });
-      } else {
-        this.toastService.showWarning('No Report Selected!');
-      }
+    const reportIds: number[] = this.helperService.getSelectedIds(this.reports);
+    if (reportIds.length > 0) {
+      const path: string = this.transformPath(this.moveToInputModel.value);
+      const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
+      this.httpService.updatePath(reportIds, this.testReportsService.storageName, map).subscribe({
+        next: () => this.loadData(path),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
+      this.matches();
+      this.testReportsService.getReports();
+      this.refresh();
+    } else {
+      this.toastService.showWarning('No Report Selected!');
     }
   }
 
@@ -340,14 +309,11 @@ export class TestComponent implements OnInit {
   }
 
   changeFilter(filter: string): void {
-    if (this.reports) {
-      const transformedFilter: string =
-        filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
-      this.currentFilter = transformedFilter;
-      for (const report of this.reports) {
-        report.checked = this.matches(report);
-      }
+    this.currentFilter = filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
+    for (const report of this.reports) {
+      report.checked = report.showReport ?? false;
     }
+    this.matches();
   }
 
   transformPath(path: string): string {
@@ -360,33 +326,22 @@ export class TestComponent implements OnInit {
     return path;
   }
 
-  matches(report: TestListItem): boolean {
-    const name = report.path + report.name;
-    return new RegExp(`(/)?${this.currentFilter}.*`).test(name);
-  }
-
-  extractVariables(variables: string): string {
-    if (!variables || variables == 'null') {
-      return '';
+  matches(): void {
+    for (const report of this.reports) {
+      report.showReport = false;
+      if (report.path === null) report.path = '';
+      const name: string = report.path + report.name;
+      if (new RegExp(`(/)?${this.currentFilter}.*`).test(name)) {
+        report.showReport = true;
+      }
     }
-    const map = variables.split('\n');
-    const keys = map[0].split(',');
-    const values = map[1].split(',');
-    let resultString = '';
-    for (let i in keys) {
-      resultString += keys[i] + '=' + values[i] + ', ';
-    }
-    return resultString.slice(0, -2);
-  }
-
-  getFullPath(path: string, name: string): string {
-    if (path) {
-      return `${path.replace(this.currentFilter, '')}${name}`;
-    }
-    return `/${name}`;
   }
 
   getSelectedReports(): TestListItem[] {
     return this.reports?.filter((item: TestListItem) => item.checked) ?? [];
+  }
+
+  refresh(): void {
+    this.reports = [...this.reports];
   }
 }
