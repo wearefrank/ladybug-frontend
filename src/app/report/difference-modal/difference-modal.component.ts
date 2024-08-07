@@ -18,8 +18,9 @@ export type ChangesAction = (typeof changesActionConst)[number];
 export class DifferenceModalComponent {
   protected saveOrDiscardType!: ChangesAction;
   protected reportDifferences?: ReportDifference[];
+  protected stubChange: boolean = false;
   protected activeModal?: NgbModalRef;
-  @Output() saveChangesEvent: Subject<void> = new Subject<void>();
+  @Output() saveChangesEvent: Subject<boolean> = new Subject<boolean>();
   @Output() discardChangesEvent: Subject<void> = new Subject<void>();
   @Output() rerunEvent: Subject<void> = new Subject<void>();
   @ViewChild('modal') protected modal!: TemplateRef<DifferenceModalComponent>;
@@ -29,7 +30,8 @@ export class DifferenceModalComponent {
     private toastService: ToastService,
   ) {}
 
-  open(differences: ReportDifference[], saveOrDiscardType: ChangesAction): void {
+  open(differences: ReportDifference[], saveOrDiscardType: ChangesAction, stubChange?: boolean): void {
+    this.stubChange = !!stubChange;
     this.reportDifferences = differences;
     this.saveOrDiscardType = saveOrDiscardType;
     this.activeModal = this.modalService.open(this.modal, {
@@ -60,7 +62,7 @@ export class DifferenceModalComponent {
 
   onClickSave(): void {
     if (this.saveOrDiscardType === 'save') {
-      this.saveChangesEvent.next();
+      this.saveChangesEvent.next(this.stubChange);
     } else if (this.saveOrDiscardType === 'discard') {
       this.discardChangesEvent.next();
     } else {

@@ -20,11 +20,17 @@
             </div>
             <div class="col text-right" [attr.data-cy-changes-form-after]="part.name">
               <div class="text-center pt-2">After</div>
-              <div class="changeBox text-left p-1 overflow-auto">
-                @for (chunk of part.difference; track chunk[1]) {
-                  <span [style.background-color]="getChunkColorForDifferenceModal(+chunk[0])">{{ chunk[1] }}</span>
-                }
-              </div>
+              @if (stubChange) {
+                <div class="changeBox text-left p-1 overflow-auto"
+                >{{ part.difference }}
+                </div>
+              } @else if (!stubChange) {
+                <div class="changeBox text-left p-1 overflow-auto">
+                  @for (chunk of part.difference; track chunk[1]) {
+                    <span [style.background-color]="getChunkColorForDifferenceModal(+chunk[0])">{{ chunk[1] }}</span>
+                  }
+                </div>
+              }
             </div>
           </div>
         </div>
