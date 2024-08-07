@@ -31,7 +31,7 @@ import { FormsModule } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
-  @Input() reports?: TestListItem[];
+  @Input() reports: TestListItem[] = new Array<TestListItem>();
   @Input() currentFilter: string = '';
   @Input() showStorageIds?: boolean;
   @Output() toggleCheckEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
@@ -50,7 +50,7 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['currentFilter'] || changes['reports']) && this.reports) {
+    if (changes['currentFilter'] || changes['reports']) {
       this.showReport = [];
       this.amountOfSelectedReports = 0;
       for (const report of this.reports) {
@@ -161,12 +161,10 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   toggleSelectAll(): void {
-    if (this.reports) {
-      if (this.amountOfSelectedReports === this.reports.length) {
-        this.testReportsService.setAmountSelected(0);
-      } else {
-        this.testReportsService.setAmountSelected(this.reports.length);
-      }
+    if (this.amountOfSelectedReports === this.reports.length) {
+      this.testReportsService.setAmountSelected(0);
+    } else {
+      this.testReportsService.setAmountSelected(this.reports.length);
     }
   }
 }

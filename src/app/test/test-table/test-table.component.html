@@ -3,7 +3,7 @@
     <thead>
     <tr>
       <th>
-        <input data-cy-test="toggleSelectAll" type="checkbox" [ngModel]="amountOfSelectedReports === reports?.length && amountOfSelectedReports > 0"
+        <input data-cy-test="toggleSelectAll" type="checkbox" [ngModel]="amountOfSelectedReports === reports.length"
                (click)="toggleSelectAll()">
       </th>
       @if (showStorageIds) {
@@ -50,23 +50,25 @@
                 <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
               }
             </td>
-            @if (report.reranReport; as reranReport) {
-              <td>
-                  <span data-cy-test="runResult"
-                        [id]="'runResult#' + report.storageId"
-                        [style.color]="reranReport.color">
-                              {{ reranReport.resultString }}
-                  </span>
-              </td>
-              <td>
-                  <span class="buttons">
-                    <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
-                            (click)="replaceReport(report.storageId)">Replace</button>
-                    <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
-                            (click)="compareReports(report)">Compare</button>
-                  </span>
-              </td>
-            }
+            <td>
+              @if (report.reranReport; as reranReport) {
+                <span data-cy-test="runResult"
+                      [id]="'runResult#' + report.storageId"
+                      [style.color]="reranReport.color">
+                            {{ reranReport.resultString }}
+                </span>
+              }
+            </td>
+            <td>
+              @if (report.reranReport) {
+                <span class="buttons">
+                  <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
+                          (click)="replaceReport(report.storageId)">Replace</button>
+                  <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
+                          (click)="compareReports(report)">Compare</button>
+                </span>
+              }
+            </td>
           </tr>
         }
       }
