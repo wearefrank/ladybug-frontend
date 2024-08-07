@@ -52,7 +52,6 @@ export class TestComponent implements OnInit, OnDestroy {
   protected showStorageIds?: boolean;
   protected amountOfSelectedReports: number = 0;
 
-  private matchedReports: Array<MatchedReportItem> = new Array<MatchedReportItem>();
   private updatePathAction: UpdatePathAction = 'move';
   private subscriptions: Subscription = new Subscription();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
@@ -75,6 +74,7 @@ export class TestComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscribeToSubscriptions();
     this.loadData();
+    this.matches();
     localStorage.removeItem('generatorEnabled');
   }
 
@@ -134,6 +134,7 @@ export class TestComponent implements OnInit, OnDestroy {
           this.testFileTreeComponent.setData(this.reports);
           this.testFileTreeComponent.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
         }
+        this.matches();
         this.refresh();
       },
       error: () => catchError(this.errorHandler.handleError()),
@@ -152,7 +153,7 @@ export class TestComponent implements OnInit, OnDestroy {
     const amountAdded: number = metadata.length - this.reports.length;
     if (amountAdded > 0) {
       for (let index = this.reports.length; index <= metadata.length - 1; index++) {
-        if (this.isMatched(metadata[index])) metadata[index].checked = true;
+        if (metadata[index].showReport) metadata[index].checked = true;
         this.reports.push(metadata[index]);
       }
       this.refresh();
@@ -309,9 +310,10 @@ export class TestComponent implements OnInit, OnDestroy {
 
   changeFilter(filter: string): void {
     this.currentFilter = filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
-    for (const { report, index } of this.reports.map((report: TestListItem, index: number) => ({ report, index }))) {
-      report.checked = this.matchedReports.at(index)?.matched ?? false;
+    for (const report of this.reports) {
+      report.checked = report.showReport ?? false;
     }
+    this.matches();
   }
 
   transformPath(path: string): string {
@@ -325,20 +327,14 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   matches(): void {
-    this.matchedReports = [];
     for (const report of this.reports) {
-      if (report.path === null) report.path = '/';
+      report.showReport = false;
+      if (report.path === null) report.path = '';
       const name: string = report.path + report.name;
-      let matched: boolean = false;
       if (new RegExp(`(/)?${this.currentFilter}.*`).test(name)) {
-        matched = true;
+        report.showReport = true;
       }
-      this.matchedReports.push({ report, matched });
     }
-  }
-
-  isMatched(report: TestListItem): boolean {
-    return this.matchedReports.some((item: MatchedReportItem) => item.report === report && item.matched);
   }
 
   getSelectedReports(): TestListItem[] {
@@ -349,8 +345,3 @@ export class TestComponent implements OnInit, OnDestroy {
     this.reports = [...this.reports];
   }
 }
-
-type MatchedReportItem = {
-  report: TestListItem;
-  matched: boolean;
-};

@@ -36,7 +36,6 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
   @Input() showStorageIds?: boolean;
   @Output() toggleCheckEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
   @Output() runEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
-  protected showReport: boolean[] = [];
   protected amountOfSelectedReports: number = 0;
   private subscriptions: Subscription = new Subscription();
 
@@ -51,15 +50,17 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['currentFilter'] || changes['reports']) {
-      this.showReport = [];
       this.amountOfSelectedReports = 0;
       for (const report of this.reports) {
         if (report.checked) {
           this.amountOfSelectedReports++;
         }
-        this.showReport.push(this.matches(report));
+        if (report.variables) {
+          report.extractedVariables = this.extractVariables(report.variables);
+        }
       }
       this.testReportsService.setAmountSelected(this.amountOfSelectedReports);
+      this.getFullPaths();
     }
   }
 
@@ -85,19 +86,6 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  matches(report: TestListItem): boolean {
-    const name: string = report.path + report.name;
-    return new RegExp(`(/)?${this.currentFilter}.*`).test(name);
-  }
-
-  toggleCheck(report: TestListItem): void {
-    this.toggleCheckEvent.emit(report);
-  }
-
-  run(report: TestListItem): void {
-    this.runEvent.emit(report);
-  }
-
   openReport(storageId: number): void {
     this.httpService.getReport(storageId, this.testReportsService.storageName).subscribe({
       next: (report: Report): void => {
@@ -114,11 +102,13 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
     });
   }
 
-  getFullPath(path: string, name: string): string {
-    if (path) {
-      return `${path.replace(this.currentFilter, '')}${name}`;
+  getFullPaths(): void {
+    for (const report of this.reports) {
+      report.fullPath = '';
+      report.fullPath = report.path
+        ? `${report.path.replace(this.currentFilter, '')}${report.name}`
+        : `/${report.name}`;
     }
-    return `/${name}`;
   }
 
   extractVariables(variables: string): string {

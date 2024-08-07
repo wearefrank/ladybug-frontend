@@ -19,11 +19,11 @@
     </thead>
     <tbody data-cy-test="table" id="testReports">
       @for (report of reports; let index = $index; track report.storageId) {
-        @if (showReport[index]) {
+        @if (report.showReport) {
           <tr>
             <td>
               <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked"
-                     (click)="toggleCheck(report)">
+                     (click)="toggleCheckEvent.next(report)">
             </td>
             @if (showStorageIds) {
               <td>
@@ -33,21 +33,21 @@
             <td>
               <span class="buttons">
                 <button data-cy-test="runReport" title="Run report" class="btn btn-info button-width"
-                        (click)="run(report)"><i class="fa fa-play"></i></button>
+                        (click)="runEvent.next(report)"><i class="fa fa-play"></i></button>
                 <button data-cy-test="openReport" title="Open report" class="btn btn-info button-width"
                         (click)="openReport(report.storageId)"><i class="fa fa-folder-open"></i>
                 </button>
               </span>
             </td>
             <td>
-              {{ getFullPath(report.path, report.name) }}
+              {{ report.fullPath }}
             </td>
             <td>
               {{ report.description }}
             </td>
             <td>
-              @if (report.variables) {
-                <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
+              @if (report.extractedVariables) {
+                <span data-cy-test="variables">{{ report.extractedVariables }}</span>
               }
             </td>
             <td>
