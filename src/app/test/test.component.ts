@@ -52,6 +52,7 @@ export class TestComponent implements OnInit, OnDestroy {
   protected showStorageIds?: boolean;
   protected amountOfSelectedReports: number = 0;
 
+  private matchedReports: Array<MatchedReportItem> = new Array<MatchedReportItem>();
   private updatePathAction: UpdatePathAction = 'move';
   private subscriptions: Subscription = new Subscription();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
@@ -151,7 +152,7 @@ export class TestComponent implements OnInit, OnDestroy {
     const amountAdded: number = metadata.length - this.reports.length;
     if (amountAdded > 0) {
       for (let index = this.reports.length; index <= metadata.length - 1; index++) {
-        if (this.matches(metadata[index])) metadata[index].checked = true;
+        if (this.isMatched(metadata[index])) metadata[index].checked = true;
         this.reports.push(metadata[index]);
       }
       this.refresh();
@@ -294,6 +295,7 @@ export class TestComponent implements OnInit, OnDestroy {
         next: () => this.loadData(path),
         error: () => catchError(this.errorHandler.handleError()),
       });
+      this.matches();
       this.testReportsService.getReports();
       this.refresh();
     } else {
@@ -307,8 +309,8 @@ export class TestComponent implements OnInit, OnDestroy {
 
   changeFilter(filter: string): void {
     this.currentFilter = filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
-    for (const report of this.reports) {
-      report.checked = this.matches(report);
+    for (const { report, index } of this.reports.map((report: TestListItem, index: number) => ({ report, index }))) {
+      report.checked = this.matchedReports.at(index)?.matched ?? false;
     }
   }
 
@@ -322,9 +324,21 @@ export class TestComponent implements OnInit, OnDestroy {
     return path;
   }
 
-  matches(report: TestListItem): boolean {
-    const name = report.path + report.name;
-    return new RegExp(`(/)?${this.currentFilter}.*`).test(name);
+  matches(): void {
+    this.matchedReports = [];
+    for (const report of this.reports) {
+      if (report.path === null) report.path = '/';
+      const name: string = report.path + report.name;
+      let matched: boolean = false;
+      if (new RegExp(`(/)?${this.currentFilter}.*`).test(name)) {
+        matched = true;
+      }
+      this.matchedReports.push({ report, matched });
+    }
+  }
+
+  isMatched(report: TestListItem): boolean {
+    return this.matchedReports.some((item: MatchedReportItem) => item.report === report && item.matched);
   }
 
   getSelectedReports(): TestListItem[] {
@@ -335,3 +349,8 @@ export class TestComponent implements OnInit, OnDestroy {
     this.reports = [...this.reports];
   }
 }
+
+type MatchedReportItem = {
+  report: TestListItem;
+  matched: boolean;
+};
