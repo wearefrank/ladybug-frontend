@@ -253,8 +253,9 @@ export class EditDisplayComponent {
     } else {
       return;
     }
-
-    const body = this.getReportValues(checkpointId);
+    const body = stubChange
+      ? { stub: this.stubStrategy ?? '', checkpointId: checkpointId }
+      : this.getReportValues(checkpointId);
     const message: string = ReportUtil.isReport(node) ? node.xml : node.message;
 
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
