@@ -287,7 +287,9 @@ export class EditDisplayComponent {
   copyReport(): void {
     const node: Report | Checkpoint = this.selectedNode!;
     let storageId: number;
-    storageId = ReportUtil.isReport(node) ? node.storageId : node.storageId ?? Number.parseInt(node.uid.split('#')[0]);
+    storageId = ReportUtil.isReport(node)
+      ? node.storageId
+      : (node.storageId ?? Number.parseInt(node.uid.split('#')[0]));
     const data: Record<string, number[]> = {
       [this.currentView.storageName]: [storageId!],
     };
