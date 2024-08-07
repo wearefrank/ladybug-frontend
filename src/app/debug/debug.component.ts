@@ -1,7 +1,6 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
-import { Subscription, catchError } from 'rxjs';
-import { DebugReportService } from './debug-report.service';
+import { catchError } from 'rxjs';
 import { AngularSplitModule } from 'angular-split';
 import { TableComponent } from './table/table.component';
 import { ReportComponent } from '../report/report.component';
@@ -17,17 +16,14 @@ import { ErrorHandling } from '../shared/classes/error-handling.service';
   standalone: true,
   imports: [TableComponent, AngularSplitModule, ReportComponent],
 })
-export class DebugComponent implements OnInit, OnDestroy {
+export class DebugComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'debug';
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @ViewChild('reportComponent') customReportComponent!: ReportComponent;
   currentView!: View;
   views?: View[];
 
-  private viewSubscription!: Subscription;
-
   constructor(
-    private debugReportService: DebugReportService,
     private httpService: HttpService,
     private toastService: ToastService,
     private errorHandler: ErrorHandling,
@@ -35,12 +31,7 @@ export class DebugComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.retrieveViews();
-    this.subscribeToServices();
     this.retrieveErrorsAndWarnings();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribeAll();
   }
 
   retrieveViews(): void {
@@ -53,19 +44,6 @@ export class DebugComponent implements OnInit, OnDestroy {
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
-  }
-
-  subscribeToServices(): void {
-    this.viewSubscription = this.debugReportService.changeViewObservable.subscribe({
-      next: (view) => (this.currentView = view),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-  }
-
-  unsubscribeAll(): void {
-    if (this.viewSubscription) {
-      this.viewSubscription.unsubscribe();
-    }
   }
 
   addReportToTree(report: Report): void {

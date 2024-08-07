@@ -4,7 +4,7 @@ import { CompareData } from './compare-data';
 import { DiffEditorModel, MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TabService } from '../shared/services/tab.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MetadataTableComponent } from '../shared/components/display-table/metadata-table.component';
+import { MetadataTableComponent } from '../shared/components/metadata-table/metadata-table.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TitleCasePipe } from '@angular/common';
 import { NodeLinkStrategy, nodeLinkStrategyConst } from '../shared/enums/node-link-strategy';
@@ -42,6 +42,9 @@ export class CompareComponent implements AfterViewInit, OnInit {
   };
   protected originalModel: DiffEditorModel = { code: '', language: 'xml' };
   protected modifiedModel: DiffEditorModel = { code: '', language: 'xml' };
+
+  protected leftNode?: Report | Checkpoint;
+  protected rightNode?: Report | Checkpoint;
 
   protected compareData?: CompareData;
 
@@ -89,10 +92,18 @@ export class CompareComponent implements AfterViewInit, OnInit {
     this.compareTreeComponent.createTrees(this.compareData!.originalReport, this.compareData!.runResultReport);
   }
 
+  protected syncLeftAndRight(): void {
+    this.leftNode = this.compareTreeComponent.leftTree.getSelected().originalValue;
+    this.rightNode = this.compareTreeComponent.rightTree.getSelected().originalValue;
+    this.showDifference();
+  }
+
   protected showDifference(): void {
-    const leftSide = this.extractMessage(this.compareTreeComponent.leftTree.getSelected().originalValue);
-    const rightSide = this.extractMessage(this.compareTreeComponent.rightTree.getSelected().originalValue);
-    this.renderDiffs(leftSide, rightSide);
+    if (this.leftNode && this.rightNode) {
+      const leftSide: string = this.extractMessage(this.leftNode);
+      const rightSide: string = this.extractMessage(this.rightNode);
+      this.renderDiffs(leftSide, rightSide);
+    }
   }
 
   private extractMessage(selectedNode: Report | Checkpoint): string {

@@ -21,7 +21,7 @@ export interface Checkpoint {
   typeAsString: string;
   uid: string;
   waitingForStream: boolean;
-  storageId?: string;
+  storageId?: number;
   checkpoints?: Checkpoint[];
   icon?: string;
   iconClass?: string;

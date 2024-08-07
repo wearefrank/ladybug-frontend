@@ -36,7 +36,7 @@ export class CompareTreeComponent {
   @Input({ required: true }) compareData!: CompareData;
   leftReport?: Report;
   rightReport?: Report;
-  left?: Report;
+
   leftTreeOptions: FileTreeOptions = {
     highlightOpenFolders: false,
     folderBehaviourOnClick: 'select',
@@ -45,11 +45,8 @@ export class CompareTreeComponent {
   };
 
   rightTreeOptions: FileTreeOptions = {
-    highlightOpenFolders: false,
-    folderBehaviourOnClick: 'select',
-    expandAllFolders: true,
+    ...this.leftTreeOptions,
     determineFontColor: (item: CreateTreeItem) => this.setRedLabels(item),
-    determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };
 
   createTrees(leftReport: Report, rightReport: Report): void {
@@ -105,9 +102,9 @@ export class CompareTreeComponent {
 
   selectByCheckPointNumber(tree: NgSimpleFileTree, treeItem: Report | Checkpoint): void {
     if (ReportUtil.isReport(treeItem)) {
-      tree.selectItem(tree.getItems()[0].path);
+      tree.selectItem(tree.items[0].path);
     } else if (ReportUtil.isCheckPoint(treeItem)) {
-      this.selectCheckpoint(tree, tree.getItems()[0], treeItem);
+      this.selectCheckpoint(tree, tree.items[0], treeItem);
     }
   }
 

@@ -2,80 +2,80 @@
   <div class="d-flex flex-row justify-content-between align-items-center"
        id="displayButtons">
     <div data-cy-debug-editor="buttons" class="button-row">
-      <button
-        data-cy-debug-editor="close"
-        title="Close"
-        class="btn btn-info"
-        (click)="closeReport(false)"
-      ><i class="fa fa-times"></i></button>
-      @if (!newTab) {
+      @if (selectedNode) {
         <button
-          data-cy-debug-editor="copy"
+          data-cy-debug-editor="close"
+          title="Close"
           class="btn btn-info"
-          title="Copy report to test tab"
-          (click)="copyReport()"
-        ><i class="fa fa-copy"></i></button>
-      }
-      <div ngbDropdown title="Download">
-        <button ngbDropdownToggle class="btn btn-info"><i class="fa fa-download px-2"></i><span class="caret"></span></button>
-        <div ngbDropdownMenu>
-          <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
-          <button ngbDropdownItem (click)="downloadReport(false, true)">
-            XML
-            <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i>
-          </button>
-          <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
+          (click)="closeReport(false)"
+        ><i class="fa fa-times"></i></button>
+        <!--This if condition is necessary to avoid a race condition where storageId will be null-->
+        @if (!newTab && (!Number.isNaN(selectedNode.storageId) || (ReportUtil.isCheckPoint(selectedNode) && selectedNode.uid))) {
+          <button
+            data-cy-debug-editor="copy"
+            class="btn btn-info"
+            title="Copy report to test tab"
+            (click)="copyReport()"
+          ><i class="fa fa-copy"></i></button>
+        }
+        <div ngbDropdown title="Download">
+          <button ngbDropdownToggle class="btn btn-info"><i class="fa fa-download px-2"></i><span class="caret"></span></button>
+          <div ngbDropdownMenu>
+            <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
+            <button ngbDropdownItem (click)="downloadReport(false, true)">
+              XML
+              <i class="fa fa-info-circle" title="Only a binary file can be uploaded again"></i>
+            </button>
+            <button ngbDropdownItem (click)="downloadReport(true, false)">Binary</button>
+          </div>
         </div>
-      </div>
-      <button
-        data-cy-open-metadata-table
-        class="btn btn-info h-fit"
-        title="Open metadata table"
-        (click)="toggleMetadataTable()">
-        {{ metadataTableVisible|booleanToString:'Hide' :'Show' }} metadata
-      </button>
-      <app-toggle-button
-        data-cy-report="toggleEdit"
-        [labels]="{on: 'Edit', off:'View'}"
-        [value]="editingEnabled"
-        (valueChanged)="toggleEditMode($event)"
-      ></app-toggle-button>
-
-      <span class="button-divider">&#124;</span>
-      @if (report.xml) {
         <button
-          data-cy-report="rerun"
-          class="btn btn-info"
-          [title]=" editingEnabled ? 'Please save your changes to rerun the report' : 'Rerun this report'"
-          [disabled]="editingEnabled"
-          (click)="openDifferenceModal('saveRerun')"
-        >Rerun
+          data-cy-open-metadata-table
+          class="btn btn-info h-fit"
+          title="Open metadata table"
+          (click)="toggleMetadataTable()">
+          {{ metadataTableVisible|booleanToString:'Hide' :'Show' }} metadata
         </button>
-      }
-      @if (editingEnabled) {
-        <button
-          data-cy-report="discard"
-          class="btn btn-info"
-          title="Discard Changes"
-          (click)="openDifferenceModal('discard')"
-        ><i class="fa fa-trash"></i></button>
-        <button
-          data-cy-report="save"
-          class="btn btn-info"
-          title="Save"
-          (click)="openDifferenceModal('save')"
-        ><i class="fa fa-save"></i></button>
-      }
-      @if (report.encoding === 'Base64') {
-        <button class="btn btn-info" title="Convert to Base64" (click)="changeEncoding($event)">Base64</button>
-      }
+        <app-toggle-button
+          data-cy-report="toggleEdit"
+          [labels]="{on: 'Edit', off:'View'}"
+          [value]="editingEnabled"
+          (valueChanged)="toggleEditMode($event)"
+        ></app-toggle-button>
 
-      @if (report.stub) {
+        <span class="button-divider">&#124;</span>
+        @if (ReportUtil.isReport(selectedNode)) {
+          <button
+            data-cy-report="rerun"
+            class="btn btn-info"
+            [title]=" editingEnabled ? 'Please save your changes to rerun the report' : 'Rerun this report'"
+            [disabled]="editingEnabled"
+            (click)="openDifferenceModal('saveRerun')"
+          >Rerun
+          </button>
+        }
+        @if (editingEnabled) {
+          <button
+            data-cy-report="discard"
+            class="btn btn-info"
+            title="Discard Changes"
+            (click)="openDifferenceModal('discard')"
+          ><i class="fa fa-trash"></i></button>
+          <button
+            data-cy-report="save"
+            class="btn btn-info"
+            title="Save"
+            (click)="openDifferenceModal('save')"
+          ><i class="fa fa-save"></i></button>
+        }
+        <app-encoding-button [selectedNode]="selectedNode" (updatedMessageEvent)="editor.setNewReport($event)"></app-encoding-button>
+      }
+      @if (ReportUtil.isCheckPoint(selectedNode)) {
         <div class="w-fit mx-1 my-0">
-          <select class="form-control" [(ngModel)]="stubStrategy">
-            <option [value]="-1" [selected]="report.stub === -1">Use report level stub strategy</option>
-            <option [value]="0" [selected]="report.stub === 0">Always stub this checkpoint</option>
-            <option [value]="1" [selected]="report.stub === 1">Never stub this checkpoint</option>
+          <select class="form-control" [(ngModel)]="stubStrategy" (ngModelChange)="openStubDifferenceModal($event)">
+            <option [value]="-1" [selected]="selectedNode.stub === -1">Use report level stub strategy</option>
+            <option [value]="0" [selected]="selectedNode.stub === 0">Always stub this checkpoint</option>
+            <option [value]="1" [selected]="selectedNode.stub === 1">Never stub this checkpoint</option>
           </select>
         </div>
       }
@@ -92,13 +92,13 @@
     <div class="rerun-result" [style.color]="rerunResult.equal ? 'green' : 'red'">{{ rerunResult.info }}</div>
   }
 
-  @if (metadataTableVisible) {
-    <app-display-table [report]="report"/>
+  @if (metadataTableVisible && selectedNode) {
+    <app-metadata-table [report]="selectedNode"/>
   }
 }
 
-@if (editingRootNode) {
-  <app-edit-form [report]="report"/>
+@if (editingRootNode && ReportUtil.isReport(selectedNode)) {
+  <app-edit-form [report]="selectedNode"/>
 }
 <app-custom-editor
   data-cy-report="editor"
@@ -107,7 +107,9 @@
   [readOnlyMode]="!editingChildNode"
 />
 
-<app-difference-modal (saveChangesEvent)="saveChanges()" (discardChangesEvent)="discardChanges()" (rerunEvent)="rerunReport()"/>
+@if (selectedNode) {
+  <app-difference-modal (saveChangesEvent)="saveChanges()" (discardChangesEvent)="discardChanges()" (rerunEvent)="rerunReport()"/>
+}
 
 <ng-template #possibilitiesModal let-modal>
   <div class="modal-header d-flex align-items-center">

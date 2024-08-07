@@ -15,22 +15,21 @@
       class="trees"
       [compareData]="compareData"
       [nodeLinkStrategy]="nodeLinkStrategy"
-      (compareEvent)="showDifference()"
+      (compareEvent)="syncLeftAndRight()"
     />
+    <div class="text-diff-container pl-3 pb-2">
+      @if (leftNode && rightNode) {
+        <div class="d-flex flex-row w-100">
+          <app-metadata-table class="w-50" [report]="leftNode"/>
+          <app-metadata-table class="w-50" [report]="rightNode"/>
+        </div>
+      }
+      <ngx-monaco-diff-editor
+        class="diff-editor"
+        [options]="diffOptions"
+        [originalModel]="originalModel"
+        [modifiedModel]="modifiedModel"
+      />
+    </div>
   }
-  <div class="text-diff-container pl-3 pb-2">
-    @if (compareData) {
-      <div class="d-flex flex-row w-100">
-        <app-display-table class="w-50" [report]="compareData.originalReport"/>
-        <app-display-table class="w-50" [report]="compareData.runResultReport"/>
-      </div>
-    }
-    <ngx-monaco-diff-editor
-      class="diff-editor"
-      [options]="diffOptions"
-      [originalModel]="originalModel"
-      [modifiedModel]="modifiedModel"
-    />
-  </div>
-
 </div>

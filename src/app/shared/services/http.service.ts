@@ -15,6 +15,7 @@ import { UpdateReport } from '../interfaces/update-report';
 import { UpdateCheckpoint } from '../interfaces/update-checkpoint';
 import { UpdateReportResponse } from '../interfaces/update-report-response';
 import { Transformation } from '../interfaces/transformation';
+import { TableSettings } from '../interfaces/table-settings';
 
 @Injectable({
   providedIn: 'root',
@@ -43,19 +44,13 @@ export class HttpService {
     );
   }
 
-  getMetadataReports(
-    limit: number,
-    regexFilter: string[],
-    filterHeader: string[],
-    metadataNames: string[],
-    storage: string,
-  ): Observable<Report[]> {
-    return this.http.get<Report[]>(`api/metadata/${storage}/`, {
+  getMetadataReports(settings: TableSettings, view: View): Observable<Report[]> {
+    return this.http.get<Report[]>(`api/metadata/${view.storageName}/`, {
       params: {
-        limit: limit,
-        filterHeader: filterHeader,
-        filter: regexFilter,
-        metadataNames: metadataNames,
+        limit: settings.displayAmount,
+        filterHeader: [...settings.currentFilters.keys()],
+        filter: [...settings.currentFilters.values()],
+        metadataNames: view.metadataNames,
       },
     });
   }
