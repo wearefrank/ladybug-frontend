@@ -58,12 +58,17 @@
                             {{ reranReport.resultString }}
                 </span>
               }
+              @if (report.error) {
+                <span style="color: red">
+                  {{ report.error }}
+                </span>
+              }
             </td>
             <td>
               @if (report.reranReport) {
                 <span class="buttons">
                   <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
-                          (click)="replaceReport(report.storageId)">Replace</button>
+                          disabled (click)="replaceReport(report.storageId)">Replace</button>
                   <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
                           (click)="compareReports(report)">Compare</button>
                 </span>
