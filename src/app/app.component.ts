@@ -150,4 +150,10 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       this.router.navigate([DebugComponent.ROUTER_PATH]);
     }
   }
+
+  closeTabEvent(tab: Tab, event: MouseEvent) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.closeTab(tab);
+  }
 }

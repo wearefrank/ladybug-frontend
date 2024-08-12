@@ -9,12 +9,10 @@
 
     @for (tab of tabs; track tab) {
       <li class="nav-item" [attr.data-cy-nav-tab]="tab.key">
-        <div class="nav-link" routerLinkActive="active">
-          <a [routerLink]="tab.path">
-            {{ tab.key }}
-          </a>
-          <i class="bi bi-x close-tab" (click)="closeTab(tab)"></i>
-        </div>
+        <a class="nav-link" routerLinkActive="active" [routerLink]="tab.path">
+          <span>{{ tab.key }}</span>
+          <i class="bi bi-x close-tab" (click)="closeTabEvent(tab, $event)"></i>
+        </a>
       </li>
     }
     <li ngbNavItem class="ml-auto my-auto mr-1" id="version">
