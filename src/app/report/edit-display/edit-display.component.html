@@ -73,9 +73,9 @@
       @if (ReportUtil.isCheckPoint(selectedNode)) {
         <div class="w-fit mx-1 my-0">
           <select class="form-control" [(ngModel)]="stubStrategy" (ngModelChange)="openStubDifferenceModal($event)">
-            <option [value]="-1" [selected]="selectedNode.stub === -1">Use report level stub strategy</option>
-            <option [value]="0" [selected]="selectedNode.stub === 0">Always stub this checkpoint</option>
-            <option [value]="1" [selected]="selectedNode.stub === 1">Never stub this checkpoint</option>
+            <option [ngValue]="-1" [selected]="selectedNode.stub === -1">Use report level stub strategy</option>
+            <option [ngValue]="0" [selected]="selectedNode.stub === 0">Always stub this checkpoint</option>
+            <option [ngValue]="1" [selected]="selectedNode.stub === 1">Never stub this checkpoint</option>
           </select>
         </div>
       }

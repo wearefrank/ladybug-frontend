@@ -222,22 +222,26 @@ export class EditDisplayComponent {
   }
 
   openStubDifferenceModal(stubStrategy: number): void {
-    let reportDifferences: ReportDifference[] = [];
-    const stubStrategies: string[] = [
-      'Use report level stub strategy',
-      'Always stub this checkpoint',
-      'Never stub this checkpoint',
-    ];
-    if (this.selectedNode && this.selectedNode.stub !== +stubStrategy) {
-      reportDifferences.push({
-        name: 'message',
-        originalValue: stubStrategies[this.selectedNode.stub + 1],
-        // @ts-ignore
-        difference: stubStrategies[+stubStrategy + 1],
-      });
-    }
-    if (reportDifferences.length > 0) {
-      this.differenceModal.open(reportDifferences, 'save', true);
+    if ((this.selectedNode as Checkpoint).message == this.editor.getValue()) {
+      let reportDifferences: ReportDifference[] = [];
+      const stubStrategies: string[] = [
+        'Use report level stub strategy',
+        'Always stub this checkpoint',
+        'Never stub this checkpoint',
+      ];
+      if (this.selectedNode && this.selectedNode.stub !== +stubStrategy) {
+        reportDifferences.push({
+          name: 'message',
+          originalValue: stubStrategies[this.selectedNode.stub + 1],
+          // @ts-ignore
+          difference: stubStrategies[stubStrategy + 1],
+        });
+      }
+      if (reportDifferences.length > 0) {
+        this.differenceModal.open(reportDifferences, 'save', true);
+      }
+    } else {
+      this.toastService.showWarning('Save or discard your changes before updating the stub strategy');
     }
   }
 
