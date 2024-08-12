@@ -205,6 +205,7 @@ export class TableComponent implements OnInit, OnDestroy {
         value = '';
       }
     }
+    this.tableSettings.currentFilters = new Map<string, string>();
     this.tableSettings.currentFilters = filters;
 
     this.retrieveRecords();
