@@ -256,14 +256,12 @@ export class EditDisplayComponent {
     const body = stubChange
       ? { stub: this.stubStrategy ?? '', checkpointId: checkpointId }
       : this.getReportValues(checkpointId);
-    const message: string = ReportUtil.isReport(node) ? node.xml : node.message;
 
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
       next: (response: UpdateReportResponse) => {
         response.report.xml = response.xml;
         this.selectedNode = response.report;
         this.saveReportEvent.next(this.selectedNode);
-        this.editor.setNewReport(message);
         this.disableEditing();
         this.debugTab.refresh([+storageId]);
       },
