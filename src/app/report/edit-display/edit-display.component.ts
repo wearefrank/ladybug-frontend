@@ -260,7 +260,6 @@ export class EditDisplayComponent {
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
       next: (response: UpdateReportResponse) => {
         response.report.xml = response.xml;
-        this.selectedNode = response.report;
         this.saveReportEvent.next(this.selectedNode);
         this.disableEditing();
         this.debugTab.refresh([+storageId]);
