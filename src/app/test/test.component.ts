@@ -293,12 +293,14 @@ export class TestComponent implements OnInit, OnDestroy {
       const path: string = this.transformPath(this.moveToInputModel.value);
       const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
       this.httpService.updatePath(reportIds, this.testReportsService.storageName, map).subscribe({
-        next: () => this.loadData(path),
+        next: () => {
+          this.loadData(path);
+          this.matches();
+          this.testReportsService.getReports();
+          this.refresh();
+        },
         error: () => catchError(this.errorHandler.handleError()),
       });
-      this.matches();
-      this.testReportsService.getReports();
-      this.refresh();
     } else {
       this.toastService.showWarning('No Report Selected!');
     }
