@@ -24,7 +24,7 @@
                 <div class="changeBox text-left p-1 overflow-auto"
                 >{{ part.difference }}
                 </div>
-              } @else if (!stubChange) {
+              } @else {
                 <div class="changeBox text-left p-1 overflow-auto">
                   @for (chunk of part.difference; track chunk[1]) {
                     <span [style.background-color]="getChunkColorForDifferenceModal(+chunk[0])">{{ chunk[1] }}</span>

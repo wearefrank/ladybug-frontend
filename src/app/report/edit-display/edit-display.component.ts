@@ -264,6 +264,11 @@ export class EditDisplayComponent {
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
       next: (response: UpdateReportResponse) => {
         response.report.xml = response.xml;
+        if (ReportUtil.isCheckPoint(node)) {
+          this.selectedNode = ReportUtil.getCheckpointFromReport(response.report, node.uid);
+        } else if (ReportUtil.isReport(node)) {
+          this.selectedNode = response.report;
+        }
         this.saveReportEvent.next(this.selectedNode);
         this.disableEditing();
         this.debugTab.refresh([+storageId]);
