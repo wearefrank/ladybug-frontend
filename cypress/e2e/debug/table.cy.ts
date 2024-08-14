@@ -1,4 +1,4 @@
-describe('Testing table', () => {
+describe('Testing for Debug tab table', () => {
   before(() => cy.resetApp());
 
   beforeEach(() => {
@@ -9,7 +9,7 @@ describe('Testing table', () => {
 
   afterEach(() => cy.resetApp());
 
-  it('Sorting the table by column name', () => {
+  it('Should sort by column naming when clicking on table column header', () => {
     cy.getTableRows().first().contains("Simple report");
     cy.get('[data-cy-debug="metadataLabel"]').eq(3).click();
     cy.getTableRows().first().contains("Another simple report");
@@ -17,10 +17,10 @@ describe('Testing table', () => {
     cy.getTableRows().first().contains("Simple report");
   });
 
-  it('Refresh to reset table to default', () => {
-    cy.getTableRows().first().contains("Simple report");
+  it('Should still be ordered when refreshing table.', () => {
     cy.get('[data-cy-debug="metadataLabel"]').eq(3).click();
+    cy.getTableRows().first().contains("Another simple report");
     cy.get('[data-cy-debug="refresh"]').click()
-    cy.getTableRows().first().contains("Simple report");
+    cy.getTableRows().first().contains("Another simple report");
   })
 });
