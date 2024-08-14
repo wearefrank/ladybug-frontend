@@ -6,17 +6,18 @@ import { debounceTime, filter, Observable, Subject } from 'rxjs';
 })
 export class FilterService {
   private showFilterSubject: Subject<boolean> = new Subject();
-  private metadataLabelsSubject: Subject<string[]> = new Subject();
+  private metadataLabelsSubject: Subject<Array<string>> = new Subject();
   private filterContextSubject: Subject<Map<string, string>> = new Subject();
   private currentRecordsSubject: Subject<Map<string, Array<string>>> = new Subject();
   private metadataTypesSubject: Subject<Map<string, string>> = new Subject();
   private filterErrorSubject: Subject<[boolean, Map<string, string>]> = new Subject();
   private filters: Map<string, string> = new Map<string, string>();
   private metadataTypes: Map<string, string> = new Map<string, string>();
+  private metadataLabels: Array<string> = new Array<string>();
   private filterErrors: Map<string, string> = new Map<string, string>();
 
   showFilter$: Observable<boolean> = this.showFilterSubject.asObservable();
-  metadataLabels$: Observable<string[]> = this.metadataLabelsSubject.asObservable();
+  metadataLabels$: Observable<Array<string>> = this.metadataLabelsSubject.asObservable();
   currentRecords$: Observable<Map<string, Array<string>>> = this.currentRecordsSubject.asObservable();
   metadataTypes$: Observable<Map<string, string>> = this.metadataTypesSubject.asObservable();
   filterError$: Observable<[boolean, Map<string, string>]> = this.filterErrorSubject.asObservable();
@@ -52,7 +53,15 @@ export class FilterService {
     this.showFilterSubject.next(show);
   }
 
-  setMetadataLabels(metadataLabels: string[]): void {
+  setMetadataLabels(metadataLabels: Array<string>): void {
+    //Safely transform old filter to filter with new metadata columns
+    for (const metadataLabel of this.metadataLabels) {
+      if (!metadataLabels.includes(metadataLabel)) {
+        this.filters.delete(metadataLabel);
+        this.filterContextSubject.next(this.filters);
+      }
+    }
+    this.metadataLabels = metadataLabels;
     this.metadataLabelsSubject.next(metadataLabels);
   }
 
