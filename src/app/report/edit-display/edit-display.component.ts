@@ -18,7 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
-import { catchError, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { EditFormComponent } from '../edit-form/edit-form.component';
 import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
@@ -127,7 +127,6 @@ export class EditDisplayComponent {
         this.rerunResult = response;
         this.debugTab.refresh([reportId]);
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -247,7 +246,6 @@ export class EditDisplayComponent {
         this.disableEditing();
         this.debugTab.refresh([+storageId]);
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -283,7 +281,6 @@ export class EditDisplayComponent {
     };
     this.httpService.copyReport(data, 'Test').subscribe({
       next: () => this.testReportsService.getReports(),
-      error: catchError(this.errorHandler.handleError()),
     }); // TODO: storage is hardcoded, fix issue #196 for this
   }
 

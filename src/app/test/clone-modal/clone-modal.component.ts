@@ -4,7 +4,6 @@ import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
 import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CloneReport } from 'src/app/shared/interfaces/clone-report';
-import { catchError } from 'rxjs';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 
 @Component({
@@ -29,7 +28,6 @@ export class CloneModalComponent {
   constructor(
     private modalService: NgbModal,
     private httpService: HttpService,
-    private errorHandler: ErrorHandling,
   ) {}
 
   open(selectedReport: any) {
@@ -39,7 +37,6 @@ export class CloneModalComponent {
         this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
         this.modalService.open(this.modal);
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -50,7 +47,6 @@ export class CloneModalComponent {
     };
     this.httpService.cloneReport(this.currentView.storageName, this.report.storageId, map).subscribe({
       next: () => this.cloneReportEvent.emit(),
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 }

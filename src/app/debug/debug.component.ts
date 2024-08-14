@@ -1,6 +1,5 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
-import { catchError } from 'rxjs';
 import { AngularSplitModule } from 'angular-split';
 import { TableComponent } from './table/table.component';
 import { ReportComponent } from '../report/report.component';
@@ -26,7 +25,6 @@ export class DebugComponent implements OnInit {
   constructor(
     private httpService: HttpService,
     private toastService: ToastService,
-    private errorHandler: ErrorHandling,
   ) {}
 
   ngOnInit(): void {
@@ -42,7 +40,6 @@ export class DebugComponent implements OnInit {
           this.currentView = this.views.find((v: View) => v.defaultView)!;
         }
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -63,7 +60,6 @@ export class DebugComponent implements OnInit {
             this.showErrorsAndWarnings(value);
           }
         },
-        error: () => catchError(this.errorHandler.handleError()),
       });
     }
   }

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
-import { catchError, firstValueFrom, Observable, Subscription } from 'rxjs';
+import { firstValueFrom, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
 import {
@@ -105,7 +105,6 @@ export class DebugTreeComponent implements OnDestroy {
       if (report.storageName === currentView.storageName) {
         this.httpService.getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name).subscribe({
           next: (unmatched: string[]) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
-          error: () => catchError(this.errorHandler.handleError()),
         });
       }
     }

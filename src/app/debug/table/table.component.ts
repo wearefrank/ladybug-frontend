@@ -226,7 +226,6 @@ export class TableComponent implements OnInit, OnDestroy {
         this.tableSettings.tableLoaded = true;
         this.toastService.showSuccess('Data loaded!');
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -240,14 +239,12 @@ export class TableComponent implements OnInit, OnDestroy {
   loadMetadataCount(): void {
     this.httpService.getMetadataCount(this.currentView.storageName).subscribe({
       next: (count: number) => (this.metadataCount = count),
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
   loadReportInProgressThreshold(): void {
     this.httpService.getReportsInProgressThresholdTime().subscribe({
       next: (time: number) => (this.reportsInProgressThreshold = time),
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -258,7 +255,6 @@ export class TableComponent implements OnInit, OnDestroy {
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
         this.loadReportInProgressDates();
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -273,7 +269,6 @@ export class TableComponent implements OnInit, OnDestroy {
             hasChanged = true;
           }
         },
-        error: () => catchError(this.errorHandler.handleError()),
       });
     }
     if (!hasChanged) {
@@ -351,7 +346,6 @@ export class TableComponent implements OnInit, OnDestroy {
         };
         this.tabService.openNewTab(reportData);
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -373,7 +367,6 @@ export class TableComponent implements OnInit, OnDestroy {
           this.openReportEvent.next(data[report].report);
         }
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -382,7 +375,6 @@ export class TableComponent implements OnInit, OnDestroy {
     if (reportIds.length > 0) {
       this.httpService.deleteReport(reportIds, this.currentView.storageName).subscribe({
         next: () => this.retrieveRecords(),
-        error: () => catchError(this.errorHandler.handleError()),
       });
     }
   }
@@ -411,7 +403,6 @@ export class TableComponent implements OnInit, OnDestroy {
           viewName: this.currentView.name,
         });
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -438,7 +429,6 @@ export class TableComponent implements OnInit, OnDestroy {
         data.storageName = this.currentView.storageName;
         this.openReportEvent.next(data);
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -454,7 +444,6 @@ export class TableComponent implements OnInit, OnDestroy {
           this.openReportEvent.next(report);
         }
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -463,13 +452,11 @@ export class TableComponent implements OnInit, OnDestroy {
       next: (report: Report) => {
         this.openReportEvent.next(report);
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
   deleteReportInProgress(index: number): void {
     this.httpService.deleteReportInProgress(index).subscribe({
-      error: () => catchError(this.errorHandler.handleError()),
       complete: () => {
         this.loadReportInProgressSettings();
       },
@@ -511,7 +498,6 @@ export class TableComponent implements OnInit, OnDestroy {
           this.tabService.openNewTab(reportData);
         }
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 

@@ -122,17 +122,13 @@ export class TableSettingsModalComponent implements OnDestroy {
     const form: any = this.settingsForm.value;
     localStorage.setItem('generatorEnabled', form.generatorEnabled);
     localStorage.setItem('transformationEnabled', form.transformationEnabled.toString());
-    this.httpService.postTransformation(form.transformation).subscribe({
-      error: catchError(this.errorHandler.handleError()),
-    });
+    this.httpService.postTransformation(form.transformation);
     const generatorEnabled: boolean = form.generatorEnabled === 'Enabled';
     const data: UploadParams = {
       generatorEnabled: generatorEnabled,
       regexFilter: form.regexFilter,
     };
-    this.httpService.postSettings(data).subscribe({
-      error: catchError(this.errorHandler.handleError()),
-    });
+    this.httpService.postSettings(data);
 
     this.toastService.showWarning('Reopen report to see updated XML');
     this.saving = true;
@@ -147,25 +143,21 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.settingsService.setShowMultipleAtATime();
     this.httpService.resetSettings().subscribe({
       next: (response: OptionsSettings) => this.saveResponseSetting(response),
-      error: () => catchError(this.errorHandler.handleError()),
     });
     this.httpService.getTransformation(true).subscribe({
       next: (res: Transformation) => this.settingsForm.get('transformation')?.setValue(res.transformation),
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
   loadSettings(): void {
     this.httpService.getSettings().subscribe({
       next: (response: OptionsSettings) => this.saveResponseSetting(response),
-      error: () => catchError(this.errorHandler.handleError()),
     });
     if (localStorage.getItem('transformationEnabled')) {
       this.settingsForm.get('transformationEnabled')?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }
     this.httpService.getTransformation(false).subscribe({
       next: (response: Transformation) => this.settingsForm.get('transformation')?.setValue(response.transformation),
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 

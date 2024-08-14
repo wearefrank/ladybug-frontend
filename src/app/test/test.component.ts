@@ -4,7 +4,7 @@ import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
@@ -21,10 +21,9 @@ import { View } from '../shared/interfaces/view';
 import { OptionsSettings } from '../shared/interfaces/options-settings';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
 import { BooleanToStringPipe } from '../shared/pipes/boolean-to-string.pipe';
-import { HttpErrorResponse } from '@angular/common/http';
 import { TestReportsService } from './test-reports.service';
 
-export const updatePathActionConst = ['move', 'copy'] as const;
+export const updatePathActionConst: readonly ['move', 'copy'] = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
 
 @Component({
@@ -90,7 +89,6 @@ export class TestComponent implements OnInit {
           this.generatorEnabled = response.generatorEnabled;
           localStorage.setItem('generatorEnabled', String(this.generatorEnabled));
         },
-        error: () => catchError(this.errorHandler.handleError()),
       });
     }
   }
@@ -137,7 +135,6 @@ export class TestComponent implements OnInit {
       .getTestReports(this.testReportsService.metadataNames, this.testReportsService.storageName)
       .subscribe({
         next: (response: TestListItem[]) => this.addCopiedReports(response),
-        error: () => catchError(this.errorHandler.handleError()),
       });
   }
 
@@ -155,11 +152,6 @@ export class TestComponent implements OnInit {
         next: (response: TestResult): void => {
           report.reranReport = this.createReranReport(response);
         },
-        error: () =>
-          catchError((error: HttpErrorResponse): Observable<any> => {
-            report.error = error.message;
-            return of(error);
-          }),
       });
     } else {
       this.toastService.showWarning('Generator is disabled!');
@@ -200,7 +192,6 @@ export class TestComponent implements OnInit {
         };
         this.tabService.openNewTab(reportData);
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
   }
 
@@ -217,7 +208,6 @@ export class TestComponent implements OnInit {
         .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
         .subscribe({
           next: () => this.testReportsService.getReports(),
-          error: () => catchError(this.errorHandler.handleError()),
         });
     }
   }
@@ -243,7 +233,6 @@ export class TestComponent implements OnInit {
       formData.append('file', file);
       this.httpService.uploadReportToStorage(formData, this.testReportsService.storageName).subscribe({
         next: () => this.loadData(),
-        error: () => catchError(this.errorHandler.handleError()),
       });
     }
   }
@@ -273,7 +262,6 @@ export class TestComponent implements OnInit {
     //       },
     //     });
     //   },
-    //   error: () => catchError(this.errorHandler.handleError()),
     // });
   }
 
@@ -285,7 +273,6 @@ export class TestComponent implements OnInit {
       };
       this.httpService.copyReport(data, this.testReportsService.storageName).subscribe({
         next: () => this.loadData(),
-        error: () => catchError(this.errorHandler.handleError()),
       });
     }
   }
@@ -327,7 +314,6 @@ export class TestComponent implements OnInit {
         const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
         this.httpService.updatePath(reportIds, this.testReportsService.storageName, map).subscribe({
           next: () => this.loadData(path),
-          error: () => catchError(this.errorHandler.handleError()),
         });
       } else {
         this.toastService.showWarning('No Report Selected!');
