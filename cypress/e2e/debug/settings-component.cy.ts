@@ -9,7 +9,7 @@ describe('Tests for settings component', () => {
 
   afterEach(() => cy.resetApp());
 
-  it('should alter spacing when spacing setting is altered', () => {
+  it('Should alter spacing when spacing setting is altered', () => {
     cy.get('[data-cy-debug="openSettings"]').as('openSettingsModal').click();
     cy.get('[data-cy-settings="spacingDropdown"]').select('1x');
     cy.get('[data-cy-settings="spacingDropdown"] option:selected').should(
@@ -32,7 +32,7 @@ describe('Tests for settings component', () => {
     cy.get('@tableCell').should('have.attr', 'style', 'padding: 0em 0px;');
   });
 
-  it('should allow multiple files to be opened in debug tree when setting is enabled and close all but one report when setting is disabled', () => {
+  it('Should allow multiple files to be opened in debug tree when setting is enabled and close all but one report when setting is disabled', () => {
     cy.get('[data-cy-debug="openSettings"]').as('openSettingsModal').click();
     cy.get('[data-cy-settings="showAmount"]').should(
       'have.attr',

@@ -1,4 +1,4 @@
-describe('Report transformation', () => {
+describe('Tests for report transformation', () => {
   before(() => cy.resetApp());
 
   afterEach(() => cy.resetApp());
@@ -12,7 +12,7 @@ describe('Report transformation', () => {
     cy.get('[data-cy-settings="saveChanges"]').click();
   });
 
-  it('Update transformation', () => {
+  it('Should see updated metadata when updating transformation field', () => {
     cy.visit('');
     cy.get('[data-cy-debug="openSettings"]').click();
     cy.get('textarea[formcontrolname=transformation]').type('{selectAll}{del}');
