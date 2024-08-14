@@ -122,13 +122,13 @@ export class TableSettingsModalComponent implements OnDestroy {
     const form: any = this.settingsForm.value;
     localStorage.setItem('generatorEnabled', form.generatorEnabled);
     localStorage.setItem('transformationEnabled', form.transformationEnabled.toString());
-    this.httpService.postTransformation(form.transformation);
+    this.httpService.postTransformation(form.transformation).subscribe();
     const generatorEnabled: boolean = form.generatorEnabled === 'Enabled';
     const data: UploadParams = {
       generatorEnabled: generatorEnabled,
       regexFilter: form.regexFilter,
     };
-    this.httpService.postSettings(data);
+    this.httpService.postSettings(data).subscribe();
 
     this.toastService.showWarning('Reopen report to see updated XML');
     this.saving = true;

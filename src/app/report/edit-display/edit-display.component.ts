@@ -26,7 +26,6 @@ import { ToggleButtonComponent } from '../../shared/components/button/toggle-but
 import { ToastService } from '../../shared/services/toast.service';
 import { TestResult } from '../../shared/interfaces/test-result';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
 import { UpdateReportResponse } from '../../shared/interfaces/update-report-response';
@@ -89,7 +88,6 @@ export class EditDisplayComponent {
     private httpService: HttpService,
     private helperService: HelperService,
     private toastService: ToastService,
-    private errorHandler: ErrorHandling,
     private testReportsService: TestReportsService,
     private debugTab: DebugTabService,
   ) {}

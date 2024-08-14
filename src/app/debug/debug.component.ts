@@ -6,7 +6,6 @@ import { ReportComponent } from '../report/report.component';
 import { ToastService } from '../shared/services/toast.service';
 import { HttpService } from '../shared/services/http.service';
 import { View } from '../shared/interfaces/view';
-import { ErrorHandling } from '../shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-debug',

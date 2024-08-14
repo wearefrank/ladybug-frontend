@@ -4,7 +4,6 @@ import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
 import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CloneReport } from 'src/app/shared/interfaces/clone-report';
-import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-clone-modal',
