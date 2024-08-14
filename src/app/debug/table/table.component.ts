@@ -424,12 +424,6 @@ export class TableComponent implements OnInit, OnDestroy {
   refresh(): void {
     this.filterService.setShowFilter(false);
     this.tableSettings.displayAmount = 10;
-    if (this.tableDataSort) {
-      //Resets the sort
-      //Needed because of a known issue with the Angular matSort
-      //https://github.com/angular/components/issues/10242
-      this.tableDataSort.sort({ id: '', start: 'desc', disableClear: false });
-    }
     this.loadData();
   }
 
