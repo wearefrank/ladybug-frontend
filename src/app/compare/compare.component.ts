@@ -39,6 +39,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
     readOnly: true,
     renderSideBySide: true,
     automaticLayout: true,
+    scrollBeyondLastLine: false,
   };
   protected originalModel: DiffEditorModel = { code: '', language: 'xml' };
   protected modifiedModel: DiffEditorModel = { code: '', language: 'xml' };
