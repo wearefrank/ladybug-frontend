@@ -1,4 +1,4 @@
-describe('Testing for Debug tab table', () => {
+describe('Tests for Debug tab table', () => {
   before(() => cy.resetApp());
 
   beforeEach(() => {
