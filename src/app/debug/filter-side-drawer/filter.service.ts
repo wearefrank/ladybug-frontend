@@ -55,11 +55,15 @@ export class FilterService {
 
   setMetadataLabels(metadataLabels: Array<string>): void {
     //Safely transform old filter to filter with new metadata columns
+    let wasChanged: boolean = false;
     for (const metadataLabel of this.metadataLabels) {
       if (!metadataLabels.includes(metadataLabel)) {
         this.filters.delete(metadataLabel);
-        this.filterContextSubject.next(this.filters);
+        wasChanged = true;
       }
+    }
+    if (wasChanged) {
+      this.filterContextSubject.next(this.filters);
     }
     this.metadataLabels = metadataLabels;
     this.metadataLabelsSubject.next(metadataLabels);
