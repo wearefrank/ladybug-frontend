@@ -14,7 +14,7 @@ import { HelperService } from '../../shared/services/helper.service';
 import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
 import { Report } from '../../shared/interfaces/report';
 import { MetadataTableComponent } from '../../shared/components/metadata-table/metadata-table.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
@@ -62,6 +62,7 @@ import { DebugTabService } from '../../debug/debug-tab.service';
     MatTooltipModule,
     NgClass,
     EncodingButtonComponent,
+    FormsModule,
   ],
 })
 export class EditDisplayComponent {
@@ -83,6 +84,7 @@ export class EditDisplayComponent {
   rerunResult?: TestResult;
   selectedNode?: Report | Checkpoint;
   displayReport: boolean = false;
+  stubStrategy?: number;
 
   constructor(
     private modalService: NgbModal,
@@ -97,6 +99,7 @@ export class EditDisplayComponent {
   showReport(node: Report | Checkpoint): void {
     this.disableEditing();
     this.selectedNode = node;
+    this.stubStrategy = node.stub;
     if (ReportUtil.isReport(this.selectedNode)) {
       this.editor.setNewReport(this.selectedNode.xml);
     } else if (ReportUtil.isCheckPoint(this.selectedNode)) {
@@ -164,10 +167,6 @@ export class EditDisplayComponent {
     this.httpService.handleSuccess('Report Downloaded!');
   }
 
-  selectStubStrategy(event: Event): void {
-    this.saveChanges(Number.parseInt((event.target as HTMLOptionElement).value));
-  }
-
   openDifferenceModal(type: ChangesAction): void {
     const node: Report | Checkpoint = this.selectedNode!;
     let reportDifferences: ReportDifference[] = [];
@@ -178,7 +177,7 @@ export class EditDisplayComponent {
         name: 'message',
         originalValue: node.message,
         // @ts-ignore
-        difference: new DiffMatchPatch().diff_main(this.report.message ?? '', this.editor?.getValue()),
+        difference: new DiffMatchPatch().diff_main(node.message ?? '', this.editor?.getValue()),
       });
     }
     if (reportDifferences.length > 0) {
@@ -222,7 +221,31 @@ export class EditDisplayComponent {
     this.editingEnabled = false;
   }
 
-  saveChanges(stubStrategy: number): void {
+  openStubDifferenceModal(stubStrategy: number): void {
+    if ((this.selectedNode as Checkpoint).message == this.editor.getValue()) {
+      let reportDifferences: ReportDifference[] = [];
+      const stubStrategies: string[] = [
+        'Use report level stub strategy',
+        'Always stub this checkpoint',
+        'Never stub this checkpoint',
+      ];
+      if (this.selectedNode && this.selectedNode.stub !== +stubStrategy) {
+        reportDifferences.push({
+          name: 'message',
+          originalValue: stubStrategies[this.selectedNode.stub + 1],
+          // @ts-ignore
+          difference: stubStrategies[stubStrategy + 1],
+        });
+      }
+      if (reportDifferences.length > 0) {
+        this.differenceModal.open(reportDifferences, 'save', true);
+      }
+    } else {
+      this.toastService.showWarning('Save or discard your changes before updating the stub strategy');
+    }
+  }
+
+  saveChanges(stubChange: boolean): void {
     const node: Report | Checkpoint = this.selectedNode!;
     let checkpointId: string = '';
     let storageId: string;
@@ -234,16 +257,19 @@ export class EditDisplayComponent {
     } else {
       return;
     }
-
-    const body = this.getReportValues(checkpointId);
-    const message: string = ReportUtil.isReport(node) ? node.xml : node.message;
+    const body = stubChange
+      ? { stub: this.stubStrategy ?? '', checkpointId: checkpointId }
+      : this.getReportValues(checkpointId);
 
     this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
       next: (response: UpdateReportResponse) => {
         response.report.xml = response.xml;
-        this.selectedNode = response.report;
+        if (ReportUtil.isCheckPoint(node)) {
+          this.selectedNode = ReportUtil.getCheckpointFromReport(response.report, node.uid);
+        } else if (ReportUtil.isReport(node)) {
+          this.selectedNode = response.report;
+        }
         this.saveReportEvent.next(this.selectedNode);
-        this.editor.setNewReport(message);
         this.disableEditing();
         this.debugTab.refresh([+storageId]);
       },
