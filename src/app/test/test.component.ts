@@ -95,6 +95,7 @@ export class TestComponent implements OnInit {
   }
 
   loadData(path?: string): void {
+    this.testReportsService.getReports();
     this.testReportsService.testReports$.subscribe({
       next: (value: TestListItem[]) => {
         this.reports = value;

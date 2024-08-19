@@ -12,4 +12,13 @@ export const ReportUtil = {
   isCheckPoint(node: ReportOrCheckpoint): node is Checkpoint {
     return !!node && !!(node as Checkpoint).uid;
   },
+
+  getCheckpointFromReport(report: Report, uid: string): Checkpoint | undefined {
+    for (let checkpoint of report.checkpoints) {
+      if (uid === checkpoint.uid) {
+        return checkpoint;
+      }
+    }
+    return undefined;
+  },
 };
