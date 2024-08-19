@@ -33,6 +33,7 @@ import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { CompareReport } from '../../shared/interfaces/compare-reports';
 import { DebugTabService } from '../debug-tab.service';
 import { ViewDropdownComponent } from '../../shared/components/view-dropdown/view-dropdown.component';
+import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 
 @Component({
   selector: 'app-table',
@@ -59,6 +60,7 @@ import { ViewDropdownComponent } from '../../shared/components/view-dropdown/vie
     TableCellShortenerPipe,
     MatTableModule,
     ViewDropdownComponent,
+    DeleteModalComponent,
   ],
 })
 export class TableComponent implements OnInit, OnDestroy {
@@ -71,6 +73,7 @@ export class TableComponent implements OnInit, OnDestroy {
   @Output() openReportEvent: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild(TableSettingsModalComponent) tableSettingsModal!: TableSettingsModalComponent;
+  @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
 
   @ViewChild(MatSort) set matSort(sort: MatSort) {
     this.tableDataSort = sort;
@@ -386,6 +389,13 @@ export class TableComponent implements OnInit, OnDestroy {
         error: () => catchError(this.errorHandler.handleError()),
       });
     }
+  }
+
+  deleteAll(): void {
+    this.httpService.deleteAllReports(this.currentView.storageName).subscribe({
+      next: () => this.retrieveRecords(),
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 
   compareTwoReports(): void {
