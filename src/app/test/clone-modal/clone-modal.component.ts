@@ -4,6 +4,9 @@ import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
 import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CloneReport } from 'src/app/shared/interfaces/clone-report';
+import { catchError, tap } from 'rxjs';
+import { ErrorHandling } from '../../shared/classes/error-handling.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-clone-modal',
@@ -27,16 +30,21 @@ export class CloneModalComponent {
   constructor(
     private modalService: NgbModal,
     private httpService: HttpService,
+    private errorHandler: ErrorHandling,
+    private toastService: ToastService,
   ) {}
 
   open(selectedReport: any) {
-    this.httpService.getReport(selectedReport.storageId, this.currentView.storageName).subscribe({
-      next: (report: Report) => {
-        this.report = report;
-        this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
-        this.modalService.open(this.modal);
-      },
-    });
+    this.httpService
+      .getReport(selectedReport.storageId, this.currentView.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (report: Report) => {
+          this.report = report;
+          this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
+          this.modalService.open(this.modal);
+        },
+      });
   }
 
   generateClones() {
@@ -44,8 +52,14 @@ export class CloneModalComponent {
       csv: this.variableForm.value.variables,
       message: this.variableForm.value.message,
     };
-    this.httpService.cloneReport(this.currentView.storageName, this.report.storageId, map).subscribe({
-      next: () => this.cloneReportEvent.emit(),
-    });
+    this.httpService
+      .cloneReport(this.currentView.storageName, this.report.storageId, map)
+      .pipe(
+        tap(() => this.toastService.showSuccess('Report cloned!')),
+        catchError(this.errorHandler.handleError()),
+      )
+      .subscribe({
+        next: () => this.cloneReportEvent.emit(),
+      });
   }
 }

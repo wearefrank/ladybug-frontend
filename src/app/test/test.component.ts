@@ -4,7 +4,7 @@ import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError, Observable, of, tap } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
@@ -85,12 +85,15 @@ export class TestComponent implements OnInit {
     if (generatorStatus && generatorStatus.length <= 5) {
       this.generatorEnabled = generatorStatus === 'true';
     } else {
-      this.httpService.getSettings().subscribe({
-        next: (response: OptionsSettings) => {
-          this.generatorEnabled = response.generatorEnabled;
-          localStorage.setItem('generatorEnabled', String(this.generatorEnabled));
-        },
-      });
+      this.httpService
+        .getSettings()
+        .pipe(catchError(this.errorHandler.handleError()))
+        .subscribe({
+          next: (response: OptionsSettings) => {
+            this.generatorEnabled = response.generatorEnabled;
+            localStorage.setItem('generatorEnabled', String(this.generatorEnabled));
+          },
+        });
     }
   }
 
@@ -134,6 +137,7 @@ export class TestComponent implements OnInit {
   getCopiedReports(): void {
     this.httpService
       .getTestReports(this.testReportsService.metadataNames, this.testReportsService.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (response: TestListItem[]) => this.addCopiedReports(response),
       });
@@ -149,16 +153,19 @@ export class TestComponent implements OnInit {
 
   run(report: TestListItem): void {
     if (this.generatorEnabled) {
-      this.httpService.runReport(this.testReportsService.storageName, report.storageId).subscribe({
-        next: (response: TestResult): void => {
-          report.reranReport = this.createReranReport(response);
-        },
-        error: () =>
+      this.httpService
+        .runReport(this.testReportsService.storageName, report.storageId)
+        .pipe(
           catchError((error: HttpErrorResponse): Observable<any> => {
             report.error = error.message;
             return of(error);
           }),
-      });
+        )
+        .subscribe({
+          next: (response: TestResult): void => {
+            report.reranReport = this.createReranReport(response);
+          },
+        });
     } else {
       this.toastService.showWarning('Generator is disabled!');
     }
@@ -187,18 +194,21 @@ export class TestComponent implements OnInit {
   }
 
   openReport(storageId: number): void {
-    this.httpService.getReport(storageId, this.testReportsService.storageName).subscribe({
-      next: (report: Report): void => {
-        const reportData: ReportData = {
-          report: report,
-          currentView: {
-            storageName: this.testReportsService.storageName,
-            metadataNames: this.testReportsService.metadataNames,
-          } as View,
-        };
-        this.tabService.openNewTab(reportData);
-      },
-    });
+    this.httpService
+      .getReport(storageId, this.testReportsService.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (report: Report): void => {
+          const reportData: ReportData = {
+            report: report,
+            currentView: {
+              storageName: this.testReportsService.storageName,
+              metadataNames: this.testReportsService.metadataNames,
+            } as View,
+          };
+          this.tabService.openNewTab(reportData);
+        },
+      });
   }
 
   openDeleteModal(): void {
@@ -212,6 +222,7 @@ export class TestComponent implements OnInit {
     if (this.reports) {
       this.httpService
         .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
+        .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
           next: () => this.testReportsService.getReports(),
         });
@@ -237,9 +248,15 @@ export class TestComponent implements OnInit {
     if (file) {
       const formData: FormData = new FormData();
       formData.append('file', file);
-      this.httpService.uploadReportToStorage(formData, this.testReportsService.storageName).subscribe({
-        next: () => this.loadData(),
-      });
+      this.httpService
+        .uploadReportToStorage(formData, this.testReportsService.storageName)
+        .pipe(
+          tap(() => this.toastService.showSuccess('Report uploaded to storage!')),
+          catchError(this.errorHandler.handleError()),
+        )
+        .subscribe({
+          next: () => this.loadData(),
+        });
     }
   }
 
@@ -277,9 +294,15 @@ export class TestComponent implements OnInit {
       const data: Record<string, number[]> = {
         [this.testReportsService.storageName]: copiedIds,
       };
-      this.httpService.copyReport(data, this.testReportsService.storageName).subscribe({
-        next: () => this.loadData(),
-      });
+      this.httpService
+        .copyReport(data, this.testReportsService.storageName)
+        .pipe(
+          tap(() => this.toastService.showSuccess('Report copied!')),
+          catchError(this.errorHandler.handleError()),
+        )
+        .subscribe({
+          next: () => this.loadData(),
+        });
     }
   }
 
@@ -318,9 +341,12 @@ export class TestComponent implements OnInit {
       if (reportIds.length > 0) {
         const path: string = this.transformPath(this.moveToInputModel.value);
         const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
-        this.httpService.updatePath(reportIds, this.testReportsService.storageName, map).subscribe({
-          next: () => this.loadData(path),
-        });
+        this.httpService
+          .updatePath(reportIds, this.testReportsService.storageName, map)
+          .pipe(catchError(this.errorHandler.handleError()))
+          .subscribe({
+            next: () => this.loadData(path),
+          });
       } else {
         this.toastService.showWarning('No Report Selected!');
       }

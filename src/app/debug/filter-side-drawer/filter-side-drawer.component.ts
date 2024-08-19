@@ -76,9 +76,12 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   getFilterToolTips(): void {
-    this.httpService.getUserHelp(this.currentView.storageName, this.currentView.metadataNames).subscribe({
-      next: (response: Report) => (this.toolTipSuggestions = response),
-    });
+    this.httpService
+      .getUserHelp(this.currentView.storageName, this.currentView.metadataNames)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (response: Report) => (this.toolTipSuggestions = response),
+      });
   }
 
   closeFilter(): void {

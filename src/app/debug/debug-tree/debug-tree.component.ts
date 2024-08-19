@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
-import { firstValueFrom, Observable, Subscription } from 'rxjs';
+import { catchError, firstValueFrom, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
 import {
@@ -23,6 +23,7 @@ import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarch
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 import { View } from '../../shared/interfaces/view';
 import { DebugTabService } from '../debug-tab.service';
+import { ErrorHandling } from '../../shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-debug-tree',
@@ -62,6 +63,7 @@ export class DebugTreeComponent implements OnDestroy {
     private httpService: HttpService,
     private settingsService: SettingsService,
     private debugTab: DebugTabService,
+    private errorHandler: ErrorHandling,
   ) {
     this.subscribeToSubscriptions();
   }
@@ -101,9 +103,12 @@ export class DebugTreeComponent implements OnDestroy {
   checkUnmatchedCheckpoints(reports: Report[], currentView: View) {
     for (let report of reports) {
       if (report.storageName === currentView.storageName) {
-        this.httpService.getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name).subscribe({
-          next: (unmatched: string[]) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
-        });
+        this.httpService
+          .getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name)
+          .pipe(catchError(this.errorHandler.handleError()))
+          .subscribe({
+            next: (unmatched: string[]) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
+          });
       }
     }
   }
@@ -206,7 +211,11 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   async getNewReport(storageId: number): Promise<FileTreeItem> {
-    const response: Report = await firstValueFrom(this.httpService.getReport(storageId, this._currentView.storageName));
+    const response: Report = await firstValueFrom(
+      this.httpService
+        .getReport(storageId, this._currentView.storageName)
+        .pipe(catchError(this.errorHandler.handleError())),
+    );
     const transformedReport: Report = new ReportHierarchyTransformer().transform(response);
     return this.tree.createItemToFileItem(transformedReport);
   }

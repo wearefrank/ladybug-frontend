@@ -18,7 +18,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
-import { Subject } from 'rxjs';
+import { catchError, Subject, tap } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { EditFormComponent } from '../edit-form/edit-form.component';
 import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
@@ -35,6 +35,7 @@ import { EncodingButtonComponent } from './encoding-button/encoding-button.compo
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { TestReportsService } from '../../test/test-reports.service';
 import { DebugTabService } from '../../debug/debug-tab.service';
+import { ErrorHandling } from '../../shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-edit-display',
@@ -92,6 +93,7 @@ export class EditDisplayComponent {
     private toastService: ToastService,
     private testReportsService: TestReportsService,
     private debugTab: DebugTabService,
+    private errorHandler: ErrorHandling,
   ) {}
 
   showReport(node: Report | Checkpoint): void {
@@ -122,13 +124,16 @@ export class EditDisplayComponent {
       return;
     }
     const reportId: number = node.storageId;
-    this.httpService.runReport(this.currentView.storageName, reportId).subscribe({
-      next: (response: TestResult): void => {
-        this.toastService.showSuccess('Report rerun successful');
-        this.rerunResult = response;
-        this.debugTab.refresh([reportId]);
-      },
-    });
+    this.httpService
+      .runReport(this.currentView.storageName, reportId)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (response: TestResult): void => {
+          this.toastService.showSuccess('Report rerun successful');
+          this.rerunResult = response;
+          this.debugTab.refresh([reportId]);
+        },
+      });
   }
 
   closeReport(removeReportFromTree: boolean): void {
@@ -161,7 +166,7 @@ export class EditDisplayComponent {
       return;
     }
     this.helperService.download(`${queryString}&`, this.currentView.storageName, exportBinary, exportXML);
-    this.httpService.handleSuccess('Report Downloaded!');
+    this.toastService.showSuccess('Report Downloaded!');
   }
 
   openDifferenceModal(type: ChangesAction): void {
@@ -258,19 +263,25 @@ export class EditDisplayComponent {
       ? { stub: this.stubStrategy ?? '', checkpointId: checkpointId }
       : this.getReportValues(checkpointId);
 
-    this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
-      next: (response: UpdateReportResponse) => {
-        response.report.xml = response.xml;
-        if (ReportUtil.isCheckPoint(node)) {
-          this.selectedNode = ReportUtil.getCheckpointFromReport(response.report, node.uid);
-        } else if (ReportUtil.isReport(node)) {
-          this.selectedNode = response.report;
-        }
-        this.saveReportEvent.next(this.selectedNode);
-        this.disableEditing();
-        this.debugTab.refresh([+storageId]);
-      },
-    });
+    this.httpService
+      .updateReport(storageId, body, this.currentView.storageName)
+      .pipe(
+        tap(() => this.toastService.showSuccess('Report updated!')),
+        catchError(this.errorHandler.handleError()),
+      )
+      .subscribe({
+        next: (response: UpdateReportResponse) => {
+          response.report.xml = response.xml;
+          if (ReportUtil.isCheckPoint(node)) {
+            this.selectedNode = ReportUtil.getCheckpointFromReport(response.report, node.uid);
+          } else if (ReportUtil.isReport(node)) {
+            this.selectedNode = response.report;
+          }
+          this.saveReportEvent.next(this.selectedNode);
+          this.disableEditing();
+          this.debugTab.refresh([+storageId]);
+        },
+      });
   }
 
   discardChanges(): void {
@@ -303,9 +314,15 @@ export class EditDisplayComponent {
     const data: Record<string, number[]> = {
       [this.currentView.storageName]: [storageId!],
     };
-    this.httpService.copyReport(data, 'Test').subscribe({
-      next: () => this.testReportsService.getReports(),
-    }); // TODO: storage is hardcoded, fix issue #196 for this
+    this.httpService
+      .copyReport(data, 'Test')
+      .pipe(
+        tap(() => this.toastService.showSuccess('Report copied!')),
+        catchError(this.errorHandler.handleError()),
+      )
+      .subscribe({
+        next: () => this.testReportsService.getReports(),
+      }); // TODO: storage is hardcoded, fix issue #196 for this
   }
 
   toggleEditMode(value: boolean): void {

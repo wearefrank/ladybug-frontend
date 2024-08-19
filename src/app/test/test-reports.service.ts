@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { HttpService } from '../shared/services/http.service';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { catchError, Observable, ReplaySubject, Subject } from 'rxjs';
+import { ErrorHandling } from '../shared/classes/error-handling.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,16 +13,22 @@ export class TestReportsService {
   private testReportsSubject: Subject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
   testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
 
-  constructor(private httpService: HttpService) {
+  constructor(
+    private httpService: HttpService,
+    private errorHandler: ErrorHandling,
+  ) {
     this.getReports();
   }
 
   getReports() {
-    this.httpService.getTestReports(this.metadataNames, this.storageName).subscribe({
-      next: (response: TestListItem[]) => {
-        this.testReportsSubject.next(this.sortByName(response));
-      },
-    });
+    this.httpService
+      .getTestReports(this.metadataNames, this.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (response: TestListItem[]) => {
+          this.testReportsSubject.next(this.sortByName(response));
+        },
+      });
   }
 
   sortByName(reports: TestListItem[]): TestListItem[] {
