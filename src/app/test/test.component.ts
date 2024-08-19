@@ -215,15 +215,13 @@ export class TestComponent implements OnInit {
   deleteSelected(deleteAllReports: boolean): void {
     if (deleteAllReports) {
       this.deleteAllReports();
-    } else {
-      if (this.reports) {
-        this.httpService
-          .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
-          .subscribe({
-            next: () => this.testReportsService.getReports(),
-            error: () => catchError(this.errorHandler.handleError()),
-          });
-      }
+    } else if (this.reports) {
+      this.httpService
+        .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
+        .subscribe({
+          next: () => this.testReportsService.getReports(),
+          error: () => catchError(this.errorHandler.handleError()),
+        });
     }
   }
 
