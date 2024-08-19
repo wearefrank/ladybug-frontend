@@ -11,7 +11,7 @@
       <button class="btn btn-info" title="Reset" (click)="resetRunner()">Reset</button>
       <button class="btn btn-info" title="Options" (click)="testSettingsModal.open()"><i class="fa fa-cog"></i></button>
       <button data-cy-test="deleteSelected" class="btn btn-info" title="Delete Selected" (click)="openDeleteModal(false)"><i class="fa fa-trash"></i></button>
-      <button data-cy-test="deleteSelected" class="btn btn-info" title="Delete Selected" (click)="openDeleteModal(true)">Delete all</button>
+      <button class="btn btn-info" title="Delete All" (click)="openDeleteModal(true)">Delete all</button>
       <button class="btn btn-info" title="Clone report" (click)="openCloneModal()">Clone</button>
       <button data-cy-test="copySelected" class="btn btn-info" title="Copy Selected" (click)="copySelected()"><i class="fa fa-copy"></i></button>
       <button data-cy-test="downloadBinary" class="btn btn-info" title="Download Binary" (click)="downloadSelected()"><i class="fa fa-download"></i></button>
