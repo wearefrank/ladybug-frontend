@@ -332,9 +332,7 @@ export class TestComponent implements OnInit {
 
   changeFilter(filter: string): void {
     if (this.reports) {
-      const transformedFilter: string =
-        filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
-      this.currentFilter = transformedFilter;
+      this.currentFilter = filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
       for (const report of this.reports) {
         report.checked = this.matches(report);
       }
