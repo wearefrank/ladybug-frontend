@@ -196,7 +196,7 @@ export class DebugTreeComponent implements OnDestroy {
     for (let i = 0; i < this.tree.items.length; i++) {
       const report: Report = this.tree.items[i].originalValue as Report;
       if (ids.includes(report.storageId)) {
-        const fileItem: FileTreeItem = await this.getNewReport(report);
+        const fileItem: FileTreeItem = await this.getNewReport(report.storageId);
         if (selectedReportId === report.storageId) {
           lastSelectedReport = fileItem;
         }
@@ -208,8 +208,8 @@ export class DebugTreeComponent implements OnDestroy {
     }
   }
 
-  async getNewReport(report: Report): Promise<FileTreeItem> {
-    const response: Report = await firstValueFrom(this.httpService.getReport(report.storageId, report.storageName));
+  async getNewReport(storageId: number): Promise<FileTreeItem> {
+    const response: Report = await firstValueFrom(this.httpService.getReport(storageId, this._currentView.storageName));
     const transformedReport: Report = new ReportHierarchyTransformer().transform(response);
     return this.tree.createItemToFileItem(transformedReport);
   }
