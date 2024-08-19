@@ -33,7 +33,7 @@ import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { CompareReport } from '../../shared/interfaces/compare-reports';
 import { DebugTabService } from '../debug-tab.service';
 import { ViewDropdownComponent } from '../../shared/components/view-dropdown/view-dropdown.component';
-import { DeleteModalComponent } from './delete-modal/delete-modal.component';
+import { DeleteModalComponent } from '../../shared/components/delete-modal/delete-modal.component';
 
 @Component({
   selector: 'app-table',

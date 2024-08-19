@@ -1,15 +1,17 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { TestListItem } from '../../shared/interfaces/test-list-item';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { TestListItem } from '../../interfaces/test-list-item';
 
 @Component({
   selector: 'app-delete-modal',
-  templateUrl: './delete-modal.component.html',
-  styleUrls: ['./delete-modal.component.css'],
   standalone: true,
+  imports: [],
+  templateUrl: './delete-modal.component.html',
+  styleUrl: './delete-modal.component.css',
 })
 export class DeleteModalComponent {
   @ViewChild('modal') modal!: NgbModal;
+  protected activeModal?: NgbModalRef;
   @Output() confirmDeleteEvent = new EventEmitter<boolean>();
   reports: TestListItem[] = [];
   deleteQuestion!: string;
@@ -26,10 +28,17 @@ export class DeleteModalComponent {
       modalDialogClass: 'modal-window',
       backdropClass: 'modal-backdrop',
     };
-    this.modalService.open(this.modal, options);
+    this.activeModal = this.modalService.open(this.modal, options);
   }
 
   deleteReports() {
     this.confirmDeleteEvent.emit(this.deleteAllReports);
+    this.closeModal();
+  }
+
+  closeModal(): void {
+    if (this.activeModal) {
+      this.activeModal.close();
+    }
   }
 }
