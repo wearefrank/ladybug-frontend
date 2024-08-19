@@ -96,7 +96,7 @@ export class DebugTreeComponent implements OnDestroy {
 
   getTreeReports(): Report[] {
     const reports: Report[] = [];
-    for (const item of this.tree.getItems()) {
+    for (const item of this.tree.items) {
       if (item.originalValue.storageId != undefined) {
         reports.push(item.originalValue);
       }
@@ -175,7 +175,7 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   selectReportIfPresent(report: Report): boolean {
-    for (let item of this.tree.getItems()) {
+    for (let item of this.tree.items) {
       const treeReport = item.originalValue as Report;
       if (treeReport.storageId === report.storageId) {
         this.tree.selectItem(item.path);

@@ -102,9 +102,9 @@ export class CompareTreeComponent {
 
   selectByCheckPointNumber(tree: NgSimpleFileTree, treeItem: Report | Checkpoint): void {
     if (ReportUtil.isReport(treeItem)) {
-      tree.selectItem(tree.getItems()[0].path);
+      tree.selectItem(tree.items[0].path);
     } else if (ReportUtil.isCheckPoint(treeItem)) {
-      this.selectCheckpoint(tree, tree.getItems()[0], treeItem);
+      this.selectCheckpoint(tree, tree.items[0], treeItem);
     }
   }
 
