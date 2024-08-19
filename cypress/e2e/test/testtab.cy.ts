@@ -51,16 +51,11 @@ function copyTheReportsToTestTab() {
   cy.wait(100);
   cy.checkFileTreeLength(2);
   cy.wait(100);
-  // TODO: Uncomment this line when the sequence in the debug tree has been fixed.
-  // cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
-  // TODO: And at that time also remove the line below.
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item').contains('Simple report').click();
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
   cy.wait(100);
-  // TODO: Same as above.
-  // cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item').contains('Another simple report').click();
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Another simple report', 3, 'second');
   cy.wait(1000);
