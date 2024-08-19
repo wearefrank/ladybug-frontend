@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { TestListItem } from '../../shared/interfaces/test-list-item';
 
 @Component({
   selector: 'app-delete-modal',
@@ -9,11 +10,17 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 })
 export class DeleteModalComponent {
   @ViewChild('modal') modal!: NgbModal;
-  @Output() confirmDeleteEvent = new EventEmitter<any>();
-  reports: any[] = [];
+  @Output() confirmDeleteEvent = new EventEmitter<boolean>();
+  reports: TestListItem[] = [];
+  deleteQuestion!: string;
+  deleteAllReports!: boolean;
   constructor(private modalService: NgbModal) {}
 
-  open(reportsToBeDeleted: any[]): void {
+  open(reportsToBeDeleted: TestListItem[], deleteAllReports: boolean): void {
+    this.deleteAllReports = deleteAllReports;
+    this.deleteQuestion = deleteAllReports
+      ? 'Are you sure you want to delete all reports?'
+      : 'Are you sure you want to delete the following reports?';
     this.reports = reportsToBeDeleted;
     const options: NgbModalOptions = {
       modalDialogClass: 'modal-window',
@@ -23,6 +30,6 @@ export class DeleteModalComponent {
   }
 
   deleteReports() {
-    this.confirmDeleteEvent.emit();
+    this.confirmDeleteEvent.emit(this.deleteAllReports);
   }
 }

@@ -205,22 +205,33 @@ export class TestComponent implements OnInit {
     });
   }
 
-  openDeleteModal(): void {
+  openDeleteModal(deleteAllReports: boolean): void {
     const reportsToBeDeleted: TestListItem[] = this.getSelectedReports();
-    if (reportsToBeDeleted.length > 0) {
-      this.deleteModal.open(reportsToBeDeleted);
+    if (reportsToBeDeleted.length > 0 || deleteAllReports) {
+      this.deleteModal.open(reportsToBeDeleted, deleteAllReports);
     }
   }
 
-  deleteSelected(): void {
-    if (this.reports) {
-      this.httpService
-        .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
-        .subscribe({
-          next: () => this.testReportsService.getReports(),
-          error: () => catchError(this.errorHandler.handleError()),
-        });
+  deleteSelected(deleteAllReports: boolean): void {
+    if (deleteAllReports) {
+      this.deleteAllReports();
+    } else {
+      if (this.reports) {
+        this.httpService
+          .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
+          .subscribe({
+            next: () => this.testReportsService.getReports(),
+            error: () => catchError(this.errorHandler.handleError()),
+          });
+      }
     }
+  }
+
+  deleteAllReports(): void {
+    this.httpService.deleteAllReports(this.testReportsService.storageName).subscribe({
+      next: () => this.testReportsService.getReports(),
+      error: () => catchError(this.errorHandler.handleError()),
+    });
   }
 
   downloadSelected(): void {
