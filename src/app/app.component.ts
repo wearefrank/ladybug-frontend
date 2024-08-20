@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Location } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { CompareComponent } from './compare/compare.component';
 import { Report } from './shared/interfaces/report';
@@ -47,6 +48,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     private tabService: TabService,
     private router: Router,
     private helperService: HelperService,
+    private location: Location,
   ) {
     this.titleService.setTitle(`Ladybug - v${this.appVersion}`);
   }
@@ -147,7 +149,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     const index: number = this.tabs.indexOf(tab);
     this.tabs.splice(index, 1);
     if (this.router.url.includes(tab.path)) {
-      this.router.navigate([DebugComponent.ROUTER_PATH]);
+      this.location.back();
     }
   }
 
