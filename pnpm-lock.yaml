@@ -190,11 +190,11 @@ importers:
         specifier: 2.2.1
         version: 2.2.1
       karma-jasmine:
-        specifier: 4.0.1
-        version: 4.0.1(karma@6.4.2)
+        specifier: 5.1.0
+        version: 5.1.0(karma@6.4.2)
       karma-jasmine-html-reporter:
         specifier: 1.7.0
-        version: 1.7.0(jasmine-core@3.9.0)(karma-jasmine@4.0.1(karma@6.4.2))(karma@6.4.2)
+        version: 1.7.0(jasmine-core@3.9.0)(karma-jasmine@5.1.0(karma@6.4.2))(karma@6.4.2)
       start-server-and-test:
         specifier: ^2.0.4
         version: 2.0.4
@@ -3711,6 +3711,9 @@ packages:
   jasmine-core@3.9.0:
     resolution: {integrity: sha512-Tv3kVbPCGVrjsnHBZ38NsPU3sDOtNa0XmbG2baiyJqdb5/SPpDO6GVwJYtUryl6KB4q1Ssckwg612ES9Z0dreQ==}
 
+  jasmine-core@4.6.1:
+    resolution: {integrity: sha512-VYz/BjjmC3klLJlLwA4Kw8ytk0zDSmbbDLNs794VnWmkcCB7I9aAL/D48VNQtmITyPvea2C3jdUMfc3kAoy0PQ==}
+
   jest-diff@29.7.0:
     resolution: {integrity: sha512-LMIgiIrhigmPrs03JHpxUh2yISK3vLFPkAodPeo0+BuF7wA2FoQbkEg1u8gBYBThncu7e1oEDUfIXVuTqLRUjw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -3828,11 +3831,11 @@ packages:
       karma: '>=0.9'
       karma-jasmine: '>=1.1'
 
-  karma-jasmine@4.0.1:
-    resolution: {integrity: sha512-h8XDAhTiZjJKzfkoO1laMH+zfNlra+dEQHUAjpn5JV1zCPtOIVWGQjLBrqhnzQa/hrU2XrZwSyBa6XjEBzfXzw==}
-    engines: {node: '>= 10'}
+  karma-jasmine@5.1.0:
+    resolution: {integrity: sha512-i/zQLFrfEpRyQoJF9fsCdTMOF5c2dK7C7OmsuKg2D0YSsuZSfQDiLuaiktbuio6F2wiCsZSnSnieIQ0ant/uzQ==}
+    engines: {node: '>=12'}
     peerDependencies:
-      karma: '*'
+      karma: ^6.0.0
 
   karma-source-map-support@1.4.0:
     resolution: {integrity: sha512-RsBECncGO17KAoJCYXjv+ckIz+Ii9NCi+9enk+rq6XC81ezYkb4/RHE6CTXdA7IOJqoF3wcaLfVG0CPmE5ca6A==}
@@ -10027,6 +10030,8 @@ snapshots:
 
   jasmine-core@3.9.0: {}
 
+  jasmine-core@4.6.1: {}
+
   jest-diff@29.7.0:
     dependencies:
       chalk: 4.1.2
@@ -10131,15 +10136,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  karma-jasmine-html-reporter@1.7.0(jasmine-core@3.9.0)(karma-jasmine@4.0.1(karma@6.4.2))(karma@6.4.2):
+  karma-jasmine-html-reporter@1.7.0(jasmine-core@3.9.0)(karma-jasmine@5.1.0(karma@6.4.2))(karma@6.4.2):
     dependencies:
       jasmine-core: 3.9.0
       karma: 6.4.2
-      karma-jasmine: 4.0.1(karma@6.4.2)
+      karma-jasmine: 5.1.0(karma@6.4.2)
 
-  karma-jasmine@4.0.1(karma@6.4.2):
+  karma-jasmine@5.1.0(karma@6.4.2):
     dependencies:
-      jasmine-core: 3.9.0
+      jasmine-core: 4.6.1
       karma: 6.4.2
 
   karma-source-map-support@1.4.0:
