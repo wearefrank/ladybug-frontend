@@ -37,7 +37,7 @@
     "@popperjs/core": "^2.11.8",
     "@prettier/plugin-xml": "^3.2.2",
     "ace-builds": "^1.35.3",
-    "angular-split": "^14.1.0",
+    "angular-split": "^17.2.0",
     "bootstrap": "4",
     "bootstrap-icons": "^1.11.3",
     "bower": "1.8.12",
