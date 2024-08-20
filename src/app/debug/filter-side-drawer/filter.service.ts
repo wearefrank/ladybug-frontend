@@ -8,17 +8,13 @@ export class FilterService {
   private showFilterSubject: Subject<boolean> = new Subject();
   private metadataLabelsSubject: Subject<Array<string>> = new Subject();
   private filterContextSubject: Subject<Map<string, string>> = new Subject();
-  private currentRecordsSubject: Subject<Map<string, Array<string>>> = new Subject();
+  private currentRecordsSubject: Subject<Map<string, string[]>> = new Subject();
   private metadataTypesSubject: Subject<Map<string, string>> = new Subject();
   private filterErrorSubject: Subject<[boolean, Map<string, string>]> = new Subject();
-  private filters: Map<string, string> = new Map<string, string>();
-  private metadataTypes: Map<string, string> = new Map<string, string>();
-  private metadataLabels: Array<string> = new Array<string>();
-  private filterErrors: Map<string, string> = new Map<string, string>();
 
   showFilter$: Observable<boolean> = this.showFilterSubject.asObservable();
-  metadataLabels$: Observable<Array<string>> = this.metadataLabelsSubject.asObservable();
-  currentRecords$: Observable<Map<string, Array<string>>> = this.currentRecordsSubject.asObservable();
+  metadataLabels$: Observable<string[]> = this.metadataLabelsSubject.asObservable();
+  currentRecords$: Observable<Map<string, string[]>> = this.currentRecordsSubject.asObservable();
   metadataTypes$: Observable<Map<string, string>> = this.metadataTypesSubject.asObservable();
   filterError$: Observable<[boolean, Map<string, string>]> = this.filterErrorSubject.asObservable();
   filterContext$: Observable<Map<string, string>> = this.filterContextSubject.pipe(
@@ -48,6 +44,11 @@ export class FilterService {
       return !errorFound;
     }),
   );
+
+  private metadataLabels: string[] = [];
+  private filters: Map<string, string> = new Map<string, string>();
+  private metadataTypes: Map<string, string> = new Map<string, string>();
+  private filterErrors: Map<string, string> = new Map<string, string>();
 
   setShowFilter(show: boolean): void {
     this.showFilterSubject.next(show);
