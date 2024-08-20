@@ -31,7 +31,7 @@ import { FormsModule } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
-  @Input() reports: TestListItem[] = [];
+  @Input({ required: true }) reports!: TestListItem[];
   @Input() currentFilter: string = '';
   @Input() showStorageIds?: boolean;
   @Output() runEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();

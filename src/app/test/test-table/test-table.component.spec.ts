@@ -16,6 +16,7 @@ describe('TestTableBodyComponent', () => {
 
     fixture = TestBed.createComponent(TestTableComponent);
     component = fixture.componentInstance;
+    component.reports = [];
     fixture.detectChanges();
   });
 
