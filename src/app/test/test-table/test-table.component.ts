@@ -31,10 +31,9 @@ import { FormsModule } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
-  @Input() reports: TestListItem[] = new Array<TestListItem>();
+  @Input() reports: TestListItem[] = [];
   @Input() currentFilter: string = '';
   @Input() showStorageIds?: boolean;
-  @Output() toggleCheckEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
   @Output() runEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
   protected amountOfSelectedReports: number = 0;
   private subscriptions: Subscription = new Subscription();
@@ -69,7 +68,7 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribeToSubscriptions();
+    this.unsubscribeFromSubscriptions();
   }
 
   subscribeToSubscriptions(): void {
@@ -82,7 +81,7 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
     this.subscriptions.add(amountSelectedSubscription);
   }
 
-  unsubscribeToSubscriptions(): void {
+  unsubscribeFromSubscriptions(): void {
     this.subscriptions.unsubscribe();
   }
 
@@ -104,7 +103,6 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
 
   getFullPaths(): void {
     for (const report of this.reports) {
-      report.fullPath = '';
       report.fullPath = report.path
         ? `${report.path.replace(this.currentFilter, '')}${report.name}`
         : `/${report.name}`;
@@ -156,5 +154,15 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
     } else {
       this.testReportsService.setAmountSelected(this.reports.length);
     }
+  }
+
+  toggleCheck(report: TestListItem): void {
+    report.checked = !report.checked;
+    if (report.checked) {
+      this.amountOfSelectedReports++;
+    } else {
+      this.amountOfSelectedReports--;
+    }
+    this.testReportsService.setAmountSelected(this.amountOfSelectedReports);
   }
 }

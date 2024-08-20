@@ -23,7 +23,7 @@
           <tr>
             <td>
               <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked"
-                     (click)="toggleCheckEvent.next(report)">
+                     (click)="toggleCheck(report)">
             </td>
             @if (showStorageIds) {
               <td>

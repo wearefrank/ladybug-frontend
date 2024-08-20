@@ -9,10 +9,12 @@ import { Observable, ReplaySubject, Subject } from 'rxjs';
 export class TestReportsService {
   private testReportsSubject: Subject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
   private amountSelectedSubject: Subject<number> = new Subject<number>();
-  metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
-  storageName: string = 'Test';
+
   testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
   amountSelected$: Observable<number> = this.amountSelectedSubject.asObservable();
+
+  metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
+  storageName: string = 'Test';
 
   constructor(private httpService: HttpService) {
     this.getReports();

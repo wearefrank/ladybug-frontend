@@ -272,15 +272,6 @@ export class TestComponent implements OnInit, OnDestroy {
     this.testReportsService.getReports();
   }
 
-  toggleCheck(report: TestListItem): void {
-    report.checked = !report.checked;
-    if (report.checked) {
-      this.amountOfSelectedReports++;
-    } else {
-      this.amountOfSelectedReports--;
-    }
-  }
-
   setCheckedForAllReports(value: boolean): void {
     for (const report of this.reports) {
       report.checked = value;

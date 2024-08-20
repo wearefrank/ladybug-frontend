@@ -36,8 +36,8 @@
     <p>Generator is {{ generatorEnabled|booleanToString: 'enabled':'disabled' }}</p>
 
     <app-test-table
-      [reports]="reports" [currentFilter]="currentFilter" [showStorageIds]="showStorageIds"
-      (toggleCheckEvent)="toggleCheck($event)" (runEvent)="run($event)">
+      [reports]="reports" [currentFilter]="currentFilter"
+      [showStorageIds]="showStorageIds" (runEvent)="run($event)">
     </app-test-table>
   </div>
 </div>
