@@ -384,6 +384,8 @@ export class TableComponent implements OnInit, OnDestroy {
   openDeleteModal(): void {
     if (this.tableSettings.reportMetadata.length > 0) {
       this.deleteModal.open(true);
+    } else {
+      this.toastService.showWarning('No reports to be deleted!');
     }
   }
 
