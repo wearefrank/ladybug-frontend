@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { HttpService } from '../shared/services/http.service';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -9,8 +9,9 @@ import { Observable, ReplaySubject, Subject } from 'rxjs';
 export class TestReportsService {
   metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
   storageName: string = 'Test';
-  private testReportsSubject: Subject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
+  private testReportsSubject: ReplaySubject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
   testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
+  private firstApiCall: boolean = true;
 
   constructor(private httpService: HttpService) {
     this.getReports();
@@ -18,10 +19,31 @@ export class TestReportsService {
 
   getReports() {
     this.httpService.getTestReports(this.metadataNames, this.storageName).subscribe({
-      next: (response: TestListItem[]) => {
-        this.testReportsSubject.next(this.sortByName(response));
+      next: async (response: TestListItem[]) => {
+        const sortedReports = this.sortByName(response);
+        if (this.firstApiCall) {
+          this.testReportsSubject.next(sortedReports);
+          this.firstApiCall = false;
+        } else {
+          this.testReportsSubject.next(await this.matchRerunResults(sortedReports));
+        }
       },
     });
+  }
+
+  async matchRerunResults(reports: TestListItem[]) {
+    const oldReports: TestListItem[] = await firstValueFrom(this.testReportsSubject);
+    const filteredReports: TestListItem[] = oldReports.filter((r: TestListItem) => !!r.reranReport);
+    if (filteredReports.length > 0) {
+      for (const report of reports) {
+        for (const oldReport of filteredReports) {
+          if (report.storageId === oldReport.storageId) {
+            report.reranReport = oldReport.reranReport;
+          }
+        }
+      }
+    }
+    return reports;
   }
 
   sortByName(reports: TestListItem[]): TestListItem[] {
