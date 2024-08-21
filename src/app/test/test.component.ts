@@ -208,11 +208,13 @@ export class TestComponent implements OnInit {
   openDeleteModal(deleteAllReports: boolean): void {
     const reportsToBeDeleted: TestListItem[] = this.getSelectedReports();
     if (this.reports && (reportsToBeDeleted.length > 0 || (deleteAllReports && this.reports.length > 0))) {
-      this.deleteModal.open(reportsToBeDeleted, deleteAllReports);
+      this.deleteModal.open(deleteAllReports, reportsToBeDeleted);
+    } else {
+      this.toastService.showWarning('No reports to be deleted!');
     }
   }
 
-  deleteSelected(deleteAllReports: boolean): void {
+  deleteReports(deleteAllReports: boolean): void {
     if (deleteAllReports) {
       this.deleteAllReports();
     } else if (this.reports) {

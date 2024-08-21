@@ -383,7 +383,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openDeleteModal(): void {
     if (this.tableSettings.reportMetadata.length > 0) {
-      this.deleteModal.open([], true);
+      this.deleteModal.open(true);
     }
   }
 

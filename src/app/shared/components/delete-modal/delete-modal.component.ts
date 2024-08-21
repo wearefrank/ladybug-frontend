@@ -20,12 +20,14 @@ export class DeleteModalComponent {
 
   constructor(private modalService: NgbModal) {}
 
-  open(reportsToBeDeleted: TestListItem[], deleteAllReports: boolean): void {
+  open(deleteAllReports: boolean, reportsToBeDeleted?: TestListItem[]): void {
     this.deleteAllReports = deleteAllReports;
     this.deleteQuestion = deleteAllReports
       ? 'Are you sure you want to delete all reports?'
       : 'Are you sure you want to delete the following reports?';
-    this.reports = reportsToBeDeleted;
+    if (reportsToBeDeleted) {
+      this.reports = reportsToBeDeleted;
+    }
     const options: NgbModalOptions = {
       modalDialogClass: 'modal-window',
       backdropClass: 'modal-backdrop',
