@@ -55,6 +55,7 @@ export class DebugTreeComponent implements OnDestroy {
   treeOptions: FileTreeOptions = {
     highlightOpenFolders: false,
     folderBehaviourOnClick: 'select',
+    doubleClickToOpenFolders: false,
     autoOpenCondition: this.conditionalOpenFunction,
     determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };

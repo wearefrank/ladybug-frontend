@@ -39,6 +39,7 @@ export class CompareTreeComponent {
 
   leftTreeOptions: FileTreeOptions = {
     highlightOpenFolders: false,
+    doubleClickToOpenFolders: false,
     folderBehaviourOnClick: 'select',
     expandAllFolders: true,
     determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
