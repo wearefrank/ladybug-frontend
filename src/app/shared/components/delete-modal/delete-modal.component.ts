@@ -35,10 +35,6 @@ export class DeleteModalComponent {
 
   deleteReports() {
     this.confirmDeleteEvent.emit(this.deleteAllReports);
-    this.closeModal();
-  }
-
-  closeModal(): void {
     this.activeModal?.close();
   }
 }

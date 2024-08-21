@@ -13,7 +13,7 @@ describe('About the Test tab', () => {
 
   afterEach(() => cy.resetApp());
 
-  it('Test deleting a report', () => {
+  it('Should delete one report at a time with deleteSelected button', () => {
     cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="table"]').contains('Simple report').parent('tr').find('[data-cy-test="reportChecked"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
@@ -23,19 +23,36 @@ describe('About the Test tab', () => {
     cy.get('[data-cy-delete-modal="confirm"]').click();
   });
 
-  it('Test select all by deleting', () => {
+  it('Should delete all tests with deleteSelected button', () => {
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
     cy.checkTestTableNumRows(0);
   });
 
-  it('Test deselect all', () => {
+  it('Should not open delete modal when clicking on deleteSelected button and there are no tests selected', () => {
     cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.checkTestTableNumRows(2);
     cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
+  });
+
+  it('Should delete all tests with deleteAll button', () => {
+    cy.checkTestTableNumRows(2);
+    cy.get('[data-cy-test="toggleSelectAll"]').click();
+    cy.get('[data-cy-test="deleteAll"]').click();
+    cy.get('[data-cy-delete-modal="confirm"]').click();
+    cy.checkTestTableNumRows(0);
+  });
+
+  it('Should not open delete modal when there are no tests', () => {
+    cy.get('[data-cy-test="deleteAll"]').click();
+    cy.get('[data-cy-delete-modal="confirm"]').should('exist').click();
+    cy.get('[data-cy-test="deleteAll"]').click();
+    cy.get('[data-cy-delete-modal="confirm"]').should('not.exist');
+    cy.get('[data-cy-test="deleteSelected"]').click();
+    cy.get('[data-cy-delete-modal="confirm"]').should('not.exist');
   });
 });
 
