@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { catchError, Observable, of, Subscription } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { DeleteModalComponent } from './delete-modal/delete-modal.component';
@@ -43,22 +43,21 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     TestTableComponent,
   ],
 })
-export class TestComponent implements OnInit, OnDestroy {
+export class TestComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'test';
 
   protected reports: TestListItem[] = new Array<TestListItem>();
   protected generatorEnabled: boolean = false;
   protected currentFilter: string = '';
   protected showStorageIds?: boolean;
-  protected amountOfSelectedReports: number = 0;
 
   private updatePathAction: UpdatePathAction = 'move';
-  private subscriptions: Subscription = new Subscription();
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
   @ViewChild(TestFolderTreeComponent) testFileTreeComponent!: TestFolderTreeComponent;
   @ViewChild('moveToInput', { read: NgModel }) moveToInputModel!: NgModel;
+  @ViewChild(TestTableComponent) testTableComponent!: TestTableComponent;
 
   constructor(
     private httpService: HttpService,
@@ -72,33 +71,9 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscribeToSubscriptions();
     this.loadData();
     this.matches();
     localStorage.removeItem('generatorEnabled');
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribeFromSubscriptions();
-  }
-
-  subscribeToSubscriptions(): void {
-    const amountSelectedSubscription: Subscription = this.testReportsService.amountSelected$.subscribe({
-      next: (amount: number): void => {
-        this.amountOfSelectedReports = amount;
-        if (this.amountOfSelectedReports === this.reports.length) {
-          this.setCheckedForAllReports(true);
-        } else if (this.amountOfSelectedReports === 0) {
-          this.setCheckedForAllReports(false);
-        }
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-    this.subscriptions.add(amountSelectedSubscription);
-  }
-
-  unsubscribeFromSubscriptions(): void {
-    this.subscriptions.unsubscribe();
   }
 
   getStorageIdsFromLocalStorage(): void {
@@ -129,8 +104,6 @@ export class TestComponent implements OnInit, OnDestroy {
     this.testReportsService.testReports$.subscribe({
       next: (value: TestListItem[]) => {
         this.reports = value;
-        this.setCheckedForAllReports(true);
-        this.amountOfSelectedReports = value.length;
         if (this.testFileTreeComponent) {
           this.testFileTreeComponent.setData(this.reports);
           this.testFileTreeComponent.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
@@ -182,6 +155,7 @@ export class TestComponent implements OnInit, OnDestroy {
       this.httpService.runReport(this.testReportsService.storageName, report.storageId).subscribe({
         next: (response: TestResult): void => {
           report.reranReport = this.createReranReport(response);
+          this.refresh();
         },
         error: () =>
           catchError((error: HttpErrorResponse): Observable<any> => {
@@ -198,7 +172,6 @@ export class TestComponent implements OnInit, OnDestroy {
     for (const report of this.getSelectedReports()) {
       this.run(report);
     }
-    this.refresh();
   }
 
   createReranReport(result: TestResult): ReranReport {
@@ -270,13 +243,6 @@ export class TestComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.testReportsService.getReports();
-  }
-
-  setCheckedForAllReports(value: boolean): void {
-    for (const report of this.reports) {
-      report.checked = value;
-    }
-    this.refresh();
   }
 
   updatePath(): void {

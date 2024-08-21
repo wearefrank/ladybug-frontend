@@ -8,10 +8,8 @@ import { Observable, ReplaySubject, Subject } from 'rxjs';
 })
 export class TestReportsService {
   private testReportsSubject: Subject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
-  private amountSelectedSubject: Subject<number> = new Subject<number>();
 
   testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
-  amountSelected$: Observable<number> = this.amountSelectedSubject.asObservable();
 
   metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
   storageName: string = 'Test';
@@ -32,9 +30,5 @@ export class TestReportsService {
     return reports.sort((a: TestListItem, b: TestListItem): number =>
       a.name > b.name ? 1 : a.name === b.name ? 0 : -1,
     );
-  }
-
-  setAmountSelected(amount: number): void {
-    this.amountSelectedSubject.next(amount);
   }
 }

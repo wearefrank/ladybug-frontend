@@ -4,13 +4,12 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
 import { TestListItem } from '../../shared/interfaces/test-list-item';
-import { catchError, Subscription } from 'rxjs';
+import { catchError } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { ErrorHandling } from '../../shared/classes/error-handling.service';
 import { TabService } from '../../shared/services/tab.service';
@@ -30,13 +29,13 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './test-table.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
+export class TestTableComponent implements OnChanges {
   @Input({ required: true }) reports!: TestListItem[];
   @Input() currentFilter: string = '';
   @Input() showStorageIds?: boolean;
   @Output() runEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
-  protected amountOfSelectedReports: number = 0;
-  private subscriptions: Subscription = new Subscription();
+
+  amountOfSelectedReports: number = 0;
 
   constructor(
     private httpService: HttpService,
@@ -58,31 +57,8 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
           report.extractedVariables = this.extractVariables(report.variables);
         }
       }
-      this.testReportsService.setAmountSelected(this.amountOfSelectedReports);
       this.getFullPaths();
     }
-  }
-
-  ngOnInit(): void {
-    this.subscribeToSubscriptions();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribeFromSubscriptions();
-  }
-
-  subscribeToSubscriptions(): void {
-    const amountSelectedSubscription: Subscription = this.testReportsService.amountSelected$.subscribe({
-      next: (value: number): void => {
-        this.amountOfSelectedReports = value;
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-    this.subscriptions.add(amountSelectedSubscription);
-  }
-
-  unsubscribeFromSubscriptions(): void {
-    this.subscriptions.unsubscribe();
   }
 
   openReport(storageId: number): void {
@@ -148,14 +124,6 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  toggleSelectAll(): void {
-    if (this.amountOfSelectedReports === this.reports.length) {
-      this.testReportsService.setAmountSelected(0);
-    } else {
-      this.testReportsService.setAmountSelected(this.reports.length);
-    }
-  }
-
   toggleCheck(report: TestListItem): void {
     report.checked = !report.checked;
     if (report.checked) {
@@ -163,6 +131,20 @@ export class TestTableComponent implements OnChanges, OnInit, OnDestroy {
     } else {
       this.amountOfSelectedReports--;
     }
-    this.testReportsService.setAmountSelected(this.amountOfSelectedReports);
+  }
+
+  toggleSelectAll(): void {
+    this.amountOfSelectedReports = this.amountOfSelectedReports === this.reports.length ? 0 : this.reports.length;
+    if (this.amountOfSelectedReports > 0) {
+      this.setCheckedForAllReports(true);
+    } else {
+      this.setCheckedForAllReports(false);
+    }
+  }
+
+  setCheckedForAllReports(value: boolean): void {
+    for (const report of this.reports) {
+      report.checked = value;
+    }
   }
 }
