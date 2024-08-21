@@ -10,12 +10,14 @@ import { TestListItem } from '../../interfaces/test-list-item';
   styleUrl: './delete-modal.component.css',
 })
 export class DeleteModalComponent {
-  @ViewChild('modal') modal!: NgbModal;
-  protected activeModal?: NgbModalRef;
   @Output() confirmDeleteEvent = new EventEmitter<boolean>();
-  reports: TestListItem[] = [];
-  deleteQuestion!: string;
-  deleteAllReports!: boolean;
+  @ViewChild('modal') modal!: NgbModal;
+
+  protected activeModal?: NgbModalRef;
+  protected reports: TestListItem[] = [];
+  protected deleteQuestion?: string;
+  protected deleteAllReports?: boolean;
+
   constructor(private modalService: NgbModal) {}
 
   open(reportsToBeDeleted: TestListItem[], deleteAllReports: boolean): void {
@@ -37,8 +39,6 @@ export class DeleteModalComponent {
   }
 
   closeModal(): void {
-    if (this.activeModal) {
-      this.activeModal.close();
-    }
+    this.activeModal?.close();
   }
 }

@@ -8,7 +8,7 @@
   @if (!deleteAllReports) {
     <div class="modal-body">
       <ul>
-        @for (report of reports; track report) {
+        @for (report of reports; track report.storageId) {
           <li> [{{ report.storageId }}] {{ report.name }}</li>
         }
       </ul>
