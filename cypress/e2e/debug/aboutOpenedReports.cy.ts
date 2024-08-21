@@ -51,12 +51,7 @@ describe('About opened reports', () => {
     cy.initializeApp();
     cy.getTableRows().find('td:contains("Hide a checkpoint in blackbox view")').first().click();
     cy.checkFileTreeLength(1);
-    cy.get(
-      '[data-cy-debug-tree="root"] app-tree-item > div > div:contains("Hide this checkpoint") > div:contains("Hide this checkpoint") > app-tree-item > div > div:contains("Hide a checkpoint in blackbox view")',
-    )
-      .first()
-      .selectIfNotSelected()
-      .click();
+    cy.get('[data-cy-debug-tree="root"] app-tree-item app-tree-icon .sft-chevron-container').eq(1).click()
     cy.get('[data-cy-debug-tree="root"] app-tree-item > div > div:contains("Hide this checkpoint")').should(
       'be.hidden',
     );
@@ -67,12 +62,7 @@ describe('About opened reports', () => {
     cy.initializeApp();
     cy.getTableRows().find('td:contains("Multiple startpoints")').first().click();
     cy.checkFileTreeLength(1);
-    cy.get(
-      '[data-cy-debug-tree="root"] app-tree-item > div > div:contains("Hello infopoint") > div:contains("Hello infopoint") > app-tree-item > div > div:contains("startpoint 2") > div:contains("startpoint 2") > app-tree-item  > div > div:contains("startpoint 2")',
-    )
-      .first()
-      .selectIfNotSelected()
-      .click();
+    cy.get('[data-cy-debug-tree="root"] app-tree-item app-tree-icon .sft-chevron-container').eq(1).click()
     cy.get('[data-cy-debug-tree="root"] app-tree-item > div > div:contains("Hello infopoint")').should('be.hidden');
     cy.get(
       '[data-cy-debug-tree="root"] app-tree-item > div > div:contains("startpoint 2") > div:contains("Multiple startpoints") > app-tree-item > div > div:contains("Multiple startpoints")',
