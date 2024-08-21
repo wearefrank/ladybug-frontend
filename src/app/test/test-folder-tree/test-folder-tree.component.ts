@@ -18,6 +18,7 @@ export class TestFolderTreeComponent {
   };
   treeOptions: FileTreeOptions = {
     folderBehaviourOnClick: 'select',
+    doubleClickToOpenFolders: false,
     expandAllFolders: true,
     highlightOpenFolders: false,
     autoSelectCondition: (item: CreateTreeItem) => this.autoSelectItem(item),
