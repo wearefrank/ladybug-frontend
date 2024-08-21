@@ -27,3 +27,27 @@ tr {
 button {
   height: fit-content;
 }
+
+.table-container {
+  overflow: auto;
+  height: 80vh;
+}
+
+.test-table td {
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.test-table th {
+  padding-bottom: 0.25rem;
+  padding-top: 0.25rem;
+}
+
+.table-row-checkbox {
+  display: table-cell;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  vertical-align: middle;
+  width: 2rem;
+}
