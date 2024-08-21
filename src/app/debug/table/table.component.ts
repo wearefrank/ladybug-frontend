@@ -381,6 +381,12 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
+  openDeleteModal(): void {
+    if (this.tableSettings.reportMetadata.length > 0) {
+      this.deleteModal.open([], true);
+    }
+  }
+
   deleteSelected(): void {
     const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
     if (reportIds.length > 0) {
