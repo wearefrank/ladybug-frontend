@@ -37,6 +37,14 @@ describe('Test the Test tab', () => {
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
   });
+
+  it('should keep rerun results after switching tabs', () => {
+    cy.get('[data-cy-test="runReport"]').eq(0).click();
+    cy.get('[data-cy-test="runResult"]').should('be.visible');
+    cy.get('[data-cy-test="compareReport"]').eq(0).click();
+    cy.get('[data-cy-nav-tab="testTab"]').click();
+    cy.get('[data-cy-test="runResult"]').should('be.visible');
+  });
 });
 
 function copyTheReportsToTestTab() {
