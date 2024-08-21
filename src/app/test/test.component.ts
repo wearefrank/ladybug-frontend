@@ -226,10 +226,12 @@ export class TestComponent implements OnInit {
   }
 
   deleteAllReports(): void {
-    this.httpService.deleteAllReports(this.testReportsService.storageName).subscribe({
-      next: () => this.testReportsService.getReports(),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .deleteAllReports(this.testReportsService.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: () => this.testReportsService.getReports(),
+      });
   }
 
   downloadSelected(): void {

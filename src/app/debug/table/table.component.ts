@@ -398,10 +398,12 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   deleteAll(): void {
-    this.httpService.deleteAllReports(this.currentView.storageName).subscribe({
-      next: () => this.retrieveRecords(),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .deleteAllReports(this.currentView.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: () => this.retrieveRecords(),
+      });
   }
 
   compareTwoReports(): void {
