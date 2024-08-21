@@ -15,7 +15,7 @@ import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   NgbDropdown,
   NgbDropdownButtonItem,
@@ -122,7 +122,7 @@ export class TableComponent implements OnInit, OnDestroy {
   tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
   tableDataSort?: MatSort;
   protected selectedReportStorageId?: number;
-
+  protected openInProgress?: FormControl;
   private readonly subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -258,6 +258,12 @@ export class TableComponent implements OnInit, OnDestroy {
         this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
         this.loadReportInProgressDates();
+        this.openInProgress = new FormControl(1, [
+          Validators.min(1),
+          Validators.max(this.tableSettings.numberOfReportsInProgress),
+          Validators.pattern('^[0-9]*$'),
+          Validators.required,
+        ]);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
