@@ -80,10 +80,6 @@ export class ReportComponent implements AfterViewInit, OnInit {
     this.displayComponent.closeReport();
   }
 
-  closeReport(): void {
-    this.debugTreeComponent.removeReport(this.reportData?.report);
-  }
-
   getIdFromPath(): string {
     return this.route.snapshot.paramMap.get('id') as string;
   }
