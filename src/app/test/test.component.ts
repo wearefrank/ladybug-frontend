@@ -7,7 +7,6 @@ import { ReranReport } from '../shared/interfaces/reran-report';
 import { catchError, Observable, of } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
-import { DeleteModalComponent } from './delete-modal/delete-modal.component';
 import { ToastService } from '../shared/services/toast.service';
 import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
@@ -23,6 +22,7 @@ import { ErrorHandling } from '../shared/classes/error-handling.service';
 import { BooleanToStringPipe } from '../shared/pipes/boolean-to-string.pipe';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestReportsService } from './test-reports.service';
+import { DeleteModalComponent } from '../shared/components/delete-modal/delete-modal.component';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -40,8 +40,8 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     ToastComponent,
     TestSettingsModalComponent,
     CloneModalComponent,
-    DeleteModalComponent,
     BooleanToStringPipe,
+    DeleteModalComponent,
   ],
 })
 export class TestComponent implements OnInit {
@@ -205,15 +205,19 @@ export class TestComponent implements OnInit {
     });
   }
 
-  openDeleteModal(): void {
+  openDeleteModal(deleteAllReports: boolean): void {
     const reportsToBeDeleted: TestListItem[] = this.getSelectedReports();
-    if (reportsToBeDeleted.length > 0) {
-      this.deleteModal.open(reportsToBeDeleted);
+    if (this.reports && (reportsToBeDeleted.length > 0 || (deleteAllReports && this.reports.length > 0))) {
+      this.deleteModal.open(deleteAllReports, reportsToBeDeleted);
+    } else {
+      this.toastService.showWarning('No reports to be deleted!');
     }
   }
 
-  deleteSelected(): void {
-    if (this.reports) {
+  deleteReports(deleteAllReports: boolean): void {
+    if (deleteAllReports) {
+      this.deleteAllReports();
+    } else if (this.reports) {
       this.httpService
         .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
         .subscribe({
@@ -221,6 +225,15 @@ export class TestComponent implements OnInit {
           error: () => catchError(this.errorHandler.handleError()),
         });
     }
+  }
+
+  deleteAllReports(): void {
+    this.httpService
+      .deleteAllReports(this.testReportsService.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: () => this.testReportsService.getReports(),
+      });
   }
 
   downloadSelected(): void {
