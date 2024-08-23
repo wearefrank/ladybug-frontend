@@ -21,7 +21,7 @@ export interface Report {
   transformation: string;
   variableCsv: string;
   checked: boolean;
-  storageName: string;
+  storageName?: string;
   variablesAsMap: any; // Map<String, String>
   xml: string; // Custom for the xml representation of the report
   id: string; // Custom
