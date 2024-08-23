@@ -74,9 +74,7 @@ export class HttpService {
   }
 
   getReportInProgress(index: number): Observable<Report> {
-    return this.http
-      .get<Report>(`api/testtool/in-progress/${index}`)
-      .pipe(tap(() => this.handleSuccess(`Opened report in progress with index [${index}]`)));
+    return this.http.get<Report>(`api/testtool/in-progress/${index}`);
   }
 
   deleteReportInProgress(index: number): Observable<Report> {

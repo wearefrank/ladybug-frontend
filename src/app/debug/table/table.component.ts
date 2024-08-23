@@ -15,7 +15,7 @@ import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   NgbDropdown,
   NgbDropdownButtonItem,
@@ -70,7 +70,7 @@ export class TableComponent implements OnInit, OnDestroy {
   @Input({ required: true }) currentView!: View;
 
   @Output() viewChange: Subject<View> = new Subject<View>();
-  @Output() openReportEvent: EventEmitter<any> = new EventEmitter<any>();
+  @Output() openReportEvent: EventEmitter<Report> = new EventEmitter<Report>();
 
   @ViewChild(TableSettingsModalComponent) tableSettingsModal!: TableSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
@@ -125,7 +125,7 @@ export class TableComponent implements OnInit, OnDestroy {
   tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
   tableDataSort?: MatSort;
   protected selectedReportStorageId?: number;
-
+  protected openInProgress?: FormControl;
   private readonly subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -259,6 +259,12 @@ export class TableComponent implements OnInit, OnDestroy {
         this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
         this.loadReportInProgressDates();
+        this.openInProgress = new FormControl(1, [
+          Validators.min(1),
+          Validators.max(this.tableSettings.numberOfReportsInProgress),
+          Validators.pattern('^[0-9]*$'),
+          Validators.required,
+        ]);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -473,6 +479,7 @@ export class TableComponent implements OnInit, OnDestroy {
   openReportInProgress(index: number): void {
     this.httpService.getReportInProgress(index).subscribe({
       next: (report: Report) => {
+        this.toastService.showSuccess(`Opened report in progress with index [${index}]`);
         this.openReportEvent.next(report);
       },
       error: () => catchError(this.errorHandler.handleError()),

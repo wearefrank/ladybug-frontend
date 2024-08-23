@@ -61,16 +61,18 @@
       <div data-cy-debug-in-progress-counter class="btn btn-static"
       >Reports in progress: {{ tableSettings.numberOfReportsInProgress }}
       </div>
-      @if (tableSettings.numberOfReportsInProgress > 0) {
+      @if (tableSettings.numberOfReportsInProgress > 0 && openInProgress) {
         <span class="progress-buttons">
           <div class="btn btn-static "> Estimated memory usage of reports in
             progress: {{ tableSettings.estimatedMemoryUsage }} Bytes
           </div>
           <div class="input-group w-auto h-auto">
             <input #openIndex type="number" min="0" class="form-control input-field" data-cy-debug="openInProgressNo"
+                   [formControl]="openInProgress"
                    [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress"/>
             <div class="input-group-append">
               <button data-cy-debug="openInProgress" class="btn btn-info" type="button"
+                      [disabled]="openInProgress.invalid"
                       (click)="openReportInProgress(+openIndex.value)">Open
               </button>
             </div>
