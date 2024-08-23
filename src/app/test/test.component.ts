@@ -257,9 +257,9 @@ export class TestComponent implements OnInit {
       );
       this.tabService.openNewCompareTab({
         id: tabId,
-        viewName: 'compare',
-        originalReport: report.reranReport.originalReport,
-        runResultReport: report.reranReport.runResultReport,
+        originalReport: { ...report.reranReport.originalReport, storageName: this.testReportsService.storageName },
+        // Temporary fix until https://github.com/wearefrank/ladybug/issues/283 is fixed
+        runResultReport: { ...report.reranReport.runResultReport, storageName: 'Debug' },
       });
     }
   }

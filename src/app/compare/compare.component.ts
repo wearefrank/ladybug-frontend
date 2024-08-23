@@ -12,6 +12,14 @@ import { Report } from '../shared/interfaces/report';
 import { Checkpoint } from '../shared/interfaces/checkpoint';
 import { ReportUtil } from '../shared/util/report-util';
 import { StrReplacePipe } from '../shared/pipes/str-replace.pipe';
+import { ViewDropdownComponent } from '../shared/components/view-dropdown/view-dropdown.component';
+import { View } from '../shared/interfaces/view';
+import { HttpService } from '../shared/services/http.service';
+import { ErrorHandling } from '../shared/classes/error-handling.service';
+import { catchError } from 'rxjs';
+import { SimpleFileTreeUtil } from '../shared/util/simple-file-tree-util';
+import { DebugComponent } from '../debug/debug.component';
+import { TreeItemComponent } from 'ng-simple-file-tree';
 
 @Component({
   selector: 'app-compare',
@@ -26,6 +34,7 @@ import { StrReplacePipe } from '../shared/pipes/str-replace.pipe';
     TitleCasePipe,
     FormsModule,
     StrReplacePipe,
+    ViewDropdownComponent,
   ],
 })
 export class CompareComponent implements AfterViewInit, OnInit {
@@ -36,28 +45,34 @@ export class CompareComponent implements AfterViewInit, OnInit {
   protected diffOptions = {
     theme: 'vs',
     language: 'xml',
-    readOnly: true,
+    readOnly: false,
+    originalEditable: true,
     renderSideBySide: true,
     automaticLayout: true,
     scrollBeyondLastLine: false,
   };
   protected originalModel: DiffEditorModel = { code: '', language: 'xml' };
   protected modifiedModel: DiffEditorModel = { code: '', language: 'xml' };
-
+  protected leftReport?: Report;
+  protected rightReport?: Report;
   protected leftNode?: Report | Checkpoint;
   protected rightNode?: Report | Checkpoint;
-
   protected compareData?: CompareData;
+  protected views?: View[];
+  protected currentView?: View;
 
   constructor(
     public tabService: TabService,
     private route: ActivatedRoute,
     private router: Router,
+    private httpService: HttpService,
+    private errorHandler: ErrorHandling,
   ) {}
 
   ngOnInit(): void {
     this.compareData = this.getData(this.getIdsFromPath());
     this.getStrategyFromLocalStorage();
+    this.getViews();
   }
 
   ngAfterViewInit(): void {
@@ -65,8 +80,23 @@ export class CompareComponent implements AfterViewInit, OnInit {
       this.renderDiffs(this.compareData.originalReport.xml, this.compareData.runResultReport.xml);
       this.showReports();
     } else {
-      this.router.navigate(['debug']);
+      this.router.navigate([DebugComponent.ROUTER_PATH]);
     }
+  }
+
+  private getViews() {
+    this.httpService.getViews().subscribe((views: View[]) => {
+      const filteredViews: View[] = views.filter((v: View) => {
+        return (
+          v.storageName === this.compareData?.originalReport.storageName ||
+          v.storageName === this.compareData?.runResultReport.storageName
+        );
+      });
+      if (filteredViews.length > 0) {
+        this.views = filteredViews;
+        this.changeView(views[0]);
+      }
+    });
   }
 
   private getData(id: string): CompareData | undefined {
@@ -96,6 +126,12 @@ export class CompareComponent implements AfterViewInit, OnInit {
   protected syncLeftAndRight(): void {
     this.leftNode = this.compareTreeComponent.leftTree.getSelected().originalValue;
     this.rightNode = this.compareTreeComponent.rightTree.getSelected().originalValue;
+    if (ReportUtil.isReport(this.leftNode)) {
+      this.leftReport = { ...this.leftNode };
+    }
+    if (ReportUtil.isReport(this.rightNode)) {
+      this.rightReport = { ...this.rightNode };
+    }
     this.showDifference();
   }
 
@@ -115,5 +151,37 @@ export class CompareComponent implements AfterViewInit, OnInit {
     if (this.compareData && this.nodeLinkStrategy) {
       localStorage.setItem(this.compareData.viewName + '.NodeLinkStrategy', this.nodeLinkStrategy);
     }
+  }
+
+  protected changeView(view: View): void {
+    if (this.leftReport?.storageName && this.rightReport?.storageName) {
+      this.hideOrShowCheckpoints(
+        view,
+        this.leftReport.storageName,
+        this.leftReport.storageId,
+        this.compareTreeComponent.leftTree.elements.toArray(),
+      );
+      this.hideOrShowCheckpoints(
+        view,
+        this.rightReport.storageName,
+        this.rightReport.storageId,
+        this.compareTreeComponent.rightTree.elements.toArray(),
+      );
+    }
+    this.currentView = view;
+  }
+
+  private hideOrShowCheckpoints(
+    view: View,
+    storageName: string,
+    storageId: number,
+    treeElements: TreeItemComponent[],
+  ): void {
+    this.httpService
+      .getUnmatchedCheckpoints(storageName, storageId, view.name)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (response: string[]) => SimpleFileTreeUtil.hideOrShowCheckpoints(response, treeElements),
+      });
   }
 }
