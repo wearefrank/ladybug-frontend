@@ -208,9 +208,7 @@ export class TableComponent implements OnInit, OnDestroy {
         value = '';
       }
     }
-    this.tableSettings.currentFilters = new Map<string, string>();
     this.tableSettings.currentFilters = filters;
-
     this.retrieveRecords();
   }
 
@@ -237,7 +235,7 @@ export class TableComponent implements OnInit, OnDestroy {
   changeView(view: View): void {
     this.currentView = view;
     this.retrieveRecords();
-    this.filterService.setMetadataLabels(this.currentView.metadataLabels);
+    this.filterService.setMetadataLabels(this.currentView.metadataNames);
     this.viewChange.next(this.currentView);
   }
 
@@ -442,7 +440,6 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   refresh(): void {
-    this.filterService.setShowFilter(false);
     this.tableSettings.displayAmount = 10;
     this.loadData();
   }
