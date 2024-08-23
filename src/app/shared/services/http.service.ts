@@ -21,7 +21,7 @@ import { TableSettings } from '../interfaces/table-settings';
   providedIn: 'root',
 })
 export class HttpService {
-  headers = new HttpHeaders().set('Content-Type', 'application/json');
+  private readonly headers: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json');
 
   constructor(
     private http: HttpClient,
@@ -96,13 +96,15 @@ export class HttpService {
   }
 
   getReport(reportId: number, storage: string): Observable<Report> {
+    const transformationEnabled = localStorage.getItem('transformationEnabled') === 'true';
     return this.http
       .get<
         Record<string, Report | string>
-      >(`api/report/${storage}/${reportId}/?xml=true&globalTransformer=${localStorage.getItem('transformationEnabled')}`)
+      >(`api/report/${storage}/${reportId}/?xml=true&globalTransformer=${transformationEnabled}`)
       .pipe(
         map((e) => {
           const report = e['report'] as Report;
+          report.storageName = storage;
           report.xml = e['xml'] as string;
           return report;
         }),
@@ -110,10 +112,20 @@ export class HttpService {
   }
 
   getReports(reportIds: number[], storage: string): Observable<Record<string, CompareReport>> {
-    return this.http.get<Record<string, CompareReport>>(
-      `api/report/${storage}/?xml=true&globalTransformer=${localStorage.getItem('transformationEnabled')}`,
-      { params: { storageIds: reportIds } },
-    );
+    const transformationEnabled = localStorage.getItem('transformationEnabled') === 'true';
+    return this.http
+      .get<
+        Record<string, CompareReport>
+      >(`api/report/${storage}/?xml=true&globalTransformer=${transformationEnabled}`, { params: { storageIds: reportIds } })
+      .pipe(
+        map((data) => {
+          for (const report of reportIds) {
+            data[report].report.xml = data[report].xml;
+            data[report].report.storageName = storage;
+          }
+          return data;
+        }),
+      );
   }
 
   updateReport(
