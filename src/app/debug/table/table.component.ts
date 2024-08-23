@@ -33,6 +33,7 @@ import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { CompareReport } from '../../shared/interfaces/compare-reports';
 import { DebugTabService } from '../debug-tab.service';
 import { ViewDropdownComponent } from '../../shared/components/view-dropdown/view-dropdown.component';
+import { DeleteModalComponent } from '../../shared/components/delete-modal/delete-modal.component';
 
 @Component({
   selector: 'app-table',
@@ -59,6 +60,7 @@ import { ViewDropdownComponent } from '../../shared/components/view-dropdown/vie
     TableCellShortenerPipe,
     MatTableModule,
     ViewDropdownComponent,
+    DeleteModalComponent,
   ],
 })
 export class TableComponent implements OnInit, OnDestroy {
@@ -71,6 +73,7 @@ export class TableComponent implements OnInit, OnDestroy {
   @Output() openReportEvent: EventEmitter<any> = new EventEmitter<any>();
 
   @ViewChild(TableSettingsModalComponent) tableSettingsModal!: TableSettingsModalComponent;
+  @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
 
   @ViewChild(MatSort) set matSort(sort: MatSort) {
     this.tableDataSort = sort;
@@ -378,6 +381,14 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
+  openDeleteModal(): void {
+    if (this.tableSettings.reportMetadata.length > 0) {
+      this.deleteModal.open(true);
+    } else {
+      this.toastService.showWarning('No reports to be deleted!');
+    }
+  }
+
   deleteSelected(): void {
     const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
     if (reportIds.length > 0) {
@@ -386,6 +397,15 @@ export class TableComponent implements OnInit, OnDestroy {
         error: () => catchError(this.errorHandler.handleError()),
       });
     }
+  }
+
+  deleteAll(): void {
+    this.httpService
+      .deleteAllReports(this.currentView.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: () => this.retrieveRecords(),
+      });
   }
 
   compareTwoReports(): void {
