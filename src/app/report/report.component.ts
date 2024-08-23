@@ -52,7 +52,7 @@ export class ReportComponent implements AfterViewInit, OnInit {
       if (this.reportData) {
         this.currentView = this.reportData.currentView;
         this.displayComponent.showReport(this.reportData.report);
-        this.debugTreeComponent.addReportToTree(this.reportData.report);
+        this.addReportToTree(this.reportData.report);
       }
     });
     this.listenToHeight();

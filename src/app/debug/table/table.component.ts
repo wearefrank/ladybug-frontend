@@ -70,7 +70,7 @@ export class TableComponent implements OnInit, OnDestroy {
   @Input({ required: true }) currentView!: View;
 
   @Output() viewChange: Subject<View> = new Subject<View>();
-  @Output() openReportEvent: EventEmitter<any> = new EventEmitter<any>();
+  @Output() openReportEvent: EventEmitter<Report> = new EventEmitter<Report>();
 
   @ViewChild(TableSettingsModalComponent) tableSettingsModal!: TableSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
@@ -482,6 +482,7 @@ export class TableComponent implements OnInit, OnDestroy {
   openReportInProgress(index: number): void {
     this.httpService.getReportInProgress(index).subscribe({
       next: (report: Report) => {
+        this.toastService.showSuccess(`Opened report in progress with index [${index}]`);
         this.openReportEvent.next(report);
       },
       error: () => catchError(this.errorHandler.handleError()),
