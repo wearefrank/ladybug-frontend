@@ -77,11 +77,7 @@ export class ReportComponent implements AfterViewInit, OnInit {
     if (this.newTab && this.reportData) {
       this.tabService.closeTab(this.reportData);
     }
-    this.displayComponent.closeReport(false);
-  }
-
-  closeReport(): void {
-    this.debugTreeComponent.removeReport(this.reportData?.report);
+    this.displayComponent.closeReport();
   }
 
   getIdFromPath(): string {
