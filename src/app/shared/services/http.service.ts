@@ -199,6 +199,10 @@ export class HttpService {
     return this.http.delete<void>(`api/report/${storage}`, { params: { storageIds: reportIds } });
   }
 
+  deleteAllReports(storage: string): Observable<void> {
+    return this.http.delete<void>(`api/report/all/${storage}`);
+  }
+
   //This endpoint never existed in the backend, so this needs to be refactored
   // replaceReport(reportId: number, storage: string): Observable<void> {
   //   return this.http.put<void>(`api/runner/replace/${storage}/${reportId}`, {
