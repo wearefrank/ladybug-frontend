@@ -74,9 +74,7 @@ export class HttpService {
   }
 
   getReportInProgress(index: number): Observable<Report> {
-    return this.http
-      .get<Report>(`api/testtool/in-progress/${index}`)
-      .pipe(tap(() => this.handleSuccess(`Opened report in progress with index [${index}]`)));
+    return this.http.get<Report>(`api/testtool/in-progress/${index}`);
   }
 
   deleteReportInProgress(index: number): Observable<Report> {
@@ -197,6 +195,10 @@ export class HttpService {
 
   deleteReport(reportIds: number[], storage: string): Observable<void> {
     return this.http.delete<void>(`api/report/${storage}`, { params: { storageIds: reportIds } });
+  }
+
+  deleteAllReports(storage: string): Observable<void> {
+    return this.http.delete<void>(`api/report/all/${storage}`);
   }
 
   //This endpoint never existed in the backend, so this needs to be refactored
