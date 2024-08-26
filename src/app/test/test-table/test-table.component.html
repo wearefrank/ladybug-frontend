@@ -1,7 +1,7 @@
 <div class="table-container">
   <table data-cy-test="table" mat-table class="test-table" [dataSource]="reports">
     <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef class="table-row-checkbox">
+      <th mat-header-cell class="table-row-checkbox" *matHeaderCellDef>
         <input
           data-cy-test="toggleSelectAll"
           type="checkbox"
@@ -9,17 +9,17 @@
           [checked]="amountOfSelectedReports === reports.length"
           (click)="toggleSelectAll()">
       </th>
-      <td data-cy-test="reportChecked" mat-cell *matCellDef="let report" class="table-row-checkbox">
+      <td data-cy-test="reportChecked" mat-cell class="table-row-checkbox" *matCellDef="let report">
         <input type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
       </td>
     </ng-container>
     <ng-container matColumnDef="storageId">
-      <th mat-header-cell *matHeaderCellDef title="Storage Id">Storage Id</th>
-      <td mat-cell *matCellDef="let report" title="Storage Id">{{ report.storageId }}</td>
+      <th mat-header-cell title="Storage Id" *matHeaderCellDef>Storage Id</th>
+      <td mat-cell title="Storage Id" *matCellDef="let report">{{ report.storageId }}</td>
     </ng-container>
     <ng-container matColumnDef="run">
-      <th mat-header-cell *matHeaderCellDef title="Run/Open">(Re)run/open</th>
-      <td mat-cell *matCellDef="let report" title="Run/Open">
+      <th mat-header-cell title="Run/Open" *matHeaderCellDef>(Re)run/open</th>
+      <td mat-cell title="Run/Open" *matCellDef="let report">
         <span class="buttons">
           <button data-cy-test="runReport" title="Run report" class="btn btn-info button-width"
                   (click)="runEvent.next(report)"><i class="fa fa-play"></i></button>
