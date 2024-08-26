@@ -5,10 +5,24 @@ import { Observable, Subject } from 'rxjs';
   providedIn: 'root',
 })
 export class DebugTabService {
-  private refreshSubject: Subject<number[]> = new Subject();
-  refresh$: Observable<number[]> = this.refreshSubject.asObservable();
+  private refreshAllSubject: Subject<number[]> = new Subject();
+  refreshAll$: Observable<number[]> = this.refreshAllSubject.asObservable();
 
-  refresh(reportIds: number[]): void {
-    this.refreshSubject.next(reportIds);
+  private refreshTableSubject: Subject<void> = new Subject();
+  refreshTable$: Observable<void> = this.refreshTableSubject.asObservable();
+
+  private refreshTreeSubject: Subject<number[]> = new Subject();
+  refreshTree$: Observable<number[]> = this.refreshTreeSubject.asObservable();
+
+  refreshAll(reportIds: number[]): void {
+    this.refreshAllSubject.next(reportIds);
+  }
+
+  refreshTable(): void {
+    this.refreshTableSubject.next();
+  }
+
+  refreshTree(reportIds: number[]): void {
+    this.refreshTreeSubject.next(reportIds);
   }
 }

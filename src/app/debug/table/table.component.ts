@@ -183,8 +183,10 @@ export class TableComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(filterContextSubscription);
-    const refresh = this.debugTab.refresh$.subscribe(() => this.refresh());
-    this.subscriptions.add(refresh);
+    const refreshAll = this.debugTab.refreshAll$.subscribe(() => this.refresh());
+    this.subscriptions.add(refreshAll);
+    const refreshTable = this.debugTab.refreshTable$.subscribe(() => this.refresh());
+    this.subscriptions.add(refreshTable);
   }
 
   setTableSpacing(value: number): void {
