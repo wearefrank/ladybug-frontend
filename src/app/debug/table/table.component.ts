@@ -15,7 +15,7 @@ import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   NgbDropdown,
   NgbDropdownButtonItem,
@@ -33,6 +33,7 @@ import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { CompareReport } from '../../shared/interfaces/compare-reports';
 import { DebugTabService } from '../debug-tab.service';
 import { ViewDropdownComponent } from '../../shared/components/view-dropdown/view-dropdown.component';
+import { DeleteModalComponent } from '../../shared/components/delete-modal/delete-modal.component';
 
 @Component({
   selector: 'app-table',
@@ -59,6 +60,7 @@ import { ViewDropdownComponent } from '../../shared/components/view-dropdown/vie
     TableCellShortenerPipe,
     MatTableModule,
     ViewDropdownComponent,
+    DeleteModalComponent,
   ],
 })
 export class TableComponent implements OnInit, OnDestroy {
@@ -68,9 +70,10 @@ export class TableComponent implements OnInit, OnDestroy {
   @Input({ required: true }) currentView!: View;
 
   @Output() viewChange: Subject<View> = new Subject<View>();
-  @Output() openReportEvent: EventEmitter<any> = new EventEmitter<any>();
+  @Output() openReportEvent: EventEmitter<Report> = new EventEmitter<Report>();
 
   @ViewChild(TableSettingsModalComponent) tableSettingsModal!: TableSettingsModalComponent;
+  @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
 
   @ViewChild(MatSort) set matSort(sort: MatSort) {
     this.tableDataSort = sort;
@@ -122,7 +125,7 @@ export class TableComponent implements OnInit, OnDestroy {
   tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
   tableDataSort?: MatSort;
   protected selectedReportStorageId?: number;
-
+  protected openInProgress?: FormControl;
   private readonly subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -205,9 +208,7 @@ export class TableComponent implements OnInit, OnDestroy {
         value = '';
       }
     }
-    this.tableSettings.currentFilters = new Map<string, string>();
     this.tableSettings.currentFilters = filters;
-
     this.retrieveRecords();
   }
 
@@ -234,7 +235,7 @@ export class TableComponent implements OnInit, OnDestroy {
   changeView(view: View): void {
     this.currentView = view;
     this.retrieveRecords();
-    this.filterService.setMetadataLabels(this.currentView.metadataLabels);
+    this.filterService.setMetadataLabels(this.currentView.metadataNames);
     this.viewChange.next(this.currentView);
   }
 
@@ -258,6 +259,12 @@ export class TableComponent implements OnInit, OnDestroy {
         this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
         this.tableSettings.estimatedMemoryUsage = settings.estMemory;
         this.loadReportInProgressDates();
+        this.openInProgress = new FormControl(1, [
+          Validators.min(1),
+          Validators.max(this.tableSettings.numberOfReportsInProgress),
+          Validators.pattern('^[0-9]*$'),
+          Validators.required,
+        ]);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -376,6 +383,14 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
+  openDeleteModal(): void {
+    if (this.tableSettings.reportMetadata.length > 0) {
+      this.deleteModal.open(true);
+    } else {
+      this.toastService.showWarning('No reports to be deleted!');
+    }
+  }
+
   deleteSelected(): void {
     const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
     if (reportIds.length > 0) {
@@ -384,6 +399,15 @@ export class TableComponent implements OnInit, OnDestroy {
         error: () => catchError(this.errorHandler.handleError()),
       });
     }
+  }
+
+  deleteAll(): void {
+    this.httpService
+      .deleteAllReports(this.currentView.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: () => this.retrieveRecords(),
+      });
   }
 
   compareTwoReports(): void {
@@ -421,7 +445,6 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   refresh(): void {
-    this.filterService.setShowFilter(false);
     this.tableSettings.displayAmount = 10;
     this.loadData();
   }
@@ -455,6 +478,7 @@ export class TableComponent implements OnInit, OnDestroy {
   openReportInProgress(index: number): void {
     this.httpService.getReportInProgress(index).subscribe({
       next: (report: Report) => {
+        this.toastService.showSuccess(`Opened report in progress with index [${index}]`);
         this.openReportEvent.next(report);
       },
       error: () => catchError(this.errorHandler.handleError()),

@@ -52,7 +52,7 @@ export class ReportComponent implements AfterViewInit, OnInit {
       if (this.reportData) {
         this.currentView = this.reportData.currentView;
         this.displayComponent.showReport(this.reportData.report);
-        this.debugTreeComponent.addReportToTree(this.reportData.report);
+        this.addReportToTree(this.reportData.report);
       }
     });
     this.listenToHeight();
@@ -77,11 +77,7 @@ export class ReportComponent implements AfterViewInit, OnInit {
     if (this.newTab && this.reportData) {
       this.tabService.closeTab(this.reportData);
     }
-    this.displayComponent.closeReport(false);
-  }
-
-  closeReport(): void {
-    this.debugTreeComponent.removeReport(this.reportData?.report);
+    this.displayComponent.closeReport();
   }
 
   getIdFromPath(): string {

@@ -147,10 +147,6 @@ export class DebugTreeComponent implements OnDestroy {
     }
   }
 
-  removeReport(report: any): void {
-    this.tree.removeItem(report.path);
-  }
-
   closeEntireTree(): void {
     this.closeEntireTreeEvent.emit();
     this.tree.clearItems();

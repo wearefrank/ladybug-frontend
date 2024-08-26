@@ -7,17 +7,17 @@ import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
   providedIn: 'root',
 })
 export class TestReportsService {
-  metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
-  storageName: string = 'Test';
   private testReportsSubject: ReplaySubject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
   testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
   private firstApiCall: boolean = true;
+  metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
+  storageName: string = 'Test';
 
   constructor(private httpService: HttpService) {
     this.getReports();
   }
 
-  getReports() {
+  getReports(): void {
     this.httpService.getTestReports(this.metadataNames, this.storageName).subscribe({
       next: async (response: TestListItem[]) => {
         const sortedReports = this.sortByName(response);

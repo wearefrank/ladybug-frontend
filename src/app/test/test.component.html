@@ -10,7 +10,8 @@
               (click)="loadData()"><i class="fa fa-refresh"></i></button>
       <button class="btn btn-info" title="Reset" (click)="resetRunner()">Reset</button>
       <button class="btn btn-info" title="Options" (click)="testSettingsModal.open()"><i class="fa fa-cog"></i></button>
-      <button data-cy-test="deleteSelected" class="btn btn-info" title="Delete Selected" (click)="openDeleteModal()"><i class="fa fa-trash"></i></button>
+      <button data-cy-test="deleteSelected" class="btn btn-info" title="Delete Selected" (click)="openDeleteModal(false)"><i class="fa fa-trash"></i></button>
+      <button data-cy-test="deleteAll" class="btn btn-info" title="Delete All" (click)="openDeleteModal(true)">Delete all</button>
       <button class="btn btn-info" title="Clone report" (click)="openCloneModal()">Clone</button>
       <button data-cy-test="copySelected" class="btn btn-info" title="Copy Selected" (click)="copySelected()"><i class="fa fa-copy"></i></button>
       <button data-cy-test="downloadBinary" class="btn btn-info" title="Download Binary" (click)="downloadSelected()"><i class="fa fa-download"></i></button>
@@ -35,98 +36,13 @@
 
     <p>Generator is {{ generatorEnabled|booleanToString: 'enabled':'disabled' }}</p>
 
-    <div class="table-responsive">
-      <table class="table table-hover">
-        <thead>
-        <tr>
-          <th>
-            <input data-cy-test="toggleSelectAll" type="checkbox" [checked]="amountOfSelectedReports === reports?.length && amountOfSelectedReports > 0"
-                   (click)="toggleSelectAll()">
-          </th>
-          @if (showStorageIds) {
-            <th>StorageId</th>
-          }
-          <th>(Re)run/open</th>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Variables</th>
-          <th>Run result</th>
-          <th>Options</th>
-        </tr>
-        </thead>
-        <tbody data-cy-test="table">
-          @for (report of reports; track report.storageId) {
-
-            @if (matches(report)) {
-              <tr>
-                <td>
-                  <input data-cy-test="reportChecked" type="checkbox" [checked]="report.checked"
-                         (click)="toggleCheck(report)">
-                </td>
-                @if (showStorageIds) {
-                  <td>
-                    {{ report.storageId }}
-                  </td>
-                }
-                <td>
-                    <span class="buttons">
-                      <button
-                        data-cy-test="runReport"
-                        title="Run report"
-                        class="btn btn-info button-width"
-                        (click)="run(report)"
-                      ><i class="fa fa-play"></i></button>
-                      <button
-                        data-cy-test="openReport"
-                        title="Open report"
-                        class="btn btn-info button-width"
-                        (click)="openReport(report.storageId)"
-                      ><i class="fa fa-folder-open"></i></button>
-                    </span>
-                </td>
-                <td>
-                  {{ getFullPath(report.path, report.name) }}
-                </td>
-                <td>
-                  {{ report.description }}
-                </td>
-                <td>
-                  @if (report.variables) {
-                    <span data-cy-test="variables">{{ extractVariables(report.variables) }}</span>
-                  }
-                </td>
-                <td>
-                  @if (report.reranReport) {
-                    <span data-cy-test="runResult"
-                          [style.color]="report.reranReport.color">
-                      {{ report.reranReport.resultString }}
-                    </span>
-                  }
-                  @if (report.error) {
-                    <span style="color: red">
-                      {{ report.error }}
-                    </span>
-                  }
-                </td>
-                <td>
-                  @if (report.reranReport) {
-                    <span class="buttons">
-                        <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
-                                disabled (click)="replaceReport(report)">Replace</button>
-                        <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
-                                (click)="compareReports(report)">Compare</button>
-                    </span>
-                  }
-                </td>
-              </tr>
-            }
-          }
-        </tbody>
-      </table>
-    </div>
+    <app-test-table
+      [reports]="reports" [currentFilter]="currentFilter"
+      [showStorageIds]="showStorageIds" (runEvent)="run($event)">
+    </app-test-table>
   </div>
 </div>
 
-<app-test-settings-modal></app-test-settings-modal>
+<app-test-settings-modal (updateShowStorageIds)="updateShowStorageIds($event)"></app-test-settings-modal>
 <app-clone-modal (cloneReportEvent)="getCopiedReports()"></app-clone-modal>
-<app-delete-modal (confirmDeleteEvent)="deleteSelected()"></app-delete-modal>
+<app-delete-modal (confirmDeleteEvent)="deleteReports($event)"></app-delete-modal>

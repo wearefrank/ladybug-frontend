@@ -1,4 +1,4 @@
-describe('About the Test tab', () => {
+describe('Test the Test tab', () => {
   before(() => {
     cy.resetApp();
   });
@@ -13,29 +13,47 @@ describe('About the Test tab', () => {
 
   afterEach(() => cy.resetApp());
 
-  it('Test deleting a report', () => {
+  it('Should delete one report at a time with deleteSelected button', () => {
     cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="table"]').contains('Simple report').parent('tr').find('[data-cy-test="reportChecked"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
-    cy.checkTestTableReportsAre(['Another simple report']);
+    cy.checkTestTableReportsAre(['Simple report']);
+    cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
   });
 
-  it('Test select all by deleting', () => {
+  it('Should delete all tests with deleteSelected button', () => {
+    cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
     cy.checkTestTableNumRows(0);
   });
 
-  it('Test deselect all', () => {
-    cy.get('[data-cy-test="toggleSelectAll"]').click();
+  it('Should not open delete modal when clicking on deleteSelected button and there are no tests selected', () => {
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.checkTestTableNumRows(2);
     cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
+  });
+
+  it('Should delete all tests with deleteAll button', () => {
+    cy.checkTestTableNumRows(2);
+    cy.get('[data-cy-test="toggleSelectAll"]').click();
+    cy.get('[data-cy-test="deleteAll"]').click();
+    cy.get('[data-cy-delete-modal="confirm"]').click();
+    cy.checkTestTableNumRows(0);
+  });
+
+  it('Should not open delete modal when there are no tests', () => {
+    cy.get('[data-cy-test="deleteAll"]').click();
+    cy.get('[data-cy-delete-modal="confirm"]').should('exist').click();
+    cy.get('[data-cy-test="deleteAll"]').click();
+    cy.get('[data-cy-delete-modal="confirm"]').should('not.exist');
+    cy.get('[data-cy-test="deleteSelected"]').click();
+    cy.get('[data-cy-delete-modal="confirm"]').should('not.exist');
   });
 
   it('should keep rerun results after switching tabs', () => {
@@ -59,16 +77,11 @@ function copyTheReportsToTestTab() {
   cy.wait(100);
   cy.checkFileTreeLength(2);
   cy.wait(100);
-  // TODO: Uncomment this line when the sequence in the debug tree has been fixed.
-  // cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
-  // TODO: And at that time also remove the line below.
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item').contains('Simple report').click();
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
   cy.wait(100);
-  // TODO: Same as above.
-  // cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item').contains('Another simple report').click();
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
   cy.wait(100);
   cy.debugTreeGuardedCopyReport('Another simple report', 3, 'second');
   cy.wait(1000);
