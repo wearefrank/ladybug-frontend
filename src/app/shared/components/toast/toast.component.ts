@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { Toast } from '../../interfaces/toast';
 import { ToastService } from '../../services/toast.service';
