@@ -40,8 +40,11 @@
       <button data-cy-debug="openSelected" class="btn btn-info btn-table" title="Open Selected Reports" (click)="openSelected()">
         Open Selected
       </button>
-      <button data-cy-debug="delete" class="btn btn-info btn-table" title="Delete selected reports" (click)="deleteSelected()">
+      <button data-cy-debug="deleteSelected" class="btn btn-info btn-table" title="Delete selected reports" (click)="deleteSelected()">
         <i class="fa fa-trash"></i>
+      </button>
+      <button data-cy-debug="deleteAll" class="btn btn-info btn-table" title="Delete all reports" (click)="openDeleteModal()">
+        Delete all
       </button>
 
       <div class="input-group w-auto">
@@ -58,16 +61,18 @@
       <div data-cy-debug-in-progress-counter class="btn btn-static"
       >Reports in progress: {{ tableSettings.numberOfReportsInProgress }}
       </div>
-      @if (tableSettings.numberOfReportsInProgress > 0) {
+      @if (tableSettings.numberOfReportsInProgress > 0 && openInProgress) {
         <span class="progress-buttons">
           <div class="btn btn-static "> Estimated memory usage of reports in
             progress: {{ tableSettings.estimatedMemoryUsage }} Bytes
           </div>
           <div class="input-group w-auto h-auto">
             <input #openIndex type="number" min="0" class="form-control input-field" data-cy-debug="openInProgressNo"
+                   [formControl]="openInProgress"
                    [value]="tableSettings.numberOfReportsInProgress" [max]="tableSettings.numberOfReportsInProgress"/>
             <div class="input-group-append">
               <button data-cy-debug="openInProgress" class="btn btn-info" type="button"
+                      [disabled]="openInProgress.invalid"
                       (click)="openReportInProgress(+openIndex.value)">Open
               </button>
             </div>
@@ -118,7 +123,7 @@
               (click)="toggleSelectAll()">
           </th>
           <td mat-cell class="table-row-checkbox" *matCellDef="let row" [style.padding]="tableSpacing">
-            <input type="checkbox" [checked]="row.checked" [style.width]="checkboxSize" [style.height]="checkboxSize" (click)="toggleCheck(row, $event)">
+            <input type="checkbox" data-cy-debug="selectOne" [checked]="row.checked" [style.width]="checkboxSize" [style.height]="checkboxSize" (click)="toggleCheck(row, $event)">
           </td>
         </ng-container>
 
@@ -156,3 +161,4 @@
 }
 
 <app-table-settings-modal (openLatestReportsEvent)="openLatestReports($event)"></app-table-settings-modal>
+<app-delete-modal (confirmDeleteEvent)="deleteAll()"></app-delete-modal>

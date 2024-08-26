@@ -7,7 +7,7 @@
           data-cy-debug-editor="close"
           title="Close"
           class="btn btn-info"
-          (click)="closeReport(false)"
+          (click)="closeReport()"
         ><i class="fa fa-times"></i></button>
         <!--This if condition is necessary to avoid a race condition where storageId will be null-->
         @if (!newTab && (!Number.isNaN(selectedNode.storageId) || (ReportUtil.isCheckPoint(selectedNode) && selectedNode.uid))) {
