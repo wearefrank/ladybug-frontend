@@ -46,7 +46,7 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
 export class TestComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'test';
 
-  protected reports: TestListItem[];
+  protected reports: TestListItem[] = [];
   protected generatorEnabled: boolean = false;
   protected currentFilter: string = '';
   protected showStorageIds?: boolean;
@@ -190,7 +190,7 @@ export class TestComponent implements OnInit {
     };
   }
 
-  openDeleteModal(): void {
+  openDeleteModal(deleteAllReports: boolean): void {
     const reportsToBeDeleted: TestListItem[] = this.getSelectedReports();
     if (this.reports && (reportsToBeDeleted.length > 0 || (deleteAllReports && this.reports.length > 0))) {
       this.deleteModal.open(deleteAllReports, reportsToBeDeleted);
@@ -235,7 +235,7 @@ export class TestComponent implements OnInit {
   }
 
   uploadReport(event: Event): void {
-    const eventTarget = event.target as HTMLInputElement;
+    const eventTarget: HTMLInputElement = event.target as HTMLInputElement;
     const file: File | undefined = eventTarget.files?.[0];
     if (file) {
       const formData: FormData = new FormData();
