@@ -1,4 +1,4 @@
-import { Component, Input, Output, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
 import {
   NgbDropdown,
@@ -18,7 +18,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
-import { catchError, Subject, tap } from 'rxjs';
+import { catchError, tap } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { EditFormComponent } from '../edit-form/edit-form.component';
 import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
@@ -72,8 +72,6 @@ export class EditDisplayComponent {
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
-  @Output() saveReportEvent: Subject<any> = new Subject<any>();
-  @Output() closeReportEvent: Subject<void> = new Subject<void>();
   @ViewChild(CustomEditorComponent) editor!: CustomEditorComponent;
   @ViewChild(EditFormComponent) editFormComponent!: EditFormComponent;
   @ViewChild(DifferenceModalComponent) differenceModal!: DifferenceModalComponent;
@@ -91,9 +89,9 @@ export class EditDisplayComponent {
     private httpService: HttpService,
     private helperService: HelperService,
     private toastService: ToastService,
+    private errorHandler: ErrorHandling,
     private testReportsService: TestReportsService,
     private debugTab: DebugTabService,
-    private errorHandler: ErrorHandling,
   ) {}
 
   showReport(node: Report | Checkpoint): void {
@@ -136,18 +134,10 @@ export class EditDisplayComponent {
       });
   }
 
-  closeReport(removeReportFromTree: boolean): void {
-    const node: Report | Checkpoint = this.selectedNode!;
-    if (!ReportUtil.isReport(node)) {
-      this.toastService.showDanger('Could not find report to close');
-      return;
-    }
+  closeReport(): void {
     this.displayReport = false;
     this.editingRootNode = false;
     this.editingChildNode = false;
-    if (removeReportFromTree) {
-      this.closeReportEvent.next();
-    }
     this.editor.setNewReport('');
   }
 
@@ -277,7 +267,6 @@ export class EditDisplayComponent {
           } else if (ReportUtil.isReport(node)) {
             this.selectedNode = response.report;
           }
-          this.saveReportEvent.next(this.selectedNode);
           this.disableEditing();
           this.debugTab.refresh([+storageId]);
         },

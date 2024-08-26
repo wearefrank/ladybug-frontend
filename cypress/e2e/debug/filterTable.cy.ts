@@ -85,5 +85,14 @@ describe('Tests for table filter', () => {
     cy.get('[data-cy-debug="clear-filter-btn"]').click()
     cy.get('[data-cy-debug="tableFilter"]').eq(3).type('*Simple*');
     cy.assertDebugTableLength(2);
+  });
+
+  it('Should convert filter to new values when a different view is selected with different columns', () => {
+    cy.get('[data-cy-debug="filter"]').click();
+    cy.get('[data-cy-debug="tableFilter"]').eq(1).type('1{enter}');
+    cy.get('[data-cy-change-view-dropdown]').select('Report name only');
+    cy.get('[data-cy-debug="filterLabel"]').eq(1).should('not.contain', 'Endtime');
+    cy.get('[data-cy-change-view-dropdown]').select('White box');
+    cy.get('[data-cy-debug="tableFilter"').eq(1).should('not.contain.value', '1')
   })
 });
