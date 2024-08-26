@@ -15,7 +15,7 @@ describe('About deleting reports', () => {
     cy.assertDebugTableLength(2);
     cy.get('[data-cy-debug="selectOne"]').eq(0).click();
     cy.get('[data-cy-debug="deleteSelected"]').click();
-    cy.getTableRows().first().contains('Another simple report');
+    cy.getDebugTableRows().first().contains('Another simple report');
   })
 
   it ('Should delete all reports with the deleteAll button', () => {
