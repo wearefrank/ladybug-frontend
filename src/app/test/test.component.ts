@@ -250,35 +250,6 @@ export class TestComponent implements OnInit {
     this.refresh();
   }
 
-  compareReports(report: TestListItem): void {
-    if (report.reranReport) {
-      const tabId: string = this.helperService.createCompareTabId(
-        report.reranReport.originalReport,
-        report.reranReport.runResultReport,
-      );
-      this.tabService.openNewCompareTab({
-        id: tabId,
-        originalReport: { ...report.reranReport.originalReport, storageName: this.testReportsService.storageName },
-        // Temporary fix until https://github.com/wearefrank/ladybug/issues/283 is fixed
-        runResultReport: { ...report.reranReport.runResultReport, storageName: 'Debug' },
-      });
-    }
-  }
-
-  replaceReport(report: TestListItem): void {
-    this.toastService.showWarning('Sorry this is not implemented as of now');
-    // this.httpService.replaceReport(report.storageId, this.storageName).subscribe({
-    //   next: (value) => {
-    //     this.httpService.getReport(report.storageId, this.storageName).subscribe({
-    //       next: (response: Report): void => {
-    //         report = { ...response };
-    //       },
-    //     });
-    //   },
-    //   error: () => catchError(this.errorHandler.handleError()),
-    // });
-  }
-
   copySelected(): void {
     const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
     const data: Record<string, number[]> = {

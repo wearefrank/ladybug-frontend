@@ -68,7 +68,7 @@
               @if (report.reranReport) {
                 <span class="buttons">
                   <button data-cy-test="replaceReport" class="btn btn-info" title="Replace report"
-                          disabled (click)="replaceReport(report.storageId)">Replace</button>
+                          disabled (click)="replaceReport(report)">Replace</button>
                   <button data-cy-test="compareReport" class="btn btn-info" title="Compare"
                           (click)="compareReports(report)">Compare</button>
                 </span>
