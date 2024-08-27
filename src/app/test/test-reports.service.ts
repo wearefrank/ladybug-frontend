@@ -1,41 +1,34 @@
 import { Injectable } from '@angular/core';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { HttpService } from '../shared/services/http.service';
-import { catchError, Observable, ReplaySubject, firstValueFrom } from 'rxjs';
-import { ErrorHandling } from '../shared/classes/error-handling.service';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TestReportsService {
-  metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
-  storageName: string = 'Test';
   private testReportsSubject: ReplaySubject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
   testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
   private firstApiCall: boolean = true;
+  metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
+  storageName: string = 'Test';
 
-  constructor(
-    private httpService: HttpService,
-    private errorHandler: ErrorHandling,
-  ) {
+  constructor(private httpService: HttpService) {
     this.getReports();
   }
 
-  getReports() {
-    this.httpService
-      .getTestReports(this.metadataNames, this.storageName)
-      .pipe(catchError(this.errorHandler.handleError()))
-      .subscribe({
-        next: async (response: TestListItem[]) => {
-          const sortedReports = this.sortByName(response);
-          if (this.firstApiCall) {
-            this.testReportsSubject.next(sortedReports);
-            this.firstApiCall = false;
-          } else {
-            this.testReportsSubject.next(await this.matchRerunResults(sortedReports));
-          }
-        },
-      });
+  getReports(): void {
+    this.httpService.getTestReports(this.metadataNames, this.storageName).subscribe({
+      next: async (response: TestListItem[]) => {
+        const sortedReports = this.sortByName(response);
+        if (this.firstApiCall) {
+          this.testReportsSubject.next(sortedReports);
+          this.firstApiCall = false;
+        } else {
+          this.testReportsSubject.next(await this.matchRerunResults(sortedReports));
+        }
+      },
+    });
   }
 
   async matchRerunResults(reports: TestListItem[]) {

@@ -1,4 +1,4 @@
-describe('About the Test tab', () => {
+describe('Test the Test tab', () => {
   before(() => {
     cy.resetApp();
   });
@@ -18,19 +18,20 @@ describe('About the Test tab', () => {
     cy.get('[data-cy-test="table"]').contains('Simple report').parent('tr').find('[data-cy-test="reportChecked"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
-    cy.checkTestTableReportsAre(['Another simple report']);
+    cy.checkTestTableReportsAre(['Simple report']);
+    cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
   });
 
   it('Should delete all tests with deleteSelected button', () => {
+    cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
     cy.checkTestTableNumRows(0);
   });
 
   it('Should not open delete modal when clicking on deleteSelected button and there are no tests selected', () => {
-    cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.checkTestTableNumRows(2);
     cy.get('[data-cy-test="toggleSelectAll"]').click();

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
+import { ToastService } from './toast.service';
 import { View } from '../interfaces/view';
 import { OptionsSettings } from '../interfaces/options-settings';
 import { Report } from '../interfaces/report';
@@ -22,18 +23,17 @@ import { TableSettings } from '../interfaces/table-settings';
 export class HttpService {
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private toastService: ToastService,
+  ) {}
+
+  handleSuccess(message: string): void {
+    this.toastService.showSuccess(message);
+  }
 
   getViews(): Observable<View[]> {
-    return this.http.get<View[]>('api/testtool/views').pipe(
-      map((data: View[]) => {
-        const views: View[] = [];
-        for (let [key, value] of Object.entries(data)) {
-          views.push({ ...value, name: key });
-        }
-        return views;
-      }),
-    );
+    return this.http.get<Record<string, View>>('api/testtool/views').pipe(map((response) => Object.values(response)));
   }
 
   getMetadataReports(settings: TableSettings, view: View): Observable<Report[]> {
@@ -60,7 +60,9 @@ export class HttpService {
   }
 
   getLatestReports(amount: number, storage: string): Observable<Report[]> {
-    return this.http.get<Report[]>(`api/report/latest/${storage}/${amount}`);
+    return this.http
+      .get<Report[]>(`api/report/latest/${storage}/${amount}`)
+      .pipe(tap(() => this.handleSuccess('Latest' + amount + 'reports opened!')));
   }
 
   getReportInProgress(index: number): Observable<Report> {
@@ -68,7 +70,9 @@ export class HttpService {
   }
 
   deleteReportInProgress(index: number): Observable<Report> {
-    return this.http.delete<Report>('api/testtool/in-progress/' + index);
+    return this.http
+      .delete<Report>('api/testtool/in-progress/' + index)
+      .pipe(tap(() => this.handleSuccess(`Deleted report in progress with index [${index}]`)));
   }
 
   getReportsInProgressThresholdTime(): Observable<number> {
@@ -107,11 +111,15 @@ export class HttpService {
     body: UpdateReport | UpdateCheckpoint | { stub: string | number; checkpointId: string },
     storage: string,
   ): Observable<UpdateReportResponse> {
-    return this.http.post<UpdateReportResponse>(`api/report/${storage}/${reportId}`, body);
+    return this.http
+      .post<UpdateReportResponse>(`api/report/${storage}/${reportId}`, body)
+      .pipe(tap(() => this.handleSuccess('Report updated!')));
   }
 
   copyReport(data: Record<string, number[]>, storage: string): Observable<void> {
-    return this.http.put<void>(`api/report/store/${storage}`, data);
+    return this.http
+      .put<void>(`api/report/store/${storage}`, data)
+      .pipe(tap(() => this.handleSuccess('Report copied!')));
   }
 
   updatePath(reportIds: number[], storage: string, map: UpdatePathSettings): Observable<void> {
@@ -121,23 +129,30 @@ export class HttpService {
   }
 
   uploadReport(formData: FormData): Observable<Report[]> {
-    return this.http.post<Report[]>('api/report/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return this.http
+      .post<Report[]>('api/report/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .pipe(tap(() => this.handleSuccess('Report uploaded!')));
   }
 
   uploadReportToStorage(formData: FormData, storage: string): Observable<void> {
-    return this.http.post<void>(`api/report/upload/${storage}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return this.http
+      .post<void>(`api/report/upload/${storage}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .pipe(tap(() => this.handleSuccess('Report uploaded to storage!')));
   }
 
   postSettings(settings: UploadParams): Observable<void> {
-    return this.http.post<void>('api/testtool', settings);
+    return this.http.post<void>('api/testtool', settings).pipe(tap(() => this.handleSuccess('Settings saved!')));
   }
 
   postTransformation(transformation: string): Observable<void> {
-    return this.http.post<void>('api/testtool/transformation', { transformation: transformation });
+    return this.http.post<void>('api/testtool/transformation', {
+      transformation: transformation,
+    });
+    // .pipe(tap(() => this.handleSuccess('Transformation saved!')))
   }
 
   getTransformation(defaultTransformation: boolean): Observable<Transformation> {
@@ -167,11 +182,15 @@ export class HttpService {
   }
 
   cloneReport(storage: string, storageId: number, map: CloneReport): Observable<void> {
-    return this.http.post<void>(`api/report/move/${storage}/${storageId}`, map);
+    return this.http
+      .post<void>(`api/report/move/${storage}/${storageId}`, map)
+      .pipe(tap(() => this.handleSuccess('Report cloned!')));
   }
 
   deleteReport(reportIds: number[], storage: string): Observable<void> {
-    return this.http.delete<void>(`api/report/${storage}`, { params: { storageIds: reportIds } });
+    return this.http.delete<void>(`api/report/${storage}`, {
+      params: { storageIds: reportIds },
+    });
   }
 
   deleteAllReports(storage: string): Observable<void> {
@@ -193,6 +212,8 @@ export class HttpService {
 
   getWarningsAndErrors(storageName: string): Observable<string | undefined> {
     const cleanStorageName: string = storageName.replaceAll(' ', '');
-    return this.http.get(`api/report/warningsAndErrors/${cleanStorageName}`, { responseType: 'text' });
+    return this.http.get(`api/report/warningsAndErrors/${cleanStorageName}`, {
+      responseType: 'text',
+    });
   }
 }

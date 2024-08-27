@@ -20,7 +20,7 @@ export class DebugComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'debug';
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @ViewChild('reportComponent') customReportComponent!: ReportComponent;
-  currentView!: View;
+  currentView?: View;
   views?: View[];
 
   constructor(
