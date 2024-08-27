@@ -126,7 +126,7 @@ export class EditDisplayComponent {
       next: (response: TestResult): void => {
         this.toastService.showSuccess('Report rerun successful');
         this.rerunResult = response;
-        this.debugTab.refresh([reportId]);
+        this.debugTab.refreshTable();
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -260,7 +260,7 @@ export class EditDisplayComponent {
           this.selectedNode = response.report;
         }
         this.disableEditing();
-        this.debugTab.refresh([+storageId]);
+        this.debugTab.refreshAll([+storageId]);
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
