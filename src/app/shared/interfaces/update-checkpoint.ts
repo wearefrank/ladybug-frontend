@@ -1,4 +1,5 @@
 export interface UpdateCheckpoint {
   checkpointId: string;
-  checkpointMessage: string;
+  checkpointMessage?: string;
+  stub?: number;
 }

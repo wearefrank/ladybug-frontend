@@ -120,7 +120,7 @@ export class HttpService {
 
   updateReport(
     reportId: string,
-    body: UpdateReport | UpdateCheckpoint | { stub: string | number; checkpointId: string },
+    body: UpdateReport | UpdateCheckpoint,
     storage: string,
   ): Observable<UpdateReportResponse> {
     return this.http

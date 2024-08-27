@@ -69,15 +69,26 @@
           ><i class="fa fa-save"></i></button>
         }
         <app-encoding-button [selectedNode]="selectedNode" (updatedMessageEvent)="editor.setNewReport($event)"></app-encoding-button>
-      }
-      @if (ReportUtil.isCheckPoint(selectedNode)) {
-        <div class="w-fit mx-1 my-0">
-          <select class="form-control" [(ngModel)]="stubStrategy" (ngModelChange)="openStubDifferenceModal($event)">
-            <option [ngValue]="-1" [selected]="selectedNode.stub === -1">Use report level stub strategy</option>
-            <option [ngValue]="0" [selected]="selectedNode.stub === 0">Always stub this checkpoint</option>
-            <option [ngValue]="1" [selected]="selectedNode.stub === 1">Never stub this checkpoint</option>
-          </select>
-        </div>
+
+        @if (selectedNode) {
+          @if (ReportUtil.isReport(selectedNode)) {
+            <div class="w-fit mx-1 my-0">
+              <select class="form-control" [(ngModel)]="stubStrategy" (ngModelChange)="updateReportStubStrategy($event)">
+                @for (strategy of reportStubStrategyConst; track strategy) {
+                  <option [ngValue]="strategy" [selected]="selectedNode.stubStrategy === strategy">{{ strategy }}</option>
+                }
+              </select>
+            </div>
+          } @else if (ReportUtil.isCheckPoint(selectedNode)) {
+            <div class="w-fit mx-1 my-0">
+              <select class="form-control" [(ngModel)]="stub" (ngModelChange)="updateCheckpointStubStrategy($event)">
+                @for (strategy of checkpointStubStrategyConst; track strategy; let index = $index) {
+                  <option [ngValue]="index - 1" [selected]="selectedNode.stub === index - 1">{{ strategy }}</option>
+                }
+              </select>
+            </div>
+          }
+        }
       }
       <div
         class="mr-2 cursor-pointer ml-auto"

@@ -1,4 +1,5 @@
 import { Checkpoint } from './checkpoint';
+import { ReportStubStrategy } from '../enums/stub-strategy';
 
 export interface Report {
   checkpoints: Checkpoint[];
@@ -17,7 +18,7 @@ export interface Report {
   startTime: number;
   storageId: number;
   stub: number;
-  stubStrategy: string;
+  stubStrategy: ReportStubStrategy;
   transformation: string;
   variableCsv: string;
   checked: boolean;
