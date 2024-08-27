@@ -31,7 +31,7 @@ export class TabService {
 
   closeTab(value: CompareData | ReportData): void {
     let closeTab: CloseTab;
-    if (value instanceof CompareData) {
+    if (this.isCompareData(value)) {
       this.activeCompareTabs.delete(value.id);
       closeTab = { id: value.id, type: 'compare' };
     } else {
@@ -39,5 +39,9 @@ export class TabService {
       closeTab = { id: value.report.storageId.toString(), type: 'report' };
     }
     this.closeTabSubject.next(closeTab);
+  }
+
+  isCompareData(value: CompareData | ReportData): value is CompareData {
+    return !!value && !!(value as CompareData).originalReport;
   }
 }

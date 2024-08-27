@@ -1,6 +1,6 @@
 <div class="flex flex-column" id="container">
   <div class="compare-header p-2 w-100">
-    <label class="p-2">
+    <label>
       Compare method:
     </label>
     <select data-cy-compare="compareMethod" class="form-control w-fit" [(ngModel)]="nodeLinkStrategy" (ngModelChange)="changeNodeLinkStrategy()">
@@ -8,6 +8,9 @@
         <option [value]="strategy">{{ strategy|titlecase|strReplace: '_': ' ' }}</option>
       }
     </select>
+    @if (views && currentView) {
+      <app-view-dropdown [views]="views" [currentView]="currentView" (viewChanged)="changeView($event)"/>
+    }
   </div>
 
   @if (compareData) {
@@ -18,7 +21,7 @@
       (compareEvent)="syncLeftAndRight()"
     />
     <div class="text-diff-container pl-3 pb-2">
-      @if (leftNode && rightNode) {
+      @if (leftNode && rightNode && compareTreeComponent) {
         <div class="d-flex flex-row w-100">
           <app-metadata-table class="w-50" [report]="leftNode"/>
           <app-metadata-table class="w-50" [report]="rightNode"/>

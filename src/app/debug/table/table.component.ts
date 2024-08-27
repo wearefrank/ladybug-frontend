@@ -396,8 +396,6 @@ export class TableComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data: Record<string, CompareReport>) => {
           for (const report of selectedReports) {
-            data[report].report.xml = data[report].xml;
-            data[report].report.storageName = this.currentView.storageName;
             this.openReportEvent.next(data[report].report);
           }
         },
@@ -437,21 +435,15 @@ export class TableComponent implements OnInit, OnDestroy {
     const selectedReports: number[] = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .map((report) => report.storageId);
-
     this.httpService
       .getReports(selectedReports, this.currentView.storageName)
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (data: Record<string, CompareReport>) => {
-          const leftObject = data[selectedReports[0]];
-          const originalReport = leftObject.report;
-          originalReport.xml = leftObject.xml;
+          const originalReport = this.transformCompareToReport(data[selectedReports[0]]);
+          const runResultReport = this.transformCompareToReport(data[selectedReports[1]]);
 
-          const rightObject = data[selectedReports[1]];
-          const runResultReport = rightObject.report;
-          runResultReport.xml = rightObject.xml;
-
-          const id = this.helperService.createCompareTabId(originalReport, runResultReport);
+          const id: string = this.helperService.createCompareTabId(originalReport, runResultReport);
 
           this.tabService.openNewCompareTab({
             id: id,
@@ -461,6 +453,13 @@ export class TableComponent implements OnInit, OnDestroy {
           });
         },
       });
+  }
+
+  transformCompareToReport(compareReport: CompareReport): Report {
+    const report = compareReport.report;
+    report.xml = compareReport.xml;
+    report.storageName = this.currentView.storageName;
+    return report;
   }
 
   changeTableLimit(event: any): void {

@@ -9,7 +9,6 @@ import {
   FileTreeOptions,
   NgSimpleFileTree,
   NgSimpleFileTreeModule,
-  TreeItemComponent,
 } from 'ng-simple-file-tree';
 import {
   NgbDropdown,
@@ -110,7 +109,8 @@ export class DebugTreeComponent implements OnDestroy {
           .getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name)
           .pipe(catchError(this.errorHandler.handleError()))
           .subscribe({
-            next: (unmatched: string[]) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
+            next: (unmatched: string[]) =>
+              SimpleFileTreeUtil.hideOrShowCheckpoints(unmatched, this.tree.elements.toArray()),
           });
       }
     }
@@ -124,19 +124,6 @@ export class DebugTreeComponent implements OnDestroy {
       }
     }
     return reports;
-  }
-
-  hideCheckpoints(unmatched: string[], items: TreeItemComponent[]): void {
-    for (let item of items) {
-      if (unmatched.length === 0 || !unmatched) {
-        item.setVisible(true);
-      } else if (unmatched.includes(item.item.originalValue.uid)) {
-        item.setVisible(false);
-      }
-      if (item.item.children) {
-        this.hideCheckpoints(unmatched, [item.childElement]);
-      }
-    }
   }
 
   removeAllReportsButOne(): void {
