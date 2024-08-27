@@ -33,15 +33,7 @@ export class HttpService {
   }
 
   getViews(): Observable<View[]> {
-    return this.http.get<View[]>('api/testtool/views').pipe(
-      map((data: View[]) => {
-        const views: View[] = [];
-        for (let [key, value] of Object.entries(data)) {
-          views.push({ ...value, name: key });
-        }
-        return views;
-      }),
-    );
+    return this.http.get<Record<string, View>>('api/testtool/views').pipe(map((response) => Object.values(response)));
   }
 
   getMetadataReports(settings: TableSettings, view: View): Observable<Report[]> {
@@ -157,7 +149,9 @@ export class HttpService {
   }
 
   postTransformation(transformation: string): Observable<void> {
-    return this.http.post<void>('api/testtool/transformation', { transformation: transformation });
+    return this.http.post<void>('api/testtool/transformation', {
+      transformation: transformation,
+    });
     // .pipe(tap(() => this.handleSuccess('Transformation saved!')))
   }
 
@@ -194,7 +188,9 @@ export class HttpService {
   }
 
   deleteReport(reportIds: number[], storage: string): Observable<void> {
-    return this.http.delete<void>(`api/report/${storage}`, { params: { storageIds: reportIds } });
+    return this.http.delete<void>(`api/report/${storage}`, {
+      params: { storageIds: reportIds },
+    });
   }
 
   deleteAllReports(storage: string): Observable<void> {
@@ -216,6 +212,8 @@ export class HttpService {
 
   getWarningsAndErrors(storageName: string): Observable<string | undefined> {
     const cleanStorageName: string = storageName.replaceAll(' ', '');
-    return this.http.get(`api/report/warningsAndErrors/${cleanStorageName}`, { responseType: 'text' });
+    return this.http.get(`api/report/warningsAndErrors/${cleanStorageName}`, {
+      responseType: 'text',
+    });
   }
 }
