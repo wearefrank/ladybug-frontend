@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { HttpService } from '../shared/services/http.service';
-import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { catchError, firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { ErrorHandling } from '../shared/classes/error-handling.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,22 +14,28 @@ export class TestReportsService {
   metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
   storageName: string = 'Test';
 
-  constructor(private httpService: HttpService) {
+  constructor(
+    private httpService: HttpService,
+    private errorHandler: ErrorHandling,
+  ) {
     this.getReports();
   }
 
   getReports(): void {
-    this.httpService.getTestReports(this.metadataNames, this.storageName).subscribe({
-      next: async (response: TestListItem[]) => {
-        const sortedReports = this.sortByName(response);
-        if (this.firstApiCall) {
-          this.testReportsSubject.next(sortedReports);
-          this.firstApiCall = false;
-        } else {
-          this.testReportsSubject.next(await this.matchRerunResults(sortedReports));
-        }
-      },
-    });
+    this.httpService
+      .getTestReports(this.metadataNames, this.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: async (response: TestListItem[]) => {
+          const sortedReports = this.sortByName(response);
+          if (this.firstApiCall) {
+            this.testReportsSubject.next(sortedReports);
+            this.firstApiCall = false;
+          } else {
+            this.testReportsSubject.next(await this.matchRerunResults(sortedReports));
+          }
+        },
+      });
   }
 
   async matchRerunResults(reports: TestListItem[]) {
