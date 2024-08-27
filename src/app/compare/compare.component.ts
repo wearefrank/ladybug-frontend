@@ -94,6 +94,13 @@ export class CompareComponent implements AfterViewInit, OnInit {
       });
       if (filteredViews.length > 0) {
         this.views = filteredViews;
+        if (this.compareData?.viewName) {
+          const view = this.views.find((v) => v.name === this.compareData!.viewName);
+          if (view) {
+            this.changeView(view);
+            return;
+          }
+        }
         this.changeView(views[0]);
       }
     });
