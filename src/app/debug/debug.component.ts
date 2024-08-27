@@ -20,7 +20,7 @@ export class DebugComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'debug';
   @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @ViewChild('reportComponent') customReportComponent!: ReportComponent;
-  currentView!: View;
+  currentView?: View;
   views?: View[];
 
   constructor(
@@ -35,15 +35,17 @@ export class DebugComponent implements OnInit {
   }
 
   retrieveViews(): void {
-    this.httpService.getViews().subscribe({
-      next: (views: View[]) => {
-        this.views = views;
-        if (!this.currentView) {
-          this.currentView = this.views.find((v: View) => v.defaultView)!;
-        }
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getViews()
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (views: View[]) => {
+          this.views = views;
+          if (!this.currentView) {
+            this.currentView = this.views.find((v: View) => v.defaultView)!;
+          }
+        },
+      });
   }
 
   addReportToTree(report: Report): void {
@@ -57,14 +59,16 @@ export class DebugComponent implements OnInit {
 
   retrieveErrorsAndWarnings(): void {
     if (this.currentView) {
-      this.httpService.getWarningsAndErrors(this.currentView.storageName).subscribe({
-        next: (value: string | undefined): void => {
-          if (value) {
-            this.showErrorsAndWarnings(value);
-          }
-        },
-        error: () => catchError(this.errorHandler.handleError()),
-      });
+      this.httpService
+        .getWarningsAndErrors(this.currentView.storageName)
+        .pipe(catchError(this.errorHandler.handleError()))
+        .subscribe({
+          next: (value: string | undefined): void => {
+            if (value) {
+              this.showErrorsAndWarnings(value);
+            }
+          },
+        });
     }
   }
 
