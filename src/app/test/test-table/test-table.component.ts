@@ -99,14 +99,8 @@ export class TestTableComponent implements OnChanges {
     return resultString.slice(0, -2);
   }
 
-  replaceReport(reportId: number): void {
+  replaceReport(report: TestListItem): void {
     this.toastService.showWarning('Sorry this is not implemented as of now');
-    // this.httpService.replaceReport(reportId, this.storageName).subscribe({
-    //   next: () => {
-    //     this.reranReports = this.reranReports.filter((report: ReranReport) => report.id != reportId);
-    //   },
-    //   error: () => catchError(this.errorHandler.handleError()),
-    // });
   }
 
   compareReports(report: TestListItem): void {
@@ -117,9 +111,9 @@ export class TestTableComponent implements OnChanges {
       );
       this.tabService.openNewCompareTab({
         id: tabId,
-        viewName: 'compare',
-        originalReport: report.reranReport.originalReport,
-        runResultReport: report.reranReport.runResultReport,
+        originalReport: { ...report.reranReport.originalReport, storageName: this.testReportsService.storageName },
+        // Temporary fix until https://github.com/wearefrank/ladybug/issues/283 is fixed
+        runResultReport: { ...report.reranReport.runResultReport, storageName: 'Debug' },
       });
     }
   }

@@ -8,6 +8,7 @@
 .compare-header {
   display: flex;
   align-items: center;
+  gap: 0.25rem;
   height: 50px;
   border-bottom: 1px solid #dee2e6;
 

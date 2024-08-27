@@ -1,6 +1,8 @@
-export class CompareData {
-  id!: string;
-  originalReport: any;
-  runResultReport: any;
-  viewName: string = '';
+import { Report } from '../shared/interfaces/report';
+
+export interface CompareData {
+  id: string;
+  originalReport: Report;
+  runResultReport: Report;
+  viewName?: string;
 }
