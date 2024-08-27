@@ -83,8 +83,10 @@ export class DebugTreeComponent implements OnDestroy {
       },
     });
     this.subscriptions.add(showMultipleSubscription);
-    const refresh: Subscription = this.debugTab.refresh$.subscribe((ids: number[]) => this.refreshReports(ids));
-    this.subscriptions.add(refresh);
+    const refreshAll: Subscription = this.debugTab.refreshAll$.subscribe((ids: number[]) => this.refreshReports(ids));
+    this.subscriptions.add(refreshAll);
+    const refreshTree: Subscription = this.debugTab.refreshTree$.subscribe((ids: number[]) => this.refreshReports(ids));
+    this.subscriptions.add(refreshTree);
   }
 
   @Input({ required: true }) set currentView(value: View) {
