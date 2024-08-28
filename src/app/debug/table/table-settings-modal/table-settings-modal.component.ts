@@ -133,11 +133,12 @@ export class TableSettingsModalComponent implements OnDestroy {
     };
     this.httpService
       .postSettings(data)
-      .pipe(
-        tap(() => this.toastService.showSuccess('Settings saved!')),
-        catchError(this.errorHandler.handleError()),
-      )
-      .subscribe();
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (): void => {
+          this.toastService.showSuccess('Settings saved!');
+        },
+      });
 
     this.toastService.showWarning('Reopen report to see updated XML');
     this.saving = true;

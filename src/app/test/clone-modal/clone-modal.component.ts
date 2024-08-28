@@ -54,12 +54,12 @@ export class CloneModalComponent {
     };
     this.httpService
       .cloneReport(this.currentView.storageName, this.report.storageId, map)
-      .pipe(
-        tap(() => this.toastService.showSuccess('Report cloned!')),
-        catchError(this.errorHandler.handleError()),
-      )
+      .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
-        next: () => this.cloneReportEvent.emit(),
+        next: (): void => {
+          this.cloneReportEvent.emit();
+          this.toastService.showSuccess('Report cloned!');
+        },
       });
   }
 }

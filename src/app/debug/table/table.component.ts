@@ -285,10 +285,7 @@ export class TableComponent implements OnInit, OnDestroy {
     for (let index = 1; index <= this.tableSettings.numberOfReportsInProgress; index++) {
       this.httpService
         .getReportInProgress(index)
-        .pipe(
-          tap(() => this.toastService.showSuccess(`Opened report in progress with index [${index}]`)),
-          catchError(this.errorHandler.handleError()),
-        )
+        .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
           next: (report: Report) => {
             this.reportsInProgress[report.correlationId] ??= report.startTime;
@@ -296,6 +293,7 @@ export class TableComponent implements OnInit, OnDestroy {
               this.hasTimedOut = true;
               hasChanged = true;
             }
+            this.toastService.showSuccess(`Opened report in progress with index [${index}]`);
           },
         });
     }
@@ -492,15 +490,13 @@ export class TableComponent implements OnInit, OnDestroy {
   openLatestReports(amount: number): void {
     this.httpService
       .getLatestReports(amount, this.currentView.storageName)
-      .pipe(
-        tap(() => this.toastService.showSuccess(`Latest ${amount} reports opened!`)),
-        catchError(this.errorHandler.handleError()),
-      )
+      .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (data: Report[]) => {
           for (let report of data) {
             this.openReportEvent.next(report);
           }
+          this.toastService.showSuccess(`Latest ${amount} reports opened!`);
         },
       });
   }
@@ -508,13 +504,11 @@ export class TableComponent implements OnInit, OnDestroy {
   openReportInProgress(index: number): void {
     this.httpService
       .getReportInProgress(index)
-      .pipe(
-        tap(() => this.toastService.showSuccess(`Opened report in progress with index [${index}]`)),
-        catchError(this.errorHandler.handleError()),
-      )
+      .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (report: Report) => {
           this.openReportEvent.next(report);
+          this.toastService.showSuccess(`Opened report in progress with index [${index}]`);
         },
       });
   }
@@ -522,13 +516,11 @@ export class TableComponent implements OnInit, OnDestroy {
   deleteReportInProgress(index: number): void {
     this.httpService
       .deleteReportInProgress(index)
-      .pipe(
-        tap(() => this.toastService.showSuccess(`Deleted report in progress with index [${index}]`)),
-        catchError(this.errorHandler.handleError()),
-      )
+      .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
-        complete: () => {
+        next: (): void => {
           this.loadReportInProgressSettings();
+          this.toastService.showSuccess(`Deleted report in progress with index [${index}]`);
         },
       });
   }
@@ -560,10 +552,7 @@ export class TableComponent implements OnInit, OnDestroy {
   showUploadedReports(formData: FormData): void {
     this.httpService
       .uploadReport(formData)
-      .pipe(
-        tap(() => this.toastService.showSuccess('Report uploaded!')),
-        catchError(this.errorHandler.handleError()),
-      )
+      .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (data: Report[]) => {
           for (let report of data) {
@@ -573,6 +562,7 @@ export class TableComponent implements OnInit, OnDestroy {
             };
             this.tabService.openNewTab(reportData);
           }
+          this.toastService.showSuccess('Report uploaded!');
         },
       });
   }
