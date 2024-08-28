@@ -16,7 +16,7 @@ import { ToastComponent } from './shared/components/toast/toast.component';
 import { ReportComponent } from './report/report.component';
 import { CloseTab } from './shared/interfaces/close-tab';
 import { HttpService } from './shared/services/http.service';
-import { StubStrategyUtil } from './shared/enums/stub-strategy';
+import { StubStrategy } from './shared/enums/stub-strategy';
 import { ErrorHandling } from './shared/classes/error-handling.service';
 
 @Component({
@@ -155,6 +155,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.httpService
       .getStubStrategies()
       .pipe(catchError(this.errorHandler.handleError()))
-      .subscribe((response: string[]) => (StubStrategyUtil.reportStubStrategies = response));
+      .subscribe((response: string[]) => (StubStrategy.report = response));
   }
 }

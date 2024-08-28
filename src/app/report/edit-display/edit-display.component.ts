@@ -36,7 +36,7 @@ import { EncodingButtonComponent } from './encoding-button/encoding-button.compo
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { TestReportsService } from '../../test/test-reports.service';
 import { DebugTabService } from '../../debug/debug-tab.service';
-import { StubStrategyUtil } from '../../shared/enums/stub-strategy';
+import { StubStrategy } from '../../shared/enums/stub-strategy';
 
 @Component({
   selector: 'app-edit-display',
@@ -69,7 +69,7 @@ import { StubStrategyUtil } from '../../shared/enums/stub-strategy';
 export class EditDisplayComponent {
   protected readonly ReportUtil = ReportUtil;
   protected readonly Number: NumberConstructor = Number;
-  protected readonly StubStrategyUtil = StubStrategyUtil;
+  protected readonly StubStrategyUtil = StubStrategy;
 
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
@@ -226,8 +226,8 @@ export class EditDisplayComponent {
   updateCheckpointStubStrategy(strategy: number): void {
     if (this.selectedNode && this.selectedNode.stub !== strategy) {
       this.openStubDifferenceModal(
-        StubStrategyUtil.checkpointStubStrategyConst[this.selectedNode.stub + 1],
-        StubStrategyUtil.checkpointStubStrategyConst[strategy + 1],
+        StubStrategy.checkpoints[this.selectedNode.stub + 1],
+        StubStrategy.checkpoints[strategy + 1],
       );
     }
   }
