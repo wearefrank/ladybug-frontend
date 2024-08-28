@@ -69,7 +69,7 @@ import { StubStrategy } from '../../shared/enums/stub-strategy';
 export class EditDisplayComponent {
   protected readonly ReportUtil = ReportUtil;
   protected readonly Number: NumberConstructor = Number;
-  protected readonly StubStrategyUtil = StubStrategy;
+  protected readonly StubStrategy = StubStrategy;
 
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
