@@ -74,7 +74,7 @@
           @if (ReportUtil.isReport(selectedNode)) {
             <div class="w-fit mx-1 my-0">
               <select class="form-control" [(ngModel)]="stubStrategy" (ngModelChange)="updateReportStubStrategy($event)">
-                @for (strategy of reportStubStrategyConst; track strategy) {
+                @for (strategy of StubStrategyUtil.reportStubStrategies; track strategy) {
                   <option [ngValue]="strategy" [selected]="selectedNode.stubStrategy === strategy">{{ strategy }}</option>
                 }
               </select>
@@ -82,7 +82,7 @@
           } @else if (ReportUtil.isCheckPoint(selectedNode)) {
             <div class="w-fit mx-1 my-0">
               <select class="form-control" [(ngModel)]="stub" (ngModelChange)="updateCheckpointStubStrategy($event)">
-                @for (strategy of checkpointStubStrategyConst; track strategy; let index = $index) {
+                @for (strategy of StubStrategyUtil.checkpointStubStrategyConst; track strategy; let index = $index) {
                   <option [ngValue]="index - 1" [selected]="selectedNode.stub === index - 1">{{ strategy }}</option>
                 }
               </select>

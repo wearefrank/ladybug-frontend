@@ -1,10 +1,8 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { CompareComponent } from './compare/compare.component';
-import { Report } from './shared/interfaces/report';
 import { TestComponent } from './test/test.component';
-import { DynamicService } from './shared/services/dynamic.service';
 import { CompareData } from './compare/compare-data';
 import { SettingsService } from './shared/services/settings.service';
 import { TabService } from './shared/services/tab.service';
@@ -17,6 +15,8 @@ import { HelperService } from './shared/services/helper.service';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { ReportComponent } from './report/report.component';
 import { CloseTab } from './shared/interfaces/close-tab';
+import { HttpService } from './shared/services/http.service';
+import { StubStrategyUtil } from './shared/enums/stub-strategy';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +25,7 @@ import { CloseTab } from './shared/interfaces/close-tab';
   standalone: true,
   imports: [RouterLinkActive, RouterLink, RouterOutlet, ToastComponent],
 })
-export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AppComponent implements OnInit, OnDestroy {
   appVersion: string = '0.0.0';
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
   @ViewChild(TestComponent) testComponent!: TestComponent;
@@ -42,13 +42,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private titleService: Title,
-    private dynamicService: DynamicService,
     //make sure settings are retrieved from localstorage on startup by initializing the service on startup
     private settingsService: SettingsService,
     private tabService: TabService,
     private router: Router,
     private helperService: HelperService,
     private location: Location,
+    private httpService: HttpService,
   ) {
     this.titleService.setTitle(`Ladybug - v${this.appVersion}`);
   }
@@ -56,10 +56,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.fetchAndSetAppVersion();
     this.subscribeToServices();
-  }
-
-  ngAfterViewInit(): void {
-    this.observeReportSave();
+    this.getStubStrategies();
   }
 
   ngOnDestroy(): void {
@@ -123,13 +120,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate([ReportComponent.ROUTER_PATH, data.report.storageId]);
   }
 
-  observeReportSave(): void {
-    this.dynamicService.getObservable().subscribe((report: Report) => {
-      const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id == String(report.storageId));
-      this.tabs[tabIndex].data = report;
-    });
-  }
-
   openNewCompareTab(data: CompareData): void {
     const tabId = this.helperService.createCompareTabId(data.originalReport, data.runResultReport);
     const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id == tabId);
@@ -157,5 +147,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     event.stopPropagation();
     event.preventDefault();
     this.closeTab(tab);
+  }
+
+  getStubStrategies(): void {
+    this.httpService
+      .getStubStrategies()
+      .subscribe((response: string[]) => (StubStrategyUtil.reportStubStrategies = response));
   }
 }

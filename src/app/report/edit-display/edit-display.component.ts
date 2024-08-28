@@ -36,11 +36,7 @@ import { EncodingButtonComponent } from './encoding-button/encoding-button.compo
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { TestReportsService } from '../../test/test-reports.service';
 import { DebugTabService } from '../../debug/debug-tab.service';
-import {
-  checkpointStubStrategyConst,
-  ReportStubStrategy,
-  reportStubStrategyConst,
-} from '../../shared/enums/stub-strategy';
+import { StubStrategyUtil } from '../../shared/enums/stub-strategy';
 
 @Component({
   selector: 'app-edit-display',
@@ -72,11 +68,9 @@ import {
 })
 export class EditDisplayComponent {
   protected readonly ReportUtil = ReportUtil;
-  protected readonly checkpointStubStrategyConst = checkpointStubStrategyConst;
-  protected readonly reportStubStrategyConst = reportStubStrategyConst;
   protected readonly Number: NumberConstructor = Number;
+  protected readonly StubStrategyUtil = StubStrategyUtil;
 
-  @Input() id: string = '';
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
@@ -91,7 +85,7 @@ export class EditDisplayComponent {
   selectedNode?: Report | Checkpoint;
   displayReport: boolean = false;
   stub?: number;
-  stubStrategy?: ReportStubStrategy;
+  stubStrategy?: string;
 
   constructor(
     private modalService: NgbModal,
@@ -221,17 +215,17 @@ export class EditDisplayComponent {
     this.editingEnabled = false;
   }
 
-  updateReportStubStrategy(strategy: ReportStubStrategy) {
+  updateReportStubStrategy(strategy: string): void {
     if (ReportUtil.isReport(this.selectedNode) && this.selectedNode.stubStrategy !== strategy) {
       this.openStubDifferenceModal(this.selectedNode.stubStrategy, strategy);
     }
   }
 
-  updateCheckpointStubStrategy(strategy: number) {
+  updateCheckpointStubStrategy(strategy: number): void {
     if (this.selectedNode && this.selectedNode.stub !== strategy) {
       this.openStubDifferenceModal(
-        checkpointStubStrategyConst[this.selectedNode.stub + 1],
-        checkpointStubStrategyConst[strategy + 1],
+        StubStrategyUtil.checkpointStubStrategyConst[this.selectedNode.stub + 1],
+        StubStrategyUtil.checkpointStubStrategyConst[strategy + 1],
       );
     }
   }
@@ -276,7 +270,7 @@ export class EditDisplayComponent {
     }
   }
 
-  updateReport(storageId: string, body: UpdateReport | UpdateCheckpoint, node: Report | Checkpoint) {
+  updateReport(storageId: string, body: UpdateReport | UpdateCheckpoint, node: Report | Checkpoint): void {
     this.httpService
       .updateReport(storageId, body, this.currentView.storageName)
       .pipe(catchError(this.errorHandler.handleError()))

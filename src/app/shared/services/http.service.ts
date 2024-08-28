@@ -228,4 +228,10 @@ export class HttpService {
       responseType: 'text',
     });
   }
+
+  getStubStrategies(): Observable<string[]> {
+    return this.http.get<string[]>(`api/testtool/stub-strategies`, {
+      headers: this.headers,
+    });
+  }
 }
