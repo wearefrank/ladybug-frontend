@@ -1,5 +1,5 @@
 <div class="table-container">
-  <table data-cy-test="table" mat-table class="test-table" [dataSource]="reports">
+  <table data-cy-test="table" mat-table class="test-table table-responsive table table-hover" [dataSource]="reports">
     <ng-container matColumnDef="select">
       <th mat-header-cell class="table-row-checkbox" *matHeaderCellDef>
         <input
@@ -76,7 +76,7 @@
       </td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr data-cy-test="tableRow" mat-row *matRowDef="let report; columns: displayedColumns;" [hidden]="!report.showReport"></tr>
   </table>
 </div>

@@ -156,6 +156,7 @@ Cypress.Commands.add('checkTestTableNumRows' as keyof Chainable, (length: number
   cy.getTestTableRows().should('have.length', length);
 });
 
+//Will not work with duplicate report names
 Cypress.Commands.add('checkTestTableReportsAre' as keyof Chainable, (reportNames: string[]): void => {
   cy.checkTestTableNumRows(reportNames.length);
   for (const reportName of reportNames) {

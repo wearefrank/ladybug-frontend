@@ -1,7 +1,9 @@
 td {
   border: 0;
   vertical-align: middle;
-  height: fit-content;
+  font-size: 11px;
+  max-width: 40rem;
+  word-wrap: break-word;
 }
 
 tr {
