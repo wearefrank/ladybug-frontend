@@ -39,8 +39,9 @@ declare global {
       clickRowInTable(index: number): Chainable;
       checkFileTreeLength(length: number): Chainable;
       refreshApp(): Chainable;
+      getDebugTableRows(): Chainable;
+      getTestTableRows(): Chainable
       assertDebugTableLength(length: number): Chainable;
-      getTableRows(): Chainable;
     }
   }
 }
@@ -152,13 +153,14 @@ Cypress.Commands.add('enableShowMultipleInDebugTree' as keyof Chainable, (): voi
 });
 
 Cypress.Commands.add('checkTestTableNumRows' as keyof Chainable, (length: number): void => {
-  cy.get('[data-cy-test="table"] tr').should('have.length', length);
+  cy.getTestTableRows().should('have.length', length);
 });
 
+//Will not work with duplicate report names
 Cypress.Commands.add('checkTestTableReportsAre' as keyof Chainable, (reportNames: string[]): void => {
   cy.checkTestTableNumRows(reportNames.length);
   for (const reportName of reportNames) {
-    cy.get('[data-cy-test="table"]').find('tr').contains(`/${reportName}`).should('have.length', 1);
+    cy.getTestTableRows().contains(`/${reportName}`).should('have.length', 1);
   }
 });
 
@@ -188,7 +190,7 @@ Cypress.Commands.add('clickFirstFileInFileTree' as keyof Chainable, (): void => 
 });
 
 Cypress.Commands.add('clickRowInTable' as keyof Chainable, (index: number): void => {
-  cy.getTableRows().eq(index).click();
+  cy.getDebugTableRows().eq(index).click();
 });
 
 Cypress.Commands.add('checkFileTreeLength' as keyof Chainable, (length: number): void => {
@@ -201,14 +203,18 @@ Cypress.Commands.add('refreshApp' as keyof Chainable, (): void => {
   cy.wait('@apiCall').then(() => cy.log('All api requests have completed'));
 });
 
-Cypress.Commands.add('getTableRows' as keyof Chainable, (): Chainable => {
+Cypress.Commands.add('getDebugTableRows' as keyof Chainable, (): Chainable => {
   return cy.get('[data-cy-debug="tableRow"]');
+});
+
+Cypress.Commands.add('getTestTableRows' as keyof Chainable, (): Chainable => {
+  return cy.get('[data-cy-test="tableRow"]');
 });
 
 Cypress.Commands.add('assertDebugTableLength' as keyof Chainable, (length: number): void => {
   length === 0
-    ? cy.getTableRows().should('not.exist')
-    : cy.getTableRows().should('have.length', length);
+    ? cy.getDebugTableRows().should('not.exist')
+    : cy.getDebugTableRows().should('have.length', length);
 });
 
 function interceptGetApiCall(alias: string): void {

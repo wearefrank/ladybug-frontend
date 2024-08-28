@@ -30,9 +30,9 @@ describe('About opened reports', () => {
 
   it('Close all', () => {
     cy.enableShowMultipleInDebugTree();
-    cy.getTableRows().find('td:contains(Simple report)').first().click();
+    cy.getDebugTableRows().find('td:contains(Simple report)').first().click();
     cy.checkFileTreeLength(1);
-    cy.getTableRows().find('td:contains("Another simple report")').first().click();
+    cy.getDebugTableRows().find('td:contains("Another simple report")').first().click();
     cy.checkFileTreeLength(2);
     // Check sequence of opened reports. We expect "Simple report" first, then "Another simple report".
     cy.get('[data-cy-debug-tree="root"] > app-tree-item:nth-child(1) > div > .sft-item > .item-name').should(
@@ -49,7 +49,7 @@ describe('About opened reports', () => {
   it('Correct nesting in debug tree for report with infopoint', () => {
     cy.createReportWithInfopoint();
     cy.initializeApp();
-    cy.getTableRows().find('td:contains("Hide a checkpoint in blackbox view")').first().click();
+    cy.getDebugTableRows().find('td:contains("Hide a checkpoint in blackbox view")').first().click();
     cy.checkFileTreeLength(1);
     cy.get('[data-cy-debug-tree="root"] app-tree-item app-tree-icon .sft-chevron-container').eq(1).click()
     cy.get('[data-cy-debug-tree="root"] app-tree-item > div > div:contains("Hide this checkpoint")').should(
@@ -60,7 +60,7 @@ describe('About opened reports', () => {
   it('Correct nesting in debug tree for report with multiple startpoints', () => {
     cy.createReportWithMultipleStartpoints();
     cy.initializeApp();
-    cy.getTableRows().find('td:contains("Multiple startpoints")').first().click();
+    cy.getDebugTableRows().find('td:contains("Multiple startpoints")').first().click();
     cy.checkFileTreeLength(1);
     cy.get('[data-cy-debug-tree="root"] app-tree-item app-tree-icon .sft-chevron-container').eq(1).click()
     cy.get('[data-cy-debug-tree="root"] app-tree-item > div > div:contains("Hello infopoint")').should('be.hidden');

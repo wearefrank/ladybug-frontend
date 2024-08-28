@@ -19,11 +19,39 @@ import { View } from '../../shared/interfaces/view';
 import { TestReportsService } from '../test-reports.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { FormsModule } from '@angular/forms';
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
+} from '@angular/material/table';
+import { MatSortHeader } from '@angular/material/sort';
+import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
 
 @Component({
   selector: 'app-test-table',
   standalone: true,
-  imports: [FormsModule],
+  imports: [
+    FormsModule,
+    MatTable,
+    MatColumnDef,
+    MatCell,
+    MatCellDef,
+    MatHeaderCell,
+    MatSortHeader,
+    TableCellShortenerPipe,
+    MatHeaderCellDef,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+  ],
   templateUrl: './test-table.component.html',
   styleUrl: './test-table.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,8 +61,8 @@ export class TestTableComponent implements OnChanges {
   @Input() currentFilter: string = '';
   @Input() showStorageIds?: boolean;
   @Output() runEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
-
   amountOfSelectedReports: number = 0;
+  protected displayedColumns: string[] = [];
 
   constructor(
     private httpService: HttpService,
@@ -46,6 +74,9 @@ export class TestTableComponent implements OnChanges {
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['showStorageIds']) {
+      this.updateDisplayColumn();
+    }
     if (changes['currentFilter'] || changes['reports']) {
       this.amountOfSelectedReports = 0;
       for (const report of this.reports) {
@@ -58,6 +89,14 @@ export class TestTableComponent implements OnChanges {
       }
       this.getFullPaths();
     }
+  }
+
+  updateDisplayColumn(): void {
+    this.displayedColumns = ['select'];
+    if (this.showStorageIds) {
+      this.displayedColumns.push('storageId');
+    }
+    this.displayedColumns.push('run', 'name', 'description', 'variables', 'runResults', 'options');
   }
 
   openReport(storageId: number): void {
