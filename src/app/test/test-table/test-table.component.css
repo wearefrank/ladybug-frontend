@@ -1,7 +1,13 @@
 td {
   border: 0;
   vertical-align: middle;
-  height: fit-content;
+  font-size: 11px;
+  max-width: 40rem;
+  word-wrap: break-word;
+}
+
+.mat-mdc-row:hover {
+  background-color: #eeeeee;
 }
 
 tr {
@@ -26,4 +32,35 @@ tr {
 
 button {
   height: fit-content;
+}
+
+.table-container {
+  overflow: auto;
+  height: 80vh;
+}
+
+.test-table td {
+  padding-bottom: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+.test-table th {
+  padding-bottom: 0.25rem;
+  padding-top: 0.25rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+thead {
+  width: 100% !important;
+}
+
+.table-row-checkbox {
+  text-align: center;
+  vertical-align: middle;
+  width: 1rem;
+}
+
+.test-table {
+  table-layout: fixed;
 }
