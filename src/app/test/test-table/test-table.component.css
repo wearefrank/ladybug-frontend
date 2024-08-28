@@ -45,6 +45,7 @@ button {
   padding-top: 0.25rem;
   width: 15%;
   text-align: left;
+  vertical-align: middle;
 }
 
 .table-row-checkbox {
