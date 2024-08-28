@@ -293,7 +293,6 @@ export class TableComponent implements OnInit, OnDestroy {
               this.hasTimedOut = true;
               hasChanged = true;
             }
-            this.toastService.showSuccess(`Opened report in progress with index [${index}]`);
           },
         });
     }
