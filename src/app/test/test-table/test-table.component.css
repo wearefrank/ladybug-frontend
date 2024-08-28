@@ -6,6 +6,10 @@ td {
   word-wrap: break-word;
 }
 
+.mat-mdc-row:hover {
+  background-color: #eeeeee;
+}
+
 tr {
   line-height: 20px;
   height: 100%;
