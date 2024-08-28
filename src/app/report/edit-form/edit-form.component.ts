@@ -38,7 +38,6 @@ export class EditFormComponent implements OnInit {
 
   getDifference(name: keyof Report): ReportDifference {
     const originalValue = this.report[name] ?? '';
-    // @ts-ignore
     const difference = new DiffMatchPatch().diff_main(originalValue, this.editForm.get(name)?.value ?? '');
     return {
       name: name,

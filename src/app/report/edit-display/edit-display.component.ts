@@ -36,6 +36,7 @@ import { EncodingButtonComponent } from './encoding-button/encoding-button.compo
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { TestReportsService } from '../../test/test-reports.service';
 import { DebugTabService } from '../../debug/debug-tab.service';
+import { StubStrategy } from '../../shared/enums/stub-strategy';
 
 @Component({
   selector: 'app-edit-display',
@@ -68,7 +69,8 @@ import { DebugTabService } from '../../debug/debug-tab.service';
 export class EditDisplayComponent {
   protected readonly ReportUtil = ReportUtil;
   protected readonly Number: NumberConstructor = Number;
-  @Input() id: string = '';
+  protected readonly StubStrategy = StubStrategy;
+
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
@@ -82,7 +84,8 @@ export class EditDisplayComponent {
   rerunResult?: TestResult;
   selectedNode?: Report | Checkpoint;
   displayReport: boolean = false;
-  stubStrategy?: number;
+  stub?: number;
+  stubStrategy?: string;
 
   constructor(
     private modalService: NgbModal,
@@ -97,8 +100,9 @@ export class EditDisplayComponent {
   showReport(node: Report | Checkpoint): void {
     this.disableEditing();
     this.selectedNode = node;
-    this.stubStrategy = node.stub;
+    this.stub = node.stub;
     if (ReportUtil.isReport(this.selectedNode)) {
+      this.stubStrategy = this.selectedNode.stubStrategy;
       this.editor.setNewReport(this.selectedNode.xml);
     } else if (ReportUtil.isCheckPoint(this.selectedNode)) {
       this.editor.setNewReport(this.convertMessage(this.selectedNode));
@@ -179,8 +183,8 @@ export class EditDisplayComponent {
     }
   }
 
-  getReportValues(checkpointId: string): UpdateReport | UpdateCheckpoint {
-    return this.editingRootNode ? this.getReportValuesForRootNode() : this.getReportValuesForChildNode(checkpointId);
+  getReportValues(checkpointId?: string): UpdateReport | UpdateCheckpoint {
+    return checkpointId ? this.getReportValuesForChildNode(checkpointId) : this.getReportValuesForRootNode();
   }
 
   getReportValuesForRootNode(): UpdateReport {
@@ -213,46 +217,61 @@ export class EditDisplayComponent {
     this.editingEnabled = false;
   }
 
-  openStubDifferenceModal(stubStrategy: number): void {
-    if ((this.selectedNode as Checkpoint).message == this.editor.getValue()) {
-      let reportDifferences: ReportDifference[] = [];
-      const stubStrategies: string[] = [
-        'Use report level stub strategy',
-        'Always stub this checkpoint',
-        'Never stub this checkpoint',
-      ];
-      if (this.selectedNode && this.selectedNode.stub !== +stubStrategy) {
-        reportDifferences.push({
-          name: 'message',
-          originalValue: stubStrategies[this.selectedNode.stub + 1],
-          // @ts-ignore
-          difference: stubStrategies[stubStrategy + 1],
-        });
-      }
-      if (reportDifferences.length > 0) {
-        this.differenceModal.open(reportDifferences, 'save', true);
-      }
-    } else {
+  updateReportStubStrategy(strategy: string): void {
+    if (ReportUtil.isReport(this.selectedNode) && this.selectedNode.stubStrategy !== strategy) {
+      this.openStubDifferenceModal(this.selectedNode.stubStrategy, strategy);
+    }
+  }
+
+  updateCheckpointStubStrategy(strategy: number): void {
+    if (this.selectedNode && this.selectedNode.stub !== strategy) {
+      this.openStubDifferenceModal(
+        StubStrategy.checkpoints[this.selectedNode.stub + 1],
+        StubStrategy.checkpoints[strategy + 1],
+      );
+    }
+  }
+
+  openStubDifferenceModal(originalValue: string, difference: string): void {
+    if (this.editingEnabled) {
       this.toastService.showWarning('Save or discard your changes before updating the stub strategy');
+    } else {
+      const reportDifferences: ReportDifference[] = [];
+      reportDifferences.push({
+        name: 'message',
+        originalValue: originalValue,
+        difference: difference,
+      });
+      this.differenceModal.open(reportDifferences, 'save', true);
     }
   }
 
   saveChanges(stubChange: boolean): void {
-    const node: Report | Checkpoint = this.selectedNode!;
-    let checkpointId: string = '';
-    let storageId: string;
-    if (ReportUtil.isReport(node)) {
-      storageId = String(node.storageId);
-    } else if (ReportUtil.isCheckPoint(node)) {
-      storageId = node.uid.split('#')[0];
-      checkpointId = node.uid.split('#')[1];
+    if (this.selectedNode) {
+      const node: Report | Checkpoint = this.selectedNode;
+      let checkpointId: string | undefined;
+      let storageId: string;
+      if (ReportUtil.isReport(node)) {
+        storageId = String(node.storageId);
+      } else if (ReportUtil.isCheckPoint(node)) {
+        storageId = node.uid.split('#')[0];
+        checkpointId = node.uid.split('#')[1];
+      } else {
+        return;
+      }
+      let body;
+      if (stubChange) {
+        body = checkpointId ? { stub: this.stub, checkpointId: checkpointId } : { stubStrategy: this.stubStrategy };
+      } else {
+        body = this.getReportValues(checkpointId);
+      }
+      this.updateReport(storageId, body, node);
     } else {
-      return;
+      this.toastService.showWarning('Please select a node in the debug tree');
     }
-    const body = stubChange
-      ? { stub: this.stubStrategy ?? '', checkpointId: checkpointId }
-      : this.getReportValues(checkpointId);
+  }
 
+  updateReport(storageId: string, body: UpdateReport | UpdateCheckpoint, node: Report | Checkpoint): void {
     this.httpService
       .updateReport(storageId, body, this.currentView.storageName)
       .pipe(catchError(this.errorHandler.handleError()))

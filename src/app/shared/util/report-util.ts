@@ -21,4 +21,8 @@ export const ReportUtil = {
     }
     return undefined;
   },
+
+  hasValidUid(uid: string) {
+    return !uid.includes('null');
+  },
 };

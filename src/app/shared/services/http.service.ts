@@ -109,7 +109,7 @@ export class HttpService {
 
   updateReport(
     reportId: string,
-    body: UpdateReport | UpdateCheckpoint | { stub: string | number; checkpointId: string },
+    body: UpdateReport | UpdateCheckpoint,
     storage: string,
   ): Observable<UpdateReportResponse> {
     return this.http.post<UpdateReportResponse>(`api/report/${storage}/${reportId}`, body);
@@ -204,6 +204,12 @@ export class HttpService {
     const cleanStorageName: string = storageName.replaceAll(' ', '');
     return this.http.get(`api/report/warningsAndErrors/${cleanStorageName}`, {
       responseType: 'text',
+    });
+  }
+
+  getStubStrategies(): Observable<string[]> {
+    return this.http.get<string[]>(`api/testtool/stub-strategies`, {
+      headers: this.headers,
     });
   }
 }
