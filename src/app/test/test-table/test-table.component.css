@@ -36,16 +36,19 @@ button {
 }
 
 .test-table td {
-  padding-bottom: 0.5rem;
-  padding-top: 0.5rem;
+  padding-bottom: 0.75rem;
+  padding-top: 0.75rem;
 }
 
-.test-table th:not(.table-row-checkbox) {
+.test-table th {
   padding-bottom: 0.25rem;
   padding-top: 0.25rem;
-  width: 15%;
   text-align: left;
   vertical-align: middle;
+}
+
+thead {
+  width: 100% !important;
 }
 
 .table-row-checkbox {
@@ -55,6 +58,5 @@ button {
 }
 
 .test-table {
-  width: 100%;
   table-layout: fixed;
 }
