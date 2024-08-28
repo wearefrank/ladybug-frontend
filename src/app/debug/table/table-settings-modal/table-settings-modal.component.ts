@@ -3,7 +3,7 @@ import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angu
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
 import { SettingsService } from '../../../shared/services/settings.service';
-import { catchError, Subscription } from 'rxjs';
+import { catchError, Subscription, tap } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
 import { ToastComponent } from '../../../shared/components/toast/toast.component';
@@ -122,17 +122,23 @@ export class TableSettingsModalComponent implements OnDestroy {
     const form: any = this.settingsForm.value;
     localStorage.setItem('generatorEnabled', form.generatorEnabled);
     localStorage.setItem('transformationEnabled', form.transformationEnabled.toString());
-    this.httpService.postTransformation(form.transformation).subscribe({
-      error: catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .postTransformation(form.transformation)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe();
     const generatorEnabled: boolean = form.generatorEnabled === 'Enabled';
     const data: UploadParams = {
       generatorEnabled: generatorEnabled,
       regexFilter: form.regexFilter,
     };
-    this.httpService.postSettings(data).subscribe({
-      error: catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .postSettings(data)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (): void => {
+          this.toastService.showSuccess('Settings saved!');
+        },
+      });
 
     this.toastService.showWarning('Reopen report to see updated XML');
     this.saving = true;
@@ -145,28 +151,36 @@ export class TableSettingsModalComponent implements OnDestroy {
   factoryReset(): void {
     this.settingsForm.reset();
     this.settingsService.setShowMultipleAtATime();
-    this.httpService.resetSettings().subscribe({
-      next: (response: OptionsSettings) => this.saveResponseSetting(response),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-    this.httpService.getTransformation(true).subscribe({
-      next: (res: Transformation) => this.settingsForm.get('transformation')?.setValue(res.transformation),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .resetSettings()
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (response: OptionsSettings) => this.saveResponseSetting(response),
+      });
+    this.httpService
+      .getTransformation(true)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (res: Transformation) => this.settingsForm.get('transformation')?.setValue(res.transformation),
+      });
   }
 
   loadSettings(): void {
-    this.httpService.getSettings().subscribe({
-      next: (response: OptionsSettings) => this.saveResponseSetting(response),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getSettings()
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (response: OptionsSettings) => this.saveResponseSetting(response),
+      });
     if (localStorage.getItem('transformationEnabled')) {
       this.settingsForm.get('transformationEnabled')?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }
-    this.httpService.getTransformation(false).subscribe({
-      next: (response: Transformation) => this.settingsForm.get('transformation')?.setValue(response.transformation),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getTransformation(false)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (response: Transformation) => this.settingsForm.get('transformation')?.setValue(response.transformation),
+      });
   }
 
   saveResponseSetting(response: any): void {

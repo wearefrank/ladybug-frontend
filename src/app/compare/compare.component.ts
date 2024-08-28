@@ -85,25 +85,28 @@ export class CompareComponent implements AfterViewInit, OnInit {
   }
 
   private getViews() {
-    this.httpService.getViews().subscribe((views: View[]) => {
-      const filteredViews: View[] = views.filter((v: View) => {
-        return (
-          v.storageName === this.compareData?.originalReport.storageName ||
-          v.storageName === this.compareData?.runResultReport.storageName
-        );
-      });
-      if (filteredViews.length > 0) {
-        this.views = filteredViews;
-        if (this.compareData?.viewName) {
-          const view = this.views.find((v) => v.name === this.compareData!.viewName);
-          if (view) {
-            this.changeView(view);
-            return;
+    this.httpService
+      .getViews()
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe((views: View[]) => {
+        const filteredViews: View[] = views.filter((v: View) => {
+          return (
+            v.storageName === this.compareData?.originalReport.storageName ||
+            v.storageName === this.compareData?.runResultReport.storageName
+          );
+        });
+        if (filteredViews.length > 0) {
+          this.views = filteredViews;
+          if (this.compareData?.viewName) {
+            const view = this.views.find((v) => v.name === this.compareData!.viewName);
+            if (view) {
+              this.changeView(view);
+              return;
+            }
           }
+          this.changeView(views[0]);
         }
-        this.changeView(views[0]);
-      }
-    });
+      });
   }
 
   private getData(id: string): CompareData | undefined {
