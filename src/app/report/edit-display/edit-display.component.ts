@@ -238,7 +238,6 @@ export class EditDisplayComponent {
       reportDifferences.push({
         name: 'message',
         originalValue: originalValue,
-        // @ts-ignore
         difference: difference,
       });
       this.differenceModal.open(reportDifferences, 'save', true);
