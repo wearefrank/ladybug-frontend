@@ -1,12 +1,12 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
-import { catchError } from 'rxjs';
 import { AngularSplitModule } from 'angular-split';
 import { TableComponent } from './table/table.component';
 import { ReportComponent } from '../report/report.component';
 import { ToastService } from '../shared/services/toast.service';
 import { HttpService } from '../shared/services/http.service';
 import { View } from '../shared/interfaces/view';
+import { catchError } from 'rxjs';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
 
 @Component({

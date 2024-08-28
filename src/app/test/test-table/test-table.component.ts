@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
@@ -62,19 +61,21 @@ export class TestTableComponent implements OnChanges {
   }
 
   openReport(storageId: number): void {
-    this.httpService.getReport(storageId, this.testReportsService.storageName).subscribe({
-      next: (report: Report): void => {
-        const reportData: ReportData = {
-          report: report,
-          currentView: {
-            storageName: this.testReportsService.storageName,
-            metadataNames: this.testReportsService.metadataNames,
-          } as View,
-        };
-        this.tabService.openNewTab(reportData);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getReport(storageId, this.testReportsService.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (report: Report): void => {
+          const reportData: ReportData = {
+            report: report,
+            currentView: {
+              storageName: this.testReportsService.storageName,
+              metadataNames: this.testReportsService.metadataNames,
+            } as View,
+          };
+          this.tabService.openNewTab(reportData);
+        },
+      });
   }
 
   getFullPaths(): void {
