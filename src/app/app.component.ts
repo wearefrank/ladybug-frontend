@@ -6,7 +6,7 @@ import { TestComponent } from './test/test.component';
 import { CompareData } from './compare/compare-data';
 import { SettingsService } from './shared/services/settings.service';
 import { TabService } from './shared/services/tab.service';
-import { Subscription } from 'rxjs';
+import { catchError, Subscription } from 'rxjs';
 import { DebugComponent } from './debug/debug.component';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Tab } from './shared/interfaces/tab';
@@ -17,6 +17,7 @@ import { ReportComponent } from './report/report.component';
 import { CloseTab } from './shared/interfaces/close-tab';
 import { HttpService } from './shared/services/http.service';
 import { StubStrategyUtil } from './shared/enums/stub-strategy';
+import { ErrorHandling } from './shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-root',
@@ -49,6 +50,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private helperService: HelperService,
     private location: Location,
     private httpService: HttpService,
+    private errorHandler: ErrorHandling,
   ) {
     this.titleService.setTitle(`Ladybug - v${this.appVersion}`);
   }
@@ -152,6 +154,7 @@ export class AppComponent implements OnInit, OnDestroy {
   getStubStrategies(): void {
     this.httpService
       .getStubStrategies()
+      .pipe(catchError(this.errorHandler.handleError()))
       .subscribe((response: string[]) => (StubStrategyUtil.reportStubStrategies = response));
   }
 }
