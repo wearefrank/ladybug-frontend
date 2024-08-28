@@ -3,7 +3,7 @@ import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../shared/interfaces/table-settings';
-import { catchError, Subject, Subscription } from 'rxjs';
+import { catchError, Subject, Subscription, tap } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
@@ -183,8 +183,10 @@ export class TableComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(filterContextSubscription);
-    const refresh = this.debugTab.refresh$.subscribe(() => this.refresh());
-    this.subscriptions.add(refresh);
+    const refreshAll = this.debugTab.refreshAll$.subscribe(() => this.refresh());
+    this.subscriptions.add(refreshAll);
+    const refreshTable = this.debugTab.refreshTable$.subscribe(() => this.refresh());
+    this.subscriptions.add(refreshTable);
   }
 
   setTableSpacing(value: number): void {
@@ -220,16 +222,18 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   retrieveRecords() {
-    this.httpService.getMetadataReports(this.tableSettings, this.currentView).subscribe({
-      next: (value: Report[]) => {
-        this.setUniqueOptions(value);
-        this.tableSettings.reportMetadata = value;
-        this.tableDataSource.data = value;
-        this.tableSettings.tableLoaded = true;
-        this.toastService.showSuccess('Data loaded!');
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getMetadataReports(this.tableSettings, this.currentView)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (value: Report[]) => {
+          this.setUniqueOptions(value);
+          this.tableSettings.reportMetadata = value;
+          this.tableDataSource.data = value;
+          this.tableSettings.tableLoaded = true;
+          this.toastService.showSuccess('Data loaded!');
+        },
+      });
   }
 
   changeView(view: View): void {
@@ -240,49 +244,57 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadMetadataCount(): void {
-    this.httpService.getMetadataCount(this.currentView.storageName).subscribe({
-      next: (count: number) => (this.metadataCount = count),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getMetadataCount(this.currentView.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (count: number) => (this.metadataCount = count),
+      });
   }
 
   loadReportInProgressThreshold(): void {
-    this.httpService.getReportsInProgressThresholdTime().subscribe({
-      next: (time: number) => (this.reportsInProgressThreshold = time),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getReportsInProgressThresholdTime()
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (time: number) => (this.reportsInProgressThreshold = time),
+      });
   }
 
   loadReportInProgressSettings(): void {
-    this.httpService.getSettings().subscribe({
-      next: (settings: OptionsSettings) => {
-        this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
-        this.tableSettings.estimatedMemoryUsage = settings.estMemory;
-        this.loadReportInProgressDates();
-        this.openInProgress = new FormControl(1, [
-          Validators.min(1),
-          Validators.max(this.tableSettings.numberOfReportsInProgress),
-          Validators.pattern('^[0-9]*$'),
-          Validators.required,
-        ]);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getSettings()
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (settings: OptionsSettings) => {
+          this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
+          this.tableSettings.estimatedMemoryUsage = settings.estMemory;
+          this.loadReportInProgressDates();
+          this.openInProgress = new FormControl(1, [
+            Validators.min(1),
+            Validators.max(this.tableSettings.numberOfReportsInProgress),
+            Validators.pattern('^[0-9]*$'),
+            Validators.required,
+          ]);
+        },
+      });
   }
 
   loadReportInProgressDates(): void {
     let hasChanged: boolean = false;
     for (let index = 1; index <= this.tableSettings.numberOfReportsInProgress; index++) {
-      this.httpService.getReportInProgress(index).subscribe({
-        next: (report: Report) => {
-          this.reportsInProgress[report.correlationId] ??= report.startTime;
-          if (this.reportsInProgressMetThreshold(report)) {
-            this.hasTimedOut = true;
-            hasChanged = true;
-          }
-        },
-        error: () => catchError(this.errorHandler.handleError()),
-      });
+      this.httpService
+        .getReportInProgress(index)
+        .pipe(catchError(this.errorHandler.handleError()))
+        .subscribe({
+          next: (report: Report) => {
+            this.reportsInProgress[report.correlationId] ??= report.startTime;
+            if (this.reportsInProgressMetThreshold(report)) {
+              this.hasTimedOut = true;
+              hasChanged = true;
+            }
+          },
+        });
     }
     if (!hasChanged) {
       this.hasTimedOut = false;
@@ -351,16 +363,18 @@ export class TableComponent implements OnInit, OnDestroy {
       this.toastService.showDanger('Could not find report that was selected.');
       return;
     }
-    this.httpService.getReport(reportTab.storageId, this.currentView.storageName).subscribe({
-      next: (report: Report): void => {
-        const reportData: ReportData = {
-          report: report,
-          currentView: this.currentView!,
-        };
-        this.tabService.openNewTab(reportData);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getReport(reportTab.storageId, this.currentView.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (report: Report): void => {
+          const reportData: ReportData = {
+            report: report,
+            currentView: this.currentView!,
+          };
+          this.tabService.openNewTab(reportData);
+        },
+      });
   }
 
   openSelected(): void {
@@ -373,16 +387,16 @@ export class TableComponent implements OnInit, OnDestroy {
     const selectedReports: number[] = this.tableSettings.reportMetadata
       .filter((report: Report) => report.checked)
       .map((report: Report) => report.storageId);
-    this.httpService.getReports(selectedReports, this.currentView.storageName).subscribe({
-      next: (data: Record<string, CompareReport>) => {
-        for (const report of selectedReports) {
-          data[report].report.xml = data[report].xml;
-          data[report].report.storageName = this.currentView.storageName;
-          this.openReportEvent.next(data[report].report);
-        }
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getReports(selectedReports, this.currentView.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (data: Record<string, CompareReport>) => {
+          for (const report of selectedReports) {
+            this.openReportEvent.next(data[report].report);
+          }
+        },
+      });
   }
 
   openDeleteModal(): void {
@@ -396,10 +410,12 @@ export class TableComponent implements OnInit, OnDestroy {
   deleteSelected(): void {
     const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
     if (reportIds.length > 0) {
-      this.httpService.deleteReport(reportIds, this.currentView.storageName).subscribe({
-        next: () => this.retrieveRecords(),
-        error: () => catchError(this.errorHandler.handleError()),
-      });
+      this.httpService
+        .deleteReport(reportIds, this.currentView.storageName)
+        .pipe(catchError(this.errorHandler.handleError()))
+        .subscribe({
+          next: () => this.retrieveRecords(),
+        });
     }
   }
 
@@ -416,28 +432,31 @@ export class TableComponent implements OnInit, OnDestroy {
     const selectedReports: number[] = this.tableSettings.reportMetadata
       .filter((report) => report.checked)
       .map((report) => report.storageId);
+    this.httpService
+      .getReports(selectedReports, this.currentView.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (data: Record<string, CompareReport>) => {
+          const originalReport = this.transformCompareToReport(data[selectedReports[0]]);
+          const runResultReport = this.transformCompareToReport(data[selectedReports[1]]);
 
-    this.httpService.getReports(selectedReports, this.currentView.storageName).subscribe({
-      next: (data: Record<string, CompareReport>) => {
-        const leftObject = data[selectedReports[0]];
-        const originalReport = leftObject.report;
-        originalReport.xml = leftObject.xml;
+          const id: string = this.helperService.createCompareTabId(originalReport, runResultReport);
 
-        const rightObject = data[selectedReports[1]];
-        const runResultReport = rightObject.report;
-        runResultReport.xml = rightObject.xml;
+          this.tabService.openNewCompareTab({
+            id: id,
+            originalReport: originalReport,
+            runResultReport: runResultReport,
+            viewName: this.currentView.name,
+          });
+        },
+      });
+  }
 
-        const id = this.helperService.createCompareTabId(originalReport, runResultReport);
-
-        this.tabService.openNewCompareTab({
-          id: id,
-          originalReport: originalReport,
-          runResultReport: runResultReport,
-          viewName: this.currentView.name,
-        });
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+  transformCompareToReport(compareReport: CompareReport): Report {
+    const report = compareReport.report;
+    report.xml = compareReport.xml;
+    report.storageName = this.currentView.storageName;
+    return report;
   }
 
   changeTableLimit(event: any): void {
@@ -451,13 +470,15 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: number): void {
-    this.httpService.getReport(storageId, this.currentView.storageName).subscribe({
-      next: (data: Report): void => {
-        data.storageName = this.currentView.storageName;
-        this.openReportEvent.next(data);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getReport(storageId, this.currentView.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (data: Report): void => {
+          data.storageName = this.currentView.storageName;
+          this.openReportEvent.next(data);
+        },
+      });
   }
 
   openSelectedReport(storageId: number) {
@@ -466,33 +487,41 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openLatestReports(amount: number): void {
-    this.httpService.getLatestReports(amount, this.currentView.storageName).subscribe({
-      next: (data: Report[]) => {
-        for (let report of data) {
-          this.openReportEvent.next(report);
-        }
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getLatestReports(amount, this.currentView.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (data: Report[]) => {
+          for (let report of data) {
+            this.openReportEvent.next(report);
+          }
+          this.toastService.showSuccess(`Latest ${amount} reports opened!`);
+        },
+      });
   }
 
   openReportInProgress(index: number): void {
-    this.httpService.getReportInProgress(index).subscribe({
-      next: (report: Report) => {
-        this.toastService.showSuccess(`Opened report in progress with index [${index}]`);
-        this.openReportEvent.next(report);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .getReportInProgress(index)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (report: Report) => {
+          this.openReportEvent.next(report);
+          this.toastService.showSuccess(`Opened report in progress with index [${index}]`);
+        },
+      });
   }
 
   deleteReportInProgress(index: number): void {
-    this.httpService.deleteReportInProgress(index).subscribe({
-      error: () => catchError(this.errorHandler.handleError()),
-      complete: () => {
-        this.loadReportInProgressSettings();
-      },
-    });
+    this.httpService
+      .deleteReportInProgress(index)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (): void => {
+          this.loadReportInProgressSettings();
+          this.toastService.showSuccess(`Deleted report in progress with index [${index}]`);
+        },
+      });
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
@@ -520,18 +549,21 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   showUploadedReports(formData: FormData): void {
-    this.httpService.uploadReport(formData).subscribe({
-      next: (data: Report[]) => {
-        for (let report of data) {
-          const reportData: ReportData = {
-            report: report,
-            currentView: this.currentView,
-          };
-          this.tabService.openNewTab(reportData);
-        }
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .uploadReport(formData)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (data: Report[]) => {
+          for (let report of data) {
+            const reportData: ReportData = {
+              report: report,
+              currentView: this.currentView,
+            };
+            this.tabService.openNewTab(reportData);
+          }
+          this.toastService.showSuccess('Report uploaded!');
+        },
+      });
   }
 
   setUniqueOptions(data: any): void {

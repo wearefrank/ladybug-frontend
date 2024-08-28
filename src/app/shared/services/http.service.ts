@@ -21,27 +21,12 @@ import { TableSettings } from '../interfaces/table-settings';
   providedIn: 'root',
 })
 export class HttpService {
-  headers = new HttpHeaders().set('Content-Type', 'application/json');
+  private readonly headers: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json');
 
-  constructor(
-    private http: HttpClient,
-    private toastService: ToastService,
-  ) {}
-
-  handleSuccess(message: string): void {
-    this.toastService.showSuccess(message);
-  }
+  constructor(private http: HttpClient) {}
 
   getViews(): Observable<View[]> {
-    return this.http.get<View[]>('api/testtool/views').pipe(
-      map((data: View[]) => {
-        const views: View[] = [];
-        for (let [key, value] of Object.entries(data)) {
-          views.push({ ...value, name: key });
-        }
-        return views;
-      }),
-    );
+    return this.http.get<Record<string, View>>('api/testtool/views').pipe(map((response) => Object.values(response)));
   }
 
   getMetadataReports(settings: TableSettings, view: View): Observable<Report[]> {
@@ -68,9 +53,7 @@ export class HttpService {
   }
 
   getLatestReports(amount: number, storage: string): Observable<Report[]> {
-    return this.http
-      .get<Report[]>(`api/report/latest/${storage}/${amount}`)
-      .pipe(tap(() => this.handleSuccess('Latest' + amount + 'reports opened!')));
+    return this.http.get<Report[]>(`api/report/latest/${storage}/${amount}`);
   }
 
   getReportInProgress(index: number): Observable<Report> {
@@ -78,9 +61,7 @@ export class HttpService {
   }
 
   deleteReportInProgress(index: number): Observable<Report> {
-    return this.http
-      .delete<Report>('api/testtool/in-progress/' + index)
-      .pipe(tap(() => this.handleSuccess(`Deleted report in progress with index [${index}]`)));
+    return this.http.delete<Report>('api/testtool/in-progress/' + index);
   }
 
   getReportsInProgressThresholdTime(): Observable<number> {
@@ -94,13 +75,15 @@ export class HttpService {
   }
 
   getReport(reportId: number, storage: string): Observable<Report> {
+    const transformationEnabled = localStorage.getItem('transformationEnabled') === 'true';
     return this.http
       .get<
         Record<string, Report | string>
-      >(`api/report/${storage}/${reportId}/?xml=true&globalTransformer=${localStorage.getItem('transformationEnabled')}`)
+      >(`api/report/${storage}/${reportId}/?xml=true&globalTransformer=${transformationEnabled}`)
       .pipe(
         map((e) => {
           const report = e['report'] as Report;
+          report.storageName = storage;
           report.xml = e['xml'] as string;
           return report;
         }),
@@ -108,10 +91,20 @@ export class HttpService {
   }
 
   getReports(reportIds: number[], storage: string): Observable<Record<string, CompareReport>> {
-    return this.http.get<Record<string, CompareReport>>(
-      `api/report/${storage}/?xml=true&globalTransformer=${localStorage.getItem('transformationEnabled')}`,
-      { params: { storageIds: reportIds } },
-    );
+    const transformationEnabled = localStorage.getItem('transformationEnabled') === 'true';
+    return this.http
+      .get<
+        Record<string, CompareReport>
+      >(`api/report/${storage}/?xml=true&globalTransformer=${transformationEnabled}`, { params: { storageIds: reportIds } })
+      .pipe(
+        map((data) => {
+          for (const report of reportIds) {
+            data[report].report.xml = data[report].xml;
+            data[report].report.storageName = storage;
+          }
+          return data;
+        }),
+      );
   }
 
   updateReport(
@@ -119,15 +112,11 @@ export class HttpService {
     body: UpdateReport | UpdateCheckpoint | { stub: string | number; checkpointId: string },
     storage: string,
   ): Observable<UpdateReportResponse> {
-    return this.http
-      .post<UpdateReportResponse>(`api/report/${storage}/${reportId}`, body)
-      .pipe(tap(() => this.handleSuccess('Report updated!')));
+    return this.http.post<UpdateReportResponse>(`api/report/${storage}/${reportId}`, body);
   }
 
   copyReport(data: Record<string, number[]>, storage: string): Observable<void> {
-    return this.http
-      .put<void>(`api/report/store/${storage}`, data)
-      .pipe(tap(() => this.handleSuccess('Report copied!')));
+    return this.http.put<void>(`api/report/store/${storage}`, data);
   }
 
   updatePath(reportIds: number[], storage: string, map: UpdatePathSettings): Observable<void> {
@@ -137,28 +126,25 @@ export class HttpService {
   }
 
   uploadReport(formData: FormData): Observable<Report[]> {
-    return this.http
-      .post<Report[]>('api/report/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      .pipe(tap(() => this.handleSuccess('Report uploaded!')));
+    return this.http.post<Report[]>('api/report/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
   }
 
   uploadReportToStorage(formData: FormData, storage: string): Observable<void> {
-    return this.http
-      .post<void>(`api/report/upload/${storage}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      .pipe(tap(() => this.handleSuccess('Report uploaded to storage!')));
+    return this.http.post<void>(`api/report/upload/${storage}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
   }
 
   postSettings(settings: UploadParams): Observable<void> {
-    return this.http.post<void>('api/testtool', settings).pipe(tap(() => this.handleSuccess('Settings saved!')));
+    return this.http.post<void>('api/testtool', settings);
   }
 
   postTransformation(transformation: string): Observable<void> {
-    return this.http.post<void>('api/testtool/transformation', { transformation: transformation });
-    // .pipe(tap(() => this.handleSuccess('Transformation saved!')))
+    return this.http.post<void>('api/testtool/transformation', {
+      transformation: transformation,
+    });
   }
 
   getTransformation(defaultTransformation: boolean): Observable<Transformation> {
@@ -188,13 +174,13 @@ export class HttpService {
   }
 
   cloneReport(storage: string, storageId: number, map: CloneReport): Observable<void> {
-    return this.http
-      .post<void>(`api/report/move/${storage}/${storageId}`, map)
-      .pipe(tap(() => this.handleSuccess('Report cloned!')));
+    return this.http.post<void>(`api/report/move/${storage}/${storageId}`, map);
   }
 
   deleteReport(reportIds: number[], storage: string): Observable<void> {
-    return this.http.delete<void>(`api/report/${storage}`, { params: { storageIds: reportIds } });
+    return this.http.delete<void>(`api/report/${storage}`, {
+      params: { storageIds: reportIds },
+    });
   }
 
   deleteAllReports(storage: string): Observable<void> {
@@ -216,6 +202,8 @@ export class HttpService {
 
   getWarningsAndErrors(storageName: string): Observable<string | undefined> {
     const cleanStorageName: string = storageName.replaceAll(' ', '');
-    return this.http.get(`api/report/warningsAndErrors/${cleanStorageName}`, { responseType: 'text' });
+    return this.http.get(`api/report/warningsAndErrors/${cleanStorageName}`, {
+      responseType: 'text',
+    });
   }
 }

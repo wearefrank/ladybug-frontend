@@ -1,4 +1,4 @@
-import { Injectable, TemplateRef } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { Toast } from '../interfaces/toast';
 

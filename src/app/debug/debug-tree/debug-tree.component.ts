@@ -9,7 +9,6 @@ import {
   FileTreeOptions,
   NgSimpleFileTree,
   NgSimpleFileTreeModule,
-  TreeItemComponent,
 } from 'ng-simple-file-tree';
 import {
   NgbDropdown,
@@ -20,10 +19,10 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
-import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 import { View } from '../../shared/interfaces/view';
 import { DebugTabService } from '../debug-tab.service';
+import { ErrorHandling } from '../../shared/classes/error-handling.service';
 
 @Component({
   selector: 'app-debug-tree',
@@ -63,8 +62,8 @@ export class DebugTreeComponent implements OnDestroy {
   constructor(
     private httpService: HttpService,
     private settingsService: SettingsService,
-    private errorHandler: ErrorHandling,
     private debugTab: DebugTabService,
+    private errorHandler: ErrorHandling,
   ) {
     this.subscribeToSubscriptions();
   }
@@ -83,8 +82,10 @@ export class DebugTreeComponent implements OnDestroy {
       },
     });
     this.subscriptions.add(showMultipleSubscription);
-    const refresh: Subscription = this.debugTab.refresh$.subscribe((ids: number[]) => this.refreshReports(ids));
-    this.subscriptions.add(refresh);
+    const refreshAll: Subscription = this.debugTab.refreshAll$.subscribe((ids: number[]) => this.refreshReports(ids));
+    this.subscriptions.add(refreshAll);
+    const refreshTree: Subscription = this.debugTab.refreshTree$.subscribe((ids: number[]) => this.refreshReports(ids));
+    this.subscriptions.add(refreshTree);
   }
 
   @Input({ required: true }) set currentView(value: View) {
@@ -104,10 +105,13 @@ export class DebugTreeComponent implements OnDestroy {
   checkUnmatchedCheckpoints(reports: Report[], currentView: View) {
     for (let report of reports) {
       if (report.storageName === currentView.storageName) {
-        this.httpService.getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name).subscribe({
-          next: (unmatched: string[]) => this.hideCheckpoints(unmatched, this.tree.elements.toArray()),
-          error: () => catchError(this.errorHandler.handleError()),
-        });
+        this.httpService
+          .getUnmatchedCheckpoints(report.storageName, report.storageId, currentView.name)
+          .pipe(catchError(this.errorHandler.handleError()))
+          .subscribe({
+            next: (unmatched: string[]) =>
+              SimpleFileTreeUtil.hideOrShowCheckpoints(unmatched, this.tree.elements.toArray()),
+          });
       }
     }
   }
@@ -120,19 +124,6 @@ export class DebugTreeComponent implements OnDestroy {
       }
     }
     return reports;
-  }
-
-  hideCheckpoints(unmatched: string[], items: TreeItemComponent[]): void {
-    for (let item of items) {
-      if (unmatched.length === 0 || !unmatched) {
-        item.setVisible(true);
-      } else if (unmatched.includes(item.item.originalValue.uid)) {
-        item.setVisible(false);
-      }
-      if (item.item.children) {
-        this.hideCheckpoints(unmatched, [item.childElement]);
-      }
-    }
   }
 
   removeAllReportsButOne(): void {
@@ -206,7 +197,11 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   async getNewReport(storageId: number): Promise<FileTreeItem> {
-    const response: Report = await firstValueFrom(this.httpService.getReport(storageId, this._currentView.storageName));
+    const response: Report = await firstValueFrom(
+      this.httpService
+        .getReport(storageId, this._currentView.storageName)
+        .pipe(catchError(this.errorHandler.handleError())),
+    );
     const transformedReport: Report = new ReportHierarchyTransformer().transform(response);
     return this.tree.createItemToFileItem(transformedReport);
   }

@@ -122,14 +122,16 @@ export class EditDisplayComponent {
       return;
     }
     const reportId: number = node.storageId;
-    this.httpService.runReport(this.currentView.storageName, reportId).subscribe({
-      next: (response: TestResult): void => {
-        this.toastService.showSuccess('Report rerun successful');
-        this.rerunResult = response;
-        this.debugTab.refresh([reportId]);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .runReport(this.currentView.storageName, reportId)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (response: TestResult): void => {
+          this.toastService.showSuccess('Report rerun successful');
+          this.rerunResult = response;
+          this.debugTab.refreshTable();
+        },
+      });
   }
 
   closeReport(): void {
@@ -154,7 +156,7 @@ export class EditDisplayComponent {
       return;
     }
     this.helperService.download(`${queryString}&`, this.currentView.storageName, exportBinary, exportXML);
-    this.httpService.handleSuccess('Report Downloaded!');
+    this.toastService.showSuccess('Report Downloaded!');
   }
 
   openDifferenceModal(type: ChangesAction): void {
@@ -251,19 +253,21 @@ export class EditDisplayComponent {
       ? { stub: this.stubStrategy ?? '', checkpointId: checkpointId }
       : this.getReportValues(checkpointId);
 
-    this.httpService.updateReport(storageId, body, this.currentView.storageName).subscribe({
-      next: (response: UpdateReportResponse) => {
-        response.report.xml = response.xml;
-        if (ReportUtil.isCheckPoint(node)) {
-          this.selectedNode = ReportUtil.getCheckpointFromReport(response.report, node.uid);
-        } else if (ReportUtil.isReport(node)) {
-          this.selectedNode = response.report;
-        }
-        this.disableEditing();
-        this.debugTab.refresh([+storageId]);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.httpService
+      .updateReport(storageId, body, this.currentView.storageName)
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (response: UpdateReportResponse) => {
+          response.report.xml = response.xml;
+          if (ReportUtil.isCheckPoint(node)) {
+            this.selectedNode = ReportUtil.getCheckpointFromReport(response.report, node.uid);
+          } else if (ReportUtil.isReport(node)) {
+            this.selectedNode = response.report;
+          }
+          this.disableEditing();
+          this.debugTab.refreshAll([+storageId]);
+        },
+      });
   }
 
   discardChanges(): void {
@@ -296,10 +300,12 @@ export class EditDisplayComponent {
     const data: Record<string, number[]> = {
       [this.currentView.storageName]: [storageId!],
     };
-    this.httpService.copyReport(data, 'Test').subscribe({
-      next: () => this.testReportsService.getReports(),
-      error: catchError(this.errorHandler.handleError()),
-    }); // TODO: storage is hardcoded, fix issue #196 for this
+    this.httpService
+      .copyReport(data, 'Test')
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: () => this.testReportsService.getReports(),
+      }); // TODO: storage is hardcoded, fix issue #196 for this
   }
 
   toggleEditMode(value: boolean): void {

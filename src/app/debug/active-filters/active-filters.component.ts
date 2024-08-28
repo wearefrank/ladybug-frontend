@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DictionaryPipe } from '../../shared/pipes/dictionary.pipe';
 import { NgClass, TitleCasePipe } from '@angular/common';
 import { catchError, Subscription } from 'rxjs';
