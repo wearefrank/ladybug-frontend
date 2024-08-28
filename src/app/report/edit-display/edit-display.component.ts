@@ -230,7 +230,7 @@ export class EditDisplayComponent {
     }
   }
 
-  openStubDifferenceModal(originalValue: string, difference: string | number): void {
+  openStubDifferenceModal(originalValue: string, difference: string): void {
     if (this.editingEnabled) {
       this.toastService.showWarning('Save or discard your changes before updating the stub strategy');
     } else {
