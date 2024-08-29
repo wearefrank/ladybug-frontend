@@ -194,6 +194,7 @@ export class DebugTreeComponent implements OnDestroy {
     if (lastSelectedReport) {
       this.tree.selectItem(lastSelectedReport.path);
     }
+    this.hideOrShowCheckpointsBasedOnView(this._currentView);
   }
 
   async getNewReport(storageId: number): Promise<FileTreeItem> {
