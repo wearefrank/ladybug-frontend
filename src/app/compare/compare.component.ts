@@ -89,24 +89,68 @@ export class CompareComponent implements AfterViewInit, OnInit {
       .getViews()
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe((views: View[]) => {
-        const filteredViews: View[] = views.filter((v: View) => {
-          return (
-            v.storageName === this.compareData?.originalReport.storageName ||
-            v.storageName === this.compareData?.runResultReport.storageName
-          );
-        });
-        if (filteredViews.length > 0) {
-          this.views = filteredViews;
-          if (this.compareData?.viewName) {
-            const view = this.views.find((v) => v.name === this.compareData!.viewName);
-            if (view) {
-              this.changeView(view);
-              return;
+        if (this.compareData) {
+          const filteredViews = this.filterViews(views);
+          if (filteredViews.length > 0) {
+            this.views = filteredViews;
+            if (this.compareData?.viewName) {
+              const view = this.views.find((v) => v.name === this.compareData!.viewName);
+              if (view) {
+                this.changeView(view);
+                return;
+              }
             }
+            this.changeView(this.views[0]);
           }
-          this.changeView(views[0]);
         }
       });
+  }
+
+  private filterViews(views: View[]): View[] {
+    const storage1: string = this.compareData!.originalReport.storageName;
+    const storage2: string = this.compareData!.runResultReport.storageName;
+    // Get all views that belong to the storage of either reports
+    const storageViews: View[] = [];
+    // Get all views that have checkpoint matchers and thus do something to the file tree
+    const checkpointMatcherViews: View[] = [];
+    // Get all views that have the same metadataNames as the views in the checkpointMatcherViews list
+    const filteredViews: View[] = [];
+    for (let view of views) {
+      if (view.storageName === storage1 || view.storageName === storage2) {
+        if (view.hasCheckpointMatchers) {
+          checkpointMatcherViews.push(view);
+          filteredViews.push(view);
+        } else {
+          storageViews.push(view);
+        }
+      }
+    }
+    if (checkpointMatcherViews.length === 0) {
+      return checkpointMatcherViews;
+    }
+    for (let storageView of storageViews) {
+      for (let checkpointView of checkpointMatcherViews) {
+        if (this.arraysEqual(storageView.metadataNames, checkpointView.metadataNames)) {
+          filteredViews.push(storageView);
+        }
+      }
+    }
+
+    return filteredViews;
+  }
+
+  private arraysEqual(array1: string[], array2: string[]): boolean {
+    if (array1.length !== array2.length) {
+      return false;
+    }
+    const sorted1 = [...array1].sort();
+    const sorted2 = [...array2].sort();
+    for (let i = 0; i < array1.length; i++) {
+      if (sorted1[i] !== sorted2[i]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private getData(id: string): CompareData | undefined {

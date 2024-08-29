@@ -6,4 +6,5 @@ export interface View {
   metadataNames: string[];
   storageName: string;
   name: string;
+  hasCheckpointMatchers: boolean;
 }
