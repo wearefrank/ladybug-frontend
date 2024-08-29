@@ -90,10 +90,10 @@ export class CompareComponent implements AfterViewInit, OnInit {
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe((views: View[]) => {
         if (this.compareData) {
-          const filteredViews = this.filterViews(views);
+          const filteredViews = this.filterViews(views, this.compareData);
           if (filteredViews.length > 0) {
             this.views = filteredViews;
-            if (this.compareData?.viewName) {
+            if (this.compareData.viewName) {
               const view = this.views.find((v) => v.name === this.compareData!.viewName);
               if (view) {
                 this.changeView(view);
@@ -106,9 +106,9 @@ export class CompareComponent implements AfterViewInit, OnInit {
       });
   }
 
-  private filterViews(views: View[]): View[] {
-    const storage1: string = this.compareData!.originalReport.storageName;
-    const storage2: string = this.compareData!.runResultReport.storageName;
+  private filterViews(views: View[], compareData: CompareData): View[] {
+    const storage1: string = compareData.originalReport.storageName;
+    const storage2: string = compareData.runResultReport.storageName;
     // Get all views that belong to the storage of either reports
     const storageViews: View[] = [];
     // Get all views that have checkpoint matchers and thus do something to the file tree
@@ -143,8 +143,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
     if (array1.length !== array2.length) {
       return false;
     }
-    const sorted1 = [...array1].sort();
-    const sorted2 = [...array2].sort();
+    const sorted1 = array1.toSorted();
+    const sorted2 = array2.toSorted();
     for (let i = 0; i < array1.length; i++) {
       if (sorted1[i] !== sorted2[i]) {
         return false;
