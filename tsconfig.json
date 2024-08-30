@@ -18,7 +18,8 @@
     "target": "ES2022",
     "module": "es2022",
     "lib": [
-      "es2022",
+      "ES2023.Array",
+      "es2023",
       "dom"
     ],
     "useDefineForClassFields": false

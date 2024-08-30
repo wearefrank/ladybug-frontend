@@ -254,8 +254,7 @@ export class EditDisplayComponent {
       if (ReportUtil.isReport(node)) {
         storageId = String(node.storageId);
       } else if (ReportUtil.isCheckPoint(node)) {
-        storageId = node.uid.split('#')[0];
-        checkpointId = node.uid.split('#')[1];
+        [storageId, checkpointId] = node.uid.split('#');
       } else {
         return;
       }
