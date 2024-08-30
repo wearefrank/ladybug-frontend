@@ -15,7 +15,6 @@ describe('Report generator', () => {
     cy.assertDebugTableLength(0);
     cy.createReport();
     cy.refreshApp();
-    cy.wait(100);
     cy.assertDebugTableLength(1);
     cy.get('[data-cy-debug="openSettings"]').click();
     cy.get('[role=dialog]').should('be.visible');
@@ -27,7 +26,6 @@ describe('Report generator', () => {
     // Without waiting, the test could succeed because we would count the number of reports
     // before refresh.
     cy.get('[data-cy-debug="refresh"]').click();
-    cy.wait(100);
     cy.assertDebugTableLength(1);
     cy.get('[data-cy-debug="openSettings"]').click();
     cy.get('[role=dialog]').should('be.visible');
@@ -36,7 +34,6 @@ describe('Report generator', () => {
     cy.contains('Settings saved');
     cy.createOtherReport();
     cy.get('[data-cy-debug="refresh"]').click();
-    cy.wait(100);
     cy.assertDebugTableLength(2);
   });
 });
