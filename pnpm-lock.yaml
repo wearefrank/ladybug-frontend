@@ -66,8 +66,8 @@ importers:
         specifier: ^1.11.3
         version: 1.11.3
       bower:
-        specifier: 1.8.12
-        version: 1.8.12
+        specifier: 1.8.14
+        version: 1.8.14
       chai-colors:
         specifier: ^1.0.1
         version: 1.0.1
@@ -2418,8 +2418,8 @@ packages:
       jquery: 1.9.1 - 3
       popper.js: ^1.16.1
 
-  bower@1.8.12:
-    resolution: {integrity: sha512-u1xy9SrwwoPlgjuHNjhV+YUPVdqyBj2ALBxuzeIUKXaPI2i2xypGgxqXkuHcITGdi5yBj5JuXgyMvgiWiS1S3Q==}
+  bower@1.8.14:
+    resolution: {integrity: sha512-8Rq058FD91q9Nwthyhw0la9fzpBz0iwZTrt51LWl+w+PnJgZk9J+5wp3nibsJcIUPglMYXr4NRBaR+TUj0OkBQ==}
     engines: {node: '>=0.10.0'}
     hasBin: true
 
@@ -8655,7 +8655,7 @@ snapshots:
       jquery: 3.7.1
       popper.js: 1.16.1
 
-  bower@1.8.12: {}
+  bower@1.8.14: {}
 
   brace-expansion@1.1.11:
     dependencies:
