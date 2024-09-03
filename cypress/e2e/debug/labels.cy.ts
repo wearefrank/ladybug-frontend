@@ -11,7 +11,6 @@ describe('Test labels', () => {
     cy.initializeApp();
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();
-    cy.wait(300);
     cy.checkFileTreeLength(1);
     testTreeView('Message is null');
   });

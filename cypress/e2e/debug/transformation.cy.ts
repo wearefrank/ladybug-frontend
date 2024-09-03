@@ -23,7 +23,6 @@ describe('Tests for report transformation', () => {
     cy.get('[data-cy-settings="saveChanges"]').click();
     cy.createOtherReport();
     cy.get('[data-cy-debug="refresh"]').click();
-    cy.wait(100);
     cy.assertDebugTableLength(1).click();
     cy.checkFileTreeLength(1);
     // We test that the top node was not selected before.
