@@ -2,6 +2,7 @@ import { Component, Output, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 import { CreateTreeItem, FileTreeOptions, NgSimpleFileTree, NgSimpleFileTreeModule } from 'ng-simple-file-tree';
+import { TestListItem } from '../../shared/interfaces/test-list-item';
 
 @Component({
   standalone: true,
@@ -13,8 +14,9 @@ import { CreateTreeItem, FileTreeOptions, NgSimpleFileTree, NgSimpleFileTreeModu
 export class TestFolderTreeComponent {
   @ViewChild('tree') tree!: NgSimpleFileTree;
   @Output() changeFolderEvent: Subject<string> = new Subject<string>();
-  rootFolder: CreateTreeItem = {
+  readonly rootFolder: CreateTreeItem = {
     name: 'Reports',
+    path: '',
   };
   treeOptions: FileTreeOptions = {
     folderBehaviourOnClick: 'select',
@@ -24,81 +26,59 @@ export class TestFolderTreeComponent {
     autoSelectCondition: (item: CreateTreeItem) => this.autoSelectItem(item),
     determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };
-  originalItems?: CreateTreeItem[];
 
-  autoSelectItem(item: CreateTreeItem): boolean {
-    return item.name === this.rootFolder.name;
+  setData(data: TestListItem[]): void {
+    this.convertToTree(data);
+    this.tree.selectItem(this.rootFolder.path!);
   }
 
-  selectItem(value: string): void {
-    value = this.removeSlashesFromPathEnds(value);
-    const path: string = value.length > 0 ? `Reports/${value}` : 'Reports';
-    this.tree.selectItem(path);
-  }
-
-  removeSlashesFromPathEnds(path: string): string {
-    if (path.startsWith('/')) {
-      path = path.slice(1);
-    }
-    if (path.endsWith('/')) {
-      path = path.slice(0, -1);
-    }
-    return path;
-  }
-
-  setData(data: CreateTreeItem[]): void {
-    this.resetTree();
-    this.originalItems = data;
-    const tempItems: CreateTreeItem[] = this.convertToFolders(data);
-    const rootFolder: CreateTreeItem = Object.assign({}, this.rootFolder);
-    if (tempItems && tempItems.length > 0) {
-      rootFolder.children = tempItems;
-    }
-    this.tree.addItem(rootFolder);
-  }
-
-  convertToFolders(items: CreateTreeItem[]): CreateTreeItem[] {
-    const tempItems: CreateTreeItem[] = [];
-    const folderNames: string[] = [];
-    for (let item of items) {
+  convertToTree(data: TestListItem[]): void {
+    this.tree.items = [];
+    this.rootFolder.children = [];
+    for (let item of data) {
       if (item.path) {
-        const tempItem: CreateTreeItem | undefined = this.createFolderFromPath(item.path);
-        if (tempItem && !folderNames.includes(tempItem.path!)) {
-          folderNames.push(tempItem.path!);
-          tempItems.push(tempItem);
+        this.nextAction(
+          item,
+          item.path.split('/').filter((s) => s !== ''),
+          this.rootFolder,
+        );
+      }
+    }
+    this.tree.addItem(this.rootFolder);
+  }
+
+  nextAction(itemToAdd: CreateTreeItem, routeParts: string[], currentLocation: CreateTreeItem) {
+    if (routeParts.length > 0) {
+      const nextRoutePart = routeParts[0];
+      let newChild = this.getChildForNextRoutePart(nextRoutePart, currentLocation);
+      if (currentLocation.children) {
+        currentLocation.children.sort((a, b) => a.name.localeCompare(b.name));
+      } else {
+        currentLocation.children = [];
+      }
+
+      if (!newChild) {
+        newChild = {
+          name: nextRoutePart,
+        } as CreateTreeItem;
+        currentLocation.children.push(newChild);
+      }
+      this.nextAction(itemToAdd, routeParts.slice(1), newChild);
+    }
+  }
+
+  getChildForNextRoutePart(routePart: string, currentLocation: CreateTreeItem) {
+    if (currentLocation.children) {
+      for (const child of currentLocation.children) {
+        if (child.name === routePart) {
+          return child;
         }
       }
     }
-    return tempItems;
+    return null;
   }
 
-  createFolderFromPath(path: string): CreateTreeItem | undefined {
-    let index = path.indexOf('/');
-    if (index === 0) {
-      index = path.indexOf('/', 2);
-    }
-    if (index === -1) {
-      return undefined;
-    }
-    let folderName = path.slice(0, index);
-    const remainingPath = path.replace(folderName, '');
-    if (folderName.startsWith('/')) {
-      folderName = folderName.slice(1);
-    }
-    const treeItem: CreateTreeItem = { name: folderName };
-    if (remainingPath && remainingPath !== '/' && remainingPath !== '') {
-      const child = this.createFolderFromPath(remainingPath);
-      if (child) {
-        treeItem.children = [child];
-      }
-    }
-    return treeItem;
-  }
-
-  resetTree(): void {
-    if (this.tree) {
-      this.tree.clearItems();
-    }
-    this.originalItems = [];
+  autoSelectItem(item: CreateTreeItem): boolean {
+    return item.path === this.rootFolder.name;
   }
 }

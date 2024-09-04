@@ -54,9 +54,11 @@ export class TestComponent implements OnInit {
 
   private updatePathAction: UpdatePathAction = 'move';
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
-  @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
+  @ViewChild(TestSettingsModalComponent)
+  testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
-  @ViewChild(TestFolderTreeComponent) testFileTreeComponent!: TestFolderTreeComponent;
+  @ViewChild(TestFolderTreeComponent)
+  testFileTreeComponent!: TestFolderTreeComponent;
   @ViewChild('moveToInput', { read: NgModel }) moveToInputModel!: NgModel;
   @ViewChild(TestTableComponent) testTableComponent!: TestTableComponent;
 
@@ -74,7 +76,6 @@ export class TestComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
-    this.matches();
     localStorage.removeItem('generatorEnabled');
   }
 
@@ -110,7 +111,7 @@ export class TestComponent implements OnInit {
         this.reports = value;
         if (this.testFileTreeComponent) {
           this.testFileTreeComponent.setData(this.reports);
-          this.testFileTreeComponent.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
+          this.testFileTreeComponent.tree.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
         }
         this.matches();
         this.refresh();
@@ -275,7 +276,10 @@ export class TestComponent implements OnInit {
     const reportIds: number[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       const path: string = this.transformPath(this.moveToInputModel.value);
-      const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
+      const map: UpdatePathSettings = {
+        path: path,
+        action: this.updatePathAction,
+      };
       this.httpService
         .updatePath(reportIds, this.testReportsService.storageName, map)
         .pipe(catchError(this.errorHandler.handleError()))
@@ -297,10 +301,7 @@ export class TestComponent implements OnInit {
   }
 
   changeFilter(filter: string): void {
-    this.currentFilter = filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
-    for (const report of this.reports) {
-      report.checked = report.showReport ?? false;
-    }
+    this.currentFilter = filter === this.testFileTreeComponent.rootFolder.path ? '' : this.transformPath(filter);
     this.matches();
   }
 
@@ -319,9 +320,7 @@ export class TestComponent implements OnInit {
       report.showReport = false;
       if (report.path === null) report.path = '';
       const name: string = report.path + report.name;
-      if (new RegExp(`(/)?${this.currentFilter}.*`).test(name)) {
-        report.showReport = true;
-      }
+      report.checked = report.showReport = new RegExp(`(/)?${this.currentFilter}.*`).test(name);
     }
   }
 
