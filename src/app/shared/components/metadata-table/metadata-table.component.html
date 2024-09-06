@@ -54,11 +54,11 @@
     </div>
   }
   <div data-cy-metadata-table="table" class="metadata-table">
+    <div class="table-col first-table-col">
+      <div class="key">Name</div>
+      <div data-cy-metadata-table="reportname" class="value" [appCopyTooltip]="report.name">{{ report.name }}</div>
+    </div>
     @if (ReportUtil.isReport(report)) {
-      <div class="table-col first-table-col">
-        <div class="key">Name</div>
-        <div data-cy-metadata-table="reportname" class="value" [appCopyTooltip]="report.name">{{ report.name }}</div>
-      </div>
       <div class="table-col">
         <div class="key">Description</div>
         <div class="value" [appCopyTooltip]="report.description">{{ report.description }}</div>
@@ -88,7 +88,7 @@
         <div class="value" [appCopyTooltip]="report.correlationId">{{ report.correlationId }}</div>
       </div>
     } @else if (ReportUtil.isCheckPoint(report)) {
-      <div class="table-col first-table-col">
+      <div class="table-col">
         <div class="key">Type</div>
         <div class="value" [appCopyTooltip]="report.typeAsString">{{ report.typeAsString }}</div>
       </div>
