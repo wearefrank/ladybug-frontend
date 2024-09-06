@@ -23,21 +23,25 @@ export class TestFolderTreeComponent {
     doubleClickToOpenFolders: false,
     expandAllFolders: true,
     highlightOpenFolders: false,
-    autoSelectCondition: (item: CreateTreeItem) => this.autoSelectItem(item),
+    autoSelectCondition: (item: CreateTreeItem) => item.path === this.rootFolder.name,
     determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };
 
   setData(data: TestListItem[]): void {
+    this.resetTree();
     this.convertToTree(data);
     this.tree.selectItem(this.rootFolder.path!);
   }
 
-  convertToTree(data: TestListItem[]): void {
+  resetTree() {
     this.tree.items = [];
     this.rootFolder.children = [];
+  }
+
+  convertToTree(data: TestListItem[]): void {
     for (let item of data) {
       if (item.path) {
-        this.nextAction(
+        this.createFolderForRemainingPath(
           item,
           item.path.split('/').filter((s) => s !== ''),
           this.rootFolder,
@@ -47,24 +51,25 @@ export class TestFolderTreeComponent {
     this.tree.addItem(this.rootFolder);
   }
 
-  nextAction(itemToAdd: CreateTreeItem, routeParts: string[], currentLocation: CreateTreeItem) {
-    if (routeParts.length > 0) {
-      const nextRoutePart = routeParts[0];
-      let newChild = this.getChildForNextRoutePart(nextRoutePart, currentLocation);
-      if (currentLocation.children) {
-        currentLocation.children.sort((a, b) => a.name.localeCompare(b.name));
-      } else {
-        currentLocation.children = [];
-      }
-
-      if (!newChild) {
-        newChild = {
-          name: nextRoutePart,
-        } as CreateTreeItem;
-        currentLocation.children.push(newChild);
-      }
-      this.nextAction(itemToAdd, routeParts.slice(1), newChild);
+  createFolderForRemainingPath(itemToAdd: CreateTreeItem, routeParts: string[], currentLocation: CreateTreeItem) {
+    if (routeParts.length === 0) {
+      return;
     }
+
+    const nextRoutePart = routeParts[0];
+    let newFolder: CreateTreeItem | null = this.getChildForNextRoutePart(nextRoutePart, currentLocation);
+    currentLocation.children ??= [];
+
+    if (!newFolder) {
+      newFolder = { name: nextRoutePart };
+      currentLocation.children.push(newFolder);
+    }
+
+    if (currentLocation.children) {
+      currentLocation.children.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    this.createFolderForRemainingPath(itemToAdd, routeParts.slice(1), newFolder);
   }
 
   getChildForNextRoutePart(routePart: string, currentLocation: CreateTreeItem) {
@@ -76,9 +81,5 @@ export class TestFolderTreeComponent {
       }
     }
     return null;
-  }
-
-  autoSelectItem(item: CreateTreeItem): boolean {
-    return item.path === this.rootFolder.name;
   }
 }
