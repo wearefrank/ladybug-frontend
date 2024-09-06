@@ -57,7 +57,7 @@ export class TestFolderTreeComponent {
     }
 
     const nextRoutePart = routeParts[0];
-    let newFolder: CreateTreeItem | null = this.getChildForNextRoutePart(nextRoutePart, currentLocation);
+    let newFolder: CreateTreeItem | undefined = currentLocation.children?.find((child) => child.name === nextRoutePart);
     currentLocation.children ??= [];
 
     if (!newFolder) {
@@ -70,16 +70,5 @@ export class TestFolderTreeComponent {
     }
 
     this.createFolderForRemainingPath(itemToAdd, routeParts.slice(1), newFolder);
-  }
-
-  getChildForNextRoutePart(routePart: string, currentLocation: CreateTreeItem) {
-    if (currentLocation.children) {
-      for (const child of currentLocation.children) {
-        if (child.name === routePart) {
-          return child;
-        }
-      }
-    }
-    return null;
   }
 }
