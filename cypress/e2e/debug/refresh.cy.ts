@@ -11,7 +11,6 @@ describe('Refresh', () => {
     cy.assertDebugTableLength(0);
     cy.createReport();
     cy.get('[data-cy-debug="refresh"]').click();
-    cy.wait(100);
     cy.assertDebugTableLength(1);
     cy.get('[data-cy-debug="amountShown"]').invoke('text').should('contain', '1');
   });

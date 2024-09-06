@@ -14,18 +14,15 @@ describe('Test the Test tab', () => {
   afterEach(() => cy.resetApp());
 
   it('Should delete one report at a time with deleteSelected button', () => {
-    // cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.getTestTableRows().contains('Simple report').parent('tr').find('[data-cy-test="reportChecked"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
     cy.checkTestTableReportsAre(['Simple report']);
-    // cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
   });
 
   it('Should delete all tests with deleteSelected button', () => {
-    // cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
     cy.checkTestTableNumRows(0);
@@ -42,7 +39,6 @@ describe('Test the Test tab', () => {
 
   it('Should delete all tests with deleteAll button', () => {
     cy.checkTestTableNumRows(2);
-    // cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteAll"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').click();
     cy.checkTestTableNumRows(0);
