@@ -198,7 +198,10 @@ export class TestComponent implements OnInit {
 
   openDeleteModal(deleteAllReports: boolean): void {
     const reportsToBeDeleted: TestListItem[] = this.getSelectedReports();
-    if (this.reports && (reportsToBeDeleted.length > 0 || (deleteAllReports && this.reports.length > 0))) {
+    if (
+      this.filteredReports &&
+      (reportsToBeDeleted.length > 0 || (deleteAllReports && this.filteredReports.length > 0))
+    ) {
       this.deleteModal.open(deleteAllReports, reportsToBeDeleted);
     } else {
       this.toastService.showWarning('No reports to be deleted!');
@@ -210,7 +213,7 @@ export class TestComponent implements OnInit {
       this.deleteAllReports();
     } else if (this.reports) {
       this.httpService
-        .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
+        .deleteReport(this.helperService.getSelectedIds(this.filteredReports), this.testReportsService.storageName)
         .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
           next: () => this.testReportsService.getReports(),
@@ -312,15 +315,16 @@ export class TestComponent implements OnInit {
   }
 
   matches(): void {
-    this.filteredReports = [];
+    const filteredReports = [];
     for (const report of this.reports) {
       if (report.path === null) report.path = '';
       const name: string = report.path + report.name;
       if (new RegExp(`(/)?${this.currentFilter}.*`).test(name)) {
         report.checked = true;
-        this.filteredReports.push(report);
+        filteredReports.push(report);
       }
     }
+    this.filteredReports = filteredReports;
   }
 
   getSelectedReports(): TestListItem[] {
