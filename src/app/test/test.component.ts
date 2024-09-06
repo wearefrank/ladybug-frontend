@@ -259,7 +259,7 @@ export class TestComponent implements OnInit {
   }
 
   copySelected(): void {
-    const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
+    const copiedIds: number[] = this.helperService.getSelectedIds(this.filteredReports);
     const data: Record<string, number[]> = {
       [this.testReportsService.storageName]: copiedIds,
     };
@@ -273,7 +273,7 @@ export class TestComponent implements OnInit {
   }
 
   updatePath(): void {
-    const reportIds: number[] = this.helperService.getSelectedIds(this.reports);
+    const reportIds: number[] = this.helperService.getSelectedIds(this.filteredReports);
     if (reportIds.length > 0) {
       const path: string = this.transformPath(this.moveToInputModel.value);
       const map: UpdatePathSettings = {
