@@ -74,15 +74,9 @@ function copyTheReportsToTestTab() {
   // be stable before we go on with the test. Without this guard, the test
   // was flaky because the selectIfNotSelected() custom command accessed
   // a detached DOM element.
-  cy.wait(100);
   cy.checkFileTreeLength(2);
-  cy.wait(100);
   cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.item-name').eq(0).click();
-  cy.wait(100);
   cy.debugTreeGuardedCopyReport('Simple report', 3, 'first');
-  cy.wait(100);
   cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(1).find('.item-name').eq(0).click();
-  cy.wait(100);
   cy.debugTreeGuardedCopyReport('Another simple report', 3, 'second');
-  cy.wait(1000);
 }
