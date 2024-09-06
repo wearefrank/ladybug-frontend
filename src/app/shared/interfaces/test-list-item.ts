@@ -11,5 +11,4 @@ export interface TestListItem {
   extractedVariables?: string;
   reranReport?: ReranReport | null;
   error?: string;
-  showReport?: boolean;
 }

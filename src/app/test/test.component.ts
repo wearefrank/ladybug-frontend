@@ -48,15 +48,18 @@ export class TestComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'test';
 
   protected reports: TestListItem[] = [];
+  protected filteredReports: TestListItem[] = [];
   protected generatorEnabled: boolean = false;
   protected currentFilter: string = '';
   protected showStorageIds?: boolean;
 
   private updatePathAction: UpdatePathAction = 'move';
   @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
-  @ViewChild(TestSettingsModalComponent) testSettingsModal!: TestSettingsModalComponent;
+  @ViewChild(TestSettingsModalComponent)
+  testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
-  @ViewChild(TestFolderTreeComponent) testFileTreeComponent!: TestFolderTreeComponent;
+  @ViewChild(TestFolderTreeComponent)
+  testFileTreeComponent!: TestFolderTreeComponent;
   @ViewChild('moveToInput', { read: NgModel }) moveToInputModel!: NgModel;
   @ViewChild(TestTableComponent) testTableComponent!: TestTableComponent;
 
@@ -74,7 +77,6 @@ export class TestComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
-    this.matches();
     localStorage.removeItem('generatorEnabled');
   }
 
@@ -110,10 +112,9 @@ export class TestComponent implements OnInit {
         this.reports = value;
         if (this.testFileTreeComponent) {
           this.testFileTreeComponent.setData(this.reports);
-          this.testFileTreeComponent.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
+          this.testFileTreeComponent.tree.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
         }
         this.matches();
-        this.refresh();
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -127,17 +128,6 @@ export class TestComponent implements OnInit {
     }
   }
 
-  addCopiedReports(metadata: TestListItem[]): void {
-    const amountAdded: number = metadata.length - this.reports.length;
-    if (amountAdded > 0) {
-      for (let index = this.reports.length; index <= metadata.length - 1; index++) {
-        if (metadata[index].showReport) metadata[index].checked = true;
-        this.reports.push(metadata[index]);
-      }
-      this.refresh();
-    }
-  }
-
   getCopiedReports(): void {
     this.httpService
       .getTestReports(this.testReportsService.metadataNames, this.testReportsService.storageName)
@@ -147,11 +137,20 @@ export class TestComponent implements OnInit {
       });
   }
 
+  addCopiedReports(metadata: TestListItem[]): void {
+    const amountAdded: number = metadata.length - this.reports.length;
+    if (amountAdded > 0) {
+      for (let metadatum of metadata) {
+        metadatum.checked = true;
+        this.reports.push(metadatum);
+      }
+    }
+  }
+
   resetRunner(): void {
     for (const report of this.reports) {
       report.reranReport = null;
     }
-    this.refresh();
   }
 
   run(report: TestListItem): void {
@@ -167,7 +166,7 @@ export class TestComponent implements OnInit {
         .subscribe({
           next: (response: TestResult): void => {
             report.reranReport = this.createReranReport(response);
-            this.refresh();
+            this.matches();
           },
         });
     } else {
@@ -254,7 +253,6 @@ export class TestComponent implements OnInit {
           next: () => this.loadData(),
         });
     }
-    this.refresh();
   }
 
   copySelected(): void {
@@ -275,7 +273,10 @@ export class TestComponent implements OnInit {
     const reportIds: number[] = this.helperService.getSelectedIds(this.reports);
     if (reportIds.length > 0) {
       const path: string = this.transformPath(this.moveToInputModel.value);
-      const map: UpdatePathSettings = { path: path, action: this.updatePathAction };
+      const map: UpdatePathSettings = {
+        path: path,
+        action: this.updatePathAction,
+      };
       this.httpService
         .updatePath(reportIds, this.testReportsService.storageName, map)
         .pipe(catchError(this.errorHandler.handleError()))
@@ -284,7 +285,6 @@ export class TestComponent implements OnInit {
             this.loadData(path);
             this.matches();
             this.testReportsService.getReports();
-            this.refresh();
           },
         });
     } else {
@@ -297,10 +297,7 @@ export class TestComponent implements OnInit {
   }
 
   changeFilter(filter: string): void {
-    this.currentFilter = filter === this.testFileTreeComponent.rootFolder.name ? '' : this.transformPath(filter);
-    for (const report of this.reports) {
-      report.checked = report.showReport ?? false;
-    }
+    this.currentFilter = filter === this.testFileTreeComponent.rootFolder.path ? '' : this.transformPath(filter);
     this.matches();
   }
 
@@ -315,21 +312,18 @@ export class TestComponent implements OnInit {
   }
 
   matches(): void {
+    this.filteredReports = [];
     for (const report of this.reports) {
-      report.showReport = false;
       if (report.path === null) report.path = '';
       const name: string = report.path + report.name;
       if (new RegExp(`(/)?${this.currentFilter}.*`).test(name)) {
-        report.showReport = true;
+        report.checked = true;
+        this.filteredReports.push(report);
       }
     }
   }
 
   getSelectedReports(): TestListItem[] {
-    return this.reports?.filter((item: TestListItem) => item.checked) ?? [];
-  }
-
-  refresh(): void {
-    this.reports = [...this.reports];
+    return this.filteredReports.filter((item: TestListItem) => item.checked) ?? [];
   }
 }
