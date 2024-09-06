@@ -48,6 +48,7 @@ export class TestComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'test';
 
   protected reports: TestListItem[] = [];
+  protected filteredReports: TestListItem[] = [];
   protected generatorEnabled: boolean = false;
   protected currentFilter: string = '';
   protected showStorageIds?: boolean;
@@ -114,7 +115,6 @@ export class TestComponent implements OnInit {
           this.testFileTreeComponent.tree.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
         }
         this.matches();
-        this.refresh();
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -128,17 +128,6 @@ export class TestComponent implements OnInit {
     }
   }
 
-  addCopiedReports(metadata: TestListItem[]): void {
-    const amountAdded: number = metadata.length - this.reports.length;
-    if (amountAdded > 0) {
-      for (let index = this.reports.length; index <= metadata.length - 1; index++) {
-        if (metadata[index].showReport) metadata[index].checked = true;
-        this.reports.push(metadata[index]);
-      }
-      this.refresh();
-    }
-  }
-
   getCopiedReports(): void {
     this.httpService
       .getTestReports(this.testReportsService.metadataNames, this.testReportsService.storageName)
@@ -148,11 +137,20 @@ export class TestComponent implements OnInit {
       });
   }
 
+  addCopiedReports(metadata: TestListItem[]): void {
+    const amountAdded: number = metadata.length - this.reports.length;
+    if (amountAdded > 0) {
+      for (let metadatum of metadata) {
+        metadatum.checked = true;
+        this.reports.push(metadatum);
+      }
+    }
+  }
+
   resetRunner(): void {
     for (const report of this.reports) {
       report.reranReport = null;
     }
-    this.refresh();
   }
 
   run(report: TestListItem): void {
@@ -168,7 +166,7 @@ export class TestComponent implements OnInit {
         .subscribe({
           next: (response: TestResult): void => {
             report.reranReport = this.createReranReport(response);
-            this.refresh();
+            this.matches();
           },
         });
     } else {
@@ -255,7 +253,6 @@ export class TestComponent implements OnInit {
           next: () => this.loadData(),
         });
     }
-    this.refresh();
   }
 
   copySelected(): void {
@@ -288,7 +285,6 @@ export class TestComponent implements OnInit {
             this.loadData(path);
             this.matches();
             this.testReportsService.getReports();
-            this.refresh();
           },
         });
     } else {
@@ -316,19 +312,18 @@ export class TestComponent implements OnInit {
   }
 
   matches(): void {
+    this.filteredReports = [];
     for (const report of this.reports) {
-      report.showReport = false;
       if (report.path === null) report.path = '';
       const name: string = report.path + report.name;
-      report.checked = report.showReport = new RegExp(`(/)?${this.currentFilter}.*`).test(name);
+      if (new RegExp(`(/)?${this.currentFilter}.*`).test(name)) {
+        report.checked = true;
+        this.filteredReports.push(report);
+      }
     }
   }
 
   getSelectedReports(): TestListItem[] {
-    return this.reports?.filter((item: TestListItem) => item.checked) ?? [];
-  }
-
-  refresh(): void {
-    this.reports = [...this.reports];
+    return this.filteredReports.filter((item: TestListItem) => item.checked) ?? [];
   }
 }
