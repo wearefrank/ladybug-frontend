@@ -2,6 +2,7 @@ import { Component, Output, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 import { CreateTreeItem, FileTreeOptions, NgSimpleFileTree, NgSimpleFileTreeModule } from 'ng-simple-file-tree';
+import { TestListItem } from '../../shared/interfaces/test-list-item';
 
 @Component({
   standalone: true,
@@ -13,92 +14,61 @@ import { CreateTreeItem, FileTreeOptions, NgSimpleFileTree, NgSimpleFileTreeModu
 export class TestFolderTreeComponent {
   @ViewChild('tree') tree!: NgSimpleFileTree;
   @Output() changeFolderEvent: Subject<string> = new Subject<string>();
-  rootFolder: CreateTreeItem = {
+  readonly rootFolder: CreateTreeItem = {
     name: 'Reports',
+    path: '',
   };
   treeOptions: FileTreeOptions = {
     folderBehaviourOnClick: 'select',
     doubleClickToOpenFolders: false,
     expandAllFolders: true,
     highlightOpenFolders: false,
-    autoSelectCondition: (item: CreateTreeItem) => this.autoSelectItem(item),
+    autoSelectCondition: (item: CreateTreeItem) => item.path === this.rootFolder.name,
     determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };
-  originalItems?: CreateTreeItem[];
 
-  autoSelectItem(item: CreateTreeItem): boolean {
-    return item.name === this.rootFolder.name;
-  }
-
-  selectItem(value: string): void {
-    value = this.removeSlashesFromPathEnds(value);
-    const path: string = value.length > 0 ? `Reports/${value}` : 'Reports';
-    this.tree.selectItem(path);
-  }
-
-  removeSlashesFromPathEnds(path: string): string {
-    if (path.startsWith('/')) {
-      path = path.slice(1);
-    }
-    if (path.endsWith('/')) {
-      path = path.slice(0, -1);
-    }
-    return path;
-  }
-
-  setData(data: CreateTreeItem[]): void {
+  setData(data: TestListItem[]): void {
     this.resetTree();
-    this.originalItems = data;
-    const tempItems: CreateTreeItem[] = this.convertToFolders(data);
-    const rootFolder: CreateTreeItem = Object.assign({}, this.rootFolder);
-    if (tempItems && tempItems.length > 0) {
-      rootFolder.children = tempItems;
-    }
-    this.tree.addItem(rootFolder);
+    this.convertToTree(data);
+    this.tree.selectItem(this.rootFolder.path!);
   }
 
-  convertToFolders(items: CreateTreeItem[]): CreateTreeItem[] {
-    const tempItems: CreateTreeItem[] = [];
-    const folderNames: string[] = [];
-    for (let item of items) {
+  resetTree() {
+    this.tree.items = [];
+    this.rootFolder.children = [];
+  }
+
+  convertToTree(data: TestListItem[]): void {
+    for (let item of data) {
       if (item.path) {
-        const tempItem: CreateTreeItem | undefined = this.createFolderFromPath(item.path);
-        if (tempItem && !folderNames.includes(tempItem.path!)) {
-          folderNames.push(tempItem.path!);
-          tempItems.push(tempItem);
-        }
+        this.createFolderForRemainingPath(
+          item,
+          item.path.split('/').filter((s) => s !== ''),
+          this.rootFolder,
+        );
       }
     }
-    return tempItems;
+    this.tree.addItem(this.rootFolder);
   }
 
-  createFolderFromPath(path: string): CreateTreeItem | undefined {
-    let index = path.indexOf('/');
-    if (index === 0) {
-      index = path.indexOf('/', 2);
+  createFolderForRemainingPath(itemToAdd: CreateTreeItem, routeParts: string[], currentLocation: CreateTreeItem) {
+    if (routeParts.length === 0) {
+      return;
     }
-    if (index === -1) {
-      return undefined;
-    }
-    let folderName = path.slice(0, index);
-    const remainingPath = path.replace(folderName, '');
-    if (folderName.startsWith('/')) {
-      folderName = folderName.slice(1);
-    }
-    const treeItem: CreateTreeItem = { name: folderName };
-    if (remainingPath && remainingPath !== '/' && remainingPath !== '') {
-      const child = this.createFolderFromPath(remainingPath);
-      if (child) {
-        treeItem.children = [child];
-      }
-    }
-    return treeItem;
-  }
 
-  resetTree(): void {
-    if (this.tree) {
-      this.tree.clearItems();
+    const nextRoutePart = routeParts[0];
+    let newFolder: CreateTreeItem | undefined = currentLocation.children?.find((child) => child.name === nextRoutePart);
+    currentLocation.children ??= [];
+
+    if (!newFolder) {
+      newFolder = { name: nextRoutePart };
+      currentLocation.children.push(newFolder);
     }
-    this.originalItems = [];
+
+    if (currentLocation.children) {
+      currentLocation.children.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    this.createFolderForRemainingPath(itemToAdd, routeParts.slice(1), newFolder);
   }
 }

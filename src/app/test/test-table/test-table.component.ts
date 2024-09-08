@@ -119,9 +119,15 @@ export class TestTableComponent implements OnChanges {
 
   getFullPaths(): void {
     for (const report of this.reports) {
-      report.fullPath = report.path
-        ? `${report.path.replace(this.currentFilter, '')}${report.name}`
-        : `/${report.name}`;
+      if (report.path) {
+        let transformedPath = report.path.replace(this.currentFilter, '');
+        if (transformedPath.startsWith('/')) {
+          transformedPath = transformedPath.slice(1);
+        }
+        report.fullPath = `${transformedPath}${report.name}`;
+      } else {
+        report.fullPath = `/${report.name}`;
+      }
     }
   }
 
@@ -151,9 +157,15 @@ export class TestTableComponent implements OnChanges {
       );
       this.tabService.openNewCompareTab({
         id: tabId,
-        originalReport: { ...report.reranReport.originalReport, storageName: this.testReportsService.storageName },
+        originalReport: {
+          ...report.reranReport.originalReport,
+          storageName: this.testReportsService.storageName,
+        },
         // Temporary fix until https://github.com/wearefrank/ladybug/issues/283 is fixed
-        runResultReport: { ...report.reranReport.runResultReport, storageName: 'Debug' },
+        runResultReport: {
+          ...report.reranReport.runResultReport,
+          storageName: 'Debug',
+        },
       });
     }
   }
