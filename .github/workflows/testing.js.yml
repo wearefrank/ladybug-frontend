@@ -201,49 +201,49 @@ jobs:
         if: always()
 
       - name: Store log of Frank!Runner downloads
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: installFrankRunnerEnv.log
           path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: serverStartLog.log
           path: frank-runner/specials/ladybug/serverStartLog.log
       - name: Store build.properties
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: specials_build.properties
           path: frank-runner/specials/ladybug/build.properties
       - name: Store Apache Tomcat log
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: logs
           path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: screenshots
           path: ladybug-frontend/cypress/screenshots/
       - name: Store Cypress videos
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: videos
           path: ladybug-frontend/cypress/videos/
       - name: Store Cypress screenshots for Firefox
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Firefix screenshots
           path: ladybug-frontend/cypress/firefox/screenshots/
       - name: Store Cypress videos for Firefox
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Firefox videos
