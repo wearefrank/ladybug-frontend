@@ -210,7 +210,7 @@ export class TestComponent implements OnInit {
       this.deleteAllReports();
     } else if (this.reports) {
       this.httpService
-        .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
+        .deleteReport(this.helperService.getSelectedIds(this.filteredReports), this.testReportsService.storageName)
         .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
           next: () => this.testReportsService.getReports(),
