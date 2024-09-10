@@ -8,3 +8,17 @@
   position: fixed;
   z-index: 999;
 }
+
+.close-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+  font-size: 8pt;
+  padding: 0.25rem;
+
+  &:hover {
+    cursor: pointer;
+    color: white;
+  }
+}
