@@ -8,7 +8,6 @@ import { catchError, Observable, of } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { ToastService } from '../shared/services/toast.service';
-import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
@@ -67,9 +66,8 @@ export class TestComponent implements OnInit {
     private httpService: HttpService,
     private helperService: HelperService,
     private toastService: ToastService,
-    private tabService: TabService,
     private errorHandler: ErrorHandling,
-    private testReportsService: TestReportsService,
+    protected testReportsService: TestReportsService,
   ) {
     this.getStorageIdsFromLocalStorage();
     this.setGeneratorStatusFromLocalStorage();
@@ -125,25 +123,6 @@ export class TestComponent implements OnInit {
       this.cloneModal.open(this.getSelectedReports()[0]);
     } else {
       this.toastService.showWarning('Make sure only one report is selected at a time');
-    }
-  }
-
-  getCopiedReports(): void {
-    this.httpService
-      .getTestReports(this.testReportsService.metadataNames, this.testReportsService.storageName)
-      .pipe(catchError(this.errorHandler.handleError()))
-      .subscribe({
-        next: (response: TestListItem[]) => this.addCopiedReports(response),
-      });
-  }
-
-  addCopiedReports(metadata: TestListItem[]): void {
-    const amountAdded: number = metadata.length - this.reports.length;
-    if (amountAdded > 0) {
-      for (let metadatum of metadata) {
-        metadatum.checked = true;
-        this.reports.push(metadatum);
-      }
     }
   }
 

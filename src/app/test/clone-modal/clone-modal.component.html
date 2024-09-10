@@ -1,7 +1,7 @@
 <ng-template #modal let-modal>
   <div class="modal-header">
     <h5 class="modal-title" id="cloneModal">Clone Report</h5>
-    <button type="button" class="close" (click)="modal.dismiss()">
+    <button type="button" class="close" (click)="activeModal?.dismiss()">
       <span>&times;</span>
     </button>
   </div>
@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button type="submit" class="btn btn-info" (click)="modal.dismiss()">Generate</button>
+      <button type="submit" class="btn btn-info">Generate</button>
     </div>
   </form>
 </ng-template>

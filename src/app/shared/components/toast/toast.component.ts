@@ -4,13 +4,14 @@ import { Toast } from '../../interfaces/toast';
 import { ToastService } from '../../services/toast.service';
 import { Subscription } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-toast',
   templateUrl: './toast.component.html',
   styleUrls: ['./toast.component.css'],
   standalone: true,
-  imports: [NgbToast, ClipboardModule],
+  imports: [NgbToast, ClipboardModule, NgClass],
 })
 export class ToastComponent implements OnInit, OnDestroy {
   toastSubscription!: Subscription;
