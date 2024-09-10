@@ -92,7 +92,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
         if (this.compareData) {
           const filteredViews = this.filterViews(views, this.compareData);
           if (filteredViews.length > 0) {
-            this.views = filteredViews;
+            this.views = filteredViews.sort((a, b) => a.name.localeCompare(b.name));
             if (this.compareData.viewName) {
               const view = this.views.find((v) => v.name === this.compareData!.viewName);
               if (view) {
@@ -115,7 +115,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
     const checkpointMatcherViews: View[] = [];
     // Get all views that have the same metadataNames as the views in the checkpointMatcherViews list
     const filteredViews: View[] = [];
-    for (let view of views) {
+    for (const view of views) {
       if (view.storageName === storage1 || view.storageName === storage2) {
         if (view.hasCheckpointMatchers) {
           checkpointMatcherViews.push(view);
@@ -132,10 +132,11 @@ export class CompareComponent implements AfterViewInit, OnInit {
       for (let checkpointView of checkpointMatcherViews) {
         if (this.arraysEqual(storageView.metadataNames, checkpointView.metadataNames)) {
           filteredViews.push(storageView);
+          //If the storageView has been added, go to the next storageView by exiting the nested for loop
+          break;
         }
       }
     }
-
     return filteredViews;
   }
 
