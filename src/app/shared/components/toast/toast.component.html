@@ -1,73 +1,37 @@
 <div class="toast-body">
   @for (toast of toasts; track toast) {
-  <div class="my-2" [attr.data-cy-toast]="toast.type">
-    @if (toast.type === 'info') {
-        <ngb-toast class="fade animate-show animate-hide" [autohide]="true" [delay]="5000"
-                   (hidden)="close(toast)">
-          <div class="d-flex flex-row justify-content-between align-items-center">
-            <div>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" color="white"
-                   viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                <path
-                  d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
-              </svg>
-            </div>
-            <div class="d-flex flex-column ml-2 mr-4">
-              <div>{{ toast.message }}</div>
-              <i class="fa fa-close" (click)="close(toast)"></i>
-            </div>
-          </div>
-        </ngb-toast>
-    }
+    <div class="my-2" [attr.data-cy-toast]="toast.type">
 
-    @if (toast.type === 'success') {
-        <ngb-toast class="fade animate-show animate-hide bg-success" [autohide]="true" [delay]="5000"
-                  (hidden)="close(toast)">
-          <div class="d-flex flex-row justify-content-between align-items-center">
-            <i class="fa fa-check"></i>
-            <div class="ml-2 mr-4">{{ toast.message }}</div>
-            <i class="fa fa-close" (click)="close(toast)"></i>
-          </div>
-        </ngb-toast>
-    }
-
-    @if (toast.type === 'warning') {
-        <ngb-toast class="fade animate-show animate-hide bg-warning" [autohide]="true" [delay]="8000" (hidden)="close(toast)"
-                  (click)="close(toast)">
-          <div class="d-flex flex-row justify-content-between align-items-center">
-            <i class="fa fa-warning"></i>
-            <div class="ml-2 mr-4">{{ toast.message }}</div>
-            <i class="fa fa-close" (click)="close(toast)"></i>
-          </div>
-        </ngb-toast>
-    }
-    
-    @if (toast.type === 'danger') {
-        <ngb-toast class="fade animate-show animate-hide bg-danger" [autohide]="false"
-                  (click)="showDetailedErrorMessages(toast)">
-          <div class="d-flex flex-row justify-content-between align-items-center">
-            <div>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle"
-                  viewBox="0 0 17 17">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                <path
-                  d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-              </svg>
-            </div>
-            <div class="d-flex flex-column ml-2 mr-4">
-              <div>{{ toast.message }}</div>
-              @if (toast.detailed) {
-                <span>
-                  <br>
-                  <i>Click to see a more detailed description</i>
-                </span>
-              }
-            </div>
-          </div>
-        </ngb-toast>
-    }
-  </div>
+      <ngb-toast class="fade animate-show animate-hide position-relative" [ngClass]="'bg-' + toast.type"
+                 [autohide]="toast.type !== 'danger'"
+                 [delay]="toast.type === 'info' || toast.type ==='success' ? 5000 : toast.type ==='warning' ? 8000 : 0"
+                 (hidden)="close(toast)">
+        <i class="fa fa-close close-icon" (click)="close(toast)"></i>
+        <div class="d-flex flex-row align-items-center">
+          @switch (toast.type) {
+            @case ('info') {
+              <i class="bi bi-info-circle"></i>
+            }
+            @case ('success') {
+              <i class="fa fa-check"></i>
+            }
+            @case ('warning') {
+              <i class="fa fa-warning"></i>
+            }
+            @case ('danger') {
+              <i class="bi bi-x-octagon"></i>
+            }
+          }
+          <div class="ml-2 mr-4">{{ toast.message }}</div>
+          @if (toast.detailed) {
+            <span>
+              <br>
+              <i>Click to see a more detailed description</i>
+            </span>
+          }
+        </div>
+      </ngb-toast>
+    </div>
   }
 </div>
 
@@ -79,7 +43,8 @@
     {{ selectedAlert.detailed }}
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-info" id="CopyToClipboard" title="Copy to Clipboard" [cdkCopyToClipboard]="selectedAlert.detailed ?? ''"
+    <button type="button" class="btn btn-info" id="CopyToClipboard" title="Copy to Clipboard"
+            [cdkCopyToClipboard]="selectedAlert.detailed ?? ''"
             (click)="copyToClipboard()">{{ this.justCopied ? 'Copied!' : 'Copy to clipboard' }}
     </button>
     <button type="button" class="btn btn-info" (click)="modal.dismiss();">Dismiss</button>
