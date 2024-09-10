@@ -8,7 +8,6 @@ import { catchError, Observable, of } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { ToastService } from '../shared/services/toast.service';
-import { TabService } from '../shared/services/tab.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
@@ -67,9 +66,8 @@ export class TestComponent implements OnInit {
     private httpService: HttpService,
     private helperService: HelperService,
     private toastService: ToastService,
-    private tabService: TabService,
     private errorHandler: ErrorHandling,
-    private testReportsService: TestReportsService,
+    protected testReportsService: TestReportsService,
   ) {
     this.getStorageIdsFromLocalStorage();
     this.setGeneratorStatusFromLocalStorage();
@@ -128,25 +126,6 @@ export class TestComponent implements OnInit {
     }
   }
 
-  getCopiedReports(): void {
-    this.httpService
-      .getTestReports(this.testReportsService.metadataNames, this.testReportsService.storageName)
-      .pipe(catchError(this.errorHandler.handleError()))
-      .subscribe({
-        next: (response: TestListItem[]) => this.addCopiedReports(response),
-      });
-  }
-
-  addCopiedReports(metadata: TestListItem[]): void {
-    const amountAdded: number = metadata.length - this.reports.length;
-    if (amountAdded > 0) {
-      for (let metadatum of metadata) {
-        metadatum.checked = true;
-        this.reports.push(metadatum);
-      }
-    }
-  }
-
   resetRunner(): void {
     for (const report of this.reports) {
       report.reranReport = null;
@@ -198,7 +177,10 @@ export class TestComponent implements OnInit {
 
   openDeleteModal(deleteAllReports: boolean): void {
     const reportsToBeDeleted: TestListItem[] = this.getSelectedReports();
-    if (this.reports && (reportsToBeDeleted.length > 0 || (deleteAllReports && this.reports.length > 0))) {
+    if (
+      this.filteredReports &&
+      (reportsToBeDeleted.length > 0 || (deleteAllReports && this.filteredReports.length > 0))
+    ) {
       this.deleteModal.open(deleteAllReports, reportsToBeDeleted);
     } else {
       this.toastService.showWarning('No reports to be deleted!');
@@ -210,7 +192,7 @@ export class TestComponent implements OnInit {
       this.deleteAllReports();
     } else if (this.reports) {
       this.httpService
-        .deleteReport(this.helperService.getSelectedIds(this.reports), this.testReportsService.storageName)
+        .deleteReport(this.helperService.getSelectedIds(this.filteredReports), this.testReportsService.storageName)
         .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
           next: () => this.testReportsService.getReports(),
@@ -256,7 +238,7 @@ export class TestComponent implements OnInit {
   }
 
   copySelected(): void {
-    const copiedIds: number[] = this.helperService.getSelectedIds(this.reports);
+    const copiedIds: number[] = this.helperService.getSelectedIds(this.filteredReports);
     const data: Record<string, number[]> = {
       [this.testReportsService.storageName]: copiedIds,
     };
@@ -270,7 +252,7 @@ export class TestComponent implements OnInit {
   }
 
   updatePath(): void {
-    const reportIds: number[] = this.helperService.getSelectedIds(this.reports);
+    const reportIds: number[] = this.helperService.getSelectedIds(this.filteredReports);
     if (reportIds.length > 0) {
       const path: string = this.transformPath(this.moveToInputModel.value);
       const map: UpdatePathSettings = {
@@ -312,15 +294,16 @@ export class TestComponent implements OnInit {
   }
 
   matches(): void {
-    this.filteredReports = [];
+    const filteredReports = [];
     for (const report of this.reports) {
       if (report.path === null) report.path = '';
       const name: string = report.path + report.name;
       if (new RegExp(`(/)?${this.currentFilter}.*`).test(name)) {
         report.checked = true;
-        this.filteredReports.push(report);
+        filteredReports.push(report);
       }
     }
+    this.filteredReports = filteredReports;
   }
 
   getSelectedReports(): TestListItem[] {

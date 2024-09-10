@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
-import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { CloneReport } from 'src/app/shared/interfaces/clone-report';
-import { catchError, tap } from 'rxjs';
+import { catchError } from 'rxjs';
 import { ErrorHandling } from '../../shared/classes/error-handling.service';
 import { ToastService } from '../../shared/services/toast.service';
+import { TestListItem } from '../../shared/interfaces/test-list-item';
 
 @Component({
   selector: 'app-clone-modal',
@@ -16,7 +17,8 @@ import { ToastService } from '../../shared/services/toast.service';
   imports: [ReactiveFormsModule],
 })
 export class CloneModalComponent {
-  @ViewChild('modal') modal!: any;
+  @ViewChild('modal') modal?: any;
+  activeModal?: NgbActiveModal;
   @Output() cloneReportEvent = new EventEmitter<any>();
   report: Report = {} as Report;
   currentView = {
@@ -34,7 +36,7 @@ export class CloneModalComponent {
     private toastService: ToastService,
   ) {}
 
-  open(selectedReport: any) {
+  open(selectedReport: TestListItem) {
     this.httpService
       .getReport(selectedReport.storageId, this.currentView.storageName)
       .pipe(catchError(this.errorHandler.handleError()))
@@ -42,13 +44,13 @@ export class CloneModalComponent {
         next: (report: Report) => {
           this.report = report;
           this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
-          this.modalService.open(this.modal);
+          this.activeModal = this.modalService.open(this.modal);
         },
       });
   }
 
   generateClones() {
-    let map: CloneReport = {
+    const map: CloneReport = {
       csv: this.variableForm.value.variables,
       message: this.variableForm.value.message,
     };
@@ -59,6 +61,7 @@ export class CloneModalComponent {
         next: (): void => {
           this.cloneReportEvent.emit();
           this.toastService.showSuccess('Report cloned!');
+          this.activeModal?.dismiss();
         },
       });
   }
