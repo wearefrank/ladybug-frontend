@@ -37,6 +37,7 @@ import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { TestReportsService } from '../../test/test-reports.service';
 import { DebugTabService } from '../../debug/debug-tab.service';
 import { StubStrategy } from '../../shared/enums/stub-strategy';
+import { ReportAlertMessageComponent } from '../report-alert-message/report-alert-message.component';
 
 @Component({
   selector: 'app-edit-display',
@@ -64,6 +65,7 @@ import { StubStrategy } from '../../shared/enums/stub-strategy';
     NgClass,
     EncodingButtonComponent,
     FormsModule,
+    ReportAlertMessageComponent,
   ],
 })
 export class EditDisplayComponent {
