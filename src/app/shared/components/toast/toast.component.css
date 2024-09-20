@@ -4,7 +4,7 @@
 
 .toast-body {
   bottom: 0;
-  left: 5px;
+  right: 5px;
   position: fixed;
   z-index: 999;
 }
