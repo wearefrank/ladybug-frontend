@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
 import { TestResult } from '../shared/interfaces/test-result';
 import { ReranReport } from '../shared/interfaces/reran-report';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError, Observable, of, Subscription } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { ToastService } from '../shared/services/toast.service';
@@ -43,7 +43,7 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     TestTableComponent,
   ],
 })
-export class TestComponent implements OnInit {
+export class TestComponent implements OnInit, OnDestroy {
   static readonly ROUTER_PATH: string = 'test';
 
   protected reports: TestListItem[] = [];
@@ -62,6 +62,8 @@ export class TestComponent implements OnInit {
   @ViewChild('moveToInput', { read: NgModel }) moveToInputModel!: NgModel;
   @ViewChild(TestTableComponent) testTableComponent!: TestTableComponent;
 
+  private subscriptions = new Subscription();
+
   constructor(
     private httpService: HttpService,
     private helperService: HelperService,
@@ -76,6 +78,10 @@ export class TestComponent implements OnInit {
   ngOnInit(): void {
     this.loadData();
     localStorage.removeItem('generatorEnabled');
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   getStorageIdsFromLocalStorage(): void {
@@ -104,8 +110,10 @@ export class TestComponent implements OnInit {
   }
 
   loadData(path?: string): void {
-    this.testReportsService.getReports();
-    this.testReportsService.testReports$.subscribe({
+    if (path && path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
+    const testServiceSubscription = this.testReportsService.testReports$.subscribe({
       next: (value: TestListItem[]) => {
         this.reports = value;
         if (this.testFileTreeComponent) {
@@ -116,6 +124,8 @@ export class TestComponent implements OnInit {
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
+    this.subscriptions.add(testServiceSubscription);
+    this.testReportsService.getReports();
   }
 
   openCloneModal(): void {
@@ -195,7 +205,7 @@ export class TestComponent implements OnInit {
         .deleteReport(this.helperService.getSelectedIds(this.filteredReports), this.testReportsService.storageName)
         .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
-          next: () => this.testReportsService.getReports(),
+          next: () => this.loadData(this.currentFilter),
         });
     }
   }
@@ -205,7 +215,7 @@ export class TestComponent implements OnInit {
       .deleteAllReports(this.testReportsService.storageName)
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
-        next: () => this.testReportsService.getReports(),
+        next: () => this.loadData(this.currentFilter),
       });
   }
 
@@ -232,7 +242,7 @@ export class TestComponent implements OnInit {
         .uploadReportToStorage(formData, this.testReportsService.storageName)
         .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
-          next: () => this.loadData(),
+          next: () => this.loadData(this.currentFilter),
         });
     }
   }
@@ -246,9 +256,8 @@ export class TestComponent implements OnInit {
       .copyReport(data, this.testReportsService.storageName)
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
-        next: () => this.loadData(),
+        next: () => this.testReportsService.getReports(),
       });
-    this.testReportsService.getReports();
   }
 
   updatePath(): void {
@@ -263,11 +272,7 @@ export class TestComponent implements OnInit {
         .updatePath(reportIds, this.testReportsService.storageName, map)
         .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
-          next: () => {
-            this.loadData(path);
-            this.matches();
-            this.testReportsService.getReports();
-          },
+          next: () => this.loadData(path),
         });
     } else {
       this.toastService.showWarning('No Report Selected!');
