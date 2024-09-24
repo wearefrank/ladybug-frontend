@@ -16,10 +16,10 @@ export class ReportAlertMessageComponent implements OnChanges {
   @Input({ required: true }) report!: Report | Checkpoint;
 
   ngOnChanges(): void {
-    this.checkIfAnyMessagesPresent();
+    this.checkIfAnyAlertMessagesPresent();
   }
 
-  checkIfAnyMessagesPresent(): void {
+  private checkIfAnyAlertMessagesPresent(): void {
     if (ReportUtil.isCheckPoint(this.report)) {
       this.anyMessagesPresent = !!(
         this.report.streaming ||
