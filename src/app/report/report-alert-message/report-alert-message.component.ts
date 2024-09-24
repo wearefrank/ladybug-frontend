@@ -12,7 +12,7 @@ import { Checkpoint } from '../../shared/interfaces/checkpoint';
 export class ReportAlertMessageComponent implements OnChanges {
   protected readonly ReportUtil = ReportUtil;
 
-  protected anyMessagesPresent: boolean = false;
+  protected anyAlertMessagesPresent: boolean = false;
   @Input({ required: true }) report!: Report | Checkpoint;
 
   ngOnChanges(): void {
@@ -21,7 +21,7 @@ export class ReportAlertMessageComponent implements OnChanges {
 
   private checkIfAnyAlertMessagesPresent(): void {
     if (ReportUtil.isCheckPoint(this.report)) {
-      this.anyMessagesPresent = !!(
+      this.anyAlertMessagesPresent = !!(
         this.report.streaming ||
         this.report.stubbed ||
         !this.report.message ||
