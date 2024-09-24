@@ -13,27 +13,8 @@ import { ReportUtil } from '../../util/report-util';
   standalone: true,
   imports: [ClipboardModule, MatTooltipModule, CopyTooltipDirective],
 })
-export class MetadataTableComponent implements OnChanges {
+export class MetadataTableComponent {
   protected readonly ReportUtil = ReportUtil;
 
   @Input({ required: true }) report!: Report | Checkpoint;
-
-  anyMessagesPresent: boolean = false;
-
-  ngOnChanges(): void {
-    this.checkIfAnyMessagesPresent();
-  }
-
-  checkIfAnyMessagesPresent(): void {
-    if (ReportUtil.isCheckPoint(this.report)) {
-      this.anyMessagesPresent = !!(
-        this.report.streaming ||
-        this.report.stubbed ||
-        !this.report.message ||
-        this.report.encoding ||
-        (this.report.preTruncatedMessageLength && this.report.preTruncatedMessageLength > 0) ||
-        this.report.stubNotFound
-      );
-    }
-  }
 }
