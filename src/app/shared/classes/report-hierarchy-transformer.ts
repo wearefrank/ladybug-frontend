@@ -1,7 +1,6 @@
 import { Report } from '../interfaces/report';
 import { Checkpoint } from '../interfaces/checkpoint';
 import { CHECKPOINT_TYPE_STRINGS, CheckpointType } from '../enums/checkpoint-type';
-import { IconData } from '../interfaces/icon-data';
 
 export class ReportHierarchyTransformer {
   private readonly THROWABLE_ENCODER: string = 'printStackTrace()';
@@ -11,13 +10,14 @@ export class ReportHierarchyTransformer {
   transform(report: Report): Report {
     const checkpoints: Checkpoint[] = report.checkpoints;
     for (const checkpoint of checkpoints) {
-      const iconData: IconData = this.getImage(checkpoint.type, checkpoint.encoding ?? '', checkpoint.level);
-      checkpoint.icon = iconData.path;
-      checkpoint.iconClass = iconData.cssClasses;
-
-      if (checkpoint.type === CheckpointType.Startpoint) {
+      checkpoint.iconClass = this.getImage(checkpoint.type, checkpoint.encoding ?? '', checkpoint.level);
+      if (checkpoint.type === CheckpointType.Startpoint || checkpoint.type === CheckpointType.ThreadStartpoint) {
         this.handleStartpoint(checkpoint);
-      } else if (checkpoint.type === CheckpointType.Endpoint || checkpoint.type === CheckpointType.Abortpoint) {
+      } else if (
+        checkpoint.type === CheckpointType.Endpoint ||
+        checkpoint.type === CheckpointType.Abortpoint ||
+        checkpoint.type === CheckpointType.ThreadEndpoint
+      ) {
         this.handleEndpoint(checkpoint);
       } else {
         this.handleIntermediatePoint(checkpoint);
@@ -64,12 +64,12 @@ export class ReportHierarchyTransformer {
     parentStartpoint.checkpoints.push(checkpoint);
   }
 
-  getImage(type: CheckpointType, encoding: string, level: number): IconData {
-    const iconData: IconData = { ...CHECKPOINT_TYPE_STRINGS[type] };
+  getImage(type: CheckpointType, encoding: string, level: number): string {
+    let iconClass = CHECKPOINT_TYPE_STRINGS[type];
     if (encoding === this.THROWABLE_ENCODER) {
-      iconData.cssClasses += '-error';
+      iconClass += ' red';
     }
-    iconData.cssClasses += level % 2 == 0 ? '-even' : '-odd';
-    return iconData;
+    iconClass += level % 2 == 0 ? ' even' : ' odd';
+    return iconClass;
   }
 }

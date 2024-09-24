@@ -114,30 +114,38 @@ html, body {
   cursor: pointer;
 }
 
-.endpoint {
-  transform: scale(-1, 1);
-}
-
-.tree-checkpoint-even {
-  filter: invert(0%) sepia(3%) saturate(7495%) hue-rotate(353deg) brightness(108%) contrast(96%);
-}
-
-.tree-checkpoint-odd {
-  filter: invert(48%) sepia(3%) saturate(10%) hue-rotate(322deg) brightness(104%) contrast(95%);
-}
-
-.tree-checkpoint-error-even {
-  filter: invert(14%) sepia(95%) saturate(4217%) hue-rotate(355deg) brightness(110%) contrast(123%);
-}
-
-.tree-checkpoint-error-odd {
-  filter: invert(76%) sepia(7%) saturate(5440%) hue-rotate(308deg) brightness(102%) contrast(101%);
-}
-
 [appCopiedTooltip] {
   position: relative;
 }
 
 .icon-size {
   font-size: 1rem;
+}
+
+.even {
+  color: black;
+}
+
+.odd {
+  color: gray;
+}
+
+.bold-icon {
+  -webkit-text-stroke: 0.3px;
+}
+
+.bolder-icon {
+  -webkit-text-stroke: 0.5px;
+}
+
+.scale-down {
+  scale: 0.9;
+}
+
+.red {
+  color: red;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
 }
