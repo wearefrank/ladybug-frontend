@@ -34,27 +34,24 @@ function testTreeView(reportName: string): void {
 
   cy.get('[data-cy-debug-tree="root"] > app-tree-item > div')
     .eq(0)
-    .get('div > app-tree-icon img')
+    .get('div > app-tree-icon div.sft-icon-container i')
     .as('tree-icons');
 
-  cy.get('@tree-icons').eq(0)
-    .invoke('attr', 'src')
-    .should('eq', 'assets/tree-icons/startpoint.svg');
-
-  cy.get('@tree-icons').eq(0)
-    .should('have.class', 'tree-checkpoint-even');
-
   cy.get('@tree-icons').eq(1)
-    .invoke('attr', 'src')
-    .should('eq', 'assets/tree-icons/infopoint.svg');
-
-  cy.get('@tree-icons').eq(1)
-    .should('have.class', 'tree-checkpoint-odd');
+    .should('satisfy', ($el) => {
+      const classList = Array.from($el[0].classList);
+      return classList.includes('bi') && classList.includes('bi-arrow-bar-right');
+    })
 
   cy.get('@tree-icons').eq(2)
-    .invoke('attr', 'src')
-    .should('equal', 'assets/tree-icons/startpoint.svg');
+    .should('satisfy', ($el) => {
+      const classList = Array.from($el[0].classList);
+      return classList.includes('bi') && classList.includes('bi-info-square');
+    })
 
-  cy.get('@tree-icons').eq(2)
-    .should('have.class', 'endpoint');
+  cy.get('@tree-icons').eq(3)
+    .should('satisfy', ($el) => {
+      const classList = Array.from($el[0].classList);
+      return classList.includes('bi') && classList.includes('bi-arrow-bar-left');
+    })
 }
