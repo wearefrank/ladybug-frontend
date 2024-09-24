@@ -18,6 +18,6 @@ export const CHECKPOINT_TYPE_STRINGS: { [key in CheckpointType]: string } = {
   [CheckpointType.Outputpoint]: 'bi bi-arrow-left icon-size scale-down bolder-icon',
   [CheckpointType.Infopoint]: 'bi bi-info-square icon-size scale-down bold-icon',
   [CheckpointType.ThreadStartpointError]: 'bi bi-fast-forward icon-size bold-icon',
-  [CheckpointType.ThreadStartpoint]: 'bi bi-fast-forward icon-size bold-icon',
-  [CheckpointType.ThreadEndpoint]: 'bi bi-fast-forward rotate-180 icon-size bold-icon',
+  [CheckpointType.ThreadStartpoint]: 'bi bi-chevron-double-right icon-size scale-down bold-icon',
+  [CheckpointType.ThreadEndpoint]: 'bi bi-chevron-double-left icon-size scale-down bold-icon',
 };
