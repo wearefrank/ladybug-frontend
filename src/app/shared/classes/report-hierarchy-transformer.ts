@@ -74,7 +74,6 @@ export class ReportHierarchyTransformer {
       iconData.cssClasses += '-error';
     }
     iconData.cssClasses += level % 2 == 0 ? '-even' : '-odd';
-    console.log(iconData);
     return iconData;
   }
 }
