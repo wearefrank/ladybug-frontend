@@ -62,7 +62,7 @@ export class TestComponent implements OnInit, OnDestroy {
   @ViewChild('moveToInput', { read: NgModel }) moveToInputModel!: NgModel;
   @ViewChild(TestTableComponent) testTableComponent!: TestTableComponent;
 
-  private subscriptions = new Subscription();
+  private testReportServiceSubscription?: Subscription;
 
   constructor(
     private httpService: HttpService,
@@ -81,7 +81,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+    this.testReportServiceSubscription?.unsubscribe();
   }
 
   getStorageIdsFromLocalStorage(): void {
@@ -113,7 +113,7 @@ export class TestComponent implements OnInit, OnDestroy {
     if (path && path.endsWith('/')) {
       path = path.slice(0, -1);
     }
-    const testServiceSubscription = this.testReportsService.testReports$.subscribe({
+    this.testReportServiceSubscription = this.testReportsService.testReports$.subscribe({
       next: (value: TestListItem[]) => {
         this.reports = value;
         if (this.testFileTreeComponent) {
@@ -124,7 +124,6 @@ export class TestComponent implements OnInit, OnDestroy {
       },
       error: () => catchError(this.errorHandler.handleError()),
     });
-    this.subscriptions.add(testServiceSubscription);
     this.testReportsService.getReports();
   }
 
