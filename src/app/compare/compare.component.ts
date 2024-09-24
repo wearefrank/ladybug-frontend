@@ -20,6 +20,7 @@ import { catchError } from 'rxjs';
 import { SimpleFileTreeUtil } from '../shared/util/simple-file-tree-util';
 import { DebugComponent } from '../debug/debug.component';
 import { TreeItemComponent } from 'ng-simple-file-tree';
+import { ReportAlertMessageComponent } from '../report/report-alert-message/report-alert-message.component';
 
 @Component({
   selector: 'app-compare',
@@ -35,6 +36,7 @@ import { TreeItemComponent } from 'ng-simple-file-tree';
     FormsModule,
     StrReplacePipe,
     ViewDropdownComponent,
+    ReportAlertMessageComponent,
   ],
 })
 export class CompareComponent implements AfterViewInit, OnInit {
