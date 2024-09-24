@@ -23,8 +23,14 @@
     <div class="text-diff-container pl-3 pb-2">
       @if (leftNode && rightNode && compareTreeComponent) {
         <div class="d-flex flex-row w-100">
-          <app-metadata-table class="w-50" [report]="leftNode"/>
-          <app-metadata-table class="w-50" [report]="rightNode"/>
+          <div class="flex flex-column">
+            <app-report-alert-message [report]="leftNode"/>
+            <app-metadata-table class="w-50" [report]="leftNode"/>
+          </div>
+          <div class="flex flex-column">
+            <app-report-alert-message [report]="rightNode"/>
+            <app-metadata-table class="w-50" [report]="rightNode"/>
+          </div>
         </div>
       }
       <ngx-monaco-diff-editor

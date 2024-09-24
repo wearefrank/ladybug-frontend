@@ -102,8 +102,11 @@
     <div class="rerun-result" [style.color]="rerunResult.equal ? 'green' : 'red'">{{ rerunResult.info }}</div>
   }
 
-  @if (metadataTableVisible && selectedNode) {
-    <app-metadata-table [report]="selectedNode"/>
+  @if (selectedNode) {
+    <app-report-alert-message [report]="selectedNode"/>
+    @if (metadataTableVisible) {
+      <app-metadata-table [report]="selectedNode"/>
+    }
   }
 }
 
