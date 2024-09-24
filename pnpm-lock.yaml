@@ -90,8 +90,8 @@ importers:
         specifier: 0.44.0
         version: 0.44.0
       ng-simple-file-tree:
-        specifier: ^0.1.26
-        version: 0.1.26(@angular/common@18.1.1(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.10))(bootstrap-icons@1.11.3)
+        specifier: ^0.1.27
+        version: 0.1.27(@angular/common@18.1.1(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.10))(bootstrap-icons@1.11.3)
       ngx-monaco-editor-v2:
         specifier: 17.0.1
         version: 17.0.1(@angular/common@18.1.1(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.10))(monaco-editor@0.44.0)
@@ -3988,8 +3988,8 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  ng-simple-file-tree@0.1.26:
-    resolution: {integrity: sha512-MRLNhJTFCoMXOQeXbLTpiCCdnTMrYpWB79H+a2V2rX8b+z3RpQCYxvvp9CrAR5m9H7hJkT087N/g++7CTpQmDw==}
+  ng-simple-file-tree@0.1.27:
+    resolution: {integrity: sha512-XMtmRBzEhfFFpzjH/J628wJreP6Tr6+5O6gc/RgFQEC1NMRjF7we5UT7SdyJ2Mc+W9D8UIGWVRR1/qR9EBMpzA==}
     peerDependencies:
       '@angular/common': ^17.2.3
       '@angular/core': ^17.3.2
@@ -10127,7 +10127,7 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  ng-simple-file-tree@0.1.26(@angular/common@18.1.1(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.10))(bootstrap-icons@1.11.3):
+  ng-simple-file-tree@0.1.27(@angular/common@18.1.1(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1))(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.10))(bootstrap-icons@1.11.3):
     dependencies:
       '@angular/common': 18.1.1(@angular/core@18.1.1(rxjs@7.8.1)(zone.js@0.14.10))(rxjs@7.8.1)
       '@angular/core': 18.1.1(rxjs@7.8.1)(zone.js@0.14.10)
