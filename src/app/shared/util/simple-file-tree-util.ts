@@ -2,7 +2,6 @@ import { CreateTreeItem, TreeItemComponent } from 'ng-simple-file-tree';
 
 export const SimpleFileTreeUtil = {
   conditionalCssClass(item: CreateTreeItem): string {
-    console.log(item);
     if (!item.uid || !item.iconClass) {
       return 'bi bi-folder icon-size';
     }
