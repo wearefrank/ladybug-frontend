@@ -15,9 +15,13 @@ export class ReportHierarchyTransformer {
       checkpoint.icon = iconData.path;
       checkpoint.iconClass = iconData.cssClasses;
 
-      if (checkpoint.type === CheckpointType.Startpoint) {
+      if (checkpoint.type === CheckpointType.Startpoint || checkpoint.type === CheckpointType.ThreadStartpoint) {
         this.handleStartpoint(checkpoint);
-      } else if (checkpoint.type === CheckpointType.Endpoint || checkpoint.type === CheckpointType.Abortpoint) {
+      } else if (
+        checkpoint.type === CheckpointType.Endpoint ||
+        checkpoint.type === CheckpointType.Abortpoint ||
+        checkpoint.type === CheckpointType.ThreadEndpoint
+      ) {
         this.handleEndpoint(checkpoint);
       } else {
         this.handleIntermediatePoint(checkpoint);
