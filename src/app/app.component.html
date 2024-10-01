@@ -1,4 +1,4 @@
-<div class="px-1 pt-1 vh-100" id="ladybug-tabs">
+<div class="px-1 pt-1" id="ladybug-tabs">
   <ul class="nav nav-tabs">
     <li data-cy-nav-tab="debugTab" class="nav-item">
       <a class="nav-link" routerLinkActive="active" [routerLink]="debugComponentPath">Debug</a>
@@ -15,9 +15,9 @@
         </a>
       </li>
     }
-    <li ngbNavItem class="ml-auto my-auto mr-1" id="version">
-      <a ngbNavLink>v{{ appVersion }}</a>
-      <ng-template ngbNavContent></ng-template>
+    <li class="ml-auto my-auto mr-1" id="version">
+      <a>v{{ appVersion }}</a>
+      <ng-template></ng-template>
     </li>
   </ul>
   <router-outlet></router-outlet>

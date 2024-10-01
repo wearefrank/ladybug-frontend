@@ -1,4 +1,16 @@
-import { Component, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import * as prettierPluginHtml from 'prettier/plugins/html';
 import * as prettier from 'prettier';
 import { debounceTime, Subject, Subscription } from 'rxjs';
@@ -27,9 +39,9 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() height!: number;
   @Input() readOnlyMode: boolean = true;
   @Output() saveReport: Subject<string> = new Subject<string>();
-  protected readonly ACTIONS_BAR_HEIGHT: number = 30;
-  protected readonly STATUS_BAR_HEIGHT: number = 43;
+  @ViewChild('statusBarElement') statusBar?: ElementRef;
   protected readonly INDENT_TWO_SPACES: string = '  ';
+  protected calculatedHeight: number = this.height;
   editor!: IEditor;
   unsavedChanges: boolean = false;
   options: any = {
@@ -58,7 +70,28 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
   availableViews!: EditorView[];
   contentType!: EditorView;
 
-  constructor(private settingsService: SettingsService) {}
+  constructor(
+    private settingsService: SettingsService,
+    private cdr: ChangeDetectorRef,
+  ) {}
+
+  ngOnInit(): void {
+    this.subscribeToEditorChanges();
+    this.subscribeToSettings();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['height']) {
+      this.calculateHeight();
+    }
+    if (changes['readOnlyMode'] && changes['readOnlyMode'].currentValue != undefined && this.editor) {
+      this.updateReadOnlyMode();
+    }
+  }
 
   @HostListener('window:keydown', ['$event'])
   keyBoardListener(event: KeyboardEvent): void {
@@ -73,19 +106,10 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
       this.save();
     }
   }
-
-  ngOnInit(): void {
-    this.subscribeToEditorChanges();
-    this.subscribeToSettings();
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['readOnlyMode'] && changes['readOnlyMode'].currentValue != undefined && this.editor) {
-      this.updateReadOnlyMode();
+  calculateHeight() {
+    if (this.statusBar) {
+      this.calculatedHeight = this.height - this.statusBar.nativeElement.offsetHeight;
+      this.cdr.detectChanges();
     }
   }
 
@@ -190,6 +214,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
     this.setValue(value);
     this.editorContentCopy = value;
     this.rawFile = value;
+    this.calculateHeight();
     this.setContentType();
     this.setAvailableViews();
     if (value !== null || value !== '') {

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { AngularSplitModule, SplitComponent } from 'angular-split';
 import { DebugTreeComponent } from '../debug/debug-tree/debug-tree.component';
 import { Subject } from 'rxjs';
@@ -33,6 +33,7 @@ export class ReportComponent implements AfterViewInit, OnInit {
     private tabService: TabService,
     private route: ActivatedRoute,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -59,9 +60,10 @@ export class ReportComponent implements AfterViewInit, OnInit {
   }
 
   listenToHeight() {
-    const resizeObserver: ResizeObserver = new ResizeObserver(
-      (entries) => (this.calculatedHeight = entries[0].target.clientHeight),
-    );
+    const resizeObserver: ResizeObserver = new ResizeObserver((entries) => {
+      this.calculatedHeight = entries[0].target.clientHeight;
+      this.cdr.detectChanges();
+    });
     resizeObserver.observe(this.host.nativeElement);
   }
 
