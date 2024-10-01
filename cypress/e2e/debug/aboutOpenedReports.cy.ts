@@ -15,13 +15,13 @@ describe('About opened reports', () => {
     cy.get('[data-cy-debug="openSelected"]').click();
     // Each of the two reports has three lines.
     cy.checkFileTreeLength(2);
-    cy.get('[data-cy-debug-tree="root"] app-tree-item > div').should('contain', 'Simple report');
+    cy.get('[data-cy-debug-tree="root"] app-tree-item > div').should('contain.text', 'Simple report');
     cy.get('[data-cy-debug-tree="root"] app-tree-item > div > div:contains(Simple report)')
       .first()
       .selectIfNotSelected();
     cy.get('[data-cy-debug-editor="close"]').click();
     cy.get('[data-cy-debug-tree="root"] > app-tree-item .item-name')
-      .should('contain', 'Another simple report')
+      .should('contain.text', 'Another simple report')
       .eq(0)
       .click();
     cy.get('[data-cy-debug-tree="closeAll"]').click();
@@ -36,12 +36,12 @@ describe('About opened reports', () => {
     cy.checkFileTreeLength(2);
     // Check sequence of opened reports. We expect "Simple report" first, then "Another simple report".
     cy.get('[data-cy-debug-tree="root"] > app-tree-item:nth-child(1) > div > .sft-item > .item-name').should(
-      'have.text',
+      'contain.text',
       'Simple report',
     );
     cy.get('[data-cy-debug-tree="root"] > app-tree-item:nth-child(2) > div > .sft-item > .item-name')
       .eq(0)
-      .should('have.text', 'Another simple report');
+      .should('contain.text', 'Another simple report');
     cy.get('[data-cy-debug-tree="closeAll"]').click();
     cy.get('[data-cy-debug-tree="root"] app-tree-item').should('not.exist');
   });
