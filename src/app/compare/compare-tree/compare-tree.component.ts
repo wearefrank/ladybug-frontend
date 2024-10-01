@@ -43,6 +43,9 @@ export class CompareTreeComponent {
     folderBehaviourOnClick: 'select',
     expandAllFolders: true,
     determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
+    hierarchyLines: {
+      vertical: true,
+    },
   };
 
   rightTreeOptions: FileTreeOptions = {
