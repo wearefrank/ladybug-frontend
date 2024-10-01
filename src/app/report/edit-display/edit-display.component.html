@@ -1,4 +1,4 @@
-@if (displayReport) {
+<div #topComponent [hidden]="!displayReport">
   <div class="d-flex flex-row justify-content-between align-items-center"
        id="displayButtons">
     <div data-cy-debug-editor="buttons" class="button-row">
@@ -19,7 +19,8 @@
           ><i class="fa fa-copy"></i></button>
         }
         <div ngbDropdown title="Download">
-          <button ngbDropdownToggle class="btn btn-info"><i class="fa fa-download px-2"></i><span class="caret"></span></button>
+          <button ngbDropdownToggle class="btn btn-info"><i class="fa fa-download px-2"></i><span
+            class="caret"></span></button>
           <div ngbDropdownMenu>
             <button ngbDropdownItem (click)="downloadReport(true, true)">XML & Binary</button>
             <button ngbDropdownItem (click)="downloadReport(false, true)">
@@ -68,14 +69,17 @@
             (click)="openDifferenceModal('save')"
           ><i class="fa fa-save"></i></button>
         }
-        <app-encoding-button [selectedNode]="selectedNode" (updatedMessageEvent)="editor.setNewReport($event)"></app-encoding-button>
+        <app-encoding-button [selectedNode]="selectedNode"
+                             (updatedMessageEvent)="editor.setNewReport($event)"></app-encoding-button>
 
 
         @if (ReportUtil.isReport(selectedNode)) {
           <div class="w-fit mx-1 my-0">
-            <select class="form-control" [(ngModel)]="stubStrategy" (ngModelChange)="updateReportStubStrategy($event)">
+            <select class="form-control" [(ngModel)]="stubStrategy"
+                    (ngModelChange)="updateReportStubStrategy($event)">
               @for (strategy of StubStrategy.report; track strategy) {
-                <option [ngValue]="strategy" [selected]="selectedNode.stubStrategy === strategy">{{ strategy }}</option>
+                <option [ngValue]="strategy" [selected]="selectedNode.stubStrategy === strategy">{{ strategy }}
+                </option>
               }
             </select>
           </div>
@@ -103,25 +107,27 @@
   }
 
   @if (selectedNode) {
-    <app-report-alert-message [report]="selectedNode"/>
+    <app-report-alert-message [report]="selectedNode" />
     @if (metadataTableVisible) {
-      <app-metadata-table [report]="selectedNode"/>
+      <app-metadata-table [report]="selectedNode" />
     }
   }
-}
+</div>
+
 
 @if (editingRootNode && ReportUtil.isReport(selectedNode)) {
-  <app-edit-form [report]="selectedNode"/>
+  <app-edit-form [report]="selectedNode" />
 }
 <app-custom-editor
   data-cy-report="editor"
   [hidden]="editingRootNode"
-  [height]="containerHeight - 24"
+  [height]="calculatedHeight"
   [readOnlyMode]="!editingChildNode"
 />
 
 @if (selectedNode) {
-  <app-difference-modal (saveChangesEvent)="saveChanges($event)" (discardChangesEvent)="discardChanges()" (rerunEvent)="rerunReport()"/>
+  <app-difference-modal (saveChangesEvent)="saveChanges($event)" (discardChangesEvent)="discardChanges()"
+                        (rerunEvent)="rerunReport()" />
 }
 
 <ng-template #possibilitiesModal let-modal>

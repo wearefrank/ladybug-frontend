@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
 import {
   NgbDropdown,
@@ -68,17 +68,20 @@ import { ReportAlertMessageComponent } from '../report-alert-message/report-aler
     ReportAlertMessageComponent,
   ],
 })
-export class EditDisplayComponent {
+export class EditDisplayComponent implements OnChanges {
   protected readonly ReportUtil = ReportUtil;
   protected readonly Number: NumberConstructor = Number;
   protected readonly StubStrategy = StubStrategy;
+  protected calculatedHeight: number = 340;
 
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
   @ViewChild(CustomEditorComponent) editor!: CustomEditorComponent;
   @ViewChild(EditFormComponent) editFormComponent!: EditFormComponent;
-  @ViewChild(DifferenceModalComponent) differenceModal!: DifferenceModalComponent;
+  @ViewChild(DifferenceModalComponent)
+  differenceModal!: DifferenceModalComponent;
+  @ViewChild('topComponent') topComponent?: ElementRef;
   editingEnabled: boolean = false;
   editingChildNode: boolean = false;
   editingRootNode: boolean = false;
@@ -97,7 +100,16 @@ export class EditDisplayComponent {
     private errorHandler: ErrorHandling,
     private testReportsService: TestReportsService,
     private debugTab: DebugTabService,
+    private cdr: ChangeDetectorRef,
   ) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['containerHeight']) {
+      const topComponentHeight = this.topComponent ? this.topComponent?.nativeElement.offsetHeight : 47;
+      this.calculatedHeight = this.containerHeight - topComponentHeight;
+      this.cdr.detectChanges();
+    }
+  }
 
   showReport(node: Report | Checkpoint): void {
     this.disableEditing();

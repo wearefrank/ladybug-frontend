@@ -1,25 +1,25 @@
 @if (rawFile) {
-  <div class="position-relative" [style.height]="height - ACTIONS_BAR_HEIGHT + 'px'">
+  <div class="position-relative overflow-hidden" [style.height]="height + 'px'">
     <ngx-monaco-editor
       data-cy-element-name="editor"
       class="editor"
       [options]="options"
-      [style.height]="height - STATUS_BAR_HEIGHT + 'px'"
+      [style.height]="calculatedHeight - 27 + 'px'"
       [(ngModel)]="editorContent"
       (onInit)="initEditor($event)"
       (ngModelChange)="onChange($event)">
     </ngx-monaco-editor>
-    <div class="status-bar">
+    <div #statusBarElement class="status-bar">
       <div class="left-side">
         @if (!readOnlyMode) {
-          <div class="status" 
-            [title]="unsavedChanges ? 'This file has unsaved changed, press ctrl + s to save' : 'No unsaved changes'">
+          <div class="status"
+               [title]="unsavedChanges ? 'This file has unsaved changed, press ctrl + s to save' : 'No unsaved changes'">
             <i class="bi bi-floppy"></i>
             <span class="status-text">{{ unsavedChanges ? 'Unsaved' : 'Saved' }}</span>
           </div>
         }
         <div class="status"
-            [title]="editorFocused ? 'Editor is in focus, commands can be run: press F1 for options' : 'Editor is not in focus, click on the editor to focus'">
+             [title]="editorFocused ? 'Editor is in focus, commands can be run: press F1 for options' : 'Editor is not in focus, click on the editor to focus'">
           @if (editorFocused) {
             <i class="bi bi-eye-fill icon-size"></i>
           } @else {

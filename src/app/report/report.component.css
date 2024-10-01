@@ -4,6 +4,6 @@
   background-color: white;
 }
 
-.right-side {
-  overflow-y: hidden !important;
+.split-size {
+  height: 95% !important;
 }
