@@ -52,6 +52,9 @@ export class DebugTreeComponent implements OnDestroy {
   private lastReport?: Report | null;
 
   treeOptions: FileTreeOptions = {
+    hierarchyLines: {
+      vertical: true,
+    },
     highlightOpenFolders: false,
     folderBehaviourOnClick: 'select',
     doubleClickToOpenFolders: false,

@@ -19,6 +19,9 @@ export class TestFolderTreeComponent {
     path: '',
   };
   treeOptions: FileTreeOptions = {
+    hierarchyLines: {
+      vertical: true,
+    },
     folderBehaviourOnClick: 'select',
     doubleClickToOpenFolders: false,
     expandAllFolders: true,
