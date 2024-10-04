@@ -1,7 +1,16 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { AngularSplitModule, SplitComponent } from 'angular-split';
 import { DebugTreeComponent } from '../debug/debug-tree/debug-tree.component';
-import { Subject } from 'rxjs';
+import { debounceTime, fromEventPattern, Subject, Subscription } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { EditDisplayComponent } from './edit-display/edit-display.component';
 import { DebugComponent } from '../debug/debug.component';
@@ -17,7 +26,7 @@ import { View } from '../shared/interfaces/view';
   templateUrl: './report.component.html',
   styleUrl: './report.component.css',
 })
-export class ReportComponent implements AfterViewInit, OnInit {
+export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
   static readonly ROUTER_PATH: string = 'report';
   @ViewChild(SplitComponent) splitter!: SplitComponent;
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
@@ -27,6 +36,8 @@ export class ReportComponent implements AfterViewInit, OnInit {
   calculatedHeight!: number;
   treeWidth: Subject<void> = new Subject<void>();
   reportData?: ReportData;
+
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private host: ElementRef,
@@ -59,12 +70,25 @@ export class ReportComponent implements AfterViewInit, OnInit {
     this.listenToHeight();
   }
 
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
   listenToHeight() {
-    const resizeObserver: ResizeObserver = new ResizeObserver((entries) => {
-      this.calculatedHeight = entries[0].target.clientHeight;
-      this.cdr.detectChanges();
+    const resizeObserver$ = fromEventPattern<ResizeObserverEntry[]>((handler) => {
+      const resizeObserver = new ResizeObserver(handler);
+      resizeObserver.observe(this.host.nativeElement);
+      return resizeObserver.disconnect.bind(resizeObserver);
     });
-    resizeObserver.observe(this.host.nativeElement);
+
+    const resizeSubscription = resizeObserver$.pipe(debounceTime(300)).subscribe((entries) => {
+      const entry = entries[0];
+      if (entry.target) {
+        this.calculatedHeight = entries[0].target.clientHeight;
+        this.cdr.detectChanges();
+      }
+    });
+    this.subscriptions.add(resizeSubscription);
   }
 
   addReportToTree(report: Report): void {
