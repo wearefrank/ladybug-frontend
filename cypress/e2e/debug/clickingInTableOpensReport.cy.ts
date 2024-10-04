@@ -18,7 +18,7 @@ describe('Clicking a report', () => {
   });
 
   it('Selecting report should show display', () => {
-    cy.get('[data-cy-debug-editor="buttons"]').should('not.exist');
+    cy.get('[data-cy-debug-editor="buttons"]').should('not.be.visible');
     cy.get('[data-cy-element-name="editor"]').should('not.exist');
     cy.getDebugTableRows().first().click();
     cy.get('[data-cy-debug-editor="buttons"]').should('be.visible');
