@@ -18,6 +18,7 @@ import { TabService } from '../shared/services/tab.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReportData } from '../shared/interfaces/report-data';
 import { View } from '../shared/interfaces/view';
+import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
 
 @Component({
   selector: 'app-report',
@@ -52,6 +53,7 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
     if (!this.reportData) {
       this.router.navigate([DebugComponent.ROUTER_PATH]);
     }
+    this.listenToHeight();
   }
 
   ngAfterViewInit(): void {
@@ -67,7 +69,6 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
         this.addReportToTree(this.reportData.report);
       }
     });
-    this.listenToHeight();
   }
 
   ngOnDestroy() {
@@ -75,18 +76,16 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   listenToHeight() {
-    const resizeObserver$ = fromEventPattern<ResizeObserverEntry[]>((handler) => {
+    const resizeObserver$ = fromEventPattern<ResizeObserverEntry[]>((handler: NodeEventHandler) => {
       const resizeObserver = new ResizeObserver(handler);
       resizeObserver.observe(this.host.nativeElement);
-      return resizeObserver.disconnect.bind(resizeObserver);
+      return () => resizeObserver.disconnect();
     });
 
-    const resizeSubscription = resizeObserver$.pipe(debounceTime(300)).subscribe((entries) => {
-      const entry = entries[0];
-      if (entry.target) {
-        this.calculatedHeight = entries[0].target.clientHeight;
-        this.cdr.detectChanges();
-      }
+    const resizeSubscription = resizeObserver$.pipe(debounceTime(50)).subscribe((entries: ResizeObserverEntry[]) => {
+      const entry = (entries[0] as unknown as ResizeObserverEntry[])[0];
+      this.calculatedHeight = entry.target.clientHeight;
+      this.cdr.detectChanges();
     });
     this.subscriptions.add(resizeSubscription);
   }
