@@ -190,8 +190,8 @@ importers:
         specifier: 5.1.0
         version: 5.1.0(karma@6.4.4)
       karma-jasmine-html-reporter:
-        specifier: 1.7.0
-        version: 1.7.0(jasmine-core@5.3.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4)
+        specifier: 2.1.0
+        version: 2.1.0(jasmine-core@5.3.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4)
       start-server-and-test:
         specifier: ^2.0.8
         version: 2.0.8
@@ -3956,12 +3956,12 @@ packages:
     resolution: {integrity: sha512-yj7hbequkQP2qOSb20GuNSIyE//PgJWHwC2IydLE6XRtsnaflv+/OSGNssPjobYUlhVVagy99TQpqUt3vAUG7A==}
     engines: {node: '>=10.0.0'}
 
-  karma-jasmine-html-reporter@1.7.0:
-    resolution: {integrity: sha512-pzum1TL7j90DTE86eFt48/s12hqwQuiD+e5aXx2Dc9wDEn2LfGq6RoAxEZZjFiN0RDSCOnosEKRZWxbQ+iMpQQ==}
+  karma-jasmine-html-reporter@2.1.0:
+    resolution: {integrity: sha512-sPQE1+nlsn6Hwb5t+HHwyy0A1FNCVKuL1192b+XNauMYWThz2kweiBVW1DqloRpVvZIJkIoHVB7XRpK78n1xbQ==}
     peerDependencies:
-      jasmine-core: '>=3.8'
-      karma: '>=0.9'
-      karma-jasmine: '>=1.1'
+      jasmine-core: ^4.0.0 || ^5.0.0
+      karma: ^6.0.0
+      karma-jasmine: ^5.0.0
 
   karma-jasmine@5.1.0:
     resolution: {integrity: sha512-i/zQLFrfEpRyQoJF9fsCdTMOF5c2dK7C7OmsuKg2D0YSsuZSfQDiLuaiktbuio6F2wiCsZSnSnieIQ0ant/uzQ==}
@@ -10293,7 +10293,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  karma-jasmine-html-reporter@1.7.0(jasmine-core@5.3.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4):
+  karma-jasmine-html-reporter@2.1.0(jasmine-core@5.3.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4):
     dependencies:
       jasmine-core: 5.3.0
       karma: 6.4.4
