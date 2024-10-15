@@ -38,9 +38,9 @@ describe('AppComponent', () => {
   it('should set the title correctly based on frontend version from version service', async () => {
     spyOn(titleService, 'setTitle');
 
-    await component.fetchAndSetFrontendVersion(); // Await the promise
+    await component.fetchAndSetFrontendVersion();
 
     expect(titleService.setTitle).toHaveBeenCalledWith('Ladybug - v1.0-TEST');
-    expect(component.frontendVersion).toEqual('1.0-TEST'); // Verify that the version was set
+    expect(component.frontendVersion).toEqual('1.0-TEST');
   });
 });
