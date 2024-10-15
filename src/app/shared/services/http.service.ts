@@ -212,4 +212,10 @@ export class HttpService {
       headers: this.headers,
     });
   }
+
+  getBackendVersion(): Observable<string> {
+    return this.http.get('api/testtool/version', {
+      responseType: 'text',
+    });
+  }
 }

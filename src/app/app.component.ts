@@ -18,6 +18,7 @@ import { CloseTab } from './shared/interfaces/close-tab';
 import { HttpService } from './shared/services/http.service';
 import { StubStrategy } from './shared/enums/stub-strategy';
 import { ErrorHandling } from './shared/classes/error-handling.service';
+import { VersionService } from './shared/services/version.service';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +28,7 @@ import { ErrorHandling } from './shared/classes/error-handling.service';
   imports: [RouterLinkActive, RouterLink, RouterOutlet, ToastComponent],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  appVersion: string = '0.0.0';
+  frontendVersion?: string;
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
   @ViewChild(TestComponent) testComponent!: TestComponent;
 
@@ -51,12 +52,11 @@ export class AppComponent implements OnInit, OnDestroy {
     private location: Location,
     private httpService: HttpService,
     private errorHandler: ErrorHandling,
-  ) {
-    this.titleService.setTitle(`Ladybug - v${this.appVersion}`);
-  }
+    private versionService: VersionService,
+  ) {}
 
   ngOnInit(): void {
-    this.fetchAndSetAppVersion();
+    this.fetchAndSetFrontendVersion();
     this.subscribeToServices();
     this.getStubStrategies();
   }
@@ -65,20 +65,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.unsubscribeAll();
   }
 
-  fetchAndSetAppVersion() {
-    fetch('assets/package.json')
-      .then((response: Response): void => {
-        if (response.ok) {
-          response.json().then((packageJson: { version: string }): void => {
-            this.appVersion = packageJson.version;
-          });
-        } else {
-          console.error('package.json could not be found in assets', response);
-        }
-      })
-      .catch((error): void => {
-        console.error('package.json could not be found in assets', error);
-      });
+  async fetchAndSetFrontendVersion() {
+    this.frontendVersion = await this.versionService.getFrontendVersion();
+    this.titleService.setTitle(`Ladybug - v${this.frontendVersion}`);
   }
 
   subscribeToServices(): void {
