@@ -3,20 +3,22 @@ import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angu
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
 import { SettingsService } from '../../../shared/services/settings.service';
-import { catchError, Subscription, tap } from 'rxjs';
+import { catchError, Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
 import { ToastComponent } from '../../../shared/components/toast/toast.component';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { OptionsSettings } from '../../../shared/interfaces/options-settings';
 import { Transformation } from '../../../shared/interfaces/transformation';
+import { VersionService } from '../../../shared/services/version.service';
+import { CopyTooltipDirective } from '../../../shared/directives/copy-tooltip.directive';
 
 @Component({
   selector: 'app-table-settings-modal',
   templateUrl: './table-settings-modal.component.html',
   styleUrls: ['./table-settings-modal.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, ToastComponent],
+  imports: [ReactiveFormsModule, ToastComponent, CopyTooltipDirective],
 })
 export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;
@@ -38,6 +40,8 @@ export class TableSettingsModalComponent implements OnDestroy {
   });
   @Output() openLatestReportsEvent = new EventEmitter<any>();
   saving: boolean = false;
+  backendVersion?: string;
+  frontendVersion?: string;
 
   constructor(
     private modalService: NgbModal,
@@ -45,12 +49,23 @@ export class TableSettingsModalComponent implements OnDestroy {
     private settingsService: SettingsService,
     private toastService: ToastService,
     private errorHandler: ErrorHandling,
+    private versionService: VersionService,
   ) {
+    this.getApplicationVersions();
     this.subscribeToSettingsServiceObservables();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  getApplicationVersions() {
+    this.versionService.getFrontendVersion().then((frontendVersion) => {
+      this.frontendVersion = frontendVersion;
+    });
+    this.versionService.getBackendVersion().then((backendVersion) => {
+      this.backendVersion = backendVersion;
+    });
   }
 
   subscribeToSettingsServiceObservables(): void {
