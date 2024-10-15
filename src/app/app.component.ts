@@ -65,11 +65,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.unsubscribeAll();
   }
 
-  fetchAndSetFrontendVersion() {
-    this.versionService.getFrontendVersion().then((version) => {
-      this.frontendVersion = version;
-      this.titleService.setTitle(`Ladybug - v${this.frontendVersion}`);
-    });
+  async fetchAndSetFrontendVersion() {
+    this.frontendVersion = await this.versionService.getFrontendVersion();
+    this.titleService.setTitle(`Ladybug - v${this.frontendVersion}`);
   }
 
   subscribeToServices(): void {

@@ -1,25 +1,27 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from './http.service';
 import { firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class VersionService {
+  packageJsonPath = 'assets/package.json';
   frontendVersion?: string;
   backendVersion?: string;
 
-  constructor(private httpService: HttpService) {}
+  constructor(
+    private httpService: HttpService,
+    private httpClient: HttpClient,
+  ) {}
 
   async getFrontendVersion() {
     if (!this.frontendVersion) {
       try {
-        const response: Response = await fetch('assets/package.json');
-        if (response.ok) {
-          const packageJson = await response.json();
+        const packageJson = await firstValueFrom(this.httpClient.get<{ version: string }>(this.packageJsonPath));
+        if (packageJson) {
           this.frontendVersion = packageJson.version;
-        } else {
-          console.error('package.json could not be found in assets', response);
         }
       } catch (error) {
         console.error('package.json could not be found in assets', error);
