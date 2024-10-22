@@ -18,6 +18,8 @@ export class SettingsService {
     this.setTableSpacing(cappedTableSpacing);
     this.setShowSearchWindowOnLoad(localStorage.getItem(this.showSearchWindowOnLoadKey) === 'true');
     this.setPrettifyOnLoad(localStorage.getItem(this.prettifyOnLoadKey) === 'true');
+    const amountOfRecordsInTable = localStorage.getItem(this.amountOfRecordsInTableKey) ?? this.amountOfRecordsInTable;
+    this.setAmountOfRecordsInTable(+amountOfRecordsInTable);
   }
 
   //Show multiple files in debug tree
@@ -65,5 +67,17 @@ export class SettingsService {
     this.prettifyOnLoad = value;
     this.prettifyOnLoadSubject.next(value);
     localStorage.setItem(this.prettifyOnLoadKey, String(this.prettifyOnLoad));
+  }
+
+  //Table settings
+  private amountOfRecordsInTableKey: string = 'amountOfRecordsInTable';
+  private amountOfRecordsInTable: number = 10;
+  private amountOfRecordsInTableSubject: Subject<number> = new ReplaySubject(1);
+  public amountOfRecordsInTableObservable: Observable<number> = this.amountOfRecordsInTableSubject.asObservable();
+
+  public setAmountOfRecordsInTable(value: number): void {
+    this.amountOfRecordsInTable = value;
+    this.amountOfRecordsInTableSubject.next(value);
+    localStorage.setItem(this.amountOfRecordsInTableKey, String(this.amountOfRecordsInTable));
   }
 }

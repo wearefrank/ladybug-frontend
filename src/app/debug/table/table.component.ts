@@ -185,6 +185,10 @@ export class TableComponent implements OnInit, OnDestroy {
     this.subscriptions.add(refreshAll);
     const refreshTable = this.debugTab.refreshTable$.subscribe(() => this.refresh());
     this.subscriptions.add(refreshTable);
+    const amountOfRecordsInTableSubscription = this.settingsService.amountOfRecordsInTableObservable.subscribe(
+      (value) => (this.tableSettings.displayAmount = value),
+    );
+    this.subscriptions.add(amountOfRecordsInTableSubscription);
   }
 
   setTableSpacing(value: number): void {
@@ -458,12 +462,14 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   changeTableLimit(event: any): void {
-    this.tableSettings.displayAmount = event.target.value === '' ? 0 : event.target.value;
-    this.retrieveRecords();
+    const value = event.target.value === '' ? 0 : event.target.value;
+    if (this.tableSettings.displayAmount !== value) {
+      this.settingsService.setAmountOfRecordsInTable(value);
+      this.retrieveRecords();
+    }
   }
 
   refresh(): void {
-    this.tableSettings.displayAmount = 10;
     this.loadData();
   }
 

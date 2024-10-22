@@ -25,8 +25,7 @@ describe('Tests for report transformation', () => {
     cy.get('[data-cy-debug="refresh"]').click();
     cy.assertDebugTableLength(1).click();
     cy.checkFileTreeLength(1);
-    // We test that the top node was not selected before.
-    // cy.get('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li > div').click();
+    cy.clickRootNodeInFileTree();
     cy.get('[data-cy-open-metadata-table]').click();
     cy.get('[data-cy-element-name="editor"]').contains('Name="IGNORED"');
     // The transformation should not affect the report table, only the XML in the Monaco editor
