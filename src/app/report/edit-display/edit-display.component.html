@@ -45,16 +45,14 @@
         ></app-toggle-button>
 
         <span class="button-divider">&#124;</span>
-        @if (ReportUtil.isReport(selectedNode)) {
-          <button
-            data-cy-report="rerun"
-            class="btn btn-info"
-            [title]=" editingEnabled ? 'Please save your changes to rerun the report' : 'Rerun this report'"
-            [disabled]="editingEnabled"
-            (click)="openDifferenceModal('saveRerun')"
-          >Rerun
-          </button>
-        }
+        <button
+          data-cy-report="rerun"
+          class="btn btn-info"
+          [title]=" editingEnabled ? 'Please save your changes to rerun the report' : 'Rerun this report'"
+          [disabled]="editingEnabled"
+          (click)="openDifferenceModal('saveRerun')"
+        >Rerun
+        </button>
         @if (editingEnabled) {
           <button
             data-cy-report="discard"
