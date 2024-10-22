@@ -17,7 +17,6 @@ import {
   NgbDropdownMenu,
   NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
-import { ButtonComponent } from '../../shared/components/button/button.component';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 import { View } from '../../shared/interfaces/view';
@@ -30,7 +29,6 @@ import { ErrorHandling } from '../../shared/classes/error-handling.service';
   styleUrls: ['./debug-tree.component.css'],
   standalone: true,
   imports: [
-    ButtonComponent,
     NgbDropdown,
     NgbDropdownToggle,
     NgbDropdownMenu,

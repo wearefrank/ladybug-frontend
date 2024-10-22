@@ -15,14 +15,13 @@ import { CustomEditorComponent } from '../../custom-editor/custom-editor.compone
 import { Report } from '../../shared/interfaces/report';
 import { MetadataTableComponent } from '../../shared/components/metadata-table/metadata-table.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ButtonComponent } from '../../shared/components/button/button.component';
 import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
 import { catchError } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { EditFormComponent } from '../edit-form/edit-form.component';
 import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
-import { ToggleButtonComponent } from '../../shared/components/button/toggle-button/toggle-button.component';
+import { ToggleButtonComponent } from '../../shared/components/toggle-button/toggle-button.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { TestResult } from '../../shared/interfaces/test-result';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -45,7 +44,6 @@ import { ReportAlertMessageComponent } from '../report-alert-message/report-aler
   styleUrls: ['./edit-display.component.css'],
   standalone: true,
   imports: [
-    ButtonComponent,
     NgbDropdown,
     NgbDropdownToggle,
     NgbDropdownMenu,
