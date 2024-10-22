@@ -472,7 +472,6 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   refresh(): void {
-    this.tableSettings.displayAmount = 10;
     this.loadData();
   }
 
