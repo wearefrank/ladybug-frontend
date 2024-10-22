@@ -107,18 +107,18 @@
   }
 
   @if (selectedNode) {
-    <app-report-alert-message [report]="selectedNode" />
+    <app-report-alert-message [report]="selectedNode"/>
     @if (metadataTableVisible) {
-      <app-metadata-table [report]="selectedNode" />
+      <app-metadata-table [report]="selectedNode"/>
     }
   }
 </div>
 
 
 @if (editingRootNode && ReportUtil.isReport(selectedNode)) {
-  <app-edit-form [report]="selectedNode" />
+  <app-edit-form [report]="selectedNode"/>
 }
-<app-custom-editor
+<app-editor
   data-cy-report="editor"
   [hidden]="editingRootNode"
   [height]="calculatedHeight"
@@ -127,7 +127,7 @@
 
 @if (selectedNode) {
   <app-difference-modal (saveChangesEvent)="saveChanges($event)" (discardChangesEvent)="discardChanges()"
-                        (rerunEvent)="rerunReport()" />
+                        (rerunEvent)="rerunReport()"/>
 }
 
 <ng-template #possibilitiesModal let-modal>

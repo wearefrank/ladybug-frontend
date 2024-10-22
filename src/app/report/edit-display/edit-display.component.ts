@@ -11,7 +11,7 @@ import {
 import { HttpService } from '../../shared/services/http.service';
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
-import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
+import { EditorComponent } from '../../editor/editor.component';
 import { Report } from '../../shared/interfaces/report';
 import { MetadataTableComponent } from '../../shared/components/metadata-table/metadata-table.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -52,7 +52,7 @@ import { ReportAlertMessageComponent } from '../report-alert-message/report-aler
     NgbDropdownButtonItem,
     NgbDropdownItem,
     ReactiveFormsModule,
-    CustomEditorComponent,
+    EditorComponent,
     MetadataTableComponent,
     BooleanToStringPipe,
     NgStyle,
@@ -77,7 +77,7 @@ export class EditDisplayComponent implements OnChanges {
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
-  @ViewChild(CustomEditorComponent) editor!: CustomEditorComponent;
+  @ViewChild(EditorComponent) editor!: EditorComponent;
   @ViewChild(EditFormComponent) editFormComponent!: EditFormComponent;
   @ViewChild(DifferenceModalComponent)
   differenceModal!: DifferenceModalComponent;
