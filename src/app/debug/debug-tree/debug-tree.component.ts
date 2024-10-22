@@ -23,6 +23,7 @@ import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 import { View } from '../../shared/interfaces/view';
 import { DebugTabService } from '../debug-tab.service';
 import { ErrorHandling } from '../../shared/classes/error-handling.service';
+import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
 
 @Component({
   selector: 'app-debug-tree',
@@ -85,9 +86,13 @@ export class DebugTreeComponent implements OnDestroy {
       },
     });
     this.subscriptions.add(showMultipleSubscription);
-    const refreshAll: Subscription = this.debugTab.refreshAll$.subscribe((ids: number[]) => this.refreshReports(ids));
+    const refreshAll: Subscription = this.debugTab.refreshAll$.subscribe((condition: RefreshCondition) =>
+      this.refreshReports(condition),
+    );
     this.subscriptions.add(refreshAll);
-    const refreshTree: Subscription = this.debugTab.refreshTree$.subscribe((ids: number[]) => this.refreshReports(ids));
+    const refreshTree: Subscription = this.debugTab.refreshTree$.subscribe((condition: RefreshCondition) =>
+      this.refreshReports(condition),
+    );
     this.subscriptions.add(refreshTree);
   }
 
@@ -181,21 +186,23 @@ export class DebugTreeComponent implements OnDestroy {
     return false;
   }
 
-  async refreshReports(ids: number[]): Promise<void> {
+  async refreshReports(condition: RefreshCondition): Promise<void> {
     const selectedReportId = this.tree.getSelected().originalValue.storageId;
     let lastSelectedReport: FileTreeItem | undefined;
-    for (let i = 0; i < this.tree.items.length; i++) {
-      const report: Report = this.tree.items[i].originalValue as Report;
-      if (ids.includes(report.storageId)) {
-        const fileItem: FileTreeItem = await this.getNewReport(report.storageId);
-        if (selectedReportId === report.storageId) {
-          lastSelectedReport = fileItem;
+    if (condition.reportIds) {
+      for (let i = 0; i < this.tree.items.length; i++) {
+        const report: Report = this.tree.items[i].originalValue as Report;
+        if (condition.reportIds.includes(report.storageId)) {
+          const fileItem: FileTreeItem = await this.getNewReport(report.storageId);
+          if (selectedReportId === report.storageId) {
+            lastSelectedReport = fileItem;
+          }
+          this.tree.items[i] = fileItem;
         }
-        this.tree.items[i] = fileItem;
       }
-    }
-    if (lastSelectedReport) {
-      this.tree.selectItem(lastSelectedReport.path);
+      if (lastSelectedReport) {
+        this.tree.selectItem(lastSelectedReport.path);
+      }
     }
     this.hideOrShowCheckpointsBasedOnView(this._currentView);
   }

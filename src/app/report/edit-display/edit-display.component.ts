@@ -147,7 +147,7 @@ export class EditDisplayComponent implements OnChanges {
         next: (response: TestResult): void => {
           this.toastService.showSuccess('Report rerun successful');
           this.rerunResult = response;
-          this.debugTab.refreshTable();
+          this.debugTab.refreshTable({ displayToast: false });
         },
       });
   }
@@ -297,7 +297,8 @@ export class EditDisplayComponent implements OnChanges {
             this.selectedNode = response.report;
           }
           this.disableEditing();
-          this.debugTab.refreshAll([+storageId]);
+          this.debugTab.refreshAll({ reportIds: [+storageId], displayToast: false });
+          this.toastService.showSuccess('Report updated successfully.');
         },
       });
   }
