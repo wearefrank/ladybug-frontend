@@ -10,7 +10,7 @@ describe('Tests for custom editor in debug tab', () => {
 
   it('should set xml as available view if editor content is xml file', () => {
     cy.clickRowInTable(0);
-    cy.clickFirstFileInFileTree();
+    cy.clickRootNodeInFileTree();
     cy.get('[data-cy-editor="viewDropDown"]').as('viewDropDown').find('option:selected').should('contain.text', 'Raw');
     // eslint-disable-next-line sonarjs/no-duplicate-string
     cy.get('@viewDropDown').find('option').should('have.length', 2);
@@ -21,7 +21,7 @@ describe('Tests for custom editor in debug tab', () => {
 
   it('should apply effect based on selected view', () => {
     cy.clickRowInTable(0);
-    cy.clickFirstFileInFileTree();
+    cy.clickRootNodeInFileTree();
     cy.get('[data-cy-editor="viewDropDown"]').as('viewDropDown');
     let numberOfLines = 0;
     cy.get('div.line-numbers').then((elements) => {

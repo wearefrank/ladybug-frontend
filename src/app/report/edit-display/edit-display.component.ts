@@ -11,7 +11,7 @@ import {
 import { HttpService } from '../../shared/services/http.service';
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
-import { CustomEditorComponent } from '../../custom-editor/custom-editor.component';
+import { EditorComponent } from '../../editor/editor.component';
 import { Report } from '../../shared/interfaces/report';
 import { MetadataTableComponent } from '../../shared/components/metadata-table/metadata-table.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -52,7 +52,7 @@ import { ReportAlertMessageComponent } from '../report-alert-message/report-aler
     NgbDropdownButtonItem,
     NgbDropdownItem,
     ReactiveFormsModule,
-    CustomEditorComponent,
+    EditorComponent,
     MetadataTableComponent,
     BooleanToStringPipe,
     NgStyle,
@@ -77,7 +77,7 @@ export class EditDisplayComponent implements OnChanges {
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
-  @ViewChild(CustomEditorComponent) editor!: CustomEditorComponent;
+  @ViewChild(EditorComponent) editor!: EditorComponent;
   @ViewChild(EditFormComponent) editFormComponent!: EditFormComponent;
   @ViewChild(DifferenceModalComponent)
   differenceModal!: DifferenceModalComponent;
@@ -135,21 +135,26 @@ export class EditDisplayComponent implements OnChanges {
 
   rerunReport(): void {
     const node: Report | Checkpoint = this.selectedNode!;
-    if (!ReportUtil.isReport(node)) {
-      this.toastService.showDanger('Could not find report to rerun');
-      return;
+    let reportId: number | undefined;
+    if (ReportUtil.isReport(node)) {
+      reportId = node.storageId;
+    } else if (ReportUtil.isCheckPoint(node)) {
+      reportId = ReportUtil.getStorageIdFromUid(node.uid);
     }
-    const reportId: number = node.storageId;
-    this.httpService
-      .runReport(this.currentView.storageName, reportId)
-      .pipe(catchError(this.errorHandler.handleError()))
-      .subscribe({
-        next: (response: TestResult): void => {
-          this.toastService.showSuccess('Report rerun successful');
-          this.rerunResult = response;
-          this.debugTab.refreshTable();
-        },
-      });
+    if (reportId) {
+      this.httpService
+        .runReport(this.currentView.storageName, reportId)
+        .pipe(catchError(this.errorHandler.handleError()))
+        .subscribe({
+          next: (response: TestResult): void => {
+            this.toastService.showSuccess('Report rerun successful');
+            this.rerunResult = response;
+            this.debugTab.refreshTable();
+          },
+        });
+    } else {
+      this.toastService.showDanger('Could not find report to rerun');
+    }
   }
 
   closeReport(): void {
@@ -182,12 +187,12 @@ export class EditDisplayComponent implements OnChanges {
     let reportDifferences: ReportDifference[] = [];
     if (ReportUtil.isReport(node) && this.editFormComponent) {
       reportDifferences = this.editFormComponent.getDifferences();
-    } else if (ReportUtil.isCheckPoint(node)) {
+    } else if (ReportUtil.isCheckPoint(node) && this.editor?.getValue() !== node.message) {
+      const diff = new DiffMatchPatch().diff_main(node.message ?? '', this.editor?.getValue());
       reportDifferences.push({
         name: 'message',
         originalValue: node.message,
-        // @ts-ignore
-        difference: new DiffMatchPatch().diff_main(node.message ?? '', this.editor?.getValue()),
+        difference: diff,
       });
     }
     if (reportDifferences.length > 0) {

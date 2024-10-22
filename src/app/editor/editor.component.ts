@@ -29,13 +29,13 @@ export const editorViewsConst = [...basicContentTypes, ...prettyContentTypes] as
 export type EditorView = (typeof editorViewsConst)[number];
 
 @Component({
-  selector: 'app-custom-editor',
-  templateUrl: './custom-editor.component.html',
-  styleUrl: './custom-editor.component.css',
+  selector: 'app-editor',
+  templateUrl: './editor.component.html',
+  styleUrl: './editor.component.css',
   standalone: true,
   imports: [MonacoEditorModule, ReactiveFormsModule, FormsModule, TitleCasePipe],
 })
-export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
+export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() height!: number;
   @Input() readOnlyMode: boolean = true;
   @Output() saveReport: Subject<string> = new Subject<string>();
@@ -106,6 +106,7 @@ export class CustomEditorComponent implements OnInit, OnDestroy, OnChanges {
       this.save();
     }
   }
+
   calculateHeight() {
     if (this.statusBar) {
       this.calculatedHeight = this.height - this.statusBar.nativeElement.offsetHeight;
