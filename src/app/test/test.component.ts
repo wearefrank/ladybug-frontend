@@ -139,6 +139,7 @@ export class TestComponent implements OnInit, OnDestroy {
     for (const report of this.reports) {
       report.reranReport = null;
     }
+    this.matches();
   }
 
   run(report: TestListItem): void {
