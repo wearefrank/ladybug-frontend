@@ -45,16 +45,14 @@
         ></app-toggle-button>
 
         <span class="button-divider">&#124;</span>
-        @if (ReportUtil.isReport(selectedNode)) {
-          <button
-            data-cy-report="rerun"
-            class="btn btn-info"
-            [title]=" editingEnabled ? 'Please save your changes to rerun the report' : 'Rerun this report'"
-            [disabled]="editingEnabled"
-            (click)="openDifferenceModal('saveRerun')"
-          >Rerun
-          </button>
-        }
+        <button
+          data-cy-report="rerun"
+          class="btn btn-info"
+          [title]=" editingEnabled ? 'Please save your changes to rerun the report' : 'Rerun this report'"
+          [disabled]="editingEnabled"
+          (click)="openDifferenceModal('saveRerun')"
+        >Rerun
+        </button>
         @if (editingEnabled) {
           <button
             data-cy-report="discard"
@@ -107,18 +105,18 @@
   }
 
   @if (selectedNode) {
-    <app-report-alert-message [report]="selectedNode" />
+    <app-report-alert-message [report]="selectedNode"/>
     @if (metadataTableVisible) {
-      <app-metadata-table [report]="selectedNode" />
+      <app-metadata-table [report]="selectedNode"/>
     }
   }
 </div>
 
 
 @if (editingRootNode && ReportUtil.isReport(selectedNode)) {
-  <app-edit-form [report]="selectedNode" />
+  <app-edit-form [report]="selectedNode"/>
 }
-<app-custom-editor
+<app-editor
   data-cy-report="editor"
   [hidden]="editingRootNode"
   [height]="calculatedHeight"
@@ -127,7 +125,7 @@
 
 @if (selectedNode) {
   <app-difference-modal (saveChangesEvent)="saveChanges($event)" (discardChangesEvent)="discardChanges()"
-                        (rerunEvent)="rerunReport()" />
+                        (rerunEvent)="rerunReport()"/>
 }
 
 <ng-template #possibilitiesModal let-modal>

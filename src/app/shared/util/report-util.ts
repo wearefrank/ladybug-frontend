@@ -25,4 +25,10 @@ export const ReportUtil = {
   hasValidUid(uid: string) {
     return !uid.includes('null');
   },
+  getCheckpointIdFromUid(uid: string): number {
+    return +uid.split('#')[1];
+  },
+  getStorageIdFromUid(uid: string): number {
+    return +uid.split('#')[0];
+  },
 };

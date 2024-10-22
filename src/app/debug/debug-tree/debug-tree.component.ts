@@ -147,10 +147,21 @@ export class DebugTreeComponent implements OnDestroy {
       this.tree.clearItems();
     }
     const newReport: CreateTreeItem = new ReportHierarchyTransformer().transform(report);
-    const path: string = this.tree.addItem(newReport);
-    this.tree.selectItem(path);
+    const rootNodePath: string = this.tree.addItem(newReport);
+    this.selectFirstCheckpoint(rootNodePath);
     if (this._currentView) {
       this.hideOrShowCheckpointsBasedOnView(this._currentView);
+    }
+  }
+
+  private selectFirstCheckpoint(rootNodePath: string) {
+    const last = this.tree.items.length - 1;
+    const lastAdded = this.tree.items[last];
+    if (lastAdded.children) {
+      const firstCheckpoint = lastAdded.children[0];
+      this.tree.selectItem(firstCheckpoint.path);
+    } else {
+      this.tree.selectItem(rootNodePath);
     }
   }
 

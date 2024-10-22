@@ -116,7 +116,9 @@ export class CompareTreeComponent {
     if (item.children) {
       for (const child of item.children) {
         const checkpoint = child.originalValue as Checkpoint;
-        if (this.getCheckpointId(checkpoint.uid) === this.getCheckpointId(checkpointToMatch.uid)) {
+        if (
+          ReportUtil.getCheckpointIdFromUid(checkpoint.uid) === ReportUtil.getCheckpointIdFromUid(checkpointToMatch.uid)
+        ) {
           tree.selectItem(child.path);
           return;
         } else {
@@ -142,7 +144,7 @@ export class CompareTreeComponent {
       for (let checkpoint of checkpoints) {
         if (
           ReportUtil.isCheckPoint(itemToMatch) &&
-          this.getCheckpointId(checkpoint.uid) === this.getCheckpointId(itemToMatch.uid)
+          ReportUtil.getCheckpointIdFromUid(checkpoint.uid) === ReportUtil.getCheckpointIdFromUid(itemToMatch.uid)
         ) {
           return checkpoint;
         }
@@ -152,9 +154,5 @@ export class CompareTreeComponent {
       }
     }
     return null;
-  }
-
-  getCheckpointId(uid: string): string {
-    return uid.split('#')[1];
   }
 }
