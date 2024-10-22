@@ -17,30 +17,55 @@ declare global {
   namespace Cypress {
     interface Chainable {
       initializeApp(): Chainable;
+
       resetApp(): Chainable;
+
       clearTestReports(): Chainable;
+
       navigateToTestTabAndWait(): Chainable;
+
       navigateToDebugTabAndWait(): Chainable;
+
       createReport(): Chainable;
+
       createOtherReport(): Chainable;
+
       createRunningReport(): Chainable;
+
       createReportWithLabelNull(): Chainable;
+
       createReportWithLabelEmpty(): Chainable;
+
       createReportWithInfopoint(): Chainable;
+
       createReportWithMultipleStartpoints(): Chainable;
+
       clearDebugStore(): Chainable;
+
       clearReportsInProgress(): Chainable;
+
       selectIfNotSelected(): Chainable;
+
       enableShowMultipleInDebugTree(): Chainable;
+
       checkTestTableNumRows(length: number): Chainable;
+
       checkTestTableReportsAre(reportNames: string[]): Chainable;
+
       debugTreeGuardedCopyReport(reportName: string, numExpandedNodes: number, aliasSuffix: string): Chainable;
-      clickFirstFileInFileTree(): Chainable;
+
+      clickRootNodeInFileTree(): Chainable;
+
       clickRowInTable(index: number): Chainable;
+
       checkFileTreeLength(length: number): Chainable;
+
       refreshApp(): Chainable;
+
       getDebugTableRows(): Chainable;
+
       getTestTableRows(): Chainable
+
       assertDebugTableLength(length: number): Chainable;
     }
   }
@@ -61,7 +86,7 @@ Cypress.Commands.add('resetApp' as keyof Chainable, (): void => {
 });
 
 Cypress.Commands.add('clearTestReports' as keyof Chainable, (): void => {
-  cy.request({ method: 'DELETE', url: '/api/report/all/Test' }).then((resp: Cypress.Response<ApiResponse>) => {
+  cy.request({method: 'DELETE', url: '/api/report/all/Test'}).then((resp: Cypress.Response<ApiResponse>) => {
     expect(resp.status).equal(200);
   });
 });
@@ -140,7 +165,7 @@ Cypress.Commands.add('clearReportsInProgress' as keyof Chainable, (): void => {
   });
 });
 
-Cypress.Commands.add('selectIfNotSelected' as keyof Chainable, { prevSubject: 'element' }, (node: JQueryWithSelector<HTMLElement>): void => {
+Cypress.Commands.add('selectIfNotSelected' as keyof Chainable, {prevSubject: 'element'}, (node: JQueryWithSelector<HTMLElement>): void => {
   if (!node[0].classList.contains("selected")) {
     cy.wrap(node).click()
   }
@@ -185,9 +210,9 @@ Cypress.Commands.add('debugTreeGuardedCopyReport' as keyof Chainable, (reportNam
   });
 });
 
-Cypress.Commands.add('clickFirstFileInFileTree' as keyof Chainable, (): void => {
-  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('app-tree-item').eq(0).click();
-});
+Cypress.Commands.add('clickRootNodeInFileTree' as keyof Chainable, (): void => {
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item').eq(0).find('.sft-item').eq(0).click()
+})
 
 Cypress.Commands.add('clickRowInTable' as keyof Chainable, (index: number): void => {
   cy.getDebugTableRows().eq(index).click();
