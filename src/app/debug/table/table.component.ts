@@ -33,6 +33,7 @@ import { CompareReport } from '../../shared/interfaces/compare-reports';
 import { DebugTabService } from '../debug-tab.service';
 import { ViewDropdownComponent } from '../../shared/components/view-dropdown/view-dropdown.component';
 import { DeleteModalComponent } from '../../shared/components/delete-modal/delete-modal.component';
+import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
 
 @Component({
   selector: 'app-table',
@@ -181,9 +182,11 @@ export class TableComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(filterContextSubscription);
-    const refreshAll = this.debugTab.refreshAll$.subscribe(() => this.refresh());
+    const refreshAll = this.debugTab.refreshAll$.subscribe((condition: RefreshCondition) => this.refresh(condition));
     this.subscriptions.add(refreshAll);
-    const refreshTable = this.debugTab.refreshTable$.subscribe(() => this.refresh());
+    const refreshTable = this.debugTab.refreshTable$.subscribe((condition: RefreshCondition) =>
+      this.refresh(condition),
+    );
     this.subscriptions.add(refreshTable);
     const amountOfRecordsInTableSubscription = this.settingsService.amountOfRecordsInTableObservable.subscribe(
       (value) => (this.tableSettings.displayAmount = value),
@@ -216,14 +219,14 @@ export class TableComponent implements OnInit, OnDestroy {
     this.retrieveRecords();
   }
 
-  loadData(): void {
-    this.retrieveRecords();
+  loadData(showToast: boolean = true): void {
+    this.retrieveRecords(showToast);
     this.loadMetadataCount();
     this.loadReportInProgressThreshold();
     this.loadReportInProgressSettings();
   }
 
-  retrieveRecords() {
+  retrieveRecords(showToast: boolean = true) {
     this.httpService
       .getMetadataReports(this.tableSettings, this.currentView)
       .pipe(catchError(this.errorHandler.handleError()))
@@ -233,7 +236,9 @@ export class TableComponent implements OnInit, OnDestroy {
           this.tableSettings.reportMetadata = value;
           this.tableDataSource.data = value;
           this.tableSettings.tableLoaded = true;
-          this.toastService.showSuccess('Data loaded!');
+          if (showToast) {
+            this.toastService.showSuccess('Data loaded!');
+          }
         },
       });
   }
@@ -469,8 +474,12 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
-  refresh(): void {
-    this.loadData();
+  refresh(refreshCondition?: RefreshCondition): void {
+    if (refreshCondition) {
+      this.loadData(refreshCondition.displayToast);
+    } else {
+      this.loadData();
+    }
   }
 
   openReport(storageId: number): void {
