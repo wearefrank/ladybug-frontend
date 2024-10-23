@@ -12,7 +12,6 @@ import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { ToastComponent } from '../shared/components/toast/toast.component';
 import { FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
-import { ButtonComponent } from '../shared/components/button/button.component';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { OptionsSettings } from '../shared/interfaces/options-settings';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
@@ -32,7 +31,6 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
   standalone: true,
   imports: [
     TestFolderTreeComponent,
-    ButtonComponent,
     ReactiveFormsModule,
     FormsModule,
     ToastComponent,
@@ -139,6 +137,7 @@ export class TestComponent implements OnInit, OnDestroy {
     for (const report of this.reports) {
       report.reranReport = null;
     }
+    this.matches();
   }
 
   run(report: TestListItem): void {
