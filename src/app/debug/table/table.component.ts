@@ -481,7 +481,7 @@ export class TableComponent implements OnInit, OnDestroy {
       this.loadData();
     }
   }
-  
+
   openReport(storageId: number): void {
     this.httpService
       .getReport(storageId, this.currentView.storageName)
