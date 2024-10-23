@@ -3,7 +3,7 @@ import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../shared/interfaces/table-settings';
-import { catchError, Subject, Subscription, tap } from 'rxjs';
+import { catchError, Subject, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
@@ -23,7 +23,6 @@ import {
   NgbDropdownMenu,
   NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
-import { ButtonComponent } from '../../shared/components/button/button.component';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
 import { KeyValuePipe, NgClass } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -42,7 +41,6 @@ import { DeleteModalComponent } from '../../shared/components/delete-modal/delet
   standalone: true,
   imports: [
     FilterSideDrawerComponent,
-    ButtonComponent,
     NgbDropdown,
     NgbDropdownToggle,
     NgbDropdownMenu,
