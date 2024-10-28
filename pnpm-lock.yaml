@@ -175,8 +175,8 @@ importers:
         specifier: ^9.1.6
         version: 9.1.6
       jasmine-core:
-        specifier: 5.3.0
-        version: 5.3.0
+        specifier: 5.4.0
+        version: 5.4.0
       karma:
         specifier: 6.4.4
         version: 6.4.4
@@ -191,7 +191,7 @@ importers:
         version: 5.1.0(karma@6.4.4)
       karma-jasmine-html-reporter:
         specifier: 2.1.0
-        version: 2.1.0(jasmine-core@5.3.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4)
+        version: 2.1.0(jasmine-core@5.4.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4)
       start-server-and-test:
         specifier: ^2.0.8
         version: 2.0.8
@@ -2860,6 +2860,7 @@ packages:
 
   critters@0.0.24:
     resolution: {integrity: sha512-Oyqew0FGM0wYUSNqR0L6AteO5MpMoUU0rhKRieXeiKs+PmRTxiJMyaunYB2KF6fQ3dzChXKCpbFOEJx3OQ1v/Q==}
+    deprecated: Ownership of Critters has moved to the Nuxt team, who will be maintaining the project going forward. If you'd like to keep using Critters, please switch to the actively-maintained fork at https://github.com/danielroe/beasties
 
   cross-spawn@7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
@@ -3858,8 +3859,8 @@ packages:
   jasmine-core@4.6.1:
     resolution: {integrity: sha512-VYz/BjjmC3klLJlLwA4Kw8ytk0zDSmbbDLNs794VnWmkcCB7I9aAL/D48VNQtmITyPvea2C3jdUMfc3kAoy0PQ==}
 
-  jasmine-core@5.3.0:
-    resolution: {integrity: sha512-zsOmeBKESky4toybvWEikRiZ0jHoBEu79wNArLfMdSnlLMZx3Xcp6CSm2sUcYyoJC+Uyj8LBJap/MUbVSfJ27g==}
+  jasmine-core@5.4.0:
+    resolution: {integrity: sha512-T4fio3W++llLd7LGSGsioriDHgWyhoL6YTu4k37uwJLF7DzOzspz7mNxRoM3cQdLWtL/ebazQpIf/yZGJx/gzg==}
 
   jest-worker@27.5.1:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
@@ -10203,7 +10204,7 @@ snapshots:
 
   jasmine-core@4.6.1: {}
 
-  jasmine-core@5.3.0: {}
+  jasmine-core@5.4.0: {}
 
   jest-worker@27.5.1:
     dependencies:
@@ -10293,9 +10294,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  karma-jasmine-html-reporter@2.1.0(jasmine-core@5.3.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4):
+  karma-jasmine-html-reporter@2.1.0(jasmine-core@5.4.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4):
     dependencies:
-      jasmine-core: 5.3.0
+      jasmine-core: 5.4.0
       karma: 6.4.4
       karma-jasmine: 5.1.0(karma@6.4.4)
 
