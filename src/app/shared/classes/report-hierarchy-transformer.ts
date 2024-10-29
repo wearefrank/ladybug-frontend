@@ -10,6 +10,7 @@ export class ReportHierarchyTransformer {
   transform(report: Report): Report {
     const checkpoints: Checkpoint[] = report.checkpoints;
     for (const checkpoint of checkpoints) {
+      checkpoint.parentReport = report;
       checkpoint.iconClass = this.getImage(checkpoint.type, checkpoint.encoding ?? '', checkpoint.level);
       if (checkpoint.type === CheckpointType.Startpoint || checkpoint.type === CheckpointType.ThreadStartpoint) {
         this.handleStartpoint(checkpoint);

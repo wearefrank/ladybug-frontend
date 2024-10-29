@@ -1,4 +1,5 @@
 import { CheckpointType } from '../enums/checkpoint-type';
+import { Report } from './report';
 
 export interface Checkpoint {
   encoding?: string;
@@ -25,4 +26,5 @@ export interface Checkpoint {
   checkpoints?: Checkpoint[];
   icon?: string;
   iconClass?: string;
+  parentReport: Report;
 }

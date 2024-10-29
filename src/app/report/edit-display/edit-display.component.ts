@@ -37,6 +37,7 @@ import { TestReportsService } from '../../test/test-reports.service';
 import { DebugTabService } from '../../debug/debug-tab.service';
 import { StubStrategy } from '../../shared/enums/stub-strategy';
 import { ReportAlertMessageComponent } from '../report-alert-message/report-alert-message.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-display',
@@ -75,18 +76,21 @@ export class EditDisplayComponent implements OnChanges {
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
+
   @ViewChild(EditorComponent) editor!: EditorComponent;
   @ViewChild(EditFormComponent) editFormComponent!: EditFormComponent;
   @ViewChild(DifferenceModalComponent)
   differenceModal!: DifferenceModalComponent;
   @ViewChild('topComponent') topComponent?: ElementRef;
+  @ViewChild('editToggleButton') editToggleButton!: ToggleButtonComponent;
+
   editingEnabled: boolean = false;
   editingChildNode: boolean = false;
   editingRootNode: boolean = false;
   metadataTableVisible: boolean = false;
+  displayReport: boolean = false;
   rerunResult?: TestResult;
   selectedNode?: Report | Checkpoint;
-  displayReport: boolean = false;
   stub?: number;
   stubStrategy?: string;
 
@@ -99,6 +103,7 @@ export class EditDisplayComponent implements OnChanges {
     private testReportsService: TestReportsService,
     private debugTab: DebugTabService,
     private cdr: ChangeDetectorRef,
+    private router: Router,
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -345,6 +350,30 @@ export class EditDisplayComponent implements OnChanges {
   }
 
   toggleEditMode(value: boolean): void {
+    if (this.selectedNode && ReportUtil.isFromCrudStorage(this.selectedNode)) {
+      this.changeEditMode(value);
+    } else {
+      this.showNotEditableWarning();
+    }
+  }
+
+  showNotEditableWarning() {
+    this.toastService.showWarning('This storage is readonly, copy to the test tab to edit this report.', {
+      buttonText: 'Copy to testtab',
+      callback: () => {
+        this.copyReport();
+        this.toastService.showSuccess('Copied report to testtab', {
+          buttonText: 'Go to test tab',
+          callback: () => this.router.navigate(['/test']),
+        });
+      },
+    });
+    setTimeout(() => {
+      this.editToggleButton.value = false;
+    });
+  }
+
+  changeEditMode(value: boolean): void {
     if (value) {
       this.editReport();
     } else {

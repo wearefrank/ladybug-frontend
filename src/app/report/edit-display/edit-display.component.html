@@ -38,8 +38,9 @@
           {{ metadataTableVisible|booleanToString:'Hide' :'Show' }} metadata
         </button>
         <app-toggle-button
+          #editToggleButton
           data-cy-report="toggleEdit"
-          [labels]="{on: 'Edit', off:'View'}"
+          [labels]="{on: 'Edit', off: 'View'}"
           [value]="editingEnabled"
           (valueChanged)="toggleEditMode($event)"
         ></app-toggle-button>

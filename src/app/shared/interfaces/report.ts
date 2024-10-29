@@ -3,6 +3,7 @@ import { Checkpoint } from './checkpoint';
 export interface Report {
   checkpoints: Checkpoint[];
   correlationId: string;
+  crudStorage: boolean;
   description: string;
   endTime: number;
   estimatedMemoryUsage: number;
