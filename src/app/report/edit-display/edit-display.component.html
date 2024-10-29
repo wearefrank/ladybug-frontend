@@ -38,8 +38,9 @@
           {{ metadataTableVisible|booleanToString:'Hide' :'Show' }} metadata
         </button>
         <app-toggle-button
+          #editToggleButton
           data-cy-report="toggleEdit"
-          [labels]="{on: 'Edit', off:'View'}"
+          [labels]="{on: 'Edit', off: 'View'}"
           [value]="editingEnabled"
           (valueChanged)="toggleEditMode($event)"
         ></app-toggle-button>
@@ -72,8 +73,8 @@
 
 
         @if (ReportUtil.isReport(selectedNode)) {
-          <div class="w-fit mx-1 my-0">
-            <select class="form-control" [(ngModel)]="stubStrategy"
+          <div class="w-fit mx-1 my-0" [title]="reportStubStrategy.disabled ? 'This report is in a readonly storage, copy it to the test tab to make changes' : null">
+            <select #reportStubStrategy class="form-control" [disabled]="!ReportUtil.isFromCrudStorage(selectedNode)" [(ngModel)]="stubStrategy"
                     (ngModelChange)="updateReportStubStrategy($event)">
               @for (strategy of StubStrategy.report; track strategy) {
                 <option [ngValue]="strategy" [selected]="selectedNode.stubStrategy === strategy">{{ strategy }}
@@ -82,8 +83,9 @@
             </select>
           </div>
         } @else if (ReportUtil.isCheckPoint(selectedNode) && ReportUtil.hasValidUid(selectedNode.uid)) {
-          <div class="w-fit mx-1 my-0">
-            <select class="form-control" [(ngModel)]="stub" (ngModelChange)="updateCheckpointStubStrategy($event)">
+          <div class="w-fit mx-1 my-0" [title]="checkpointStubStrategy.disabled ? 'This report is in a readonly storage, copy it to the test tab to make changes' : null">
+            <select #checkpointStubStrategy class="form-control" [disabled]="!ReportUtil.isFromCrudStorage(selectedNode)" [(ngModel)]="stub"
+                    (ngModelChange)="updateCheckpointStubStrategy($event)">
               @for (strategy of StubStrategy.checkpoints; track strategy; let index = $index) {
                 <option [ngValue]="index - 1" [selected]="selectedNode.stub === index - 1">{{ strategy }}</option>
               }

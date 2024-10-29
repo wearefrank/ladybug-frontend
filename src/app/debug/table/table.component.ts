@@ -245,7 +245,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   changeView(view: View): void {
     this.currentView = view;
-    this.retrieveRecords();
+    this.loadData();
     this.filterService.setMetadataLabels(this.currentView.metadataNames);
     this.viewChange.next(this.currentView);
   }

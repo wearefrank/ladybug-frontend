@@ -31,4 +31,7 @@ export const ReportUtil = {
   getStorageIdFromUid(uid: string): number {
     return +uid.split('#')[0];
   },
+  isFromCrudStorage(node: Report | Checkpoint): boolean {
+    return ReportUtil.isCheckPoint(node) ? node.parentReport.crudStorage : node.crudStorage;
+  },
 };
