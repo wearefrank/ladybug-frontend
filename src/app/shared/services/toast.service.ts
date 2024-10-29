@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { Toast } from '../interfaces/toast';
+import { Toast, ToastCallback } from '../interfaces/toast';
 
 @Injectable({
   providedIn: 'root',
@@ -12,23 +12,24 @@ export class ToastService {
 
   constructor() {}
 
-  public showDanger(body: string, detailedInfo?: string): void {
+  public showDanger(body: string, detailedInfo?: string, toastCallback?: ToastCallback): void {
     this.toastSubject.next({
       type: 'danger',
       message: body,
       detailed: detailedInfo,
+      toastCallback: toastCallback,
     } as Toast);
   }
 
-  public showWarning(body: string): void {
-    this.toastSubject.next({ type: 'warning', message: body } as Toast);
+  public showWarning(body: string, toastCallback?: ToastCallback): void {
+    this.toastSubject.next({ type: 'warning', message: body, toastCallback: toastCallback } as Toast);
   }
 
-  public showSuccess(body: string): void {
-    this.toastSubject.next({ type: 'success', message: body } as Toast);
+  public showSuccess(body: string, toastCallback?: ToastCallback): void {
+    this.toastSubject.next({ type: 'success', message: body, toastCallback: toastCallback } as Toast);
   }
 
-  public showInfo(body: string): void {
-    this.toastSubject.next({ type: 'info', message: body } as Toast);
+  public showInfo(body: string, toastCallback?: ToastCallback): void {
+    this.toastSubject.next({ type: 'info', message: body, toastCallback: toastCallback } as Toast);
   }
 }

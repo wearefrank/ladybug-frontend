@@ -29,6 +29,9 @@
               <i>Click to see a more detailed description</i>
             </span>
           }
+          @if (toast.toastCallback) {
+            <button class="btn btn-info" (click)="toast.toastCallback.callback()">{{ toast.toastCallback.buttonText }}</button>
+          }
         </div>
       </ngb-toast>
     </div>
