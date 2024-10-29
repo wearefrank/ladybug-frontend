@@ -345,7 +345,13 @@ export class EditDisplayComponent implements OnChanges {
       .copyReport(data, 'Test')
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
-        next: () => this.testReportsService.getReports(),
+        next: () => {
+          this.testReportsService.getReports();
+          this.toastService.showSuccess('Copied report to testtab', {
+            buttonText: 'Go to test tab',
+            callback: () => this.router.navigate(['/test']),
+          });
+        },
       }); // TODO: storage is hardcoded, fix issue #196 for this
   }
 
@@ -362,10 +368,6 @@ export class EditDisplayComponent implements OnChanges {
       buttonText: 'Copy to testtab',
       callback: () => {
         this.copyReport();
-        this.toastService.showSuccess('Copied report to testtab', {
-          buttonText: 'Go to test tab',
-          callback: () => this.router.navigate(['/test']),
-        });
       },
     });
     setTimeout(() => {
