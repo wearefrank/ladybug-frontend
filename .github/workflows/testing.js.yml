@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       useRealFrontend:
-        description: If true, do not check out ladybug-frontend and test the frontend inside the backend
+        description: If true, test the frontend inside the backend
         type: boolean
         default: false
         required: true
