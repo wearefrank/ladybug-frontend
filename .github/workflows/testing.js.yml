@@ -190,13 +190,14 @@ jobs:
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 1000
           browser: chrome
-      - name: Run cypress with chrome browser (bypass ladybug-frontend within backend)
+      - name: Run cypress with chrome browser (production frontend that is included in backend)
         uses: cypress-io/github-action@v6.6.0
         if: ${{ github.event.inputs.useRealFrontend == 'true' }}
         with:
           working-directory: ladybug-frontend
           wait-on: "http://0.0.0.0:8090"
           wait-on-timeout: 1000
+          config: baseUrl=http://localhost:8090/ladybug
           browser: chrome
       - name: Show files
         run: tree -d -L 5 .
