@@ -92,14 +92,17 @@ jobs:
 
       - name: Run linter
         run: pnpm run lint
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         working-directory: ladybug-frontend
 
       - name: Build project
         run: pnpm run build
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         working-directory: ladybug-frontend
 
       - name: Run unit tests
         run: pnpm run test-headless
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         working-directory: ladybug-frontend
         continue-on-error: false
 
