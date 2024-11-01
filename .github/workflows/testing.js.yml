@@ -6,6 +6,11 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
+      useRealFrontend:
+        description: If true, test the frontend inside the backend
+        type: boolean
+        default: false
+        required: true
       mergeMasterToBranch:
         description: If true, the checkout-out backend is merged with the backend master
         type: boolean
@@ -87,14 +92,17 @@ jobs:
 
       - name: Run linter
         run: pnpm run lint
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         working-directory: ladybug-frontend
 
       - name: Build project
         run: pnpm run build
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         working-directory: ladybug-frontend
 
       - name: Run unit tests
         run: pnpm run test-headless
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         working-directory: ladybug-frontend
         continue-on-error: false
 
@@ -175,8 +183,9 @@ jobs:
         run: pnpm run startServer &
         working-directory: ladybug-frontend
 
-      - name: Run cypress with chrome browser
+      - name: Run cypress with chrome browser (bypass ladybug-frontend within backend)
         uses: cypress-io/github-action@v6.6.0
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         with:
           working-directory: ladybug-frontend
           start: |
@@ -184,18 +193,15 @@ jobs:
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 1000
           browser: chrome
-      #      - name: Run cypress with firefox browser
-      #        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
-      #        uses: cypress-io/github-action@v2.9.7
-      #        with:
-      #          working-directory: ladybug-frontend
-      #          start: |
-      #            pnpm run startCicd
-      #          wait-on: 'http://localhost:8090, http://localhost:4200'
-      #          wait-on-timeout: 240
-      #          browser: firefox
-      #          config: screenshotsFolder=cypress/firefox/screenshots,videosFolder=cypress/firefox/videos
-
+      - name: Run cypress with chrome browser (production frontend that is included in backend)
+        uses: cypress-io/github-action@v6.6.0
+        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
+        with:
+          working-directory: ladybug-frontend
+          wait-on: "http://0.0.0.0:8090"
+          wait-on-timeout: 1000
+          config: baseUrl=http://localhost:8090/ladybug
+          browser: chrome
       - name: Show files
         run: tree -d -L 5 .
         if: always()
