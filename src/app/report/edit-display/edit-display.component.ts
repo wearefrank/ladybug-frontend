@@ -144,7 +144,9 @@ export class EditDisplayComponent implements OnChanges {
     } else if (ReportUtil.isCheckPoint(node)) {
       reportId = ReportUtil.getStorageIdFromUid(node.uid);
     }
-    if (reportId) {
+    if (reportId == undefined) {
+      this.toastService.showDanger('Could not find report to rerun');
+    } else {
       this.httpService
         .runReport(this.currentView.storageName, reportId)
         .pipe(catchError(this.errorHandler.handleError()))
@@ -155,8 +157,6 @@ export class EditDisplayComponent implements OnChanges {
             this.debugTab.refreshTable({ displayToast: false });
           },
         });
-    } else {
-      this.toastService.showDanger('Could not find report to rerun');
     }
   }
 
