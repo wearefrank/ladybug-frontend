@@ -5,6 +5,7 @@
       <ngb-toast class="fade animate-show animate-hide position-relative" [ngClass]="'bg-' + toast.type"
                  [autohide]="toast.type !== 'danger'"
                  [delay]="toast.type === 'info' || toast.type ==='success' ? 3000 : toast.type ==='warning' ? 8000 : 0"
+                 (click)="toast.detailed ? showDetailedErrorMessages(toast) : null"
                  (hidden)="close(toast)">
         <i class="fa fa-close close-icon" (click)="close(toast)"></i>
         <div class="d-flex flex-row align-items-center">
@@ -23,16 +24,16 @@
             }
           }
           <div class="ml-2 mr-4">{{ toast.message }}</div>
-          @if (toast.detailed) {
-            <span>
-              <br>
-              <i>Click to see a more detailed description</i>
-            </span>
-          }
           @if (toast.toastCallback) {
             <button class="btn btn-info" (click)="toast.toastCallback.callback()">{{ toast.toastCallback.buttonText }}</button>
           }
         </div>
+        @if (toast.detailed) {
+          <span>
+              <br>
+              <i>Click to see a more detailed description</i>
+            </span>
+        }
       </ngb-toast>
     </div>
   }

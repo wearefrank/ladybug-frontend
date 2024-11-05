@@ -14,9 +14,10 @@ import { NgClass } from '@angular/common';
   imports: [NgbToast, ClipboardModule, NgClass],
 })
 export class ToastComponent implements OnInit, OnDestroy {
+  @ViewChild('modal') modal!: TemplateRef<Element>;
   toastSubscription!: Subscription;
   selectedAlert!: Toast;
-  @ViewChild('modal') modal!: TemplateRef<Element>;
+
   toasts: Toast[] = [];
   justCopied: boolean = false;
 
