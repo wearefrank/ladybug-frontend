@@ -16,7 +16,7 @@ import { NgClass } from '@angular/common';
 export class ToastComponent implements OnInit, OnDestroy {
   @ViewChild('modal') modal!: TemplateRef<Element>;
   toastSubscription!: Subscription;
-  selectedAlert!: Toast;
+  selected!: Toast;
 
   toasts: Toast[] = [];
   justCopied: boolean = false;
@@ -43,7 +43,7 @@ export class ToastComponent implements OnInit, OnDestroy {
   }
 
   showDetailedErrorMessages(alert: Toast): void {
-    this.selectedAlert = alert;
+    this.selected = alert;
     this.modalService.open(this.modal, { size: 'lg' });
   }
 

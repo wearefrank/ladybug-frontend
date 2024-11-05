@@ -41,14 +41,14 @@
 
 <ng-template #modal let-modal>
   <div class="modal-header">
-    <h5 class="modal-title" id="settingsModal">{{ selectedAlert.message }}</h5>
+    <h5 class="modal-title" id="settingsModal">{{ selected.message }}</h5>
   </div>
   <div class="modal-body text-wrap" id="detailedErrorMessage">
-    {{ selectedAlert.detailed }}
+    {{ selected.detailed }}
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-info" id="CopyToClipboard" title="Copy to Clipboard"
-            [cdkCopyToClipboard]="selectedAlert.detailed ?? ''"
+            [cdkCopyToClipboard]="selected.detailed ?? ''"
             (click)="copyToClipboard()">{{ this.justCopied ? 'Copied!' : 'Copy to clipboard' }}
     </button>
     <button type="button" class="btn btn-info" (click)="modal.dismiss();">Dismiss</button>
