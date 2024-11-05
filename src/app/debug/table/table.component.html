@@ -40,12 +40,14 @@
       <button data-cy-debug="openSelected" class="btn btn-info btn-table" title="Open Selected Reports" (click)="openSelected()">
         Open Selected
       </button>
-      <button data-cy-debug="deleteSelected" class="btn btn-info btn-table" title="Delete selected reports" (click)="deleteSelected()">
-        <i class="fa fa-trash"></i>
-      </button>
-      <button data-cy-debug="deleteAll" class="btn btn-info btn-table" title="Delete all reports" (click)="openDeleteModal()">
-        Delete all
-      </button>
+      @if (currentView.crudStorage) {
+        <button data-cy-debug="deleteSelected" class="btn btn-info btn-table" title="Delete selected reports" (click)="deleteSelected()">
+          <i class="fa fa-trash"></i>
+        </button>
+        <button data-cy-debug="deleteAll" class="btn btn-info btn-table" title="Delete all reports" (click)="openDeleteModal()">
+          Delete all
+        </button>
+      }
 
       <div class="input-group w-auto">
         <input data-cy-debug="displayAmount" type="number" class="form-control input-field"
@@ -108,7 +110,7 @@
         than {{ this.reportsInProgressThreshold / 1000 / 60 }} minutes]</h4>
     }
     <div data-cy-debug="table" class="table-responsive table-container">
-      <table mat-table class="table mb-0" matSort [style.font-size]="fontSize" [dataSource]="tableDataSource">
+      <table mat-table class="table mb-0" matSort [dataSource]="tableDataSource">
         <!--Header and row container for checkboxes-->
         <ng-container matColumnDef="select">
           <th mat-header-cell class="table-row-checkbox header-padding" *matHeaderCellDef>
@@ -147,12 +149,13 @@
         }
 
         <!--Values are passed to their respective header and row elements-->
-        <tr mat-header-row *matHeaderRowDef="getDisplayedColumnNames(currentView.metadataLabels); sticky: true"></tr>
+        <tr mat-header-row *matHeaderRowDef="getDisplayedColumnNames(currentView.metadataLabels); sticky: true" [style.font-size]="fontSize"></tr>
         <tr data-cy-debug="tableRow" mat-row class="table-row"
             *matRowDef="let row; let rowIndex = index; columns: getDisplayedColumnNames(currentView.metadataLabels)"
             [ngClass]="{'highlight': row.storageId === selectedReportStorageId}"
             [attr.data-cy-record-table-index]="rowIndex"
             [style.background-color]="getStatusColor(row)"
+            [style.font-size]="fontSize"
             (click)="openSelectedReport(row.storageId);"
         ></tr>
       </table>
