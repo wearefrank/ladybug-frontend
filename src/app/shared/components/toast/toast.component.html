@@ -5,6 +5,7 @@
       <ngb-toast class="fade animate-show animate-hide position-relative" [ngClass]="'bg-' + toast.type"
                  [autohide]="toast.type !== 'danger'"
                  [delay]="toast.type === 'info' || toast.type ==='success' ? 3000 : toast.type ==='warning' ? 8000 : 0"
+                 (click)="toast.detailed ? showDetailedErrorMessages(toast) : null"
                  (hidden)="close(toast)">
         <i class="fa fa-close close-icon" (click)="close(toast)"></i>
         <div class="d-flex flex-row align-items-center">
@@ -23,16 +24,16 @@
             }
           }
           <div class="ml-2 mr-4">{{ toast.message }}</div>
-          @if (toast.detailed) {
-            <span>
-              <br>
-              <i>Click to see a more detailed description</i>
-            </span>
-          }
           @if (toast.toastCallback) {
             <button class="btn btn-info" (click)="toast.toastCallback.callback()">{{ toast.toastCallback.buttonText }}</button>
           }
         </div>
+        @if (toast.detailed) {
+          <span>
+              <br>
+              <i>Click to see a more detailed description</i>
+            </span>
+        }
       </ngb-toast>
     </div>
   }
@@ -40,14 +41,14 @@
 
 <ng-template #modal let-modal>
   <div class="modal-header">
-    <h5 class="modal-title" id="settingsModal">{{ selectedAlert.message }}</h5>
+    <h5 class="modal-title" id="settingsModal">{{ selected.message }}</h5>
   </div>
   <div class="modal-body text-wrap" id="detailedErrorMessage">
-    {{ selectedAlert.detailed }}
+    {{ selected.detailed }}
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-info" id="CopyToClipboard" title="Copy to Clipboard"
-            [cdkCopyToClipboard]="selectedAlert.detailed ?? ''"
+            [cdkCopyToClipboard]="selected.detailed ?? ''"
             (click)="copyToClipboard()">{{ this.justCopied ? 'Copied!' : 'Copy to clipboard' }}
     </button>
     <button type="button" class="btn btn-info" (click)="modal.dismiss();">Dismiss</button>
