@@ -71,6 +71,12 @@ declare global {
       getTestTableRows(): Chainable
 
       assertDebugTableLength(length: number): Chainable;
+
+      selectRowInDebugTable(index: number): Chainable;
+
+      selectRowInTestTable(index: number): Chainable;
+
+      selectAllRowsInTestTable(): Chainable;
     }
   }
 }
@@ -253,11 +259,22 @@ Cypress.Commands.add('assertDebugTableLength' as keyof Chainable, (length: numbe
     : cy.getDebugTableRows().should('have.length', length);
 });
 
+Cypress.Commands.add('selectRowInDebugTable' as keyof Chainable, (index: number): Chainable => {
+  cy.get('[data-cy-debug="selectOne"]').eq(index).click();
+})
+
+Cypress.Commands.add('selectRowInTestTable' as keyof Chainable, (index: number): Chainable => {
+  cy.get('[data-cy-test="selectOne"]').eq(index).click();
+})
+Cypress.Commands.add('selectAllRowsInTestTable' as keyof Chainable, (): Chainable => {
+  cy.get('[data-cy-test="toggleSelectAll"]').click()
+})
+
 function interceptGetApiCall(alias: string): void {
   cy.intercept({
     method: 'GET',
     hostname: 'localhost',
-    url: /\/api\/*?/g,
+    url: /\/metadata\/Debug\/*?/g,
   }).as(alias);
 }
 

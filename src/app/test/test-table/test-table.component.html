@@ -10,7 +10,7 @@
           (click)="toggleSelectAll()">
       </th>
       <td data-cy-test="reportChecked" mat-cell class="table-row-checkbox" *matCellDef="let report">
-        <input type="checkbox" [checked]="report.checked" (click)="toggleCheck(report)">
+        <input type="checkbox" data-cy-test="selectOne" [checked]="report.checked" (click)="toggleCheck(report)">
       </td>
     </ng-container>
     <ng-container matColumnDef="storageId">
