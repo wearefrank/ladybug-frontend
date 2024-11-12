@@ -22,9 +22,13 @@ declare global {
 
       clearTestReports(): Chainable;
 
-      navigateToTestTabAndWait(): Chainable;
+      navigateToTestTabAndInterceptApiCall(): Chainable;
 
-      navigateToDebugTabAndWait(): Chainable;
+      navigateToDebugTabAndInterceptApiCall(): Chainable;
+
+      navigateToTestTab(): Chainable;
+
+      navigateToDebugTab(): Chainable;
 
       createReport(): Chainable;
 
@@ -91,13 +95,20 @@ Cypress.Commands.add('clearTestReports' as keyof Chainable, (): void => {
   });
 });
 
-Cypress.Commands.add('navigateToTestTabAndWait' as keyof Chainable, (): void => {
-  navigateToTabAndWait('test');
+Cypress.Commands.add('navigateToTestTabAndInterceptApiCall' as keyof Chainable, (): void => {
+  navigateToTabAndInterceptApiCall('test');
 });
 
-Cypress.Commands.add('navigateToDebugTabAndWait' as keyof Chainable, (): void => {
-  navigateToTabAndWait('debug');
+Cypress.Commands.add('navigateToDebugTabAndInterceptApiCall' as keyof Chainable, (): void => {
+  navigateToTabAndInterceptApiCall('debug');
 });
+
+Cypress.Commands.add('navigateToTestTab' as keyof Chainable, () => {
+  navigateToTab('test');
+})
+Cypress.Commands.add('navigateToDebugTab' as keyof Chainable, () => {
+  navigateToTab('debug');
+})
 
 Cypress.Commands.add('createReport' as keyof Chainable, (): void => {
   // No cy.visit because then the API call can happen multiple times.
@@ -251,7 +262,7 @@ function interceptGetApiCall(alias: string): void {
 }
 
 //More string values can be added for each tab that can be opened
-function navigateToTabAndWait(tab: 'debug' | 'test'): void {
+function navigateToTabAndInterceptApiCall(tab: 'debug' | 'test'): void {
   const apiCallAlias: string = `apiCall${tab}Tab`;
   interceptGetApiCall(apiCallAlias);
   cy.visit('');
@@ -259,6 +270,10 @@ function navigateToTabAndWait(tab: 'debug' | 'test'): void {
   cy.wait(`@${apiCallAlias}`).then(() => {
     cy.log('All api requests have completed, ');
   });
+}
+
+function navigateToTab(tab: 'debug' | 'test'): void {
+  cy.get(`[data-cy-nav-tab="${tab}Tab"]`).click();
 }
 
 interface ApiResponse {
