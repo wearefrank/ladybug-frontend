@@ -13,8 +13,9 @@ import { MatSortModule } from '@angular/material/sort';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { AppRoutingModule } from './app/app-routing.module';
+import { AppRouteReuseStrategy, AppRoutingModule } from './app/app-routing.module';
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
+import { RouteReuseStrategy } from '@angular/router';
 
 if (environment.production) {
   enableProdMode();
@@ -23,6 +24,10 @@ if (environment.production) {
 function main() {
   bootstrapApplication(AppComponent, {
     providers: [
+      {
+        provide: RouteReuseStrategy,
+        useClass: AppRouteReuseStrategy,
+      },
       importProvidersFrom(
         BrowserModule,
         AppRoutingModule,
