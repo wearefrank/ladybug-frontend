@@ -7,18 +7,25 @@ describe('About deleting reports', () => {
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
+    cy.get('[data-cy-change-view-dropdown]').select('White box');
   });
 
   afterEach(() => cy.resetApp());
 
-  // Should not work with a log storage but should work with a crud storage.
-  // The system-under-test has to be fixed and then this test should
-  // be enabled again.
-  xit('Should delete a single report with the deleteSelected button', () => {
+  it('Should delete a single report with the deleteSelected button', () => {
+    cy.get('[data-cy-change-view-dropdown]').select('Database storage');
+    cy.createReportInDatabaseStorage();
+    cy.refreshApp();
+    cy.assertDebugTableLength(1);
+    cy.createReportInDatabaseStorage();
+    cy.refreshApp();
     cy.assertDebugTableLength(2);
     cy.get('[data-cy-debug="selectOne"]').eq(0).click();
     cy.get('[data-cy-debug="deleteSelected"]').click();
-    cy.getDebugTableRows().first().contains('Another simple report');
+    cy.assertDebugTableLength(1);
+    // TODO: This should be in beforeEach hook.
+    cy.get('[data-cy-debug="deleteAll"]').click();
+    cy.get('[data-cy-delete-modal="confirm"]').click();
   });
 
   it ('Should delete all reports with the deleteAll button', () => {

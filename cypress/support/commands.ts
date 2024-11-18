@@ -30,6 +30,8 @@ declare global {
 
       createOtherReport(): Chainable;
 
+      createReportInDatabaseStorage(): Chainable;
+
       createRunningReport(): Chainable;
 
       createReportWithLabelNull(): Chainable;
@@ -112,6 +114,14 @@ Cypress.Commands.add('createOtherReport' as keyof Chainable, (): void => {
     expect(resp.status).equal(200);
   });
 });
+
+Cypress.Commands.add('createReportInDatabaseStorage' as keyof Chainable, (): void => {
+  // No cy.visit because then the API call can happen multiple times.
+  cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Add%20report%20to%20database%20storage`).then((resp: Cypress.Response<ApiResponse>) => {
+    expect(resp.status).equal(200);
+  });
+});
+
 
 Cypress.Commands.add('createRunningReport' as keyof Chainable, (): void => {
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Waiting%20for%20thread%20to%20start`).then(
