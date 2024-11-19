@@ -29,6 +29,7 @@ describe('Test the Test tab', () => {
   });
 
   it('Should not open delete modal when clicking on deleteSelected button and there are no tests selected', () => {
+    cy.wait(100)
     cy.get('[data-cy-test="toggleSelectAll"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
     cy.checkTestTableNumRows(2);
@@ -45,8 +46,10 @@ describe('Test the Test tab', () => {
   });
 
   it('Should not open delete modal when there are no tests', () => {
+    cy.wait(100)
     cy.get('[data-cy-test="deleteAll"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').should('exist').click();
+    cy.get('[data-cy-test="refresh"]').click()
     cy.get('[data-cy-test="deleteAll"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').should('not.exist');
     cy.get('[data-cy-test="deleteSelected"]').click();
@@ -54,10 +57,13 @@ describe('Test the Test tab', () => {
   });
 
   it('should keep rerun results after switching tabs', () => {
+    cy.wait(100)
     cy.get('[data-cy-test="runReport"]').eq(0).click();
     cy.get('[data-cy-test="runResult"]').should('be.visible');
     cy.get('[data-cy-test="compareReport"]').eq(0).click();
     cy.get('[data-cy-nav-tab="testTab"]').click();
+    cy.get('[data-cy-test="refresh"]').click()
+    cy.wait(100)
     cy.get('[data-cy-test="runResult"]').should('be.visible');
   });
 });

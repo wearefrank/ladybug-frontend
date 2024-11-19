@@ -201,8 +201,9 @@ Cypress.Commands.add('checkTestTableNumRows' as keyof Chainable, (length: number
 //Will not work with duplicate report names
 Cypress.Commands.add('checkTestTableReportsAre' as keyof Chainable, (reportNames: string[]): void => {
   cy.checkTestTableNumRows(reportNames.length);
+  const tableRows= cy.getTestTableRows()
   for (const reportName of reportNames) {
-    cy.getTestTableRows().contains(`/${reportName}`).should('have.length', 1);
+    tableRows.contains(`/${reportName}`).should('have.length', 1);
   }
 });
 
@@ -274,7 +275,7 @@ function interceptGetApiCall(alias: string): void {
   cy.intercept({
     method: 'GET',
     hostname: 'localhost',
-    url: /\/metadata\/Debug\/*?/g,
+    url: /\/api\/*?/g,
   }).as(alias);
 }
 
