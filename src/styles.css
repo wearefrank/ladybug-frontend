@@ -157,3 +157,10 @@ html, body {
 .cdk-overlay-container {
   z-index: 1100 !important; /* Ensure it is higher than the modal's z-index */
 }
+.button-divider {
+  font-size: 1rem;
+  margin: 0 0.5rem;
+  color: darkgrey;
+  user-select: none;
+  height: 100%;
+}
