@@ -31,7 +31,6 @@ export class DebugComponent implements OnInit {
 
   ngOnInit(): void {
     this.retrieveViews();
-    this.retrieveErrorsAndWarnings();
   }
 
   retrieveViews(): void {
@@ -44,6 +43,7 @@ export class DebugComponent implements OnInit {
           if (!this.currentView) {
             this.currentView = this.views.find((v: View) => v.defaultView)!;
           }
+          this.retrieveErrorsAndWarnings();
         },
       });
   }
