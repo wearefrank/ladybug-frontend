@@ -10,9 +10,12 @@ describe('About deleting reports', () => {
     cy.get('[data-cy-change-view-dropdown]').select('White box');
   });
 
-  afterEach(() => cy.resetApp());
+  afterEach(() => {
+    cy.get('[data-cy-change-view-dropdown]').select('White box');
+    cy.resetApp()
+  });
 
-  it('Should delete a single report with the deleteSelected button', () => {
+  it('Should change view and delete a single report with the deleteSelected button', () => {
     cy.get('[data-cy-change-view-dropdown]').select('Database storage');
     cy.createReportInDatabaseStorage();
     cy.refreshApp();
