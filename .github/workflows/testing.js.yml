@@ -225,47 +225,47 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: installFrankRunnerEnv.log
+          name: installFrankRunnerEnv.log ${{ matrix.selection }}
           path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: serverStartLog.log
+          name: serverStartLog.log ${{ matrix.selection }}
           path: frank-runner/specials/ladybug/serverStartLog.log
       - name: Store build.properties
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: specials_build.properties
+          name: specials_build.properties ${{ matrix.selection }}
           path: frank-runner/specials/ladybug/build.properties
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: logs
+          name: logs ${{ matrix.selection }}
           path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: screenshots
+          name: screenshots ${{ matrix.selection }}
           path: ladybug-frontend/cypress/screenshots/
       - name: Store Cypress videos
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: videos
+          name: videos ${{ matrix.selection }}
           path: ladybug-frontend/cypress/videos/
       - name: Store Cypress screenshots for Firefox
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Firefix screenshots
+          name: Firefix screenshots ${{ matrix.selection }}
           path: ladybug-frontend/cypress/firefox/screenshots/
       - name: Store Cypress videos for Firefox
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Firefox videos
+          name: Firefox videos ${{ matrix.selection }}
           path: ladybug-frontend/cypress/firefox/videos/
