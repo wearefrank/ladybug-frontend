@@ -1,4 +1,11 @@
+import { showSkipped } from "cypress/support/commands";
+
 describe('Tests for Debug tab table', () => {
+  if(Cypress.env('selection')) {
+    showSkipped()
+    return
+  }
+
   before(() => cy.resetApp());
 
   beforeEach(() => {

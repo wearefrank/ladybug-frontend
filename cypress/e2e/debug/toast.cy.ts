@@ -1,4 +1,11 @@
+import { showSkipped } from "cypress/support/commands";
+
 describe('Test toast window', () => {
+  if(Cypress.env('selection')) {
+    showSkipped()
+    return
+  }
+
   before(() => cy.resetApp());
 
   beforeEach(() => cy.initializeApp());

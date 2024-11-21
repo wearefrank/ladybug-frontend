@@ -1,4 +1,11 @@
+import { showSkipped } from "cypress/support/commands";
+
 describe('Refresh', () => {
+  if(Cypress.env('selection')) {
+    showSkipped()
+    return
+  }
+
   before(() => {
     cy.resetApp();
   });

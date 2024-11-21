@@ -1,4 +1,10 @@
+import { showSkipped } from "cypress/support/commands";
+
 describe('Tests for keeping state in tabs when switching tabs', () => {
+  if(Cypress.env('selection')) {
+    showSkipped()
+    return
+  }
 
   beforeEach(() => {
     cy.createReport();

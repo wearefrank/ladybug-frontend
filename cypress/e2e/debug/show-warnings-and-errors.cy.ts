@@ -1,4 +1,11 @@
+import { showSkipped } from "cypress/support/commands";
+
 describe('Tests for showing errors and warnings', () => {
+  if(Cypress.env('selection')) {
+    showSkipped()
+    return
+  }
+
   it('should show errors that occur for the storage of the current view', () => {
     cy.initializeApp();
     const apiCallAlias: string = 'warningsAndErrors';

@@ -1,4 +1,11 @@
+import { showSkipped } from "cypress/support/commands";
+
 describe('Tests for report transformation', () => {
+  if(Cypress.env('selection')) {
+    showSkipped()
+    return
+  }
+
   before(() => cy.resetApp());
 
   afterEach(() => cy.resetApp());

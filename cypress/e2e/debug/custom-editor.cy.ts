@@ -1,4 +1,11 @@
+import { showSkipped } from "cypress/support/commands";
+
 describe('Tests for custom editor in debug tab', () => {
+  if(Cypress.env('selection')) {
+    showSkipped()
+    return
+  }
+
   before(() => cy.resetApp());
 
   beforeEach(() => {

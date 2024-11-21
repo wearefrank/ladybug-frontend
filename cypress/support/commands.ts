@@ -13,6 +13,12 @@ import Chainable = Cypress.Chainable;
 import JQueryWithSelector = Cypress.JQueryWithSelector;
 import { Interception } from 'cypress/types/net-stubbing';
 
+export function showSkipped() {
+  it('Tests are skipped because environment \'selection\' = ' + Cypress.env('selection'),() => {
+    // Nothing to do
+  })
+}
+
 declare global {
   namespace Cypress {
     interface Chainable {

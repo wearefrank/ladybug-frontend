@@ -25,6 +25,12 @@ on:
 
 jobs:
   testing:
+    strategy:
+      matrix:
+        selection: [
+          'default',
+          'some-selection'
+        ]
     name: Unit tests
     runs-on: ubuntu-latest
 
@@ -86,7 +92,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cypress-
 
-      - name: Set Cypress environment variables
+      - name: Choose tests to run - choice is the default
+        run: sed "s|SELECTION||g" cypress.env.json.cicd.template > cypress.env.json.cicd
+        if: ${{ matrix.selection }} === 'default'
+      - name: Choose tests to run - choice is some-selection
+        run: sed "s|SELECTION|\"selection\":\"some-selection\"|g" cypress.env.json.cicd.template > cypress.env.json.cicd
+        if: ${{ matrix.selection }} === 'some-selection'
+
+      - name: Choose tests to run - choice is some-selection
+        run: sed "s|SELECTION|\"selection\":\"some-selection\"|g" cypress.env.json.cicd.template > cypress.env.json.cicd
+        if: ${{ matrix.selection }} === 'some-selection'
+      - name: Set Cypress environment variables - default selection
         run: cp cypress.env.json.cicd cypress.env.json
         working-directory: ladybug-frontend
 

@@ -1,4 +1,11 @@
+import { showSkipped } from "cypress/support/commands";
+
 describe('About deleting reports', () => {
+  if(Cypress.env('selection')) {
+    showSkipped()
+    return
+  }
+
   beforeEach(() => {
     cy.resetApp()
   });
