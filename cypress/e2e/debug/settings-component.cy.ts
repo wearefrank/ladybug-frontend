@@ -1,7 +1,7 @@
 import { showSkipped } from "cypress/support/commands";
 
 describe('Tests for settings component', () => {
-  if(Cypress.env('selection')) {
+  if(Cypress.env('selection') === "default") {
     showSkipped()
     return
   }
