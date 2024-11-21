@@ -17,6 +17,11 @@ describe('Test running reports', () => {
 });
 
 describe('With running reports', () => {
+  if(Cypress.env('selection') !== "default") {
+    showSkipped()
+    return
+  }
+
   before(() => {
     cy.resetApp();
     cy.createRunningReport();
@@ -49,6 +54,11 @@ describe('With running reports', () => {
 });
 
 describe('Test Reports in progress warning', () => {
+  if(Cypress.env('selection') !== "default") {
+    showSkipped()
+    return
+  }
+
   beforeEach(() => {
     cy.createRunningReport();
     cy.request(Cypress.env('backendServer') + '/index.jsp?setReportInProgressThreshold=1').then((resp) => {
