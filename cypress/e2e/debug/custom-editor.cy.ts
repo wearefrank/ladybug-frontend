@@ -1,7 +1,7 @@
 import { showSkipped } from "cypress/support/commands";
 
 describe('Tests for custom editor in debug tab', () => {
-  if(Cypress.env('selection') === "default") {
+  if(Cypress.env('selection') !== "default") {
     showSkipped()
     return
   }

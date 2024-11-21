@@ -1,7 +1,7 @@
 import { showSkipped } from "cypress/support/commands";
 
 describe('Refresh', () => {
-  if(Cypress.env('selection') === "default") {
+  if(Cypress.env('selection') !== "default") {
     showSkipped()
     return
   }

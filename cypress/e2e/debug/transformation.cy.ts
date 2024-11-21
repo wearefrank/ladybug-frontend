@@ -1,7 +1,7 @@
 import { showSkipped } from "cypress/support/commands";
 
 describe('Tests for report transformation', () => {
-  if(Cypress.env('selection') === "default") {
+  if(Cypress.env('selection') !== "default") {
     showSkipped()
     return
   }
