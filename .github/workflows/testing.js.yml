@@ -27,7 +27,6 @@ jobs:
   testing:
     strategy:
       # Each job needs its own backend. Running backends in parallel requires using differnt ports.
-      max-parallel: 1
       matrix:
         selection: [
           'default',
