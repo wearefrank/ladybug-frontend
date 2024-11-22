@@ -225,7 +225,12 @@ jobs:
       - name: Show files
         run: tree -d -L 5 .
         if: always()
-
+      - name: Store cypress.env.json
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress.env.json ${{ matrix.selection }}
+          path: ladybug-frontend/cypress.env.json
       - name: Store log of Frank!Runner downloads
         uses: actions/upload-artifact@v4
         if: always()
