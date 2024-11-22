@@ -94,11 +94,7 @@ jobs:
             ${{ runner.os }}-cypress-
 
       - name: Choose tests to run - choice is ${{ matrix.selection }}
-        run: sed "s|SELECTION|\"selection\":\"${{ matrix.selection }}\",|g" cypress.env.json.cicd.template > cypress.env.json.cicd
-        working-directory: ladybug-frontend
-
-      - name: Set Cypress environment variables - default selection
-        run: cp cypress.env.json.cicd cypress.env.json
+        run: sed "s|SELECTION|\"selection\":\"${{ matrix.selection }}\",|g" cypress.env.json.cicd.template > cypress.env.json
         working-directory: ladybug-frontend
 
       - name: Run linter
