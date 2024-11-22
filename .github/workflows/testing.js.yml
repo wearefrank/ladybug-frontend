@@ -97,11 +97,11 @@ jobs:
       - name: Choose tests to run - choice is the default
         run: sed "s|SELECTION||g" cypress.env.json.cicd.template > cypress.env.json.cicd
         working-directory: ladybug-frontend
-        if: ${{ matrix.selection }} === 'default'
+        if: ${{ matrix.selection == 'default' }}
       - name: Choose tests to run
         run: sed "s|SELECTION|\"selection\":\"${{ matrix.selection }}\",|g" cypress.env.json.cicd.template > cypress.env.json.cicd
         working-directory: ladybug-frontend
-        if: ${{ matrix.selection }} === 'xml-storage'
+        if: ${{ matrix.selection == 'xml-storage' }}
 
       - name: Set Cypress environment variables - default selection
         run: cp cypress.env.json.cicd cypress.env.json
