@@ -135,8 +135,8 @@ jobs:
       - name: Set property to skip checking licenses
         run: echo "maven.skip.copyright=true" >> frank-runner/specials/ladybug/build.properties
       - name: Choose Spring profile storage.xml if matrix.selection is 'xml-storage'
-        run: echo "spring.profiles.active=storage.xml" >> frank-runner/specials/ladybug/build.properties
         if: ${{ matrix.selection }} === 'xml-storage'
+        run: echo "spring.profiles.active=storage.xml" >> frank-runner/specials/ladybug/build.properties
       - name: Set port where ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Prevent Java exception about binding port 443 (for https)
