@@ -22,6 +22,8 @@ declare global {
 
       clearTestReports(): Chainable;
 
+      clearDatabaseStorage(): Chainable;
+
       navigateToTestTabAndInterceptApiCall(): Chainable;
 
       navigateToDebugTabAndInterceptApiCall(): Chainable;
@@ -33,6 +35,8 @@ declare global {
       createReport(): Chainable;
 
       createOtherReport(): Chainable;
+
+      createReportInDatabaseStorage(): Chainable;
 
       createRunningReport(): Chainable;
 
@@ -101,6 +105,12 @@ Cypress.Commands.add('clearTestReports' as keyof Chainable, (): void => {
   });
 });
 
+Cypress.Commands.add('clearDatabaseStorage' as keyof Chainable, (): void => {
+  cy.get('[data-cy-change-view-dropdown]').select('Database storage');
+  cy.get('[data-cy-debug="deleteAll"]').click();
+  cy.get('[data-cy-delete-modal="confirm"]').click();    
+})
+
 Cypress.Commands.add('navigateToTestTabAndInterceptApiCall' as keyof Chainable, (): void => {
   navigateToTabAndInterceptApiCall('test');
 });
@@ -129,6 +139,14 @@ Cypress.Commands.add('createOtherReport' as keyof Chainable, (): void => {
     expect(resp.status).equal(200);
   });
 });
+
+Cypress.Commands.add('createReportInDatabaseStorage' as keyof Chainable, (): void => {
+  // No cy.visit because then the API call can happen multiple times.
+  cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Add%20report%20to%20database%20storage`).then((resp: Cypress.Response<ApiResponse>) => {
+    expect(resp.status).equal(200);
+  });
+});
+
 
 Cypress.Commands.add('createRunningReport' as keyof Chainable, (): void => {
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Waiting%20for%20thread%20to%20start`).then(
