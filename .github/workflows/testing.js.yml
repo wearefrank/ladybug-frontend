@@ -188,7 +188,7 @@ jobs:
         with:
           working-directory: ladybug-frontend
           start: |
-            ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0
+            pnpm ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 1000
           browser: chrome
