@@ -24,9 +24,13 @@ declare global {
 
       clearDatabaseStorage(): Chainable;
 
-      navigateToTestTabAndWait(): Chainable;
+      navigateToTestTabAndInterceptApiCall(): Chainable;
 
-      navigateToDebugTabAndWait(): Chainable;
+      navigateToDebugTabAndInterceptApiCall(): Chainable;
+
+      navigateToTestTab(): Chainable;
+
+      navigateToDebugTab(): Chainable;
 
       createReport(): Chainable;
 
@@ -71,6 +75,12 @@ declare global {
       getTestTableRows(): Chainable
 
       assertDebugTableLength(length: number): Chainable;
+
+      selectRowInDebugTable(index: number): Chainable;
+
+      selectRowInTestTable(index: number): Chainable;
+
+      selectAllRowsInTestTable(): Chainable;
     }
   }
 }
@@ -101,13 +111,20 @@ Cypress.Commands.add('clearDatabaseStorage' as keyof Chainable, (): void => {
   cy.get('[data-cy-delete-modal="confirm"]').click();    
 })
 
-Cypress.Commands.add('navigateToTestTabAndWait' as keyof Chainable, (): void => {
-  navigateToTabAndWait('test');
+Cypress.Commands.add('navigateToTestTabAndInterceptApiCall' as keyof Chainable, (): void => {
+  navigateToTabAndInterceptApiCall('test');
 });
 
-Cypress.Commands.add('navigateToDebugTabAndWait' as keyof Chainable, (): void => {
-  navigateToTabAndWait('debug');
+Cypress.Commands.add('navigateToDebugTabAndInterceptApiCall' as keyof Chainable, (): void => {
+  navigateToTabAndInterceptApiCall('debug');
 });
+
+Cypress.Commands.add('navigateToTestTab' as keyof Chainable, () => {
+  navigateToTab('test');
+})
+Cypress.Commands.add('navigateToDebugTab' as keyof Chainable, () => {
+  navigateToTab('debug');
+})
 
 Cypress.Commands.add('createReport' as keyof Chainable, (): void => {
   // No cy.visit because then the API call can happen multiple times.
@@ -260,16 +277,27 @@ Cypress.Commands.add('assertDebugTableLength' as keyof Chainable, (length: numbe
     : cy.getDebugTableRows().should('have.length', length);
 });
 
+Cypress.Commands.add('selectRowInDebugTable' as keyof Chainable, (index: number): Chainable => {
+  cy.get('[data-cy-debug="selectOne"]').eq(index).click();
+})
+
+Cypress.Commands.add('selectRowInTestTable' as keyof Chainable, (index: number): Chainable => {
+  cy.get('[data-cy-test="selectOne"]').eq(index).click();
+})
+Cypress.Commands.add('selectAllRowsInTestTable' as keyof Chainable, (): Chainable => {
+  cy.get('[data-cy-test="toggleSelectAll"]').click()
+})
+
 function interceptGetApiCall(alias: string): void {
   cy.intercept({
     method: 'GET',
     hostname: 'localhost',
-    url: /\/api\/*?/g,
+    url: /\/metadata\/Debug\/*?/g,
   }).as(alias);
 }
 
 //More string values can be added for each tab that can be opened
-function navigateToTabAndWait(tab: 'debug' | 'test'): void {
+function navigateToTabAndInterceptApiCall(tab: 'debug' | 'test'): void {
   const apiCallAlias: string = `apiCall${tab}Tab`;
   interceptGetApiCall(apiCallAlias);
   cy.visit('');
@@ -277,6 +305,10 @@ function navigateToTabAndWait(tab: 'debug' | 'test'): void {
   cy.wait(`@${apiCallAlias}`).then(() => {
     cy.log('All api requests have completed, ');
   });
+}
+
+function navigateToTab(tab: 'debug' | 'test'): void {
+  cy.get(`[data-cy-nav-tab="${tab}Tab"]`).click();
 }
 
 interface ApiResponse {

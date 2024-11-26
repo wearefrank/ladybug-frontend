@@ -1,6 +1,5 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
-import { AngularSplitModule } from 'angular-split';
 import { TableComponent } from './table/table.component';
 import { ReportComponent } from '../report/report.component';
 import { ToastService } from '../shared/services/toast.service';
@@ -14,11 +13,10 @@ import { ErrorHandling } from '../shared/classes/error-handling.service';
   templateUrl: './debug.component.html',
   styleUrls: ['./debug.component.css'],
   standalone: true,
-  imports: [TableComponent, AngularSplitModule, ReportComponent],
+  imports: [TableComponent, ReportComponent],
 })
 export class DebugComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'debug';
-  @Output() openSelectedCompareReportsEvent = new EventEmitter<any>();
   @ViewChild('reportComponent') customReportComponent!: ReportComponent;
   currentView?: View;
   views?: View[];
@@ -34,7 +32,16 @@ export class DebugComponent implements OnInit {
     this.retrieveErrorsAndWarnings();
   }
 
-  retrieveViews(): void {
+  protected addReportToTree(report: Report): void {
+    this.customReportComponent.addReportToTree(report);
+  }
+
+  protected onViewChange(view: View): void {
+    this.currentView = view;
+    this.retrieveErrorsAndWarnings();
+  }
+
+  private retrieveViews(): void {
     this.httpService
       .getViews()
       .pipe(catchError(this.errorHandler.handleError()))
@@ -48,16 +55,7 @@ export class DebugComponent implements OnInit {
       });
   }
 
-  addReportToTree(report: Report): void {
-    this.customReportComponent.addReportToTree(report);
-  }
-
-  onViewChange(view: View): void {
-    this.currentView = view;
-    this.retrieveErrorsAndWarnings();
-  }
-
-  retrieveErrorsAndWarnings(): void {
+  private retrieveErrorsAndWarnings(): void {
     if (this.currentView) {
       this.httpService
         .getWarningsAndErrors(this.currentView.storageName)
@@ -72,7 +70,7 @@ export class DebugComponent implements OnInit {
     }
   }
 
-  showErrorsAndWarnings(value: string): void {
+  private showErrorsAndWarnings(value: string): void {
     if (value.length > this.toastService.TOASTER_LINE_LENGTH) {
       const errorSnippet: string = value.slice(0, Math.max(0, this.toastService.TOASTER_LINE_LENGTH)).trim();
       this.toastService.showDanger(`${errorSnippet}...`, value);
