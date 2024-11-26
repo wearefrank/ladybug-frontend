@@ -58,14 +58,15 @@ jobs:
           cache-dependency-path: 'ladybug-frontend/pnpm-lock.yaml'
 
       - name: Get pnpm store directory
+        id: store-path
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         name: Setup pnpm cache
         with:
-          path: ${{ env.STORE_PATH }}
+          path: ${{ steps.store-path.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
@@ -176,12 +177,12 @@ jobs:
         run: rm -rf frank-runner/build/apache-tomcat-9.0.56/logs/catalina.out
 
       - name: Let Frank!Runner do its downloads
-        run: pnpm run installFrankRunnerEnv
-        working-directory: ladybug-frontend
+        run: ./env.sh > installFrankRunnerEnv.log
+        working-directory: frank-runner
 
       - name: Start server using Frank!Runner in background
-        run: pnpm run startServer &
-        working-directory: ladybug-frontend
+        run: ./restart.sh -Dupdate.strategy=none > serverStartLog.log
+        working-directory: frank-runner/specials/ladybug
 
       - name: Run cypress with chrome browser (bypass ladybug-frontend within backend)
         uses: cypress-io/github-action@v6.6.0
@@ -189,7 +190,7 @@ jobs:
         with:
           working-directory: ladybug-frontend
           start: |
-            pnpm run startCicd
+            pnpm ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 1000
           browser: chrome
