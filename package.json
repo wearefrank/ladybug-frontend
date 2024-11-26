@@ -4,7 +4,6 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config src/proxy.conf.json",
-    "startCicd": "ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0",
     "startWithFF": "ng serve --proxy-config src/proxy.ff.conf.json --host 0.0.0.0",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
@@ -17,9 +16,7 @@
     "e2e-interactive-webjar": "cypress open --config baseUrl=http://localhost/ladybug/",
     "e2e-webjar": "cypress run --config baseUrl=http://localhost/ladybug/",
     "lint": "ng lint",
-    "prepare": "husky install",
-    "installFrankRunnerEnv": "cd ../frank-runner && ./env.sh > installFrankRunnerEnv.log",
-    "startServer": "cd ../frank-runner/specials/ladybug && ./restart.sh -Dupdate.strategy=none > serverStartLog.log"
+    "prepare": "husky install"
   },
   "dependencies": {
     "@angular/animations": "18.1.1",
