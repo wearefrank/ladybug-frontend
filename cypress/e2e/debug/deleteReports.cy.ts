@@ -7,6 +7,7 @@ describe('About deleting reports', () => {
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
+    cy.clearDatabaseStorage();
     cy.get('[data-cy-change-view-dropdown]').select('White box');
   });
 
@@ -26,9 +27,6 @@ describe('About deleting reports', () => {
     cy.get('[data-cy-debug="selectOne"]').eq(0).click();
     cy.get('[data-cy-debug="deleteSelected"]').click();
     cy.assertDebugTableLength(1);
-    // TODO: This should be in beforeEach hook.
-    cy.get('[data-cy-debug="deleteAll"]').click();
-    cy.get('[data-cy-delete-modal="confirm"]').click();
   });
 
   it ('Should delete all reports with the deleteAll button', () => {

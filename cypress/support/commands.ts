@@ -22,6 +22,8 @@ declare global {
 
       clearTestReports(): Chainable;
 
+      clearDatabaseStorage(): Chainable;
+
       navigateToTestTabAndWait(): Chainable;
 
       navigateToDebugTabAndWait(): Chainable;
@@ -92,6 +94,12 @@ Cypress.Commands.add('clearTestReports' as keyof Chainable, (): void => {
     expect(resp.status).equal(200);
   });
 });
+
+Cypress.Commands.add('clearDatabaseStorage' as keyof Chainable, (): void => {
+  cy.get('[data-cy-change-view-dropdown]').select('Database storage');
+  cy.get('[data-cy-debug="deleteAll"]').click();
+  cy.get('[data-cy-delete-modal="confirm"]').click();    
+})
 
 Cypress.Commands.add('navigateToTestTabAndWait' as keyof Chainable, (): void => {
   navigateToTabAndWait('test');
