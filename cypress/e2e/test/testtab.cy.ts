@@ -1,9 +1,8 @@
 describe('Test the Test tab', () => {
-  before(() => {
-    cy.resetApp();
-  });
-
   beforeEach(() => {
+    // Added in beforeEach() to ensure that there is an API
+    // call to intercept when you enter the test tab.
+    cy.resetApp();
     cy.createReport();
     cy.createOtherReport();
     cy.initializeApp();
