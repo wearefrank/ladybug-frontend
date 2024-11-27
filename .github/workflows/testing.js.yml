@@ -202,7 +202,7 @@ jobs:
             pnpm ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 1000
-          config: --spec "cypress/e2e/debug/**,cypress/e2e/misc/**,cypress/e2e/test/**"
+          spec: cypress/e2e/debug/**,cypress/e2e/misc/**,cypress/e2e/test/**
           browser: chrome
       - name: Run cypress with chrome browser (production frontend that is included in backend) - no Spring profile
         uses: cypress-io/github-action@v6.6.0
@@ -211,7 +211,8 @@ jobs:
           working-directory: ladybug-frontend
           wait-on: "http://0.0.0.0:8090"
           wait-on-timeout: 1000
-          config: baseUrl=http://localhost:8090/ladybug --spec "cypress/e2e/debug/**,cypress/e2e/misc/**,cypress/e2e/test/**"
+          spec: cypress/e2e/debug/**,cypress/e2e/misc/**,cypress/e2e/test/**
+          config: baseUrl=http://localhost:8090/ladybug
           browser: chrome
 
       - name: Run cypress with chrome browser (bypass ladybug-frontend within backend) - Spring profile storage.xml
@@ -223,7 +224,7 @@ jobs:
             pnpm ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 1000
-          config: --spec "cypress/e2e/1-profile-storage-xml/**"
+          spec: cypress/e2e/1-profile-storage-xml/**
           browser: chrome
       - name: Run cypress with chrome browser (production frontend that is included in backend) - Spring profile storage.xml
         uses: cypress-io/github-action@v6.6.0
@@ -232,7 +233,8 @@ jobs:
           working-directory: ladybug-frontend
           wait-on: "http://0.0.0.0:8090"
           wait-on-timeout: 1000
-          config: baseUrl=http://localhost:8090/ladybug --spec "cypress/e2e/1-profile-storage-xml/**"
+          spec: cypress/e2e/1-profile-storage-xml/**
+          config: baseUrl=http://localhost:8090/ladybug
           browser: chrome
   
       - name: Show files
