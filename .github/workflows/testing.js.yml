@@ -25,6 +25,12 @@ on:
 
 jobs:
   testing:
+    strategy:
+      matrix:
+        selection: [
+          'default',
+          'xml-storage'
+        ]
     name: Unit tests
     runs-on: ubuntu-latest
 
@@ -118,6 +124,9 @@ jobs:
         run: echo "maven.skip.javadoc=true" >> frank-runner/specials/ladybug/build.properties
       - name: Set property to skip checking licenses
         run: echo "maven.skip.copyright=true" >> frank-runner/specials/ladybug/build.properties
+      - name: Choose Spring profile storage.xml if matrix.selection is 'xml-storage'
+        run: echo "spring.profiles.active=storage.xml" >> frank-runner/specials/ladybug/build.properties
+        if: ${{ matrix.selection == 'xml-storage' }}
       - name: Set port where ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Prevent Java exception about binding port 443 (for https)
@@ -184,7 +193,7 @@ jobs:
         run: ./restart.sh -Dupdate.strategy=none > serverStartLog.log
         working-directory: frank-runner/specials/ladybug
 
-      - name: Run cypress with chrome browser (bypass ladybug-frontend within backend)
+      - name: Run cypress with chrome browser (bypass ladybug-frontend within backend) - no Spring profile
         uses: cypress-io/github-action@v6.6.0
         if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         with:
@@ -193,16 +202,39 @@ jobs:
             pnpm ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 1000
+          config: --spec "cypress/e2e/debug/**,cypress/e2e/misc/**,cypress/e2e/test/**"
           browser: chrome
-      - name: Run cypress with chrome browser (production frontend that is included in backend)
+      - name: Run cypress with chrome browser (production frontend that is included in backend) - no Spring profile
         uses: cypress-io/github-action@v6.6.0
         if: ${{ github.event.inputs.useRealFrontend == 'true' }}
         with:
           working-directory: ladybug-frontend
           wait-on: "http://0.0.0.0:8090"
           wait-on-timeout: 1000
-          config: baseUrl=http://localhost:8090/ladybug
+          config: baseUrl=http://localhost:8090/ladybug --spec "cypress/e2e/debug/**,cypress/e2e/misc/**,cypress/e2e/test/**"
           browser: chrome
+
+      - name: Run cypress with chrome browser (bypass ladybug-frontend within backend) - Spring profile storage.xml
+        uses: cypress-io/github-action@v6.6.0
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
+        with:
+          working-directory: ladybug-frontend
+          start: |
+            pnpm ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0
+          wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
+          wait-on-timeout: 1000
+          config: --spec "cypress/e2e/1-profile-storage-xml/**"
+          browser: chrome
+      - name: Run cypress with chrome browser (production frontend that is included in backend) - Spring profile storage.xml
+        uses: cypress-io/github-action@v6.6.0
+        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
+        with:
+          working-directory: ladybug-frontend
+          wait-on: "http://0.0.0.0:8090"
+          wait-on-timeout: 1000
+          config: baseUrl=http://localhost:8090/ladybug --spec "cypress/e2e/1-profile-storage-xml/**"
+          browser: chrome
+  
       - name: Show files
         run: tree -d -L 5 .
         if: always()
@@ -211,47 +243,47 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: installFrankRunnerEnv.log
+          name: installFrankRunnerEnv.log ${{ matrix.selection }}
           path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: serverStartLog.log
+          name: serverStartLog.log ${{ matrix.selection }}
           path: frank-runner/specials/ladybug/serverStartLog.log
       - name: Store build.properties
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: specials_build.properties
+          name: specials_build.properties ${{ matrix.selection }}
           path: frank-runner/specials/ladybug/build.properties
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: logs
+          name: logs ${{ matrix.selection }}
           path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: screenshots
+          name: screenshots ${{ matrix.selection }}
           path: ladybug-frontend/cypress/screenshots/
       - name: Store Cypress videos
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: videos
+          name: videos ${{ matrix.selection }}
           path: ladybug-frontend/cypress/videos/
       - name: Store Cypress screenshots for Firefox
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Firefix screenshots
+          name: Firefix screenshots ${{ matrix.selection }}
           path: ladybug-frontend/cypress/firefox/screenshots/
       - name: Store Cypress videos for Firefox
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Firefox videos
+          name: Firefox videos ${{ matrix.selection }}
           path: ladybug-frontend/cypress/firefox/videos/
