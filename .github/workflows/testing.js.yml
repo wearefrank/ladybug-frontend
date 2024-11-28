@@ -51,11 +51,11 @@ jobs:
         working-directory: "ladybug-frontend"
       - name: Choose profile to use backend with
         id: backend-profile
-        run: echo "backend-profile=$(./extractColumn.sh profiles-and-specs.txt ${{ matrix.selection }} 2) >> $GITHUB_OUTPUT
+        run: echo "backend-profile=$(./extractColumn.sh profiles-and-specs.txt ${{ matrix.selection }} 2)" >> $GITHUB_OUTPUT
         working-directory: ladybug-frontend/.github/workflows
       - name: Choose specs to run
         id: chosen-specs
-        run: echo "chosen-specs=$(./extractColumn.sh profiles-and-specs.txt ${{ matrix.selection }} 3) >> $GITHUB_OUTPUT
+        run: echo "chosen-specs=$(./extractColumn.sh profiles-and-specs.txt ${{ matrix.selection }} 3)" >> $GITHUB_OUTPUT
         working-directory: ladybug-frontend/.github/workflows
       - name: Show chosen Spring profile for backend and chosen specs to run
         run: echo "Start backend with Spring profile ${{ steps.backend-profile.outputs.backend-profile }} and run specs ${{ steps.chosen-specs.outputs.chosen-specs }}"
