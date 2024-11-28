@@ -134,7 +134,7 @@ jobs:
         run: echo "maven.skip.javadoc=true" >> frank-runner/specials/ladybug/build.properties
       - name: Set property to skip checking licenses
         run: echo "maven.skip.copyright=true" >> frank-runner/specials/ladybug/build.properties
-      - name: Choose Spring profile storage.xml if matrix.selection is 'xml-storage'
+      - name: Choose Spring profile for backend if it is not "none"
         run: echo "spring.profiles.active=${{ steps.backend-profile.outputs.backend-profile }}" >> frank-runner/specials/ladybug/build.properties
         if: ${{ steps.backend-profile.outputs.backend-profile != 'none' }}
       - name: Set port where ladybug-test-webapp is served
