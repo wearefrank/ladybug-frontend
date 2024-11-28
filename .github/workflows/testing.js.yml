@@ -135,8 +135,8 @@ jobs:
       - name: Set property to skip checking licenses
         run: echo "maven.skip.copyright=true" >> frank-runner/specials/ladybug/build.properties
       - name: Choose Spring profile storage.xml if matrix.selection is 'xml-storage'
-        run: echo "spring.profiles.active=storage.xml" >> frank-runner/specials/ladybug/build.properties
-        if: ${{ matrix.selection == 'xml-storage' }}
+        run: echo "spring.profiles.active=${{ steps.backend-profile.outputs.backend-profile }}" >> frank-runner/specials/ladybug/build.properties
+        if: ${{ steps.backend-profile.outputs.backend-profile != 'none' }}
       - name: Set port where ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Prevent Java exception about binding port 443 (for https)
@@ -203,7 +203,7 @@ jobs:
         run: ./restart.sh -Dupdate.strategy=none > serverStartLog.log
         working-directory: frank-runner/specials/ladybug
 
-      - name: Run cypress with chrome browser (bypass ladybug-frontend within backend) - no Spring profile
+      - name: Run cypress with chrome browser (bypass ladybug-frontend within backend)
         uses: cypress-io/github-action@v6.6.0
         if: ${{ github.event.inputs.useRealFrontend != 'true' && matrix.selection == 'default' }}
         with:
@@ -212,38 +212,16 @@ jobs:
             pnpm ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 1000
-          spec: cypress/e2e/debug/**,cypress/e2e/misc/**,cypress/e2e/test/**
+          spec: ${{ steps.chosen-specs.outputs.chosen-specs }}
           browser: chrome
-      - name: Run cypress with chrome browser (production frontend that is included in backend) - no Spring profile
+      - name: Run cypress with chrome browser (production frontend that is included in backend)
         uses: cypress-io/github-action@v6.6.0
         if: ${{ github.event.inputs.useRealFrontend == 'true' && matrix.selection == 'default' }}
         with:
           working-directory: ladybug-frontend
           wait-on: "http://0.0.0.0:8090"
           wait-on-timeout: 1000
-          spec: cypress/e2e/debug/**,cypress/e2e/misc/**,cypress/e2e/test/**
-          config: baseUrl=http://localhost:8090/ladybug
-          browser: chrome
-
-      - name: Run cypress with chrome browser (bypass ladybug-frontend within backend) - Spring profile storage.xml
-        uses: cypress-io/github-action@v6.6.0
-        if: ${{ github.event.inputs.useRealFrontend != 'true' && matrix.selection == 'xml-storage' }}
-        with:
-          working-directory: ladybug-frontend
-          start: |
-            pnpm ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0
-          wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
-          wait-on-timeout: 1000
-          spec: cypress/e2e/1-profile-storage-xml/**
-          browser: chrome
-      - name: Run cypress with chrome browser (production frontend that is included in backend) - Spring profile storage.xml
-        uses: cypress-io/github-action@v6.6.0
-        if: ${{ github.event.inputs.useRealFrontend == 'true' && matrix.selection == 'xml-storage' }}
-        with:
-          working-directory: ladybug-frontend
-          wait-on: "http://0.0.0.0:8090"
-          wait-on-timeout: 1000
-          spec: cypress/e2e/1-profile-storage-xml/**
+          spec: ${{ steps.chosen-specs.outputs.chosen-specs }}
           config: baseUrl=http://localhost:8090/ladybug
           browser: chrome
   
