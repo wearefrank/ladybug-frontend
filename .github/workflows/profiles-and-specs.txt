@@ -1,0 +1,11 @@
+# This file lists for each selection name what Spring
+# profile to use for the backend and what specs to
+# execute. It is spaces-delimited, because the specs field
+# includes commas.
+#
+# Spring profile "none" is a magic value. For that
+# value nu Spring profile is specified when the
+# backend is run.
+#
+default      none         cypress/e2e/debug/**,cypress/e2e/misc/**,cypress/e2e/test/**
+xml-storage  storage.xml  cypress/e2e/1-profile-storage-xml/**
