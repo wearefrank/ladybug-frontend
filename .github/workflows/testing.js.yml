@@ -205,7 +205,7 @@ jobs:
 
       - name: Run cypress with chrome browser (bypass ladybug-frontend within backend)
         uses: cypress-io/github-action@v6.6.0
-        if: ${{ github.event.inputs.useRealFrontend != 'true' && matrix.selection == 'default' }}
+        if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         with:
           working-directory: ladybug-frontend
           start: |
@@ -216,7 +216,7 @@ jobs:
           browser: chrome
       - name: Run cypress with chrome browser (production frontend that is included in backend)
         uses: cypress-io/github-action@v6.6.0
-        if: ${{ github.event.inputs.useRealFrontend == 'true' && matrix.selection == 'default' }}
+        if: ${{ github.event.inputs.useRealFrontend == 'true' }}
         with:
           working-directory: ladybug-frontend
           wait-on: "http://0.0.0.0:8090"
