@@ -104,7 +104,7 @@ jobs:
             ${{ runner.os }}-cypress-
 
       - name: Set Cypress environment variables
-        run: cp cypress.env.json.cicd cypress.env.json
+        run: cp .github/workflows/cypress.env.json.cicd cypress.env.json
         working-directory: ladybug-frontend
 
       - name: Run linter
@@ -209,7 +209,7 @@ jobs:
         with:
           working-directory: ladybug-frontend
           start: |
-            pnpm ng serve --proxy-config src/proxy.cicd.conf.json --host 0.0.0.0
+            pnpm ng serve --proxy-config .github/workflows/proxy.cicd.conf.json --host 0.0.0.0
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 1000
           spec: ${{ steps.chosen-specs.outputs.chosen-specs }}
