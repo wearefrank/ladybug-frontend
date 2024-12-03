@@ -13,8 +13,7 @@ export class SettingsService {
     this.setShowMultipleAtATime(localStorage.getItem(this.showMultipleAtATimeKey) === 'true');
     const MAX_ALLOWED_DROPDOWN_VALUE: number = 8;
     const tempTableSpacing: number = +(localStorage.getItem(this.tableSpacingKey) ?? 1);
-    const cappedTableSpacing: number =
-      tempTableSpacing < MAX_ALLOWED_DROPDOWN_VALUE ? tempTableSpacing : MAX_ALLOWED_DROPDOWN_VALUE;
+    const cappedTableSpacing: number = Math.min(tempTableSpacing, MAX_ALLOWED_DROPDOWN_VALUE);
     this.setTableSpacing(cappedTableSpacing);
     this.setShowSearchWindowOnLoad(localStorage.getItem(this.showSearchWindowOnLoadKey) === 'true');
     this.setPrettifyOnLoad(localStorage.getItem(this.prettifyOnLoadKey) === 'true');
