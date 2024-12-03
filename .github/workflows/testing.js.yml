@@ -27,16 +27,19 @@ jobs:
   testing:
     strategy:
       matrix:
-        selection: [
-          'default',
-          'xml-storage'
-        ]
+        include:
+          - spring-profile: none
+            selected-specs: cypress/e2e/no-profile/**
+          - spring-profile: storage.xml
+            selected-specs: cypress/e2e/storage-xml/**
     name: Unit tests
     runs-on: ubuntu-latest
 
     steps:
       - name: Echo inputs
         run: echo "useRealFrontend=${{ github.event.inputs.useRealFrontend}}, mergeMasterToBranch=${{ github.event.inputs.mergeMasterToBranch}}, frontendCommitToCheckout=${{ github.event.inputs.frontendCommitToCheckout}}, backendCommitToCheckout=${{ github.event.inputs.backendCommitToCheckout }}"
+      - name: Show chosen Spring profile for backend and chosen specs to run
+        run: echo "Start backend with Spring profile ${{ matrix.spring-profile }} and run specs ${{ matrix.selected-specs }}"
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
@@ -49,16 +52,6 @@ jobs:
         if: ${{ github.event.inputs.frontendCommitToCheckout }}
         run: git checkout ${{ github.event.inputs.frontendCommitToCheckout }}
         working-directory: "ladybug-frontend"
-      - name: Choose profile to use backend with
-        id: backend-profile
-        run: echo "backend-profile=$(./extractColumn.sh profiles-and-specs.txt ${{ matrix.selection }} 2)" >> $GITHUB_OUTPUT
-        working-directory: ladybug-frontend/.github/workflows
-      - name: Choose specs to run
-        id: chosen-specs
-        run: echo "chosen-specs=$(./extractColumn.sh profiles-and-specs.txt ${{ matrix.selection }} 3)" >> $GITHUB_OUTPUT
-        working-directory: ladybug-frontend/.github/workflows
-      - name: Show chosen Spring profile for backend and chosen specs to run
-        run: echo "Start backend with Spring profile ${{ steps.backend-profile.outputs.backend-profile }} and run specs ${{ steps.chosen-specs.outputs.chosen-specs }}"
 
       - uses: pnpm/action-setup@v4
         name: Install pnpm
@@ -135,8 +128,8 @@ jobs:
       - name: Set property to skip checking licenses
         run: echo "maven.skip.copyright=true" >> frank-runner/specials/ladybug/build.properties
       - name: Choose Spring profile for backend if it is not "none"
-        run: echo "spring.profiles.active=${{ steps.backend-profile.outputs.backend-profile }}" >> frank-runner/specials/ladybug/build.properties
-        if: ${{ steps.backend-profile.outputs.backend-profile != 'none' }}
+        run: echo "spring.profiles.active=${{ matrix.spring-profile }}" >> frank-runner/specials/ladybug/build.properties
+        if: ${{ matrix.spring-profile != 'none' }}
       - name: Set port where ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Prevent Java exception about binding port 443 (for https)
@@ -212,7 +205,7 @@ jobs:
             pnpm ng serve --proxy-config .github/workflows/proxy.cicd.conf.json --host 0.0.0.0
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 1000
-          spec: ${{ steps.chosen-specs.outputs.chosen-specs }}
+          spec: ${{ matrix.selected-specs }}
           browser: chrome
       - name: Run cypress with chrome browser (production frontend that is included in backend)
         uses: cypress-io/github-action@v6.6.0
@@ -221,7 +214,7 @@ jobs:
           working-directory: ladybug-frontend
           wait-on: "http://0.0.0.0:8090"
           wait-on-timeout: 1000
-          spec: ${{ steps.chosen-specs.outputs.chosen-specs }}
+          spec: ${{ matrix.selected-specs }}
           config: baseUrl=http://localhost:8090/ladybug
           browser: chrome
   
@@ -233,47 +226,47 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: installFrankRunnerEnv.log ${{ matrix.selection }}
+          name: installFrankRunnerEnv.log ${{ matrix.spring-profile }}
           path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: serverStartLog.log ${{ matrix.selection }}
+          name: serverStartLog.log ${{ matrix.spring-profile }}
           path: frank-runner/specials/ladybug/serverStartLog.log
       - name: Store build.properties
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: specials_build.properties ${{ matrix.selection }}
+          name: specials_build.properties ${{ matrix.spring-profile }}
           path: frank-runner/specials/ladybug/build.properties
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: logs ${{ matrix.selection }}
+          name: logs ${{ matrix.spring-profile }}
           path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: screenshots ${{ matrix.selection }}
+          name: screenshots ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/screenshots/
       - name: Store Cypress videos
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: videos ${{ matrix.selection }}
+          name: videos ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/videos/
       - name: Store Cypress screenshots for Firefox
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Firefix screenshots ${{ matrix.selection }}
+          name: Firefix screenshots ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/firefox/screenshots/
       - name: Store Cypress videos for Firefox
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Firefox videos ${{ matrix.selection }}
+          name: Firefox videos ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/firefox/videos/
