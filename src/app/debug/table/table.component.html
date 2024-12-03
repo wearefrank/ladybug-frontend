@@ -103,7 +103,7 @@
           </button>
         }
       }
-      <app-active-filters class="ml-2" (click)="toggleFilter()"></app-active-filters>
+      <app-active-filters class="ml-2" (click)="toggleFilter()"/>
     </div>
     @if (hasTimedOut) {
       <h4 class="progress-report-timeout">[One or more reports are in progress for more
@@ -161,6 +161,8 @@
       </table>
     </div>
   </div>
+} @else {
+  <app-loading-spinner/>
 }
 
 <app-table-settings-modal (openLatestReportsEvent)="openLatestReports($event)"></app-table-settings-modal>
