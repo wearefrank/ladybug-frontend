@@ -11,9 +11,7 @@ import { TabService } from '../../shared/services/tab.service';
 import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
 import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
-import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
 import { FormControl, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import {
@@ -24,7 +22,7 @@ import {
   NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
-import { KeyValuePipe, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { View } from '../../shared/interfaces/view';
 import { OptionsSettings } from '../../shared/interfaces/options-settings';
@@ -34,6 +32,7 @@ import { DebugTabService } from '../debug-tab.service';
 import { ViewDropdownComponent } from '../../shared/components/view-dropdown/view-dropdown.component';
 import { DeleteModalComponent } from '../../shared/components/delete-modal/delete-modal.component';
 import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
+import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-table',
@@ -50,16 +49,14 @@ import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
     ReactiveFormsModule,
     FormsModule,
     ActiveFiltersComponent,
-    MatProgressSpinnerModule,
     MatSortModule,
     NgClass,
     TableSettingsModalComponent,
-    ToastComponent,
-    KeyValuePipe,
     TableCellShortenerPipe,
     MatTableModule,
     ViewDropdownComponent,
     DeleteModalComponent,
+    LoadingSpinnerComponent,
   ],
 })
 export class TableComponent implements OnInit, OnDestroy {
