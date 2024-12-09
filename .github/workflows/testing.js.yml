@@ -270,3 +270,4 @@ jobs:
         with:
           name: Firefox videos ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/firefox/videos/
+
