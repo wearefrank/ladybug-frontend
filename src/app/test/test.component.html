@@ -1,4 +1,4 @@
-<div class="row h-100" >
+<div class="row h-100">
   <div class="col-3 resizable-horizontal p-2 border-right">
     <app-test-folder-tree (changeFolderEvent)="changeFilter($event)"></app-test-folder-tree>
   </div>
@@ -35,11 +35,14 @@
     </div>
 
     <p>Generator is {{ generatorEnabled|booleanToString: 'enabled':'disabled' }}</p>
-
-    <app-test-table
-      [reports]="filteredReports" [currentFilter]="currentFilter"
-      [showStorageIds]="showStorageIds" (runEvent)="run($event)">
-    </app-test-table>
+    @if (loading) {
+      <app-loading-spinner/>
+    } @else {
+      <app-test-table
+        [reports]="filteredReports" [currentFilter]="currentFilter"
+        [showStorageIds]="showStorageIds" (runEvent)="run($event)">
+      </app-test-table>
+    }
   </div>
 </div>
 
