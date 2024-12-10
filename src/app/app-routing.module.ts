@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy, RouterModule, Routes } from '@angular/router';
 import { DebugComponent } from './debug/debug.component';
 import { TestComponent } from './test/test.component';
 import { CompareComponent } from './compare/compare.component';
@@ -35,3 +35,30 @@ export const routes: Routes = [
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
+
+export class AppRouteReuseStrategy implements RouteReuseStrategy {
+  storedRoutes: { [key: string]: DetachedRouteHandle } = {};
+
+  shouldDetach(route: ActivatedRouteSnapshot): boolean {
+    return true;
+  }
+
+  store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void {
+    if (route.routeConfig && handle) {
+      this.storedRoutes[route.routeConfig.path || ''] = handle;
+    }
+  }
+
+  shouldAttach(route: ActivatedRouteSnapshot): boolean {
+    return !!route.routeConfig && !!this.storedRoutes[route.routeConfig.path || ''];
+  }
+
+  retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
+    if (!route.routeConfig) return null;
+    return this.storedRoutes[route.routeConfig.path || ''];
+  }
+
+  shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
+    return future.routeConfig === curr.routeConfig;
+  }
+}

@@ -10,7 +10,6 @@ import { HelperService } from '../shared/services/helper.service';
 import { ToastService } from '../shared/services/toast.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
-import { ToastComponent } from '../shared/components/toast/toast.component';
 import { FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { OptionsSettings } from '../shared/interfaces/options-settings';
@@ -20,6 +19,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestReportsService } from './test-reports.service';
 import { TestTableComponent } from './test-table/test-table.component';
 import { DeleteModalComponent } from '../shared/components/delete-modal/delete-modal.component';
+import { LoadingSpinnerComponent } from '../shared/components/loading-spinner/loading-spinner.component';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -33,12 +33,12 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
     TestFolderTreeComponent,
     ReactiveFormsModule,
     FormsModule,
-    ToastComponent,
     TestSettingsModalComponent,
     CloneModalComponent,
     BooleanToStringPipe,
     DeleteModalComponent,
     TestTableComponent,
+    LoadingSpinnerComponent,
   ],
 })
 export class TestComponent implements OnInit, OnDestroy {
@@ -48,18 +48,18 @@ export class TestComponent implements OnInit, OnDestroy {
   protected filteredReports: TestListItem[] = [];
   protected generatorEnabled: boolean = false;
   protected currentFilter: string = '';
+  protected loading: boolean = true;
+
   protected showStorageIds?: boolean;
 
-  private updatePathAction: UpdatePathAction = 'move';
-  @ViewChild(CloneModalComponent) cloneModal!: CloneModalComponent;
-  @ViewChild(TestSettingsModalComponent)
-  testSettingsModal!: TestSettingsModalComponent;
-  @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
-  @ViewChild(TestFolderTreeComponent)
-  testFileTreeComponent!: TestFolderTreeComponent;
-  @ViewChild('moveToInput', { read: NgModel }) moveToInputModel!: NgModel;
-  @ViewChild(TestTableComponent) testTableComponent!: TestTableComponent;
+  @ViewChild(CloneModalComponent) protected cloneModal!: CloneModalComponent;
+  @ViewChild(TestSettingsModalComponent) protected testSettingsModal!: TestSettingsModalComponent;
+  @ViewChild(DeleteModalComponent) protected deleteModal!: DeleteModalComponent;
+  @ViewChild(TestFolderTreeComponent) protected testFileTreeComponent!: TestFolderTreeComponent;
+  @ViewChild('moveToInput', { read: NgModel }) protected moveToInputModel!: NgModel;
+  @ViewChild(TestTableComponent) protected testTableComponent!: TestTableComponent;
 
+  private updatePathAction: UpdatePathAction = 'move';
   private testReportServiceSubscription?: Subscription;
 
   constructor(
@@ -108,6 +108,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   loadData(path?: string): void {
+    this.loading = true;
     if (path && path.endsWith('/')) {
       path = path.slice(0, -1);
     }
@@ -119,8 +120,8 @@ export class TestComponent implements OnInit, OnDestroy {
           this.testFileTreeComponent.tree.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
         }
         this.matches();
+        this.loading = false;
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
     this.testReportsService.getReports();
   }

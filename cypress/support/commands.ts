@@ -22,13 +22,21 @@ declare global {
 
       clearTestReports(): Chainable;
 
-      navigateToTestTabAndWait(): Chainable;
+      clearDatabaseStorage(): Chainable;
 
-      navigateToDebugTabAndWait(): Chainable;
+      navigateToTestTabAndInterceptApiCall(): Chainable;
+
+      navigateToDebugTabAndInterceptApiCall(): Chainable;
+
+      navigateToTestTab(): Chainable;
+
+      navigateToDebugTab(): Chainable;
 
       createReport(): Chainable;
 
       createOtherReport(): Chainable;
+
+      createReportInDatabaseStorage(): Chainable;
 
       createRunningReport(): Chainable;
 
@@ -67,6 +75,12 @@ declare global {
       getTestTableRows(): Chainable
 
       assertDebugTableLength(length: number): Chainable;
+
+      selectRowInDebugTable(index: number): Chainable;
+
+      selectRowInTestTable(index: number): Chainable;
+
+      selectAllRowsInTestTable(): Chainable;
     }
   }
 }
@@ -91,13 +105,26 @@ Cypress.Commands.add('clearTestReports' as keyof Chainable, (): void => {
   });
 });
 
-Cypress.Commands.add('navigateToTestTabAndWait' as keyof Chainable, (): void => {
-  navigateToTabAndWait('test');
+Cypress.Commands.add('clearDatabaseStorage' as keyof Chainable, (): void => {
+  cy.get('[data-cy-change-view-dropdown]').select('Database storage');
+  cy.get('[data-cy-debug="deleteAll"]').click();
+  cy.get('[data-cy-delete-modal="confirm"]').click();    
+})
+
+Cypress.Commands.add('navigateToTestTabAndInterceptApiCall' as keyof Chainable, (): void => {
+  navigateToTabAndInterceptApiCall('test');
 });
 
-Cypress.Commands.add('navigateToDebugTabAndWait' as keyof Chainable, (): void => {
-  navigateToTabAndWait('debug');
+Cypress.Commands.add('navigateToDebugTabAndInterceptApiCall' as keyof Chainable, (): void => {
+  navigateToTabAndInterceptApiCall('debug');
 });
+
+Cypress.Commands.add('navigateToTestTab' as keyof Chainable, () => {
+  navigateToTab('test');
+})
+Cypress.Commands.add('navigateToDebugTab' as keyof Chainable, () => {
+  navigateToTab('debug');
+})
 
 Cypress.Commands.add('createReport' as keyof Chainable, (): void => {
   // No cy.visit because then the API call can happen multiple times.
@@ -112,6 +139,14 @@ Cypress.Commands.add('createOtherReport' as keyof Chainable, (): void => {
     expect(resp.status).equal(200);
   });
 });
+
+Cypress.Commands.add('createReportInDatabaseStorage' as keyof Chainable, (): void => {
+  // No cy.visit because then the API call can happen multiple times.
+  cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Add%20report%20to%20database%20storage`).then((resp: Cypress.Response<ApiResponse>) => {
+    expect(resp.status).equal(200);
+  });
+});
+
 
 Cypress.Commands.add('createRunningReport' as keyof Chainable, (): void => {
   cy.request(`${Cypress.env('backendServer')}/index.jsp?createReport=Waiting%20for%20thread%20to%20start`).then(
@@ -242,16 +277,27 @@ Cypress.Commands.add('assertDebugTableLength' as keyof Chainable, (length: numbe
     : cy.getDebugTableRows().should('have.length', length);
 });
 
+Cypress.Commands.add('selectRowInDebugTable' as keyof Chainable, (index: number): Chainable => {
+  cy.get('[data-cy-debug="selectOne"]').eq(index).click();
+})
+
+Cypress.Commands.add('selectRowInTestTable' as keyof Chainable, (index: number): Chainable => {
+  cy.get('[data-cy-test="selectOne"]').eq(index).click();
+})
+Cypress.Commands.add('selectAllRowsInTestTable' as keyof Chainable, (): Chainable => {
+  cy.get('[data-cy-test="toggleSelectAll"]').click()
+})
+
 function interceptGetApiCall(alias: string): void {
   cy.intercept({
     method: 'GET',
     hostname: 'localhost',
-    url: /\/api\/*?/g,
+    url: /\/metadata\/Debug\/*?/g,
   }).as(alias);
 }
 
 //More string values can be added for each tab that can be opened
-function navigateToTabAndWait(tab: 'debug' | 'test'): void {
+function navigateToTabAndInterceptApiCall(tab: 'debug' | 'test'): void {
   const apiCallAlias: string = `apiCall${tab}Tab`;
   interceptGetApiCall(apiCallAlias);
   cy.visit('');
@@ -259,6 +305,10 @@ function navigateToTabAndWait(tab: 'debug' | 'test'): void {
   cy.wait(`@${apiCallAlias}`).then(() => {
     cy.log('All api requests have completed, ');
   });
+}
+
+function navigateToTab(tab: 'debug' | 'test'): void {
+  cy.get(`[data-cy-nav-tab="${tab}Tab"]`).click();
 }
 
 interface ApiResponse {

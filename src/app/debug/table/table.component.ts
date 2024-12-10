@@ -3,7 +3,7 @@ import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
 import { TableSettings } from '../../shared/interfaces/table-settings';
-import { catchError, Subject, Subscription } from 'rxjs';
+import { catchError, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
 import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
@@ -11,11 +11,9 @@ import { TabService } from '../../shared/services/tab.service';
 import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
 import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
-import { ToastComponent } from '../../shared/components/toast/toast.component';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
-import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import {
   NgbDropdown,
   NgbDropdownButtonItem,
@@ -24,7 +22,7 @@ import {
   NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
 import { FilterSideDrawerComponent } from '../filter-side-drawer/filter-side-drawer.component';
-import { KeyValuePipe, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { View } from '../../shared/interfaces/view';
 import { OptionsSettings } from '../../shared/interfaces/options-settings';
@@ -34,6 +32,7 @@ import { DebugTabService } from '../debug-tab.service';
 import { ViewDropdownComponent } from '../../shared/components/view-dropdown/view-dropdown.component';
 import { DeleteModalComponent } from '../../shared/components/delete-modal/delete-modal.component';
 import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
+import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-table',
@@ -50,41 +49,44 @@ import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
     ReactiveFormsModule,
     FormsModule,
     ActiveFiltersComponent,
-    MatProgressSpinnerModule,
     MatSortModule,
     NgClass,
     TableSettingsModalComponent,
-    ToastComponent,
-    KeyValuePipe,
     TableCellShortenerPipe,
     MatTableModule,
     ViewDropdownComponent,
     DeleteModalComponent,
+    LoadingSpinnerComponent,
   ],
 })
 export class TableComponent implements OnInit, OnDestroy {
-  private readonly DEFAULT_DISPLAY_AMOUNT: number = 10;
+  private readonly defaultDisplayAmount: number = 10;
+  private readonly subscriptions: Subscription = new Subscription();
+  private readonly defaultReportInProgressValidators: ValidatorFn[] = [
+    Validators.min(1),
+    Validators.pattern('^[0-9]*$'),
+    Validators.required,
+  ];
 
   @Input({ required: true }) views!: View[];
   @Input({ required: true }) currentView!: View;
-
-  @Output() viewChange: Subject<View> = new Subject<View>();
+  @Output() viewChange: EventEmitter<View> = new EventEmitter<View>();
   @Output() openReportEvent: EventEmitter<Report> = new EventEmitter<Report>();
 
-  @ViewChild(TableSettingsModalComponent) tableSettingsModal!: TableSettingsModalComponent;
-  @ViewChild(DeleteModalComponent) deleteModal!: DeleteModalComponent;
+  @ViewChild(TableSettingsModalComponent) protected tableSettingsModal!: TableSettingsModalComponent;
+  @ViewChild(DeleteModalComponent) protected deleteModal!: DeleteModalComponent;
 
-  @ViewChild(MatSort) set matSort(sort: MatSort) {
+  @ViewChild(MatSort)
+  protected set matSort(sort: MatSort) {
     this.tableDataSort = sort;
     this.tableDataSource.sort = this.tableDataSort;
   }
 
   protected metadataCount: number = 0;
   protected amountOfSelectedReports: number = 0;
-  protected tableSpacing?: string;
-  protected fontSize?: string;
-  protected checkboxSize?: string;
-
+  protected showFilterError: boolean = false;
+  protected hasTimedOut: boolean = false;
+  protected tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
   protected shortenedTableHeaders: Map<string, string> = new Map([
     ['Storage Id', 'Storage Id'],
     ['End time', 'End time'],
@@ -103,11 +105,10 @@ export class TableComponent implements OnInit, OnDestroy {
     ['NR OF CHECKPOINTS', 'NR OF CHECKPOINTS'],
     ['STATUS', 'STATUS'],
   ]);
-
   protected tableSettings: TableSettings = {
     reportMetadata: [],
     tableLoaded: false,
-    displayAmount: this.DEFAULT_DISPLAY_AMOUNT,
+    displayAmount: this.defaultDisplayAmount,
     showFilter: false,
     currentFilters: new Map<string, string>(),
     numberOfReportsInProgress: 0,
@@ -115,17 +116,18 @@ export class TableComponent implements OnInit, OnDestroy {
     uniqueValues: new Map<string, Array<string>>(),
   };
 
-  showMultipleFiles?: boolean;
-  showFilterError: boolean = false;
-  filterErrorDetails: Map<string, string> = new Map<string, string>();
-  hasTimedOut: boolean = false;
-  reportsInProgress: Record<string, number> = {};
-  reportsInProgressThreshold!: number;
-  tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
-  tableDataSort?: MatSort;
+  protected reportsInProgressThreshold?: number;
   protected selectedReportStorageId?: number;
-  protected openInProgress?: FormControl;
-  private readonly subscriptions: Subscription = new Subscription();
+  protected tableSpacing?: string;
+  protected fontSize?: string;
+  protected checkboxSize?: string;
+  protected openInProgress: FormControl = new FormControl(1, this.defaultReportInProgressValidators);
+
+  private filterErrorDetails: Map<string, string> = new Map<string, string>();
+  private reportsInProgress: Record<string, number> = {};
+
+  private showMultipleFiles?: boolean;
+  private tableDataSort?: MatSort;
 
   constructor(
     private httpService: HttpService,
@@ -277,11 +279,10 @@ export class TableComponent implements OnInit, OnDestroy {
           this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
           this.tableSettings.estimatedMemoryUsage = settings.estMemory;
           this.loadReportInProgressDates();
-          this.openInProgress = new FormControl(1, [
-            Validators.min(1),
+          this.openInProgress.setValue(1);
+          this.openInProgress.setValidators([
+            ...this.defaultReportInProgressValidators,
             Validators.max(this.tableSettings.numberOfReportsInProgress),
-            Validators.pattern('^[0-9]*$'),
-            Validators.required,
           ]);
         },
       });
@@ -310,7 +311,8 @@ export class TableComponent implements OnInit, OnDestroy {
 
   reportsInProgressMetThreshold(report: Report): boolean {
     return (
-      Date.now() - new Date(this.reportsInProgress[report.correlationId]).getTime() > this.reportsInProgressThreshold
+      Date.now() - new Date(this.reportsInProgress[report.correlationId]).getTime() >
+      (this.reportsInProgressThreshold ?? 0)
     );
   }
 
@@ -399,8 +401,8 @@ export class TableComponent implements OnInit, OnDestroy {
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (data: Record<string, CompareReport>) => {
-          for (const report of selectedReports) {
-            this.openReportEvent.next(data[report].report);
+          for (const storageId of selectedReports) {
+            this.openReportEvent.next(data[storageId].report);
           }
         },
       });

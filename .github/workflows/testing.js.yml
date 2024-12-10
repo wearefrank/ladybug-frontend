@@ -25,12 +25,21 @@ on:
 
 jobs:
   testing:
+    strategy:
+      matrix:
+        include:
+          - spring-profile: none
+            selected-specs: cypress/e2e/no-profile/**
+          - spring-profile: storage.xml
+            selected-specs: cypress/e2e/storage-xml/**
     name: Unit tests
     runs-on: ubuntu-latest
 
     steps:
       - name: Echo inputs
         run: echo "useRealFrontend=${{ github.event.inputs.useRealFrontend}}, mergeMasterToBranch=${{ github.event.inputs.mergeMasterToBranch}}, frontendCommitToCheckout=${{ github.event.inputs.frontendCommitToCheckout}}, backendCommitToCheckout=${{ github.event.inputs.backendCommitToCheckout }}"
+      - name: Show chosen Spring profile for backend and chosen specs to run
+        run: echo "Start backend with Spring profile ${{ matrix.spring-profile }} and run specs ${{ matrix.selected-specs }}"
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
@@ -58,14 +67,15 @@ jobs:
           cache-dependency-path: 'ladybug-frontend/pnpm-lock.yaml'
 
       - name: Get pnpm store directory
+        id: store-path
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         name: Setup pnpm cache
         with:
-          path: ${{ env.STORE_PATH }}
+          path: ${{ steps.store-path.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
@@ -87,7 +97,7 @@ jobs:
             ${{ runner.os }}-cypress-
 
       - name: Set Cypress environment variables
-        run: cp cypress.env.json.cicd cypress.env.json
+        run: cp .github/workflows/cypress.env.json.cicd cypress.env.json
         working-directory: ladybug-frontend
 
       - name: Run linter
@@ -117,6 +127,9 @@ jobs:
         run: echo "maven.skip.javadoc=true" >> frank-runner/specials/ladybug/build.properties
       - name: Set property to skip checking licenses
         run: echo "maven.skip.copyright=true" >> frank-runner/specials/ladybug/build.properties
+      - name: Choose Spring profile for backend if it is not "none"
+        run: echo "spring.profiles.active=${{ matrix.spring-profile }}" >> frank-runner/specials/ladybug/build.properties
+        if: ${{ matrix.spring-profile != 'none' }}
       - name: Set port where ladybug-test-webapp is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Prevent Java exception about binding port 443 (for https)
@@ -176,12 +189,12 @@ jobs:
         run: rm -rf frank-runner/build/apache-tomcat-9.0.56/logs/catalina.out
 
       - name: Let Frank!Runner do its downloads
-        run: pnpm run installFrankRunnerEnv
-        working-directory: ladybug-frontend
+        run: ./env.sh > installFrankRunnerEnv.log
+        working-directory: frank-runner
 
       - name: Start server using Frank!Runner in background
-        run: pnpm run startServer &
-        working-directory: ladybug-frontend
+        run: ./restart.sh -Dupdate.strategy=none > serverStartLog.log
+        working-directory: frank-runner/specials/ladybug
 
       - name: Run cypress with chrome browser (bypass ladybug-frontend within backend)
         uses: cypress-io/github-action@v6.6.0
@@ -189,9 +202,10 @@ jobs:
         with:
           working-directory: ladybug-frontend
           start: |
-            pnpm run startCicd
+            pnpm ng serve --proxy-config .github/workflows/proxy.cicd.conf.json --host 0.0.0.0
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
           wait-on-timeout: 1000
+          spec: ${{ matrix.selected-specs }}
           browser: chrome
       - name: Run cypress with chrome browser (production frontend that is included in backend)
         uses: cypress-io/github-action@v6.6.0
@@ -200,8 +214,10 @@ jobs:
           working-directory: ladybug-frontend
           wait-on: "http://0.0.0.0:8090"
           wait-on-timeout: 1000
+          spec: ${{ matrix.selected-specs }}
           config: baseUrl=http://localhost:8090/ladybug
           browser: chrome
+  
       - name: Show files
         run: tree -d -L 5 .
         if: always()
@@ -210,47 +226,48 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: installFrankRunnerEnv.log
+          name: installFrankRunnerEnv.log ${{ matrix.spring-profile }}
           path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: serverStartLog.log
+          name: serverStartLog.log ${{ matrix.spring-profile }}
           path: frank-runner/specials/ladybug/serverStartLog.log
       - name: Store build.properties
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: specials_build.properties
+          name: specials_build.properties ${{ matrix.spring-profile }}
           path: frank-runner/specials/ladybug/build.properties
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: logs
+          name: logs ${{ matrix.spring-profile }}
           path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: screenshots
+          name: screenshots ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/screenshots/
       - name: Store Cypress videos
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: videos
+          name: videos ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/videos/
       - name: Store Cypress screenshots for Firefox
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Firefix screenshots
+          name: Firefix screenshots ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/firefox/screenshots/
       - name: Store Cypress videos for Firefox
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Firefox videos
+          name: Firefox videos ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/firefox/videos/
+

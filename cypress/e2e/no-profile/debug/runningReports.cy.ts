@@ -59,7 +59,7 @@ describe('Test Reports in progress warning', () => {
 
   it('If threshold time has been met then show warning', () => {
     cy.get('[data-cy-debug="refresh"]').click();
-    cy.contains(`[One or more reports are in progress for more than ${1 / 1000 / 60} minutes]`);
+    cy.contains(`[One or more reports are in progress for more than 1 minutes]`);
   });
 });
 
