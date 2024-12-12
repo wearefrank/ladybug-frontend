@@ -29,7 +29,6 @@ export class DebugComponent implements OnInit {
 
   ngOnInit(): void {
     this.retrieveViews();
-    this.retrieveErrorsAndWarnings();
   }
 
   protected addReportToTree(report: Report): void {
@@ -49,7 +48,7 @@ export class DebugComponent implements OnInit {
         next: (views: View[]) => {
           this.views = views;
           if (!this.currentView) {
-            this.currentView = this.views.find((v: View) => v.defaultView)!;
+            this.onViewChange(this.views.find((v: View) => v.defaultView)!);
           }
         },
       });
