@@ -28,10 +28,12 @@ describe('Tests for custom editor in debug tab', () => {
       numberOfLines = elements.length;
     });
     cy.get('@viewDropDown').select('Xml');
+    cy.wait(500)
     cy.get('div.line-numbers').then((elements) => {
       expect(elements.length).to.be.greaterThan(numberOfLines);
     });
     cy.get('@viewDropDown').select('Raw');
+    cy.wait(500)
     cy.get('div.line-numbers').then((elements) => {
       expect(elements.length).to.eq(numberOfLines);
     });
