@@ -1,7 +1,3 @@
-#version:hover {
-  background-color: #f3f3f4 !important;
-}
-
 .nav-link {
   display: flex;
   flex-direction: row;
