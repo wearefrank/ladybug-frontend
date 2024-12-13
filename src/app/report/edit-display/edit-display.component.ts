@@ -169,11 +169,11 @@ export class EditDisplayComponent implements OnChanges {
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
     const node: Report | Checkpoint = this.selectedNode!;
-    let queryString: string;
+    let queryString: string = 'id=';
     if (ReportUtil.isReport(node)) {
-      queryString = String(node.storageId);
+      queryString += String(node.storageId);
     } else if (ReportUtil.isCheckPoint(node)) {
-      queryString = node.uid.split('#')[0];
+      queryString += node.uid.split('#')[0];
     } else {
       queryString = '';
     }
@@ -305,7 +305,10 @@ export class EditDisplayComponent implements OnChanges {
             this.selectedNode = response.report;
           }
           this.disableEditing();
-          this.debugTab.refreshAll({ reportIds: [+storageId], displayToast: false });
+          this.debugTab.refreshAll({
+            reportIds: [+storageId],
+            displayToast: false,
+          });
           this.toastService.showSuccess('Report updated successfully.');
         },
       });
