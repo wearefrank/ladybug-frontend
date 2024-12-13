@@ -1,7 +1,3 @@
-#version:hover {
-  background-color: #f3f3f4 !important;
-}
-
 .nav-link {
   display: flex;
   flex-direction: row;
@@ -33,4 +29,16 @@ a:hover {
     cursor: pointer;
     color: red;
   }
+}
+
+.version {
+  margin: auto 0.25rem auto auto;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.mascot {
+  width: 1.2rem;
+  height: 1.2rem;
 }
