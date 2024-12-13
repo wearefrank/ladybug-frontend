@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Location } from '@angular/common';
+import { Location, NgOptimizedImage } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { CompareComponent } from './compare/compare.component';
 import { TestComponent } from './test/test.component';
@@ -25,7 +25,7 @@ import { VersionService } from './shared/services/version.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   standalone: true,
-  imports: [RouterLinkActive, RouterLink, RouterOutlet, ToastComponent],
+  imports: [RouterLinkActive, RouterLink, RouterOutlet, ToastComponent, NgOptimizedImage],
 })
 export class AppComponent implements OnInit, OnDestroy {
   frontendVersion?: string;
