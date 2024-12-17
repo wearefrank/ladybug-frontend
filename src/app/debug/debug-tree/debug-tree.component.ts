@@ -10,13 +10,6 @@ import {
   NgSimpleFileTree,
   NgSimpleFileTreeModule,
 } from 'ng-simple-file-tree';
-import {
-  NgbDropdown,
-  NgbDropdownButtonItem,
-  NgbDropdownItem,
-  NgbDropdownMenu,
-  NgbDropdownToggle,
-} from '@ng-bootstrap/ng-bootstrap';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 import { View } from '../../shared/interfaces/view';
@@ -29,14 +22,7 @@ import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
   templateUrl: './debug-tree.component.html',
   styleUrls: ['./debug-tree.component.css'],
   standalone: true,
-  imports: [
-    NgbDropdown,
-    NgbDropdownToggle,
-    NgbDropdownMenu,
-    NgbDropdownButtonItem,
-    NgbDropdownItem,
-    NgSimpleFileTreeModule,
-  ],
+  imports: [NgSimpleFileTreeModule],
 })
 export class DebugTreeComponent implements OnDestroy {
   @ViewChild('tree') tree!: NgSimpleFileTree;

@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FilterService } from './filter.service';
-import { Subscription, catchError } from 'rxjs';
+import { catchError, Subscription } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FormsModule } from '@angular/forms';

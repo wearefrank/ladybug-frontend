@@ -449,8 +449,7 @@ export class TableComponent implements OnInit, OnDestroy {
           const originalReport = this.transformCompareToReport(data[selectedReports[0]]);
           const runResultReport = this.transformCompareToReport(data[selectedReports[1]]);
 
-          const id: string = this.helperService.createCompareTabId(originalReport, runResultReport);
-
+          const id: string = this.tabService.createCompareTabId(originalReport, runResultReport);
           this.tabService.openNewCompareTab({
             id: id,
             originalReport: originalReport,

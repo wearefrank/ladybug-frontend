@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TitleCasePipe } from '@angular/common';
 
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
 import { ReportUtil } from '../../shared/util/report-util';
@@ -26,7 +25,7 @@ export type TreeSide = (typeof treeSideConst)[number];
   templateUrl: './compare-tree.component.html',
   styleUrls: ['./compare-tree.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, TitleCasePipe, FormsModule, NgSimpleFileTreeModule],
+  imports: [ReactiveFormsModule, FormsModule, NgSimpleFileTreeModule],
 })
 export class CompareTreeComponent {
   @Output() compareEvent: EventEmitter<void> = new EventEmitter<void>();

@@ -31,8 +31,6 @@ import {
   MatRowDef,
   MatTable,
 } from '@angular/material/table';
-import { MatSortHeader } from '@angular/material/sort';
-import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
 
 @Component({
   selector: 'app-test-table',
@@ -44,8 +42,6 @@ import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.
     MatCell,
     MatCellDef,
     MatHeaderCell,
-    MatSortHeader,
-    TableCellShortenerPipe,
     MatHeaderCellDef,
     MatHeaderRow,
     MatHeaderRowDef,
