@@ -5,7 +5,7 @@
       <div class="filter-input-container">
         @for (metadataName of metadataLabels; track metadataName) {
           <div class="input-container">
-            <label data-cy-debug="filterLabel" class="metadata-input-label">{{ metadataName | titlecase }}</label>
+            <label data-cy-debug="filterLabel" class="metadata-input-label">{{ metadataName| shortenedTableHeader | titlecase }}</label>
             <div class="metadata-input-container input-group">
               <input
                 class="form-control"
