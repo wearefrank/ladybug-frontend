@@ -11,7 +11,6 @@ import { DebugComponent } from './debug/debug.component';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Tab } from './shared/interfaces/tab';
 import { ReportData } from './shared/interfaces/report-data';
-import { HelperService } from './shared/services/helper.service';
 import { ToastComponent } from './shared/components/toast/toast.component';
 import { ReportComponent } from './report/report.component';
 import { CloseTab } from './shared/interfaces/close-tab';
@@ -48,7 +47,6 @@ export class AppComponent implements OnInit, OnDestroy {
     private settingsService: SettingsService,
     private tabService: TabService,
     private router: Router,
-    private helperService: HelperService,
     private location: Location,
     private httpService: HttpService,
     private errorHandler: ErrorHandling,
@@ -112,7 +110,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   openNewCompareTab(data: CompareData): void {
-    const tabId = this.helperService.createCompareTabId(data.originalReport, data.runResultReport);
+    const tabId = this.tabService.createCompareTabId(data.originalReport, data.runResultReport);
     const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id == tabId);
     if (tabIndex == -1) {
       data.id = tabId;
