@@ -19,7 +19,7 @@ export class EncodingButtonComponent implements OnChanges {
 
   constructor(private toastService: ToastService) {}
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     this.showEncodingButton = ReportUtil.isCheckPoint(this.selectedNode) && this.selectedNode.encoding === 'Base64';
   }
 
