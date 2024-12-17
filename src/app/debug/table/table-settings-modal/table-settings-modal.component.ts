@@ -6,7 +6,6 @@ import { SettingsService } from '../../../shared/services/settings.service';
 import { catchError, Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
-import { ToastComponent } from '../../../shared/components/toast/toast.component';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { OptionsSettings } from '../../../shared/interfaces/options-settings';
 import { Transformation } from '../../../shared/interfaces/transformation';
@@ -18,7 +17,7 @@ import { CopyTooltipDirective } from '../../../shared/directives/copy-tooltip.di
   templateUrl: './table-settings-modal.component.html',
   styleUrls: ['./table-settings-modal.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, ToastComponent, CopyTooltipDirective],
+  imports: [ReactiveFormsModule, CopyTooltipDirective],
 })
 export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') modal!: ElementRef;

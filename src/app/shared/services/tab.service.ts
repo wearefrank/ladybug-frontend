@@ -3,6 +3,7 @@ import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { ReportData } from '../interfaces/report-data';
 import { CompareData } from '../../compare/compare-data';
 import { CloseTab } from '../interfaces/close-tab';
+import { Report } from '../interfaces/report';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +28,10 @@ export class TabService {
   openNewCompareTab(value: CompareData): void {
     this.openInCompareSubject.next(value);
     this.activeCompareTabs.set(value.id, value);
+  }
+
+  createCompareTabId(originalReport: Report, runResultReport: Report): string {
+    return `${originalReport.storageId}-${runResultReport.storageId}`;
   }
 
   closeTab(value: CompareData | ReportData): void {

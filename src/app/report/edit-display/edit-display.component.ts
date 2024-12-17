@@ -15,7 +15,6 @@ import { EditorComponent } from '../../editor/editor.component';
 import { Report } from '../../shared/interfaces/report';
 import { MetadataTableComponent } from '../../shared/components/metadata-table/metadata-table.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgClass, NgStyle, TitleCasePipe } from '@angular/common';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
 import { catchError } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
@@ -54,14 +53,11 @@ import { Router } from '@angular/router';
     EditorComponent,
     MetadataTableComponent,
     BooleanToStringPipe,
-    NgStyle,
     ClipboardModule,
     EditFormComponent,
-    TitleCasePipe,
     DifferenceModalComponent,
     ToggleButtonComponent,
     MatTooltipModule,
-    NgClass,
     EncodingButtonComponent,
     FormsModule,
     ReportAlertMessageComponent,

@@ -1,12 +1,8 @@
 import { ReranReport } from './reran-report';
+import { BaseReport } from './base-report';
 
-export interface TestListItem {
-  checked: boolean;
-  name: string;
-  path: string;
+export interface TestListItem extends BaseReport {
   fullPath?: string;
-  description: string;
-  storageId: number;
   variables?: string;
   extractedVariables?: string;
   reranReport?: ReranReport | null;

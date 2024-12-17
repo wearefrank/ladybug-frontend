@@ -12,7 +12,6 @@ import { catchError } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { ErrorHandling } from '../../shared/classes/error-handling.service';
 import { TabService } from '../../shared/services/tab.service';
-import { HelperService } from '../../shared/services/helper.service';
 import { Report } from '../../shared/interfaces/report';
 import { ReportData } from '../../shared/interfaces/report-data';
 import { View } from '../../shared/interfaces/view';
@@ -31,8 +30,6 @@ import {
   MatRowDef,
   MatTable,
 } from '@angular/material/table';
-import { MatSortHeader } from '@angular/material/sort';
-import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
 
 @Component({
   selector: 'app-test-table',
@@ -44,8 +41,6 @@ import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.
     MatCell,
     MatCellDef,
     MatHeaderCell,
-    MatSortHeader,
-    TableCellShortenerPipe,
     MatHeaderCellDef,
     MatHeaderRow,
     MatHeaderRowDef,
@@ -68,7 +63,6 @@ export class TestTableComponent implements OnChanges {
     private httpService: HttpService,
     private errorHandler: ErrorHandling,
     private tabService: TabService,
-    private helperService: HelperService,
     private testReportsService: TestReportsService,
     private toastService: ToastService,
   ) {}
@@ -151,7 +145,7 @@ export class TestTableComponent implements OnChanges {
 
   compareReports(report: TestListItem): void {
     if (report.reranReport) {
-      const tabId: string = this.helperService.createCompareTabId(
+      const tabId: string = this.tabService.createCompareTabId(
         report.reranReport.originalReport,
         report.reranReport.runResultReport,
       );
