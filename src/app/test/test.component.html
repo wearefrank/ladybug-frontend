@@ -4,23 +4,40 @@
   </div>
   <div class="col">
     <div class="buttons pt-1">
-      <button data-cy-test="runAll" class="btn btn-info" title="Run All" (click)="runSelected()"><i
-        class="fa fa-play"></i></button>
-      <button data-cy-test="refresh" class="btn btn-info" title="ReloadTestReports"
-              (click)="loadData()"><i class="fa fa-refresh"></i></button>
-      <button class="btn btn-info" title="Reset" (click)="resetRunner()">Reset</button>
-      <button class="btn btn-info" title="Options" (click)="testSettingsModal.open()"><i class="fa fa-cog"></i></button>
-      <button data-cy-test="deleteSelected" class="btn btn-info" title="Delete Selected" (click)="openDeleteModal(false)"><i class="fa fa-trash"></i></button>
-      <button data-cy-test="deleteAll" class="btn btn-info" title="Delete All" (click)="openDeleteModal(true)">Delete all</button>
-      <button class="btn btn-info" title="Clone report" (click)="openCloneModal()">Clone</button>
-      <button data-cy-test="copySelected" class="btn btn-info" title="Copy Selected" (click)="copySelected()"><i class="fa fa-copy"></i></button>
-      <button data-cy-test="downloadBinary" class="btn btn-info" title="Download Binary" (click)="downloadSelected()"><i class="fa fa-download"></i></button>
-      <button data-cy-test="upload" type="button" class="btn btn-info" title="Upload"
-              (click)="uploadFileTest.click()">
-        <i class="fa fa-upload"></i>
-        <input #uploadFileTest data-cy-test="uploadFile" type="file" [hidden]="true"
-               (change)="uploadReport($event)">
-      </button>
+      <div class="buttons button-section">
+        <p class="button-section-title">General</p>
+        <button data-cy-test="refresh" class="btn btn-info" title="Reload test reports"
+                (click)="loadData()"><i class="fa fa-refresh"></i></button>
+        <button class="btn btn-info" title="Reset" (click)="resetRunner()">Reset</button>
+        <button class="btn btn-info" title="Options" (click)="testSettingsModal.open()"><i class="fa fa-cog"></i>
+        </button>
+        <button data-cy-test="deleteAll" class="btn btn-info" title="Delete all" (click)="openDeleteModal(true)">Delete
+          all
+        </button>
+        <button data-cy-test="upload" type="button" class="btn btn-info" title="Upload"
+                (click)="uploadFileTest.click()">
+          <i class="fa fa-upload"></i>
+          <input #uploadFileTest data-cy-test="uploadFile" type="file" [hidden]="true"
+                 (change)="uploadReport($event)">
+        </button>
+      </div>
+      <span class="button-divider">&#124;</span>
+      <div class="buttons button-section">
+        <p class="button-section-title">Selected</p>
+        <button data-cy-test="runAll" class="btn btn-info" title="Run selected reports" (click)="runSelected()"><i
+          class="fa fa-play"></i></button>
+        <button data-cy-test="deleteSelected" class="btn btn-info" title="Delete selected reports"
+                (click)="openDeleteModal(false)"><i class="fa fa-trash"></i></button>
+        <button data-cy-test="copySelected" class="btn btn-info" title="Copy selected reports" (click)="copySelected()">
+          <i class="fa fa-copy"></i></button>
+        <button data-cy-test="downloadBinary" class="btn btn-info" title="Download binary" (click)="downloadSelected()">
+          <i class="fa fa-download"></i></button>
+      </div>
+      <span class="button-divider">&#124;</span>
+      <div class="buttons button-section">
+        <p class="button-section-title">One</p>
+        <button class="btn btn-info" title="Clone report" (click)="openCloneModal()">Clone</button>
+      </div>
     </div>
 
     <div class="form-group mt-2">
