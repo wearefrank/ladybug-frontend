@@ -137,7 +137,7 @@
                 class="table-id-cell header-cell header-padding"
                 *matHeaderCellDef
                 [title]="header">
-              {{ shortenedTableHeaders.get(header) ?? header }}
+              {{ header | shortenedTableHeader }}
             </th>
             <td mat-cell class="table-cell"
                 *matCellDef="let row"
