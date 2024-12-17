@@ -12,7 +12,7 @@
       </div>
     }
 
-    @if (!report.message) {
+    @if (report.message === null) {
       <div class="btn btn-static px-2">
         Message is null
       </div>
