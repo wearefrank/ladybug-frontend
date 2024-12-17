@@ -2,13 +2,6 @@
   font-size: 11pt;
 }
 
-.button-divider {
-  font-size: 1rem;
-  margin: 0 0.5rem;
-  color: darkgrey;
-  user-select: none;
-}
-
 .rerun-result {
   margin: 0 0 1rem 0.25rem;
   font-size: 10pt;
