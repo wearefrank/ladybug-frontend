@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Report } from '../interfaces/report';
+import { BaseReport } from '../interfaces/base-report';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +9,7 @@ export class HelperService {
     window.open(`api/report/download/${storage}/${exportBinary}/${exportXML}?${queryString.slice(0, -1)}`);
   }
 
-  getSelectedIds(reports: any[]): number[] {
+  getSelectedIds(reports: BaseReport[]): number[] {
     let copiedIds: number[] = [];
     for (const report of this.getSelectedReports(reports)) {
       copiedIds.push(report.storageId);
@@ -17,8 +17,7 @@ export class HelperService {
     return copiedIds;
   }
 
-  getSelectedReports(reports: Report[]): Report[] {
-    return reports.filter((report: Report) => report.checked);
-  }
+  getSelectedReports(reports: BaseReport[]): BaseReport[] {
+    return reports.filter((report) => report.checked);
   }
 }
