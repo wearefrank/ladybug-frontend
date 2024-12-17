@@ -5,16 +5,13 @@ export interface Report extends BaseReport {
   checkpoints: Checkpoint[];
   correlationId: string;
   crudStorage: boolean;
-  description: string;
   endTime: number;
   estimatedMemoryUsage: number;
   fullPath: string;
   inputCheckpoint: Checkpoint;
-  name: string;
   numberOfCheckpoints: number;
   originalEndpointOrAbortpointForCurrentLevel?: Checkpoint;
   originalReport: Report;
-  path: string;
   reportFilterMatching: boolean;
   startTime: number;
   stub: number;
