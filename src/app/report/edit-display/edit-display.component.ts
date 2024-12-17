@@ -68,6 +68,7 @@ export class EditDisplayComponent implements OnChanges {
   protected readonly Number: NumberConstructor = Number;
   protected readonly StubStrategy = StubStrategy;
   protected calculatedHeight: number = 340;
+  protected fromCrudStorage?: boolean;
 
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
@@ -113,6 +114,7 @@ export class EditDisplayComponent implements OnChanges {
   showReport(node: Report | Checkpoint): void {
     this.disableEditing();
     this.selectedNode = node;
+    this.fromCrudStorage = ReportUtil.isFromCrudStorage(node);
     this.stub = node.stub;
     if (ReportUtil.isReport(this.selectedNode)) {
       this.stubStrategy = this.selectedNode.stubStrategy;

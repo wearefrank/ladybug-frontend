@@ -74,7 +74,7 @@
 
         @if (ReportUtil.isReport(selectedNode)) {
           <div class="w-fit mx-1 my-0" [title]="reportStubStrategy.disabled ? 'This report is in a readonly storage, copy it to the test tab to make changes' : null">
-            <select #reportStubStrategy class="form-control" [disabled]="!ReportUtil.isFromCrudStorage(selectedNode)" [(ngModel)]="stubStrategy"
+            <select #reportStubStrategy class="form-control" [disabled]="!fromCrudStorage" [(ngModel)]="stubStrategy"
                     (ngModelChange)="updateReportStubStrategy($event)">
               @for (strategy of StubStrategy.report; track strategy) {
                 <option [ngValue]="strategy" [selected]="selectedNode.stubStrategy === strategy">{{ strategy }}
@@ -84,7 +84,7 @@
           </div>
         } @else if (ReportUtil.isCheckPoint(selectedNode) && ReportUtil.hasValidUid(selectedNode.uid)) {
           <div class="w-fit mx-1 my-0" [title]="checkpointStubStrategy.disabled ? 'This report is in a readonly storage, copy it to the test tab to make changes' : null">
-            <select #checkpointStubStrategy class="form-control" [disabled]="!ReportUtil.isFromCrudStorage(selectedNode)" [(ngModel)]="stub"
+            <select #checkpointStubStrategy class="form-control" [disabled]="!fromCrudStorage" [(ngModel)]="stub"
                     (ngModelChange)="updateCheckpointStubStrategy($event)">
               @for (strategy of StubStrategy.checkpoints; track strategy; let index = $index) {
                 <option [ngValue]="index - 1" [selected]="selectedNode.stub === index - 1">{{ strategy }}</option>
