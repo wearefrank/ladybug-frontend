@@ -84,7 +84,6 @@ export class TableComponent implements OnInit, OnDestroy {
 
   protected metadataCount: number = 0;
   protected amountOfSelectedReports: number = 0;
-  protected showFilterError: boolean = false;
   protected hasTimedOut: boolean = false;
   protected tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
   protected shortenedTableHeaders: Map<string, string> = new Map([
@@ -171,14 +170,6 @@ export class TableComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(showFilterSubscription);
-    const filterErrorSubscription: Subscription = this.filterService.filterError$.subscribe({
-      next: (filterError: [boolean, Map<string, string>]): void => {
-        this.showFilterError = filterError[0];
-        this.filterErrorDetails = filterError[1];
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
-    this.subscriptions.add(filterErrorSubscription);
     const filterContextSubscription: Subscription = this.filterService.filterContext$.subscribe({
       next: (context: Map<string, string>) => this.changeFilter(context),
       error: () => catchError(this.errorHandler.handleError()),
