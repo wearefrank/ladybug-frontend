@@ -5,6 +5,7 @@ import { ToastService } from '../../services/toast.service';
 import { Subscription } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { NgClass } from '@angular/common';
+import { FilterService } from '../../../debug/filter-side-drawer/filter.service';
 
 @Component({
   selector: 'app-toast',
@@ -15,27 +16,32 @@ import { NgClass } from '@angular/common';
 })
 export class ToastComponent implements OnInit, OnDestroy {
   @ViewChild('modal') modal!: TemplateRef<Element>;
-  toastSubscription!: Subscription;
   selected!: Toast;
-
   toasts: Toast[] = [];
   justCopied: boolean = false;
+  filterPanelVisible: boolean = false;
+
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private modalService: NgbModal,
     private toastService: ToastService,
+    private filterService: FilterService,
   ) {}
 
   ngOnInit(): void {
-    this.toastSubscription = this.toastService.toastObservable.subscribe((toast: Toast): void => {
+    const toastSubscription = this.toastService.toastObservable.subscribe((toast: Toast): void => {
       this.toasts.push(toast);
     });
+    this.subscriptions.add(toastSubscription);
+    const filterSubscription = this.filterService.filterSidePanel$.subscribe((value) => {
+      this.filterPanelVisible = value;
+    });
+    this.subscriptions.add(filterSubscription);
   }
 
   ngOnDestroy(): void {
-    if (this.toastSubscription) {
-      this.toastSubscription.unsubscribe();
-    }
+    this.subscriptions.unsubscribe();
   }
 
   close(alert: Toast): void {

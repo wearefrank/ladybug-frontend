@@ -9,6 +9,14 @@
   z-index: 999;
 }
 
+.toast-location {
+  right: 5px;
+}
+
+.toast-location-offset {
+  right: 305px;
+}
+
 .close-icon {
   position: absolute;
   right: 0;
