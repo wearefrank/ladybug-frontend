@@ -274,9 +274,9 @@ Cypress.Commands.add(
   (reportNames: string[]): void => {
     cy.checkTestTableNumRows(reportNames.length);
     for (const reportName of reportNames) {
-      // TODO: Fix https://github.com/wearefrank/ladybug-frontend/issues/699
-      // and request the name to be `/${reportName}` again (with /)
-      cy.getTestTableRows().contains(`${reportName}`).should('have.length', 1);
+      // Check that https://github.com/wearefrank/ladybug-frontend/issues/699 has been fixed
+      cy.getTestTableRows().contains(`/${reportName}`).should('have.length', 1);
+      cy.getTestTableRows().contains('null').should('not.exist')
     }
   },
 );
