@@ -41,5 +41,7 @@ describe('About deleting reports', () => {
     cy.get('[data-cy-delete-modal="confirm"]').should('exist').click();
     cy.get('[data-cy-debug="deleteAll"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').should('not.exist');
+    cy.get('[data-cy-debug="deleteAll"]').click();
+    cy.get('[data-cy-delete-modal="confirm"]').should('not.exist');
   });
 });
