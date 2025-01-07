@@ -300,7 +300,7 @@ export class TestComponent implements OnInit, OnDestroy {
   matches(): void {
     const filteredReports = [];
     for (const report of this.reports) {
-      if (report.path === null) report.path = '';
+      if (report.path === null || report.path === 'null') report.path = '';
       const name: string = report.path + report.name;
       if (new RegExp(`(/)?${this.currentFilter}.*`).test(name)) {
         report.checked = true;
