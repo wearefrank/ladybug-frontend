@@ -33,6 +33,7 @@ import { ViewDropdownComponent } from '../../shared/components/view-dropdown/vie
 import { DeleteModalComponent } from '../../shared/components/delete-modal/delete-modal.component';
 import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
+import { ShortenedTableHeaderPipe } from '../../shared/pipes/shortened-table-header.pipe';
 
 @Component({
   selector: 'app-table',
@@ -57,6 +58,7 @@ import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner
     ViewDropdownComponent,
     DeleteModalComponent,
     LoadingSpinnerComponent,
+    ShortenedTableHeaderPipe,
   ],
 })
 export class TableComponent implements OnInit, OnDestroy {
@@ -87,24 +89,6 @@ export class TableComponent implements OnInit, OnDestroy {
   protected showFilterError: boolean = false;
   protected hasTimedOut: boolean = false;
   protected tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
-  protected shortenedTableHeaders: Map<string, string> = new Map([
-    ['Storage Id', 'Storage Id'],
-    ['End time', 'End time'],
-    ['Duration', 'Duration'],
-    ['Name', 'Name'],
-    ['Correlation Id', 'Correlation Id'],
-    ['Status', 'Status'],
-    ['Number of checkpoints', 'Checkpoints'],
-    ['Estimated memory usage', 'Memory'],
-    ['Storage size', 'Size'],
-    ['TIMESTAMP', 'TIMESTAMP'],
-    ['COMPONENT', 'COMPONENT'],
-    ['ENDPOINT NAME', 'ENDPOINT'],
-    ['CONVERSATION ID', 'CONVERSATION ID'],
-    ['CORRELATION ID', 'CORRELATION ID'],
-    ['NR OF CHECKPOINTS', 'NR OF CHECKPOINTS'],
-    ['STATUS', 'STATUS'],
-  ]);
   protected tableSettings: TableSettings = {
     reportMetadata: [],
     tableLoaded: false,
