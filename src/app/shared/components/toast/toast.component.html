@@ -2,7 +2,9 @@
   @for (toast of toasts; track toast) {
     <div class="my-2" [attr.data-cy-toast]="toast.type">
 
-      <ngb-toast class="fade animate-show animate-hide position-relative" [ngClass]="'bg-' + toast.type"
+      <ngb-toast class="fade animate-show animate-hide position-relative"
+                 [ngClass]="{'user-selected-none': toast.detailed}"
+                 [class]="'bg-' + toast.type"
                  [autohide]="toast.type !== 'danger'"
                  [delay]="toast.type === 'info' || toast.type ==='success' ? 3000 : toast.type ==='warning' ? 8000 : 0"
                  (click)="toast.detailed ? showDetailedErrorMessages(toast) : null"

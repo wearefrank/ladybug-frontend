@@ -22,3 +22,7 @@
     color: white;
   }
 }
+
+.user-selected-none {
+  user-select: none;
+}
