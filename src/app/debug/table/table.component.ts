@@ -232,7 +232,7 @@ export class TableComponent implements OnInit, OnDestroy {
   changeView(view: View): void {
     this.currentView = view;
     this.loadData();
-    this.filterService.setMetadataLabels(this.currentView.metadataLabels);
+    this.filterService.setMetadataLabels(this.currentView.metadataNames);
     this.viewChange.next(this.currentView);
   }
 
@@ -301,7 +301,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   toggleFilter(): void {
-    this.filterService.setMetadataLabels(this.currentView.metadataLabels);
+    this.filterService.setMetadataLabels(this.currentView.metadataNames);
     this.filterService.setMetadataTypes(this.currentView.metadataTypes);
     this.tableSettings.showFilter = !this.tableSettings.showFilter;
     this.filterService.setShowFilter(this.tableSettings.showFilter);
