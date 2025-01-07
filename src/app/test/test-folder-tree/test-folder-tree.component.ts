@@ -43,7 +43,7 @@ export class TestFolderTreeComponent {
 
   convertToTree(data: TestListItem[]): void {
     for (let item of data) {
-      if (item.path) {
+      if (item.path && item.path !== 'null') {
         this.createFolderForRemainingPath(
           item,
           item.path.split('/').filter((s) => s !== ''),
