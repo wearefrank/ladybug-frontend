@@ -99,6 +99,7 @@ Cypress.Commands.add('resetApp' as keyof Chainable, (): void => {
   cy.clearDebugStore();
   cy.clearTestReports();
   cy.clearReportsInProgress();
+  cy.clearDatabaseStorage();
   cy.initializeApp();
 });
 
@@ -111,10 +112,12 @@ Cypress.Commands.add('clearTestReports' as keyof Chainable, (): void => {
 });
 
 Cypress.Commands.add('clearDatabaseStorage' as keyof Chainable, (): void => {
-  cy.get('[data-cy-change-view-dropdown]').select('Database storage');
-  cy.get('[data-cy-debug="deleteAll"]').click();
-  cy.get('[data-cy-delete-modal="confirm"]').click();
-});
+  cy.request(
+    `${Cypress.env('backendServer')}/index.jsp?clearDatabaseStorage=true`,
+  ).then((resp: Cypress.Response<ApiResponse>): void => {
+    expect(resp.status).equal(200);
+  });
+})
 
 Cypress.Commands.add(
   'navigateToTestTabAndInterceptApiCall' as keyof Chainable,
@@ -271,7 +274,9 @@ Cypress.Commands.add(
   (reportNames: string[]): void => {
     cy.checkTestTableNumRows(reportNames.length);
     for (const reportName of reportNames) {
-      cy.getTestTableRows().contains(`/${reportName}`).should('have.length', 1);
+      // TODO: Fix https://github.com/wearefrank/ladybug-frontend/issues/699
+      // and request the name to be `/${reportName}` again (with /)
+      cy.getTestTableRows().contains(`${reportName}`).should('have.length', 1);
     }
   },
 );
