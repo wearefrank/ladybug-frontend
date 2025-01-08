@@ -55,25 +55,24 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
 
   setSubscriptions(): void {
     const showFilterSubscription: Subscription = this.filterService.showFilter$.subscribe({
-      next: (show: boolean) => (this.shouldShowFilter = show),
-      error: () => catchError(this.errorHandler.handleError()),
+      next: (show: boolean) => {
+        this.shouldShowFilter = show;
+        this.filterService.toggleShowFilterSidePanel(show);
+      },
     });
     this.subscriptions.add(showFilterSubscription);
     const metadataLabelsSubscription: Subscription = this.filterService.metadataLabels$.subscribe({
       next: (metadataLabels: string[]) => {
         this.metadataLabels = metadataLabels;
       },
-      error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(metadataLabelsSubscription);
     const currentRecordSubscription: Subscription = this.filterService.currentRecords$.subscribe({
       next: (records: Map<string, Array<string>>) => (this.currentRecords = records),
-      error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(currentRecordSubscription);
     const metadataTypesSubscription: Subscription = this.filterService.metadataTypes$.subscribe({
       next: (metadataTypes: Map<string, string>) => (this.metadataTypes = metadataTypes),
-      error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(metadataTypesSubscription);
   }

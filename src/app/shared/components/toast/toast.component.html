@@ -1,7 +1,6 @@
-<div class="toast-body">
+<div class="toast-body" [ngClass]="filterPanelVisible ? 'toast-location-offset' : 'toast-location'">
   @for (toast of toasts; track toast) {
     <div class="my-2" [attr.data-cy-toast]="toast.type">
-
       <ngb-toast class="fade animate-show animate-hide position-relative"
                  [ngClass]="{'user-selected-none': toast.detailed}"
                  [class]="'bg-' + toast.type"
@@ -32,9 +31,9 @@
         </div>
         @if (toast.detailed) {
           <span>
-              <br>
-              <i>Click to see a more detailed description</i>
-            </span>
+            <br>
+            <i>Click to see a more detailed description</i>
+          </span>
         }
       </ngb-toast>
     </div>
