@@ -128,10 +128,9 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   closeSettingsModal() {
+    this.activeSettingsModal?.close();
     if (this.unsavedChanges) {
       this.activeUnsavedChangesModal = this.modalService.open(this.unsavedChangesModalElement, { backdrop: 'static' });
-    } else {
-      this.activeSettingsModal?.close();
     }
   }
 
