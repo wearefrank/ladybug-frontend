@@ -474,6 +474,7 @@ export class TableComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data: Report): void => {
           data.storageName = this.currentView.storageName;
+          console.log('opened report from api');
           this.openReportEvent.next(data);
         },
       });
