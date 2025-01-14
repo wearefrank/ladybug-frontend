@@ -10,7 +10,10 @@ export class FilterService {
   private filterContextSubject: Subject<Map<string, string>> = new Subject();
   private currentRecordsSubject: Subject<Map<string, string[]>> = new Subject();
   private metadataTypesSubject: Subject<Map<string, string>> = new Subject();
+  private filterErrorSubject: Subject<[boolean, Map<string, string>]> = new Subject();
+  private filterSidePanelVisibleSubject: Subject<boolean> = new Subject<boolean>();
 
+  filterSidePanel$: Observable<boolean> = this.filterSidePanelVisibleSubject.asObservable();
   showFilter$: Observable<boolean> = this.showFilterSubject.asObservable();
   metadataLabels$: Observable<string[]> = this.metadataLabelsSubject.asObservable();
   currentRecords$: Observable<Map<string, string[]>> = this.currentRecordsSubject.asObservable();
@@ -63,5 +66,9 @@ export class FilterService {
   setMetadataTypes(metadataTypes: Map<string, string>): void {
     this.metadataTypes = new Map<string, string>(Object.entries(metadataTypes));
     this.metadataTypesSubject.next(this.metadataTypes);
+  }
+
+  toggleShowFilterSidePanel(value: boolean) {
+    this.filterSidePanelVisibleSubject.next(value);
   }
 }

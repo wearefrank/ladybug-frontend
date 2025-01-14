@@ -9,6 +9,7 @@ import { View } from '../../shared/interfaces/view';
 import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
+import { ShortenedTableHeaderPipe } from '../../shared/pipes/shortened-table-header.pipe';
 
 @Component({
   standalone: true,
@@ -24,15 +25,15 @@ import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
       transition(':leave', animate('300ms ease-out', style({ transform: 'translateX(100%)' }))),
     ]),
   ],
-  imports: [MatAutocompleteModule, FormsModule, TitleCasePipe],
+  imports: [MatAutocompleteModule, FormsModule, TitleCasePipe, ShortenedTableHeaderPipe],
 })
 export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   @Input({ required: true }) currentView!: View;
 
-  protected shouldShowFilter!: boolean;
-  protected metadataLabels!: string[];
+  protected shouldShowFilter?: boolean;
+  protected metadataLabels?: string[];
   protected currentRecords: Map<string, Array<string>> = new Map<string, Array<string>>();
-  protected metadataTypes!: Map<string, string>;
+  protected metadataTypes?: Map<string, string>;
   protected toolTipSuggestions?: Report;
 
   private subscriptions: Subscription = new Subscription();
@@ -54,23 +55,24 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
 
   setSubscriptions(): void {
     const showFilterSubscription: Subscription = this.filterService.showFilter$.subscribe({
-      next: (show: boolean) => (this.shouldShowFilter = show),
-      error: () => catchError(this.errorHandler.handleError()),
+      next: (show: boolean) => {
+        this.shouldShowFilter = show;
+        this.filterService.toggleShowFilterSidePanel(show);
+      },
     });
     this.subscriptions.add(showFilterSubscription);
     const metadataLabelsSubscription: Subscription = this.filterService.metadataLabels$.subscribe({
-      next: (metadataLabels: string[]) => (this.metadataLabels = metadataLabels),
-      error: () => catchError(this.errorHandler.handleError()),
+      next: (metadataLabels: string[]) => {
+        this.metadataLabels = metadataLabels;
+      },
     });
     this.subscriptions.add(metadataLabelsSubscription);
     const currentRecordSubscription: Subscription = this.filterService.currentRecords$.subscribe({
       next: (records: Map<string, Array<string>>) => (this.currentRecords = records),
-      error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(currentRecordSubscription);
     const metadataTypesSubscription: Subscription = this.filterService.metadataTypes$.subscribe({
       next: (metadataTypes: Map<string, string>) => (this.metadataTypes = metadataTypes),
-      error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(metadataTypesSubscription);
   }
