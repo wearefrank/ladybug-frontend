@@ -206,6 +206,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadData(showToast: boolean = true): void {
+    this.tableSettings.tableLoaded = false;
     this.retrieveRecords(showToast);
     this.loadMetadataCount();
     this.loadReportInProgressThreshold();
