@@ -9,13 +9,13 @@
           [checked]="amountOfSelectedReports === reports.length"
           (click)="toggleSelectAll()">
       </th>
-      <td data-cy-test="reportChecked" mat-cell class="table-row-checkbox" *matCellDef="let report">
+      <td mat-cell class="table-row-checkbox" *matCellDef="let report">
         <input type="checkbox" data-cy-test="selectOne" [checked]="report.checked" (click)="toggleCheck(report)">
       </td>
     </ng-container>
     <ng-container matColumnDef="storageId">
       <th mat-header-cell title="Storage Id" *matHeaderCellDef>Storage Id</th>
-      <td mat-cell title="Storage Id" *matCellDef="let report">{{ report.storageId }}</td>
+      <td data-cy-test-table="storageId" mat-cell title="Storage Id" *matCellDef="let report">{{ report.storageId }}</td>
     </ng-container>
     <ng-container matColumnDef="run">
       <th mat-header-cell title="Run/Open" *matHeaderCellDef>(Re)run/open</th>

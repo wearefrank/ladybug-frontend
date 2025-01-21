@@ -8,7 +8,7 @@
   <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
     <div class="modal-body">
         <div class="form-group form-check-inline">
-          <input class="form-check-input" type="checkbox" formControlName="showReportStorageIds">
+          <input data-cy-test-settings="showStorageIds" class="form-check-input" type="checkbox" formControlName="showReportStorageIds" >
           <label class="form-check-label transform-label">
             Show report storage IDs
           </label>
@@ -22,7 +22,7 @@
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-info" (click)="resetSettings(); modal.dismiss();"><i class="fa fa-undo"></i></button>
-      <button type="submit" class="btn btn-info" (click)="modal.dismiss()"><i class="fa fa-save"></i></button>
+      <button data-cy-test-settings="save" type="submit" class="btn btn-info" (click)="modal.dismiss()"><i class="fa fa-save"></i></button>
     </div>
   </form>
 </ng-template>

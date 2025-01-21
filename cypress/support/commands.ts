@@ -24,9 +24,9 @@ declare global {
 
       clearDatabaseStorage(): Chainable;
 
-      navigateToTestTabAndInterceptApiCall(): Chainable;
+      navigateToTestTabAndAwaitLoadingSpinner(): Chainable;
 
-      navigateToDebugTabAndInterceptApiCall(): Chainable;
+      navigateToDebugTabAndAwaitLoadingSpinner(): Chainable;
 
       navigateToTestTab(): Chainable;
 
@@ -47,6 +47,8 @@ declare global {
       createReportWithInfopoint(): Chainable;
 
       createReportWithMultipleStartpoints(): Chainable;
+
+      createJsonReport(): Chainable;
 
       clearDebugStore(): Chainable;
 
@@ -85,6 +87,8 @@ declare global {
       selectRowInTestTable(index: number): Chainable;
 
       selectAllRowsInTestTable(): Chainable;
+
+      copyReportsToTestTab(names: string[]): Chainable;
     }
   }
 }
@@ -120,14 +124,14 @@ Cypress.Commands.add('clearDatabaseStorage' as keyof Chainable, (): void => {
 })
 
 Cypress.Commands.add(
-  'navigateToTestTabAndInterceptApiCall' as keyof Chainable,
+  'navigateToTestTabAndAwaitLoadingSpinner' as keyof Chainable,
   (): void => {
     navigateToTabAndAwaitLoadingSpinner('test');
   },
 );
 
 Cypress.Commands.add(
-  'navigateToDebugTabAndInterceptApiCall' as keyof Chainable,
+  'navigateToDebugTabAndAwaitLoadingSpinner' as keyof Chainable,
   (): void => {
     navigateToTabAndAwaitLoadingSpinner('debug');
   },
@@ -220,6 +224,18 @@ Cypress.Commands.add(
     // No cy.visit because then the API call can happen multiple times.
     cy.request(
       `${Cypress.env('backendServer')}/index.jsp?createReport=Multiple%20startpoints`,
+    ).then((resp: Cypress.Response<ApiResponse>): void => {
+      expect(resp.status).equal(200);
+    });
+  },
+);
+
+Cypress.Commands.add(
+  'createJsonReport' as keyof Chainable,
+  (): void => {
+    // No cy.visit because then the API call can happen multiple times.
+    cy.request(
+      `${Cypress.env('backendServer')}/index.jsp?createReport=Json%20checkpoint`,
     ).then((resp: Cypress.Response<ApiResponse>): void => {
       expect(resp.status).equal(200);
     });
@@ -371,6 +387,13 @@ Cypress.Commands.add(
     cy.get('[data-cy-test="toggleSelectAll"]').click();
   },
 );
+
+Cypress.Commands.add('copyReportsToTestTab' as keyof Chainable, (names: string[]): Chainable => {
+  for (let name of names) {
+    cy.get('[data-cy-debug="tableRow"]').find(`td:contains(${name})`).click()
+    cy.get('[data-cy-debug-editor="copy"]').click();
+  }
+})
 
 function awaitLoadingSpinner(): void {
   cy.get('[data-cy-loading-spinner]', { timeout: 10000 }).should('not.exist');
