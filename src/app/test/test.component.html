@@ -4,7 +4,7 @@
   </div>
   <div class="col">
     <div class="buttons pt-1">
-      <div class="buttons button-section">
+      <section class="buttons button-section">
         <p class="button-section-title">General</p>
         <button data-cy-test="refresh" class="btn btn-info" title="Reload test reports"
                 (click)="loadData()"><i class="fa fa-refresh"></i></button>
@@ -16,17 +16,17 @@
           <input #uploadFileTest data-cy-test="uploadFile" type="file" [hidden]="true"
                  (change)="uploadReport($event)">
         </button>
-      </div>
+      </section>
       <span class="button-divider">&#124;</span>
-      <div class="buttons button-section">
+      <section class="buttons button-section">
         <p class="button-section-title">All</p>
         <button class="btn btn-info" title="Reset" (click)="resetRunner()">Reset</button>
         <button data-cy-test="deleteAll" class="btn btn-info" title="Delete all" (click)="openDeleteModal(true)">Delete
           all
         </button>
-      </div>
+      </section>
       <span class="button-divider">&#124;</span>
-      <div class="buttons button-section">
+      <section class="buttons button-section">
         <p class="button-section-title">Selected</p>
         <button data-cy-test="runAll" class="btn btn-info" title="Run selected reports" (click)="runSelected()"><i
           class="fa fa-play"></i></button>
@@ -36,12 +36,18 @@
           <i class="fa fa-copy"></i></button>
         <button data-cy-test="downloadBinary" class="btn btn-info" title="Download binary" (click)="downloadSelected()">
           <i class="fa fa-download"></i></button>
-      </div>
+        @if (childrenLoaded && testTableComponent?.amountOfSelectedReports === 2) {
+          <button data-cy-test="compare" class="btn btn-info" title="Compare two selected reports"
+                  (click)="openCompareTab()">
+            Compare
+          </button>
+        }
+      </section>
       <span class="button-divider">&#124;</span>
-      <div class="buttons button-section">
+      <section class="buttons button-section">
         <p class="button-section-title">One</p>
         <button class="btn btn-info" title="Clone report" (click)="openCloneModal()">Clone</button>
-      </div>
+      </section>
     </div>
 
     <div class="form-group mt-2">
@@ -61,7 +67,8 @@
     } @else {
       <app-test-table
         [reports]="filteredReports" [currentFilter]="currentFilter"
-        [showStorageIds]="showStorageIds" (runEvent)="run($event)">
+        [showStorageIds]="showStorageIds"
+        (fullyLoaded)="childComponentsLoaded()" (runEvent)="run($event)">
       </app-test-table>
     }
   </div>
