@@ -20,7 +20,6 @@
   margin: 1rem 1rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   flex-grow: 4;
   overflow-y: auto;
   max-height: 800px;
