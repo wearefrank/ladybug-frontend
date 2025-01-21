@@ -462,6 +462,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: number): void {
+    this.debugTab.setAnyReportsOpen(true);
     this.httpService
       .getReport(storageId, this.currentView.storageName)
       .pipe(catchError(this.errorHandler.handleError()))
