@@ -159,7 +159,7 @@ export class TableComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(filterContextSubscription);
-    const refreshAll = this.debugTab.refreshAll$.subscribe((condition: RefreshCondition) => this.refresh(condition));
+    const refreshAll = this.debugTab.refreshAll$.subscribe((condition?: RefreshCondition) => this.refresh(condition));
     this.subscriptions.add(refreshAll);
     const refreshTable = this.debugTab.refreshTable$.subscribe((condition: RefreshCondition) =>
       this.refresh(condition),
@@ -468,7 +468,6 @@ export class TableComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data: Report): void => {
           data.storageName = this.currentView.storageName;
-          console.log('opened report from api');
           this.openReportEvent.next(data);
         },
       });
