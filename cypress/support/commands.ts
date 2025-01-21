@@ -86,8 +86,6 @@ declare global {
 
       selectRowInTestTable(index: number): Chainable;
 
-      selectAllRowsInTestTable(): Chainable;
-
       copyReportsToTestTab(names: string[]): Chainable;
     }
   }
@@ -379,12 +377,6 @@ Cypress.Commands.add(
   'selectRowInTestTable' as keyof Chainable,
   (index: number): Chainable => {
     cy.get('[data-cy-test="selectOne"]').eq(index).click();
-  },
-);
-Cypress.Commands.add(
-  'selectAllRowsInTestTable' as keyof Chainable,
-  (): Chainable => {
-    cy.get('[data-cy-test="toggleSelectAll"]').click();
   },
 );
 

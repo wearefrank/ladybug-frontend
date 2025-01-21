@@ -6,7 +6,8 @@
           data-cy-test="toggleSelectAll"
           type="checkbox"
           title="Select all rows"
-          [checked]="amountOfSelectedReports === reports.length"
+          [checked]="amountOfSelectedReports === reports.length && reports.length !== 0"
+          [disabled]="reports.length === 0"
           (click)="toggleSelectAll()">
       </th>
       <td mat-cell class="table-row-checkbox" *matCellDef="let report">
