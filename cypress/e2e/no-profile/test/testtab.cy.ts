@@ -8,7 +8,7 @@ describe('Test the Test tab', () => {
     cy.createOtherReport();
     cy.initializeApp();
     copyTheReportsToTestTab();
-    cy.navigateToTestTabAndInterceptApiCall();
+    cy.navigateToTestTabAndAwaitLoadingSpinner();
   });
 
   afterEach(() => cy.resetApp());

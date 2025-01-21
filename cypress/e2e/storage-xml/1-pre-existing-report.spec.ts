@@ -5,7 +5,7 @@
 describe('Pre existing report', () => {
   beforeEach(() => {
     cy.initializeApp();
-    cy.navigateToTestTabAndInterceptApiCall();
+    cy.navigateToTestTabAndAwaitLoadingSpinner();
   })
 
   it('Report present in src/test/testtool should be shown', () => {

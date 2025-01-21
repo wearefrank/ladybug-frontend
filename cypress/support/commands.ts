@@ -24,9 +24,9 @@ declare global {
 
       clearDatabaseStorage(): Chainable;
 
-      navigateToTestTabAndInterceptApiCall(): Chainable;
+      navigateToTestTabAndAwaitLoadingSpinner(): Chainable;
 
-      navigateToDebugTabAndInterceptApiCall(): Chainable;
+      navigateToDebugTabAndAwaitLoadingSpinner(): Chainable;
 
       navigateToTestTab(): Chainable;
 
@@ -120,14 +120,14 @@ Cypress.Commands.add('clearDatabaseStorage' as keyof Chainable, (): void => {
 })
 
 Cypress.Commands.add(
-  'navigateToTestTabAndInterceptApiCall' as keyof Chainable,
+  'navigateToTestTabAndAwaitLoadingSpinner' as keyof Chainable,
   (): void => {
     navigateToTabAndAwaitLoadingSpinner('test');
   },
 );
 
 Cypress.Commands.add(
-  'navigateToDebugTabAndInterceptApiCall' as keyof Chainable,
+  'navigateToDebugTabAndAwaitLoadingSpinner' as keyof Chainable,
   (): void => {
     navigateToTabAndAwaitLoadingSpinner('debug');
   },
