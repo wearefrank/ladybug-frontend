@@ -8,9 +8,9 @@ import { ToastService } from '../../../shared/services/toast.service';
 import { UploadParams } from 'src/app/shared/interfaces/upload-params';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { OptionsSettings } from '../../../shared/interfaces/options-settings';
-import { Transformation } from '../../../shared/interfaces/transformation';
 import { VersionService } from '../../../shared/services/version.service';
 import { CopyTooltipDirective } from '../../../shared/directives/copy-tooltip.directive';
+import { DebugTabService } from '../../debug-tab.service';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -73,6 +73,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     private toastService: ToastService,
     private errorHandler: ErrorHandling,
     private versionService: VersionService,
+    private debugTabService: DebugTabService,
   ) {
     this.getApplicationVersions();
     this.subscribeToSettingsServiceObservables();
@@ -185,7 +186,12 @@ export class TableSettingsModalComponent implements OnDestroy {
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe(() => this.toastService.showSuccess('Settings saved!'));
 
-    this.toastService.showWarning('Reopen report to see updated XML');
+    if (this.debugTabService.hasAnyReportsOpen()) {
+      this.toastService.showWarning('Reopen report to see updated XML', {
+        buttonText: 'Reopen',
+        callback: () => this.debugTabService.refreshTree(),
+      });
+    }
     this.unsavedChanges = false;
     this.formValueOnStart = this.settingsForm.value;
   }
@@ -200,7 +206,6 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   async factoryReset(): Promise<void> {
-    console.log('fac reset');
     this.settingsForm.reset();
     this.settingsService.setShowMultipleAtATime();
     this.settingsService.setTableSpacing();
@@ -215,6 +220,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     );
     this.settingsForm.get(this.transformationKey)?.setValue(transformationResponse.transformation);
     this.saveSettings();
+    this.activeSettingsModal?.close();
   }
 
   saveResponseSetting(response: OptionsSettings): void {
@@ -243,8 +249,6 @@ export class TableSettingsModalComponent implements OnDestroy {
 
   protected async closeWithoutSaving(): Promise<void> {
     await this.loadSettings();
-    console.log(this.formValueOnStart);
-    console.log(this.settingsForm.value);
     this.unsavedChanges = false;
     this.activeUnsavedChangesModal?.close();
     this.closeSettingsModal();
