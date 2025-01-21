@@ -13,6 +13,13 @@ describe('Test the Test tab', () => {
 
   afterEach(() => cy.resetApp());
 
+  it('should show storage ids in table when setting is enabled', () => {
+    cy.get('[data-cy-test="settings"]').click();
+    cy.get('[data-cy-test-settings="showStorageIds"]').check();
+    cy.get('[data-cy-test-settings="save"]').click();
+    cy.get('[data-cy-test-table="storageId"]').should('be.visible');
+  });
+
   it('Should delete one report at a time with deleteSelected button', () => {
     cy.getTestTableRows().contains('Simple report').parent('tr').find('[data-cy-test="selectOne"]').click();
     cy.get('[data-cy-test="deleteSelected"]').click();
