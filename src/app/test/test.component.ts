@@ -308,7 +308,6 @@ export class TestComponent implements OnInit, OnDestroy {
       if (report.path === null || report.path === 'null') report.path = '';
       const name: string = report.path + report.name;
       if (new RegExp(`(/)?${this.currentFilter}.*`).test(name)) {
-        report.checked = true;
         filteredReports.push(report);
       }
     }
