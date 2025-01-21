@@ -40,8 +40,8 @@
     <ng-container matColumnDef="variables">
       <th mat-header-cell *matHeaderCellDef>Variables</th>
       <td mat-cell *matCellDef="let report">
-        @if (report.extractedVariables) {
-          <span data-cy-test="variables">{{ report.extractedVariables }}</span>
+        @if (report.variableCsv) {
+          <span data-cy-test="variables">{{ report.variableCsv }}</span>
         }
       </td>
     </ng-container>
