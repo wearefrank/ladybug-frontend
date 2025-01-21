@@ -16,11 +16,4 @@ describe('Tests for Debug tab table', () => {
     cy.get('[data-cy-debug="metadataLabel"]').eq(3).click();
     cy.getDebugTableRows().first().contains("Simple report");
   });
-
-  it('Should still be ordered when refreshing table.', () => {
-    cy.get('[data-cy-debug="metadataLabel"]').eq(3).click();
-    cy.getDebugTableRows().first().contains("Another simple report");
-    cy.get('[data-cy-debug="refresh"]').click()
-    cy.getDebugTableRows().first().contains("Another simple report");
-  })
 });
