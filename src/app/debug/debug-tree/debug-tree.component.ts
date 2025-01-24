@@ -172,12 +172,12 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   selectAndReplaceReportIfPresent(report: Report): boolean {
-    for (let i = 0; i < this.tree.items.length; i++) {
-      const treeReport: Report = this.tree.items[i].originalValue;
+    for (const index in this.tree.items) {
+      const treeReport: Report = this.tree.items[index].originalValue;
       if (treeReport.storageId === report.storageId) {
         const transformedReport = new ReportHierarchyTransformer().transform(report);
-        this.tree.items[i] = this.tree.createItemToFileItem(transformedReport);
-        this.tree.selectItem(this.tree.items[i].path);
+        this.tree.items[index] = this.tree.createItemToFileItem(transformedReport);
+        this.tree.selectItem(this.tree.items[index].path);
         return true;
       }
     }
@@ -190,8 +190,8 @@ export class DebugTreeComponent implements OnDestroy {
 
     const shouldProcessReport = (reportId: number) => !condition?.reportIds || condition.reportIds.includes(reportId);
 
-    for (let i = 0; i < this.tree.items.length; i++) {
-      const report: Report = this.tree.items[i].originalValue as Report;
+    for (const index in this.tree.items) {
+      const report: Report = this.tree.items[index].originalValue as Report;
 
       if (shouldProcessReport(report.storageId)) {
         const fileItem: FileTreeItem = await this.getNewReport(report.storageId);
@@ -200,7 +200,7 @@ export class DebugTreeComponent implements OnDestroy {
           lastSelectedReport = fileItem;
         }
 
-        this.tree.items[i] = fileItem;
+        this.tree.items[index] = fileItem;
       }
     }
 
