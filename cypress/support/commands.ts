@@ -288,9 +288,10 @@ Cypress.Commands.add(
   (reportNames: string[]): void => {
     cy.checkTestTableNumRows(reportNames.length);
     for (const reportName of reportNames) {
-      // TODO: Fix https://github.com/wearefrank/ladybug-frontend/issues/699
-      // and request the name to be `/${reportName}` again (with /)
-      cy.getTestTableRows().contains(`${reportName}`).should('have.length', 1);
+      // Please mind that we want to have the '/' at the start of the path and that we
+      // don't want null. There was an issue about this in the past.
+      cy.getTestTableRows().contains(`/${reportName}`).should('have.length', 1);
+      cy.getTestTableRows().contains('null').should('not.exist')
     }
   },
 );
