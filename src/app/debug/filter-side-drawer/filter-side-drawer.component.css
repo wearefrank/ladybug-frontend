@@ -20,7 +20,6 @@
   margin: 1rem 1rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   flex-grow: 4;
   overflow-y: auto;
   max-height: 800px;
@@ -62,4 +61,5 @@
 .filter-option {
   font-size: .9rem;
   word-break: break-all;
+  border-bottom: 1px solid lightgray;
 }

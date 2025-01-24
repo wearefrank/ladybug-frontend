@@ -11,41 +11,18 @@ export class FilterService {
   private currentRecordsSubject: Subject<Map<string, string[]>> = new Subject();
   private metadataTypesSubject: Subject<Map<string, string>> = new Subject();
   private filterErrorSubject: Subject<[boolean, Map<string, string>]> = new Subject();
+  private filterSidePanelVisibleSubject: Subject<boolean> = new Subject<boolean>();
 
+  filterSidePanel$: Observable<boolean> = this.filterSidePanelVisibleSubject.asObservable();
   showFilter$: Observable<boolean> = this.showFilterSubject.asObservable();
   metadataLabels$: Observable<string[]> = this.metadataLabelsSubject.asObservable();
   currentRecords$: Observable<Map<string, string[]>> = this.currentRecordsSubject.asObservable();
   metadataTypes$: Observable<Map<string, string>> = this.metadataTypesSubject.asObservable();
-  filterError$: Observable<[boolean, Map<string, string>]> = this.filterErrorSubject.asObservable();
-  filterContext$: Observable<Map<string, string>> = this.filterContextSubject.pipe(
-    debounceTime(300),
-    filter((context: Map<string, string>): boolean => {
-      if (context.size === 0) {
-        this.disableFilterError();
-        return true;
-      }
-      let errorFound: boolean = false;
-      this.filterErrors.clear();
-      for (let [key, value] of context) {
-        const metadataType: string | undefined = this.metadataTypes.get(key);
-        if (this.isNumber(metadataType) && !this.isValidNumber(value)) {
-          this.filterErrors.set(<string>this.metadataTypes.get(key), value);
-          errorFound = true;
-        }
-      }
-      if (errorFound) {
-        this.enableFilterError(this.filterErrors);
-      } else {
-        this.disableFilterError();
-      }
-      return !errorFound;
-    }),
-  );
+  filterContext$: Observable<Map<string, string>> = this.filterContextSubject.pipe(debounceTime(300));
 
   private metadataLabels: string[] = [];
   private filters: Map<string, string> = new Map<string, string>();
   private metadataTypes: Map<string, string> = new Map<string, string>();
-  private filterErrors: Map<string, string> = new Map<string, string>();
 
   setShowFilter(show: boolean): void {
     this.showFilterSubject.next(show);
@@ -91,22 +68,7 @@ export class FilterService {
     this.metadataTypesSubject.next(this.metadataTypes);
   }
 
-  disableFilterError(): void {
-    this.filterErrors.clear();
-    this.filterErrorSubject.next([false, this.filterErrors]);
-  }
-
-  enableFilterError(inputFilter: Map<string, string>): void {
-    this.filterErrors = inputFilter;
-    this.filterErrorSubject.next([true, this.filterErrors]);
-  }
-
-  isNumber(metadataType: string | undefined): boolean {
-    return metadataType === 'int' || metadataType === 'long';
-  }
-
-  isValidNumber(userInput: string): boolean {
-    const regex: RegExp = /^\*?-?\d*(\.\d*)?\*?$/;
-    return regex.test(userInput);
+  toggleShowFilterSidePanel(value: boolean) {
+    this.filterSidePanelVisibleSubject.next(value);
   }
 }

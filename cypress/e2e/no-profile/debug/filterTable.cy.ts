@@ -59,7 +59,8 @@ describe('Tests for table filter', () => {
     cy.assertDebugTableLength(2);
   });
 
-  it('Should display error when entering wrong type for filter header', () => {
+  //Disabled because form validation has been removed for filter fields
+  xit('Should display error when entering wrong type for filter header', () => {
     cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="tableFilter"]').eq(0).type('test');
     cy.get('[data-cy-debug="filter-error-message"]').should('be.visible');
@@ -91,8 +92,10 @@ describe('Tests for table filter', () => {
     cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="tableFilter"]').eq(1).type('1{enter}');
     cy.get('[data-cy-change-view-dropdown]').select('Report name only');
+    cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="filterLabel"]').eq(1).should('not.contain', 'Endtime');
     cy.get('[data-cy-change-view-dropdown]').select('White box');
+    cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="tableFilter"').eq(1).should('not.contain.value', '1')
   })
 });

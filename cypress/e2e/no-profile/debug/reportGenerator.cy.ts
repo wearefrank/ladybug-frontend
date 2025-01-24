@@ -5,7 +5,7 @@ describe('Report generator', () => {
     cy.initializeApp();
     cy.get('[data-cy-debug="openSettings"]').should('be.visible').click();
     cy.get('[role=dialog]').should('be.visible');
-    cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
+    cy.get('[data-cy-settings="generatorEnabled"]').select('Enabled').should('have.value', 'Enabled');
     cy.get('[data-cy-settings="saveChanges"]').click();
   });
 
@@ -18,7 +18,7 @@ describe('Report generator', () => {
     cy.assertDebugTableLength(1);
     cy.get('[data-cy-debug="openSettings"]').click();
     cy.get('[role=dialog]').should('be.visible');
-    cy.get('select[formcontrolname=generatorEnabled]').select('Disabled').should('have.value', 'Disabled');
+    cy.get('[data-cy-settings="generatorEnabled"]').select('Disabled').should('have.value', 'Disabled');
     cy.get('[data-cy-settings="saveChanges"]').click();
     cy.contains('Settings saved');
     cy.createOtherReport();
@@ -29,7 +29,7 @@ describe('Report generator', () => {
     cy.assertDebugTableLength(1);
     cy.get('[data-cy-debug="openSettings"]').click();
     cy.get('[role=dialog]').should('be.visible');
-    cy.get('select[formcontrolname=generatorEnabled]').select('Enabled').should('have.value', 'Enabled');
+    cy.get('[data-cy-settings="generatorEnabled"]').select('Enabled').should('have.value', 'Enabled');
     cy.get('[data-cy-settings="saveChanges"]').click();
     cy.contains('Settings saved');
     cy.createOtherReport();

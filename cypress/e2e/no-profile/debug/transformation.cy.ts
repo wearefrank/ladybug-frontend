@@ -1,7 +1,6 @@
 describe('Tests for report transformation', () => {
   before(() => cy.resetApp());
 
-  afterEach(() => cy.resetApp());
 
   afterEach(() => {
     cy.clearDebugStore();
@@ -15,11 +14,11 @@ describe('Tests for report transformation', () => {
   it('Should see updated metadata when updating transformation field', () => {
     cy.visit('');
     cy.get('[data-cy-debug="openSettings"]').click();
-    cy.get('textarea[formcontrolname=transformation]').type('{selectAll}{del}');
-    cy.get('textarea[formcontrolname=transformation]').within((textArea) => {
+    cy.get('[data-cy-settings-transformation]').type('{selectAll}{del}');
+    cy.get('[data-cy-settings-transformation]').within((textArea) => {
       cy.fixture('ignoreName.xslt').then((newText) => cy.wrap(textArea).type(newText));
     });
-    cy.get('input[type=checkbox][formcontrolname=transformationEnabled]').check();
+    cy.get('[data-cy-settings-transformation-enabled]').check();
     cy.get('[data-cy-settings="saveChanges"]').click();
     cy.createOtherReport();
     cy.get('[data-cy-debug="refresh"]').click();
