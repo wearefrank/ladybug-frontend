@@ -32,34 +32,14 @@ describe('Tests for keeping state in tabs when switching tabs', () => {
   });
 
   it('should keep the same reports selected in test table', () => {
-    copyToTestTab(0)
-    copyToTestTab(1)
-    cy.intercept({
-      method: 'GET',
-      hostname: 'localhost',
-      url: /\/metadata\/Test\/*?/g,
-    }).as('test-reports');
-    cy.navigateToTestTab()
-    cy.wait('@test-reports').then((result) => {
-      cy.selectAllRowsInTestTable();
-      cy.get('[data-cy-test="selectOne"]').eq(1).click()
-      cy.navigateToDebugTab()
-      cy.navigateToTestTab();
-      cy.get('[data-cy-test="selectOne"]').eq(0).should('not.be.checked')
-      cy.get('[data-cy-test="selectOne"]').eq(1).should('be.checked')
-    })
+    cy.copyReportsToTestTab(['Simple report', 'Another simple report'])
+    cy.navigateToTestTabAndAwaitLoadingSpinner()
+    cy.get('[data-cy-test="toggleSelectAll"]').uncheck();
+    cy.get('[data-cy-test="selectOne"]').eq(1).check()
+    cy.navigateToDebugTab()
+    cy.navigateToTestTab();
+    cy.get('[data-cy-test="selectOne"]').eq(0).should('not.be.checked')
+    cy.get('[data-cy-test="selectOne"]').eq(1).should('be.checked')
   });
 
 });
-
-function copyToTestTab(index: number) {
-  const alias = `copy-report-${index}`
-  cy.intercept({
-    method: 'PUT',
-    hostname: 'localhost',
-    url: /\/report\/store\/*?/g,
-  }).as(alias);
-  cy.clickRowInTable(index)
-  cy.get('[data-cy-debug-editor="copy"]').click()
-  cy.wait(`@${alias}`)
-}
