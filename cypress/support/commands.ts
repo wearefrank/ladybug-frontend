@@ -274,7 +274,7 @@ Cypress.Commands.add(
   (reportNames: string[]): void => {
     cy.checkTestTableNumRows(reportNames.length);
     for (const reportName of reportNames) {
-      // Please mind that we want to have the '/' and that we
+      // Please mind that we want to have the '/' at the start of the path and that we
       // don't want null. There was an issue about this in the past.
       cy.getTestTableRows().contains(`/${reportName}`).should('have.length', 1);
       cy.getTestTableRows().contains('null').should('not.exist')
