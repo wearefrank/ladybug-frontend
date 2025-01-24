@@ -161,7 +161,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.subscriptions.add(filterContextSubscription);
     const refreshAll = this.debugTab.refreshAll$.subscribe((condition?: RefreshCondition) => this.refresh(condition));
     this.subscriptions.add(refreshAll);
-    const refreshTable = this.debugTab.refreshTable$.subscribe((condition: RefreshCondition) =>
+    const refreshTable = this.debugTab.refreshTable$.subscribe((condition?: RefreshCondition) =>
       this.refresh(condition),
     );
     this.subscriptions.add(refreshTable);
