@@ -12,7 +12,9 @@ export class ErrorHandling {
   handleError(): (error: HttpErrorResponse) => Observable<any> {
     return (error: HttpErrorResponse): Observable<any> => {
       const message = error.error;
-      if (message && message.includes('- detailed error message -')) {
+      if (error.status > 399 && error.status < 500) {
+        this.toastService.showWarning(message);
+      } else if (message && message.includes('- detailed error message -')) {
         const errorMessageParts = message.split('- detailed error message -');
         this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
       } else {
