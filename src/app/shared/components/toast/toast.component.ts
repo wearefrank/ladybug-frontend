@@ -59,4 +59,11 @@ export class ToastComponent implements OnInit, OnDestroy {
       this.justCopied = false;
     }, 2000);
   }
+
+  executeCallback(toast: Toast): void {
+    if (toast.toastCallback) {
+      toast.toastCallback.callback();
+      setTimeout(() => this.close(toast), 500);
+    }
+  }
 }
