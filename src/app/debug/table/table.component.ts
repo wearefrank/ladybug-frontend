@@ -159,9 +159,9 @@ export class TableComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(filterContextSubscription);
-    const refreshAll = this.debugTab.refreshAll$.subscribe((condition: RefreshCondition) => this.refresh(condition));
+    const refreshAll = this.debugTab.refreshAll$.subscribe((condition?: RefreshCondition) => this.refresh(condition));
     this.subscriptions.add(refreshAll);
-    const refreshTable = this.debugTab.refreshTable$.subscribe((condition: RefreshCondition) =>
+    const refreshTable = this.debugTab.refreshTable$.subscribe((condition?: RefreshCondition) =>
       this.refresh(condition),
     );
     this.subscriptions.add(refreshTable);
@@ -462,13 +462,13 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReport(storageId: number): void {
+    this.debugTab.setAnyReportsOpen(true);
     this.httpService
       .getReport(storageId, this.currentView.storageName)
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (data: Report): void => {
           data.storageName = this.currentView.storageName;
-          console.log('opened report from api');
           this.openReportEvent.next(data);
         },
       });
@@ -601,36 +601,6 @@ export class TableComponent implements OnInit, OnDestroy {
       }
       return a.localeCompare(b);
     });
-  }
-
-  handleFilterErrorContext(): string {
-    let result: string = '';
-    let moreThanOne: boolean = false;
-    for (const [key, value] of this.filterErrorDetails) {
-      let typeLabel: string = key;
-      switch (typeLabel) {
-        case 'int': {
-          typeLabel = 'number';
-          break;
-        }
-        case 'long': {
-          typeLabel = 'decimal number';
-          break;
-        }
-        case 'timestamp': {
-          typeLabel = 'date time';
-          break;
-        }
-        default: {
-          typeLabel = 'text';
-          break;
-        }
-      }
-      if (moreThanOne) result += ', ';
-      result += `Search value '${value}' is not a valid '${typeLabel}'`;
-      moreThanOne = true;
-    }
-    return result;
   }
 
   getMetadata(report: Report, field: string): string {
