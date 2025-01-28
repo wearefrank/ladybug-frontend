@@ -8,7 +8,7 @@
 describe('Test that should be done before all other tests', () => {
   beforeEach(() => {
     cy.initializeApp();
-    cy.navigateToTestTabAndInterceptApiCall();
+    cy.navigateToTestTabAndAwaitLoadingSpinner();
   })
 
   it('Report in src/test/testtool should not be shown', () => {
@@ -17,4 +17,3 @@ describe('Test that should be done before all other tests', () => {
     cy.getTestTableRows().should('not.exist')
   })
 })
-  

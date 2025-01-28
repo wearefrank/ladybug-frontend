@@ -20,6 +20,9 @@ import { TestReportsService } from './test-reports.service';
 import { TestTableComponent } from './test-table/test-table.component';
 import { DeleteModalComponent } from '../shared/components/delete-modal/delete-modal.component';
 import { LoadingSpinnerComponent } from '../shared/components/loading-spinner/loading-spinner.component';
+import { TabService } from '../shared/services/tab.service';
+import { CompareData } from '../compare/compare-data';
+import { CompareReport } from '../shared/interfaces/compare-reports';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -55,12 +58,13 @@ export class TestComponent implements OnInit, OnDestroy {
   @ViewChild(CloneModalComponent) protected cloneModal!: CloneModalComponent;
   @ViewChild(TestSettingsModalComponent) protected testSettingsModal!: TestSettingsModalComponent;
   @ViewChild(DeleteModalComponent) protected deleteModal!: DeleteModalComponent;
-  @ViewChild(TestFolderTreeComponent) protected testFileTreeComponent!: TestFolderTreeComponent;
-  @ViewChild('moveToInput', { read: NgModel }) protected moveToInputModel!: NgModel;
-  @ViewChild(TestTableComponent) protected testTableComponent!: TestTableComponent;
+  @ViewChild(TestFolderTreeComponent) protected testFileTreeComponent?: TestFolderTreeComponent;
+  @ViewChild('moveToInput', { read: NgModel }) protected moveToInputModel?: NgModel;
+  @ViewChild(TestTableComponent) protected testTableComponent?: TestTableComponent;
 
   private updatePathAction: UpdatePathAction = 'move';
   private testReportServiceSubscription?: Subscription;
+  protected childrenLoaded: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -68,6 +72,7 @@ export class TestComponent implements OnInit, OnDestroy {
     private toastService: ToastService,
     private errorHandler: ErrorHandling,
     protected testReportsService: TestReportsService,
+    private tabService: TabService,
   ) {
     this.getStorageIdsFromLocalStorage();
     this.setGeneratorStatusFromLocalStorage();
@@ -262,7 +267,7 @@ export class TestComponent implements OnInit, OnDestroy {
   updatePath(): void {
     const reportIds: number[] = this.helperService.getSelectedIds(this.filteredReports);
     if (reportIds.length > 0) {
-      const path: string = this.transformPath(this.moveToInputModel.value);
+      const path: string = this.transformPath(this.moveToInputModel?.value);
       const map: UpdatePathSettings = {
         path: path,
         action: this.updatePathAction,
@@ -283,7 +288,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   changeFilter(filter: string): void {
-    this.currentFilter = filter === this.testFileTreeComponent.rootFolder.path ? '' : this.transformPath(filter);
+    this.currentFilter = filter === this.testFileTreeComponent?.rootFolder.path ? '' : this.transformPath(filter);
     this.matches();
   }
 
@@ -303,7 +308,6 @@ export class TestComponent implements OnInit, OnDestroy {
       if (report.path === null || report.path === 'null') report.path = '';
       const name: string = report.path + report.name;
       if (new RegExp(`(/)?${this.currentFilter}.*`).test(name)) {
-        report.checked = true;
         filteredReports.push(report);
       }
     }
@@ -312,5 +316,28 @@ export class TestComponent implements OnInit, OnDestroy {
 
   getSelectedReports(): TestListItem[] {
     return this.filteredReports.filter((item: TestListItem) => item.checked) ?? [];
+  }
+
+  openCompareTab(): void {
+    const checkedReportIds = this.testTableComponent?.reports.filter((r) => r.checked).map((r) => r.storageId);
+    if (checkedReportIds && checkedReportIds.length == 2) {
+      this.httpService
+        .getReports(checkedReportIds, this.testReportsService.storageName)
+        .subscribe((resp: Record<string, CompareReport>) => {
+          const reports: Report[] = Object.values(resp).map((r) => r.report);
+          const compareData: CompareData = {
+            id: this.tabService.createCompareTabId(reports[0], reports[1]),
+            originalReport: reports[0],
+            runResultReport: reports[1],
+          };
+          this.tabService.openNewCompareTab(compareData);
+        });
+    }
+  }
+
+  protected childComponentsLoaded(): void {
+    setTimeout(() => {
+      this.childrenLoaded = true;
+    });
   }
 }
