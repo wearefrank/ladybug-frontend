@@ -32,7 +32,10 @@
     </ng-container>
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let report">{{ report.fullPath }}</td>
+      <td mat-cell *matCellDef="let report">
+        <span [ngClass]="{'path-highlight': report.fullPath} " (click)="changePath.next(report)">{{ report.fullPath }}</span><span
+        *ngIf="report.fullPath">&nbsp;</span>{{ report.name }}
+      </td>
     </ng-container>
     <ng-container matColumnDef="description">
       <th mat-header-cell *matHeaderCellDef>Description</th>
