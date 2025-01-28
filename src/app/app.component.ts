@@ -101,9 +101,9 @@ export class AppComponent implements OnInit, OnDestroy {
       this.tabs.push({
         key: data.report.name,
         id: String(data.report.storageId),
-        data: data.report,
+        data: data,
         path: `report/${data.report.storageId}`,
-      });
+      } as Tab);
     }
 
     this.router.navigate([ReportComponent.ROUTER_PATH, data.report.storageId]);
@@ -119,7 +119,7 @@ export class AppComponent implements OnInit, OnDestroy {
         id: tabId,
         data: data,
         path: `compare/${tabId}`,
-      });
+      } as Tab);
     }
     this.router.navigate([CompareComponent.ROUTER_PATH, tabId]);
   }
@@ -129,6 +129,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.tabs.splice(index, 1);
     if (this.router.url.includes(tab.path)) {
       this.location.back();
+    }
+    if (tab.data) {
+      this.tabService.closeTab(tab.data);
     }
   }
 
