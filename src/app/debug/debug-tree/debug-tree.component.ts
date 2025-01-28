@@ -70,11 +70,11 @@ export class DebugTreeComponent implements OnDestroy {
       },
     });
     this.subscriptions.add(showMultipleSubscription);
-    const refreshAll: Subscription = this.debugTab.refreshAll$.subscribe((condition: RefreshCondition) =>
+    const refreshAll: Subscription = this.debugTab.refreshAll$.subscribe((condition?: RefreshCondition) =>
       this.refreshReports(condition),
     );
     this.subscriptions.add(refreshAll);
-    const refreshTree: Subscription = this.debugTab.refreshTree$.subscribe((condition: RefreshCondition) =>
+    const refreshTree: Subscription = this.debugTab.refreshTree$.subscribe((condition?: RefreshCondition) =>
       this.refreshReports(condition),
     );
     this.subscriptions.add(refreshTree);
@@ -128,7 +128,7 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   addReportToTree(report: Report): void {
-    if (this.selectReportIfPresent(report)) {
+    if (this.selectAndReplaceReportIfPresent(report)) {
       return;
     }
     this.lastReport = report;
@@ -155,6 +155,7 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   closeEntireTree(): void {
+    this.debugTab.setAnyReportsOpen(false);
     this.closeEntireTreeEvent.emit();
     this.tree.clearItems();
     this.lastReport = null;
@@ -170,35 +171,43 @@ export class DebugTreeComponent implements OnDestroy {
     return type === undefined || type === 1 || type === 2;
   }
 
-  selectReportIfPresent(report: Report): boolean {
-    for (let item of this.tree.items) {
-      const treeReport: Report = item.originalValue;
+  selectAndReplaceReportIfPresent(report: Report): boolean {
+    for (const index in this.tree.items) {
+      const treeReport: Report = this.tree.items[index].originalValue;
       if (treeReport.storageId === report.storageId) {
-        this.tree.selectItem(item.path);
+        const transformedReport = new ReportHierarchyTransformer().transform(report);
+        this.tree.items[index] = this.tree.createItemToFileItem(transformedReport);
+        this.tree.selectItem(this.tree.items[index].path);
         return true;
       }
     }
     return false;
   }
 
-  async refreshReports(condition: RefreshCondition): Promise<void> {
-    const selectedReportId = this.tree.getSelected().originalValue.storageId;
+  async refreshReports(condition?: RefreshCondition): Promise<void> {
+    const selectedReportId: number = this.tree.getSelected().originalValue.storageId;
     let lastSelectedReport: FileTreeItem | undefined;
-    if (condition.reportIds) {
-      for (let i = 0; i < this.tree.items.length; i++) {
-        const report: Report = this.tree.items[i].originalValue as Report;
-        if (condition.reportIds.includes(report.storageId)) {
-          const fileItem: FileTreeItem = await this.getNewReport(report.storageId);
-          if (selectedReportId === report.storageId) {
-            lastSelectedReport = fileItem;
-          }
-          this.tree.items[i] = fileItem;
+
+    const shouldProcessReport = (reportId: number) => !condition?.reportIds || condition.reportIds.includes(reportId);
+
+    for (const index in this.tree.items) {
+      const report: Report = this.tree.items[index].originalValue as Report;
+
+      if (shouldProcessReport(report.storageId)) {
+        const fileItem: FileTreeItem = await this.getNewReport(report.storageId);
+
+        if (selectedReportId === report.storageId) {
+          lastSelectedReport = fileItem;
         }
-      }
-      if (lastSelectedReport) {
-        this.tree.selectItem(lastSelectedReport.path);
+
+        this.tree.items[index] = fileItem;
       }
     }
+
+    if (lastSelectedReport) {
+      this.tree.selectItem(lastSelectedReport.path);
+    }
+
     this.hideOrShowCheckpointsBasedOnView(this._currentView);
   }
 

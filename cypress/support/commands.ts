@@ -24,9 +24,9 @@ declare global {
 
       clearDatabaseStorage(): Chainable;
 
-      navigateToTestTabAndInterceptApiCall(): Chainable;
+      navigateToTestTabAndAwaitLoadingSpinner(): Chainable;
 
-      navigateToDebugTabAndInterceptApiCall(): Chainable;
+      navigateToDebugTabAndAwaitLoadingSpinner(): Chainable;
 
       navigateToTestTab(): Chainable;
 
@@ -47,6 +47,8 @@ declare global {
       createReportWithInfopoint(): Chainable;
 
       createReportWithMultipleStartpoints(): Chainable;
+
+      createJsonReport(): Chainable;
 
       clearDebugStore(): Chainable;
 
@@ -84,7 +86,7 @@ declare global {
 
       selectRowInTestTable(index: number): Chainable;
 
-      selectAllRowsInTestTable(): Chainable;
+      copyReportsToTestTab(names: string[]): Chainable;
     }
   }
 }
@@ -120,14 +122,14 @@ Cypress.Commands.add('clearDatabaseStorage' as keyof Chainable, (): void => {
 })
 
 Cypress.Commands.add(
-  'navigateToTestTabAndInterceptApiCall' as keyof Chainable,
+  'navigateToTestTabAndAwaitLoadingSpinner' as keyof Chainable,
   (): void => {
     navigateToTabAndAwaitLoadingSpinner('test');
   },
 );
 
 Cypress.Commands.add(
-  'navigateToDebugTabAndInterceptApiCall' as keyof Chainable,
+  'navigateToDebugTabAndAwaitLoadingSpinner' as keyof Chainable,
   (): void => {
     navigateToTabAndAwaitLoadingSpinner('debug');
   },
@@ -226,6 +228,18 @@ Cypress.Commands.add(
   },
 );
 
+Cypress.Commands.add(
+  'createJsonReport' as keyof Chainable,
+  (): void => {
+    // No cy.visit because then the API call can happen multiple times.
+    cy.request(
+      `${Cypress.env('backendServer')}/index.jsp?createReport=Json%20checkpoint`,
+    ).then((resp: Cypress.Response<ApiResponse>): void => {
+      expect(resp.status).equal(200);
+    });
+  },
+);
+
 Cypress.Commands.add('clearDebugStore' as keyof Chainable, (): void => {
   cy.request(
     `${Cypress.env('backendServer')}/index.jsp?clearDebugStorage=true`,
@@ -274,9 +288,10 @@ Cypress.Commands.add(
   (reportNames: string[]): void => {
     cy.checkTestTableNumRows(reportNames.length);
     for (const reportName of reportNames) {
-      // TODO: Fix https://github.com/wearefrank/ladybug-frontend/issues/699
-      // and request the name to be `/${reportName}` again (with /)
-      cy.getTestTableRows().contains(`${reportName}`).should('have.length', 1);
+      // Please mind that we want to have the '/' at the start of the path and that we
+      // don't want null. There was an issue about this in the past.
+      cy.getTestTableRows().contains(`/${reportName}`).should('have.length', 1);
+      cy.getTestTableRows().contains('null').should('not.exist')
     }
   },
 );
@@ -365,12 +380,13 @@ Cypress.Commands.add(
     cy.get('[data-cy-test="selectOne"]').eq(index).click();
   },
 );
-Cypress.Commands.add(
-  'selectAllRowsInTestTable' as keyof Chainable,
-  (): Chainable => {
-    cy.get('[data-cy-test="toggleSelectAll"]').click();
-  },
-);
+
+Cypress.Commands.add('copyReportsToTestTab' as keyof Chainable, (names: string[]): Chainable => {
+  for (let name of names) {
+    cy.get('[data-cy-debug="tableRow"]').find(`td:contains(${name})`).click()
+    cy.get('[data-cy-debug-editor="copy"]').click();
+  }
+})
 
 function awaitLoadingSpinner(): void {
   cy.get('[data-cy-loading-spinner]', { timeout: 10000 }).should('not.exist');

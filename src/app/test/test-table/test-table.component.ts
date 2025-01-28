@@ -6,6 +6,7 @@ import {
   OnChanges,
   Output,
   SimpleChanges,
+  AfterContentChecked,
 } from '@angular/core';
 import { TestListItem } from '../../shared/interfaces/test-list-item';
 import { catchError } from 'rxjs';
@@ -51,11 +52,12 @@ import {
   styleUrl: './test-table.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TestTableComponent implements OnChanges {
+export class TestTableComponent implements OnChanges, AfterContentChecked {
   @Input({ required: true }) reports!: TestListItem[];
   @Input() currentFilter: string = '';
   @Input() showStorageIds?: boolean;
   @Output() runEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
+  @Output() fullyLoaded: EventEmitter<void> = new EventEmitter<void>();
   amountOfSelectedReports: number = 0;
   protected displayedColumns: string[] = [];
 
@@ -80,6 +82,10 @@ export class TestTableComponent implements OnChanges {
       }
       this.getFullPaths();
     }
+  }
+
+  ngAfterContentChecked(): void {
+    this.fullyLoaded.next();
   }
 
   updateDisplayColumn(): void {
