@@ -106,7 +106,6 @@ export class TableComponent implements OnInit, OnDestroy {
   protected checkboxSize?: string;
   protected openInProgress: FormControl = new FormControl(1, this.defaultReportInProgressValidators);
 
-  private filterErrorDetails: Map<string, string> = new Map<string, string>();
   private reportsInProgress: Record<string, number> = {};
 
   private showMultipleFiles?: boolean;
