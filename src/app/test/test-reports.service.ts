@@ -11,7 +11,7 @@ export class TestReportsService {
   private testReportsSubject: ReplaySubject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
   testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
   private firstApiCall: boolean = true;
-  metadataNames: string[] = ['storageId', 'name', 'path', 'description'];
+  metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variableMap'];
   storageName: string = 'Test';
 
   constructor(

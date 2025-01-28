@@ -85,7 +85,7 @@
         </span>
       }
 
-      @switch (amountOfSelectedReports) {
+      @switch (selectedReports.length) {
         @case (1) {
           <button data-cy-debug="openReportTab" class="btn btn-info btn-table" title="Open In New Tab"
                   (click)="openReportInTab()">
@@ -114,7 +114,7 @@
               type="checkbox"
               class="vertical-middle"
               title="Select all rows"
-              [checked]="amountOfSelectedReports === tableSettings.reportMetadata.length && amountOfSelectedReports > 0"
+              [checked]="selectedReports.length === tableSettings.reportMetadata.length && selectedReports.length > 0"
               [style.width]="checkboxSize"
               [style.height]="checkboxSize"
               (click)="toggleSelectAll()">
