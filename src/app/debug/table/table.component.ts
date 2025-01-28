@@ -230,7 +230,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadData();
     this.filterService.setMetadataLabels(this.currentView.metadataNames);
     this.viewChange.next(this.currentView);
-    this.tableSettings.showFilter = !this.tableSettings.showFilter;
+    this.tableSettings.showFilter = false;
     this.filterService.setShowFilter(this.tableSettings.showFilter);
   }
 
