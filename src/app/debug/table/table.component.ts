@@ -109,7 +109,9 @@ export class TableComponent implements OnInit, OnDestroy {
   private reportsInProgress: Record<string, number> = {};
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
-  private selectedReportIds: number[] = this.selectedReports.map((report: Report): number => report.storageId);
+  private get selectedReportIds(): number[] {
+    return this.selectedReports.map((report: Report): number => report.storageId);
+  }
 
   private showMultipleFiles?: boolean;
   private tableDataSort?: MatSort;
