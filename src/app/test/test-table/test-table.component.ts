@@ -1,4 +1,5 @@
 import {
+  AfterContentChecked,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
@@ -6,7 +7,6 @@ import {
   OnChanges,
   Output,
   SimpleChanges,
-  AfterContentChecked,
 } from '@angular/core';
 import { TestListItem } from '../../shared/interfaces/test-list-item';
 import { catchError } from 'rxjs';
@@ -31,6 +31,7 @@ import {
   MatRowDef,
   MatTable,
 } from '@angular/material/table';
+import { NgClass, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-test-table',
@@ -47,6 +48,8 @@ import {
     MatHeaderRowDef,
     MatRow,
     MatRowDef,
+    NgIf,
+    NgClass,
   ],
   templateUrl: './test-table.component.html',
   styleUrl: './test-table.component.css',
@@ -58,6 +61,7 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
   @Input() showStorageIds?: boolean;
   @Output() runEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
   @Output() fullyLoaded: EventEmitter<void> = new EventEmitter<void>();
+  @Output() changePath: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
   amountOfSelectedReports: number = 0;
   protected displayedColumns: string[] = [];
 
@@ -121,9 +125,10 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
         if (transformedPath.startsWith('/')) {
           transformedPath = transformedPath.slice(1);
         }
-        report.fullPath = `${transformedPath}${report.name}`;
-      } else {
-        report.fullPath = `/${report.name}`;
+        if (transformedPath.endsWith('/')) {
+          transformedPath = transformedPath.slice(0, -1);
+        }
+        report.fullPath = transformedPath;
       }
     }
   }

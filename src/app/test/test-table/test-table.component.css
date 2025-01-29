@@ -64,3 +64,15 @@ thead {
 .test-table {
   table-layout: fixed;
 }
+
+
+.path-highlight {
+  background-color: #fdc300;
+  border-radius: 5px;
+  padding: 0.25rem;
+  cursor: pointer;
+
+  &:hover{
+    background-color: rgba(253, 195, 0, 0.6);
+  }
+}

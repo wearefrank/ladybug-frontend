@@ -68,6 +68,7 @@
       <app-test-table
         [reports]="filteredReports" [currentFilter]="currentFilter"
         [showStorageIds]="showStorageIds"
+        (changePath)="selectItemInFolderTree($event)"
         (fullyLoaded)="childComponentsLoaded()" (runEvent)="run($event)">
       </app-test-table>
     }

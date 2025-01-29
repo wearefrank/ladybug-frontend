@@ -340,4 +340,12 @@ export class TestComponent implements OnInit, OnDestroy {
       this.childrenLoaded = true;
     });
   }
+
+  protected selectItemInFolderTree(report: TestListItem): void {
+    let path = report.path;
+    if (path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
+    this.testFileTreeComponent?.tree?.selectItem(path);
+  }
 }
