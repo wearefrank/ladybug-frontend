@@ -51,7 +51,7 @@ export class CloneModalComponent {
 
   generateClones() {
     const map: CloneReport = {
-      csv: this.variableForm.value.variables,
+      csv: this.variableForm.value.variableCsv,
       message: this.variableForm.value.message,
     };
     this.httpService

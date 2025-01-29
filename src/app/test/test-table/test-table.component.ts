@@ -83,9 +83,6 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
         if (report.checked) {
           this.amountOfSelectedReports++;
         }
-        if (report.variables) {
-          report.extractedVariables = this.extractVariables(report.variables);
-        }
       }
       this.getFullPaths();
     }
@@ -134,20 +131,6 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
         report.fullPath = transformedPath;
       }
     }
-  }
-
-  extractVariables(variables: string): string {
-    if (!variables || variables == 'null') {
-      return '';
-    }
-    const map: string[] = variables.split('\n');
-    const keys: string[] = map[0].split(',');
-    const values: string[] = map[1].split(',');
-    let resultString: string = '';
-    for (let i in keys) {
-      resultString += keys[i] + '=' + values[i] + ', ';
-    }
-    return resultString.slice(0, -2);
   }
 
   replaceReport(report: TestListItem): void {
