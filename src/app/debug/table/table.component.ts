@@ -85,7 +85,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   protected metadataCount: number = 0;
-  protected amountOfSelectedReports: number = 0;
+  protected selectedReports: Report[] = [];
   protected hasTimedOut: boolean = false;
   protected tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
   protected tableSettings: TableSettings = {
@@ -106,8 +106,12 @@ export class TableComponent implements OnInit, OnDestroy {
   protected checkboxSize?: string;
   protected openInProgress: FormControl = new FormControl(1, this.defaultReportInProgressValidators);
 
-  private filterErrorDetails: Map<string, string> = new Map<string, string>();
   private reportsInProgress: Record<string, number> = {};
+
+  // eslint-disable-next-line unicorn/consistent-function-scoping
+  private get selectedReportIds(): number[] {
+    return this.selectedReports.map((report: Report): number => report.storageId);
+  }
 
   private showMultipleFiles?: boolean;
   private tableDataSort?: MatSort;
@@ -226,7 +230,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadData();
     this.filterService.setMetadataLabels(this.currentView.metadataNames);
     this.viewChange.next(this.currentView);
-    this.tableSettings.showFilter = !this.tableSettings.showFilter;
+    this.tableSettings.showFilter = false;
     this.filterService.setShowFilter(this.tableSettings.showFilter);
   }
 
@@ -306,19 +310,20 @@ export class TableComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     report.checked = !report.checked;
     if (report.checked) {
-      this.amountOfSelectedReports++;
+      this.selectedReports.push(report);
     } else {
-      this.amountOfSelectedReports--;
+      const index = this.selectedReports.indexOf(report);
+      this.selectedReports.splice(index, 1);
     }
   }
 
   toggleSelectAll(): void {
-    if (this.amountOfSelectedReports === this.tableSettings.reportMetadata.length) {
+    if (this.selectedReports.length === this.tableSettings.reportMetadata.length) {
       this.setCheckedForAllReports(false);
-      this.amountOfSelectedReports = 0;
+      this.selectedReports = [];
     } else {
       this.setCheckedForAllReports(true);
-      this.amountOfSelectedReports = this.tableSettings.reportMetadata.length;
+      this.selectedReports = [...this.tableSettings.reportMetadata];
     }
   }
 
@@ -365,21 +370,18 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openSelected(): void {
-    if (this.amountOfSelectedReports > 1 && !this.showMultipleFiles) {
+    if (this.selectedReports.length > 1 && !this.showMultipleFiles) {
       this.toastService.showWarning(
         'Please enable show multiple files in settings to open multiple files in the debug tree',
       );
       return;
     }
-    const selectedReports: number[] = this.tableSettings.reportMetadata
-      .filter((report: Report) => report.checked)
-      .map((report: Report) => report.storageId);
     this.httpService
-      .getReports(selectedReports, this.currentView.storageName)
+      .getReports(this.selectedReportIds, this.currentView.storageName)
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (data: Record<string, CompareReport>) => {
-          for (const storageId of selectedReports) {
+          for (const storageId of this.selectedReportIds) {
             this.openReportEvent.next(data[storageId].report);
           }
         },
@@ -416,16 +418,13 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   compareTwoReports(): void {
-    const selectedReports: number[] = this.tableSettings.reportMetadata
-      .filter((report) => report.checked)
-      .map((report) => report.storageId);
     this.httpService
-      .getReports(selectedReports, this.currentView.storageName)
+      .getReports(this.selectedReportIds, this.currentView.storageName)
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (data: Record<string, CompareReport>) => {
-          const originalReport = this.transformCompareToReport(data[selectedReports[0]]);
-          const runResultReport = this.transformCompareToReport(data[selectedReports[1]]);
+          const originalReport = this.transformCompareToReport(data[this.selectedReportIds[0]]);
+          const runResultReport = this.transformCompareToReport(data[this.selectedReportIds[1]]);
 
           const id: string = this.tabService.createCompareTabId(originalReport, runResultReport);
           this.tabService.openNewCompareTab({

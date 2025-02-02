@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { By } from '@angular/platform-browser';
@@ -20,15 +20,6 @@ describe('CopyTooltipDirective', () => {
       providers: [Clipboard],
     });
   });
-
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  function setup(value: string) {
-    const fixture = TestBed.createComponent(TestComponent);
-    const component = fixture.componentInstance;
-    component.value = value;
-    fixture.detectChanges();
-    return fixture;
-  }
 
   it('should not show tooltip if value is an empty string', () => {
     const fixture = setup('');
@@ -62,3 +53,11 @@ describe('CopyTooltipDirective', () => {
     }, 2100);
   });
 });
+
+function setup(value: string): ComponentFixture<TestComponent> {
+  const fixture: ComponentFixture<TestComponent> = TestBed.createComponent(TestComponent);
+  const component: TestComponent = fixture.componentInstance;
+  component.value = value;
+  fixture.detectChanges();
+  return fixture;
+}

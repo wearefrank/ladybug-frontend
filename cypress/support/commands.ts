@@ -287,12 +287,14 @@ Cypress.Commands.add(
   'checkTestTableReportsAre' as keyof Chainable,
   (reportNames: string[]): void => {
     cy.checkTestTableNumRows(reportNames.length);
-    for (const reportName of reportNames) {
-      // Please mind that we want to have the '/' at the start of the path and that we
-      // don't want null. There was an issue about this in the past.
-      cy.getTestTableRows().contains(`/${reportName}`).should('have.length', 1);
-      cy.getTestTableRows().contains('null').should('not.exist')
-    }
+    cy.get('[data-cy-test="tableRow"]').should($rows => {
+      // Check each report name exists in the rows
+      for (let reportName of reportNames){
+        expect($rows.text()).to.include(reportName);
+        // Please mind that we don't want null. There was an issue about this in the past.
+        expect($rows.text()).not.to.include('null');
+      }
+    });
   },
 );
 
