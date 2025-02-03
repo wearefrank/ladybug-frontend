@@ -31,15 +31,7 @@ export class MessagecontextTableComponent implements OnInit, OnChanges {
   }
 
   private updateMessageContextData() {
-    if (ReportUtil.isCheckPoint(this.report)) {
-      const messageContext = this.report.messageContext;
-      if (messageContext) {
-        this.messageContextData = Object.entries(messageContext);
-      } else {
-        this.messageContextData = [];
-      }
-    } else {
-      this.messageContextData = [];
-    }
+    const messageContext = ReportUtil.isCheckPoint(this.report) ? this.report.messageContext : null;
+    this.messageContextData = messageContext ? Object.entries(messageContext) : [];
   }
 }
