@@ -14,6 +14,7 @@ import { HelperService } from '../../shared/services/helper.service';
 import { EditorComponent } from '../../editor/editor.component';
 import { Report } from '../../shared/interfaces/report';
 import { MetadataTableComponent } from '../../shared/components/metadata-table/metadata-table.component';
+import { MessagecontextTableComponent } from '../../shared/components/messagecontext-table/messagecontext-table.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
 import { catchError } from 'rxjs';
@@ -52,6 +53,7 @@ import { Router } from '@angular/router';
     ReactiveFormsModule,
     EditorComponent,
     MetadataTableComponent,
+    MessagecontextTableComponent,
     BooleanToStringPipe,
     ClipboardModule,
     EditFormComponent,
@@ -84,6 +86,7 @@ export class EditDisplayComponent implements OnChanges {
   editingChildNode: boolean = false;
   editingRootNode: boolean = false;
   metadataTableVisible: boolean = false;
+  messageContextTableVisible: boolean = false;
   displayReport: boolean = false;
   rerunResult?: TestResult;
   selectedNode?: Report | Checkpoint;
@@ -321,6 +324,10 @@ export class EditDisplayComponent implements OnChanges {
 
   toggleMetadataTable(): void {
     this.metadataTableVisible = !this.metadataTableVisible;
+  }
+
+  toggleMessageContextTable(): void {
+    this.messageContextTableVisible = !this.messageContextTableVisible;
   }
 
   showEditorPossibilitiesModal(modal: any): void {

@@ -5,6 +5,7 @@ import { DiffEditorModel, MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TabService } from '../shared/services/tab.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MetadataTableComponent } from '../shared/components/metadata-table/metadata-table.component';
+import { MessagecontextTableComponent } from '../shared/components/messagecontext-table/messagecontext-table.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TitleCasePipe } from '@angular/common';
 import { NodeLinkStrategy, nodeLinkStrategyConst } from '../shared/enums/node-link-strategy';
@@ -30,6 +31,7 @@ import { ReportAlertMessageComponent } from '../report/report-alert-message/repo
   imports: [
     CompareTreeComponent,
     MetadataTableComponent,
+    MessagecontextTableComponent,
     MonacoEditorModule,
     ReactiveFormsModule,
     TitleCasePipe,
@@ -40,6 +42,7 @@ import { ReportAlertMessageComponent } from '../report/report-alert-message/repo
   ],
 })
 export class CompareComponent implements AfterViewInit, OnInit {
+  protected readonly ReportUtil = ReportUtil;
   static readonly ROUTER_PATH: string = 'compare';
   @ViewChild(CompareTreeComponent) compareTreeComponent!: CompareTreeComponent;
   protected readonly nodeLinkStrategyConst = nodeLinkStrategyConst;
