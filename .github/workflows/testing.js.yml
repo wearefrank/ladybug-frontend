@@ -204,6 +204,9 @@ jobs:
         if: ${{ github.event.inputs.useRealFrontend == 'true' }}
         with:
           working-directory: ladybug-frontend
+          # Without this line, this GitHub Action tries to
+          # install dependencies without the --legacy-peer-deps option
+          install-command: npm ci --legacy-peer-deps
           wait-on: "http://localhost:8090"
           wait-on-timeout: 1000
           spec: ${{ matrix.selected-specs }}
