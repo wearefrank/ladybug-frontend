@@ -185,6 +185,7 @@ jobs:
         if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         with:
           working-directory: ladybug-frontend
+          install-command: npm ci --legacy-peer-deps
           start: |
             npm ng serve --proxy-config .github/workflows/proxy.cicd.conf.json --host 0.0.0.0
           wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
