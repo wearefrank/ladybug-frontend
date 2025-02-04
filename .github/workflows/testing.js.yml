@@ -91,12 +91,12 @@ jobs:
         working-directory: ladybug-frontend
 
       - name: Run linter
-        run: pnp run lint
+        run: npm run lint
         if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         working-directory: ladybug-frontend
 
       - name: Build project
-        run: pnp run build
+        run: npm run build
         if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         working-directory: ladybug-frontend
 
