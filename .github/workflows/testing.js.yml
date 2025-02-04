@@ -182,6 +182,7 @@ jobs:
 
       - name: Copy .github/workflows/proxy.cicd.conf.json
         if: ${{ github.event.inputs.useRealFrontend != 'true' }}
+        working-directory: ladybug-frontend
         run: cp .github/workflows/proxy.cicd.conf.json src/proxy.conf.json
       - name: Run cypress with chrome browser (bypass ladybug-frontend within backend)
         uses: cypress-io/github-action@v6.6.0
