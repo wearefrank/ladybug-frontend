@@ -43,20 +43,6 @@
         </configuration>
         <executions>
           <execution>
-            <id>update global corepack</id>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <executable>corepack</executable>
-              <arguments>
-                <argument>use</argument>
-                <argument>pnpm@10.0.0</argument>
-              </arguments>
-            </configuration>
-          </execution>
-          <execution>
             <id>pnpm install</id>
             <goals>
               <goal>exec</goal>
