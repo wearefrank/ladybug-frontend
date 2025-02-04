@@ -187,8 +187,8 @@ jobs:
           working-directory: ladybug-frontend
           install-command: npm ci --legacy-peer-deps
           start: |
-            npm run ng serve --proxy-config .github/workflows/proxy.cicd.conf.json --host 0.0.0.0
-          wait-on: "http://0.0.0.0:8090, http://0.0.0.0:4200"
+            npm run ng serve --proxy-config .github/workflows/proxy.cicd.conf.json
+          wait-on: "http://localhost:8090, http://localhost:4200"
           wait-on-timeout: 1000
           spec: ${{ matrix.selected-specs }}
           browser: chrome
@@ -197,7 +197,7 @@ jobs:
         if: ${{ github.event.inputs.useRealFrontend == 'true' }}
         with:
           working-directory: ladybug-frontend
-          wait-on: "http://0.0.0.0:8090"
+          wait-on: "http://localhost:8090"
           wait-on-timeout: 1000
           spec: ${{ matrix.selected-specs }}
           config: baseUrl=http://localhost:8090/ladybug
