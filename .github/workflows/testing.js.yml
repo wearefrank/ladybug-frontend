@@ -94,7 +94,9 @@ jobs:
         run: npm run lint
         if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         working-directory: ladybug-frontend
-
+      - name: Run Karma tests
+        working-directory: ladybug-frontend
+        run: npm run test-headless
       - name: Build project
         run: npm run build
         if: ${{ github.event.inputs.useRealFrontend != 'true' }}
