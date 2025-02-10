@@ -45,7 +45,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-unicorn": "^56.0.1",
     "font-awesome": "^4.7.0",
-    "monaco-editor": "0.52.2",
+    "monaco-editor": "0.48.0",
     "ng-simple-file-tree": "^0.1.28",
     "ngx-monaco-editor-v2": "17.0.1",
     "path": "^0.12.7",
@@ -53,7 +53,7 @@
     "rxjs": "7.8.1",
     "tslib": "2.8.1",
     "xml-beautifier": "0.5.0",
-    "zone.js": "0.14.10"
+    "zone.js": "0.15.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.2.8",
@@ -90,6 +90,5 @@
   },
   "repository": {
     "url": "https://github.com/wearefrank/ladybug-frontend"
-  },
-  "packageManager": "pnpm@9.4.0"
+  }
 }
