@@ -45,7 +45,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-unicorn": "^56.0.1",
     "font-awesome": "^4.7.0",
-    "monaco-editor": "0.52.2",
+    "monaco-editor": "0.48.0",
     "ng-simple-file-tree": "^0.1.28",
     "ngx-monaco-editor-v2": "17.0.1",
     "path": "^0.12.7",
