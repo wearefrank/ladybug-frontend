@@ -58,3 +58,7 @@ table {
     background-color: rgba(154, 152, 152, 0.5);
   }
 }
+
+.title {
+  font-weight: bold;
+}
