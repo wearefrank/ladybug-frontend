@@ -37,6 +37,15 @@
           (click)="toggleMetadataTable()">
           {{ metadataTableVisible|booleanToString:'Hide' :'Show' }} metadata
         </button>
+        @if (ReportUtil.isCheckPoint(selectedNode)) {
+          <button
+            data-cy-open-metadata-table
+            class="btn btn-info h-fit"
+            title="Open message context table"
+            (click)="toggleMessageContextTable()">
+            {{ messageContextTableVisible|booleanToString:'Hide' :'Show' }} messagecontext
+          </button>
+        }
         <app-toggle-button
           #editToggleButton
           data-cy-report="toggleEdit"
@@ -110,6 +119,9 @@
     <app-report-alert-message [report]="selectedNode"/>
     @if (metadataTableVisible) {
       <app-metadata-table [report]="selectedNode"/>
+    }
+    @if (messageContextTableVisible) {
+      <app-messagecontext-table [report]="selectedNode"/>
     }
   }
 </div>
