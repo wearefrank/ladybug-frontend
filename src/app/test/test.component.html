@@ -42,6 +42,12 @@
             Compare
           </button>
         }
+        @if (appVariablesService.getVariable('customReportActionButtonText') !== null) {
+          <button data-cy-test="customReportAction" class="btn btn-info" [title]="appVariablesService.getVariable('customReportActionButtonText')"
+                    (click)="processCustomReportAction()">
+              {{ appVariablesService.getVariable('customReportActionButtonText') }}
+          </button>
+        }
       </section>
       <span class="button-divider">&#124;</span>
       <section class="buttons button-section">
