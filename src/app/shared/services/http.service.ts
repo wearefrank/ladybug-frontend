@@ -217,4 +217,9 @@ export class HttpService {
       responseType: 'text',
     });
   }
+
+  processCustomReportAction(storage: string, reportIds: number[]): Observable<void> {
+    return this.http.post<void>(`api/report/customreportaction?storage=`+storage, reportIds);
+  }
+
 }

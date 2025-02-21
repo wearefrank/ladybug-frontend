@@ -23,6 +23,7 @@ import { EditFormComponent } from '../edit-form/edit-form.component';
 import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
 import { ToggleButtonComponent } from '../../shared/components/toggle-button/toggle-button.component';
 import { ToastService } from '../../shared/services/toast.service';
+import { AppVariablesService } from '../../shared/services/app.variables.service';
 import { TestResult } from '../../shared/interfaces/test-result';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
@@ -103,6 +104,7 @@ export class EditDisplayComponent implements OnChanges {
     private debugTab: DebugTabService,
     private cdr: ChangeDetectorRef,
     private router: Router,
+    protected appVariablesService: AppVariablesService
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -388,4 +390,34 @@ export class EditDisplayComponent implements OnChanges {
       this.disableEditing();
     }
   }
+
+  processCustomReportAction(): void {
+    const node: Report | Checkpoint = this.selectedNode!;
+    let reportId: number | undefined;
+    if (ReportUtil.isReport(node)) {
+      reportId = node.storageId;
+    } else if (ReportUtil.isCheckPoint(node)) {
+      reportId = ReportUtil.getStorageIdFromUid(node.uid);
+    }
+    if (reportId == undefined) {
+      this.toastService.showDanger('Could not find report to apply custom action');
+    } else {
+      this.httpService
+        .processCustomReportAction(this.currentView.storageName, [reportId])
+        .pipe(catchError(this.errorHandler.handleError()))
+        .subscribe({
+          next: (data: Record<string, string>) => {
+            if (data["success"]) {
+              this.toastService.showSuccess(data["success"]);
+            }
+            if (data["error"]) {
+              this.toastService.showDanger(data["error"]);
+            }
+          },
+          error: (err) => {
+            this.toastService.showDanger('Failed to process custom report action');
+          }
+        });
+    }
+   }
 }
