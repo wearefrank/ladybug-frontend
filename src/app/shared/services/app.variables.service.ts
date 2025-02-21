@@ -14,15 +14,18 @@ export class AppVariablesService {
 
   fetchCustomReportActionButtonText(): void {
     if (Object.keys(this.variables).length === 0) {
-      this.http.get<Record<string, string>>('api/report/variables/').pipe(
-        tap((data: Record<string, string>) => {
-          this.variables = data;
-        }),
-        catchError((error) => {
-          console.error('Error fetching custom report action button text', error);
-          return of(null);
-        })
-      ).subscribe();
+      this.http
+        .get<Record<string, string>>('api/report/variables/')
+        .pipe(
+          tap((data: Record<string, string>) => {
+            this.variables = data;
+          }),
+          catchError((error) => {
+            console.error('Error fetching custom report action button text', error);
+            return of(null);
+          }),
+        )
+        .subscribe();
     }
   }
 

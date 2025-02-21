@@ -355,7 +355,7 @@ export class TestComponent implements OnInit, OnDestroy {
     this.httpService
       .processCustomReportAction(
         this.testReportsService.storageName,
-        this.helperService.getSelectedIds(this.filteredReports)
+        this.helperService.getSelectedIds(this.filteredReports),
       )
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
