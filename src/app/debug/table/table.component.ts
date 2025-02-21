@@ -126,7 +126,7 @@ export class TableComponent implements OnInit, OnDestroy {
     private filterService: FilterService,
     private errorHandler: ErrorHandling,
     private debugTab: DebugTabService,
-    protected appVariablesService: AppVariablesService
+    protected appVariablesService: AppVariablesService,
   ) {}
 
   ngOnInit(): void {
@@ -629,16 +629,16 @@ export class TableComponent implements OnInit, OnDestroy {
         .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
           next: (data: Record<string, string>) => {
-            if (data["success"]) {
-              this.toastService.showSuccess(data["success"]);
+            if (data['success']) {
+              this.toastService.showSuccess(data['success']);
             }
-            if (data["error"]) {
-              this.toastService.showDanger(data["error"]);
+            if (data['error']) {
+              this.toastService.showDanger(data['error']);
             }
           },
           error: (err) => {
             this.toastService.showDanger('Failed to process custom report action');
-          }
+          },
         });
     }
   }

@@ -219,7 +219,6 @@ export class HttpService {
   }
 
   processCustomReportAction(storage: string, reportIds: number[]): Observable<void> {
-    return this.http.post<void>(`api/report/customreportaction?storage=`+storage, reportIds);
+    return this.http.post<void>(`api/report/customreportaction?storage=` + storage, reportIds);
   }
-
 }

@@ -104,7 +104,7 @@ export class EditDisplayComponent implements OnChanges {
     private debugTab: DebugTabService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-    protected appVariablesService: AppVariablesService
+    protected appVariablesService: AppVariablesService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -407,16 +407,16 @@ export class EditDisplayComponent implements OnChanges {
         .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
           next: (data: Record<string, string>) => {
-            if (data["success"]) {
-              this.toastService.showSuccess(data["success"]);
+            if (data['success']) {
+              this.toastService.showSuccess(data['success']);
             }
-            if (data["error"]) {
-              this.toastService.showDanger(data["error"]);
+            if (data['error']) {
+              this.toastService.showDanger(data['error']);
             }
           },
           error: (err) => {
             this.toastService.showDanger('Failed to process custom report action');
-          }
+          },
         });
     }
    }
