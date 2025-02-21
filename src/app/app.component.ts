@@ -59,7 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.fetchAndSetFrontendVersion();
     this.subscribeToServices();
     this.getStubStrategies();
-    this.appVariablesService.fetchCustomReportActionButtonText().subscribe();
+    this.appVariablesService.fetchCustomReportActionButtonText();
   }
 
   ngOnDestroy(): void {

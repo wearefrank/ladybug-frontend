@@ -407,17 +407,17 @@ export class EditDisplayComponent implements OnChanges {
         .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
           next: (data: Record<string, string>) => {
-            if (data['success']) {
-              this.toastService.showSuccess(data['success']);
+            if (data.success) {
+              this.toastService.showSuccess(data.success);
             }
-            if (data['error']) {
-              this.toastService.showDanger(data['error']);
+            if (data.error) {
+              this.toastService.showDanger(data.error);
             }
           },
-          error: (err) => {
+          error: () => {
             this.toastService.showDanger('Failed to process custom report action');
           },
         });
     }
-   }
+  }
 }

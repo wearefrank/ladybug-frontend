@@ -353,23 +353,23 @@ export class TestComponent implements OnInit, OnDestroy {
 
   processCustomReportAction(): void {
     this.httpService
-        .processCustomReportAction(
-          this.testReportsService.storageName,
-          this.helperService.getSelectedIds(this.filteredReports)
-        )
-        .pipe(catchError(this.errorHandler.handleError()))
-        .subscribe({
-          next: (data: Record<string, string>) => {
-            if (data['success']) {
-              this.toastService.showSuccess(data['success']);
-            }
-            if (data['error']) {
-              this.toastService.showDanger(data['error']);
-            }
-          },
-          error: (err) => {
-            this.toastService.showDanger('Failed to process custom report action');
-          },
-        });
+      .processCustomReportAction(
+        this.testReportsService.storageName,
+        this.helperService.getSelectedIds(this.filteredReports)
+      )
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (data: Record<string, string>) => {
+          if (data.success) {
+            this.toastService.showSuccess(data.success);
+          }
+          if (data.error) {
+            this.toastService.showDanger(data.error);
+          }
+        },
+        error: () => {
+          this.toastService.showDanger('Failed to process custom report action');
+        },
+      });
   }
 }
