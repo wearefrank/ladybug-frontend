@@ -1,7 +1,7 @@
 <div class="d-flex flex-column mb-2">
   @if (messageContextData.length > 0) {
     <div class="title">MessageContext:</div>
-    <div data-cy-metadata-table="table" class="metadata-table">
+    <div data-cy-messagecontext-table="table" class="metadata-table">
         @for (entry of messageContextData; track entry[0]) {
         <div class="table-col first-table-col">
           <div class="key">{{ entry[0] }}</div>
