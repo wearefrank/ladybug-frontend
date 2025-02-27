@@ -73,4 +73,3 @@ describe('About opened reports', () => {
     cy.get('[data-cy-debug-tree="root"] app-tree-item > div > div:contains("startpoint 2")').should('be.hidden');
   });
 });
-
