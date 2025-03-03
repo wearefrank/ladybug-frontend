@@ -1,1 +1,1 @@
-npx ng lint
+npm run lint
