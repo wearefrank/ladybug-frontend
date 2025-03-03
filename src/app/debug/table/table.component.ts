@@ -8,6 +8,7 @@ import { Report } from '../../shared/interfaces/report';
 import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { TabService } from '../../shared/services/tab.service';
+import { AppVariablesService } from '../../shared/services/app.variables.service';
 import { FilterService } from '../filter-side-drawer/filter.service';
 import { ReportData } from '../../shared/interfaces/report-data';
 import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
@@ -125,6 +126,7 @@ export class TableComponent implements OnInit, OnDestroy {
     private filterService: FilterService,
     private errorHandler: ErrorHandling,
     private debugTab: DebugTabService,
+    protected appVariablesService: AppVariablesService,
   ) {}
 
   ngOnInit(): void {
@@ -617,5 +619,27 @@ export class TableComponent implements OnInit, OnDestroy {
       names.push(this.getMetadataNameFromHeader(header));
     }
     return names;
+  }
+
+  processCustomReportAction(): void {
+    const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
+    if (reportIds.length > 0) {
+      this.httpService
+        .processCustomReportAction(this.currentView.storageName, reportIds)
+        .pipe(catchError(this.errorHandler.handleError()))
+        .subscribe({
+          next: (data: Record<string, string>) => {
+            if (data.success) {
+              this.toastService.showSuccess(data.success);
+            }
+            if (data.error) {
+              this.toastService.showDanger(data.error);
+            }
+          },
+          error: () => {
+            this.toastService.showDanger('Failed to process custom report action');
+          },
+        });
+    }
   }
 }
