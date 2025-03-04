@@ -5,10 +5,10 @@
       <span>&times;</span>
     </button>
   </div>
-  <form [formGroup]="variableForm" (ngSubmit)="generateClones()">
+  <form [formGroup]="variablesForm" (ngSubmit)="generateClones()">
     <div class="modal-body container">
       <div class="form-group">
-        <label>Variable CSV</label>
+        <label>Variables CSV</label>
         <textarea class="form-control" formControlName="variables" rows="5"></textarea>
       </div>
       <div class="form-group">
