@@ -605,7 +605,8 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   getMetadata(report: Report, field: string): string {
-    return report[field as keyof Report];
+    const value = report[field as keyof Report];
+    return value !== undefined && value !== null ? String(value) : '';
   }
 
   getMetadataNameFromHeader(header: string): string {
