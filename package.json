@@ -15,7 +15,7 @@
     "e2e-interactive": "start-server-and-test 'ng serve' 4200 cypress:open",
     "e2e-interactive-webjar": "cypress open --config baseUrl=http://localhost/ladybug/",
     "e2e-webjar": "cypress run --config baseUrl=http://localhost/ladybug/",
-    "lint": "ng lint",
+    "lint": "node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng lint",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -58,7 +58,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.2.8",
     "@angular-eslint/builder": "18.4.0",
-    "@angular-eslint/eslint-plugin": "18.3.1",
+    "@angular-eslint/eslint-plugin": "19.1.0",
     "@angular-eslint/eslint-plugin-template": "^18.3.0",
     "@angular-eslint/schematics": "18.4.0",
     "@angular-eslint/template-parser": "18.4.2",
@@ -67,7 +67,7 @@
     "@types/bootstrap": "^4",
     "@types/diff-match-patch": "1.0.36",
     "@types/jasmine": "5.1.5",
-    "@types/node": "20.14.11",
+    "@types/node": "22.13.5",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "chai-match": "^1.1.1",

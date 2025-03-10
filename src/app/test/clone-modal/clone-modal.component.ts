@@ -24,7 +24,7 @@ export class CloneModalComponent {
   currentView = {
     storageName: 'Test',
   };
-  variableForm = new UntypedFormGroup({
+  variablesForm = new UntypedFormGroup({
     variables: new UntypedFormControl(''),
     message: new UntypedFormControl(''),
   });
@@ -43,7 +43,7 @@ export class CloneModalComponent {
       .subscribe({
         next: (report: Report) => {
           this.report = report;
-          this.variableForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
+          this.variablesForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
           this.activeModal = this.modalService.open(this.modal);
         },
       });
@@ -51,8 +51,8 @@ export class CloneModalComponent {
 
   generateClones() {
     const map: CloneReport = {
-      csv: this.variableForm.value.variableCsv,
-      message: this.variableForm.value.message,
+      csv: this.variablesForm.value.variablesCsv,
+      message: this.variablesForm.value.message,
     };
     this.httpService
       .cloneReport(this.currentView.storageName, this.report.storageId, map)

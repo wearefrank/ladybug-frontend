@@ -19,7 +19,7 @@ export class EditFormComponent implements OnInit {
   protected readonly descriptionKey: string & keyof Report = 'description';
   protected readonly pathKey: string & keyof Report = 'path';
   protected readonly transformationKey: string & keyof Report = 'transformation';
-  protected readonly variableKey: string & keyof Report = 'variableCsv';
+  protected readonly variablesKey: string & keyof Report = 'variablesCsv';
 
   ngOnInit(): void {
     if (this.report) {
@@ -29,7 +29,7 @@ export class EditFormComponent implements OnInit {
           [this.descriptionKey]: new FormControl(this.report.description),
           [this.pathKey]: new FormControl(this.report.path),
           [this.transformationKey]: new FormControl(this.report.transformation),
-          [this.variableKey]: new FormControl(this.report.variableCsv),
+          [this.variablesKey]: new FormControl(this.report.variablesCsv),
         },
         { updateOn: 'change' },
       );
@@ -37,7 +37,8 @@ export class EditFormComponent implements OnInit {
   }
 
   getDifference(name: keyof Report): ReportDifference {
-    const originalValue = this.report[name] ?? '';
+    const originalValue =
+      this.report[name] !== undefined && this.report[name] !== null ? String(this.report[name]) : '';
     const difference = new DiffMatchPatch().diff_main(originalValue, this.editForm.get(name)?.value ?? '');
     return {
       name: name,
@@ -52,7 +53,7 @@ export class EditFormComponent implements OnInit {
       this.getDifference(this.descriptionKey),
       this.getDifference(this.pathKey),
       this.getDifference(this.transformationKey),
-      this.getDifference(this.variableKey),
+      this.getDifference(this.variablesKey),
     ];
   }
 
@@ -62,7 +63,7 @@ export class EditFormComponent implements OnInit {
       path: this.editForm.get(this.pathKey)?.value,
       description: this.editForm.get(this.descriptionKey)?.value,
       transformation: this.editForm.get(this.transformationKey)?.value,
-      variables: this.editForm.get(this.variableKey)?.value,
+      variables: this.editForm.get(this.variablesKey)?.value,
     };
   }
 }

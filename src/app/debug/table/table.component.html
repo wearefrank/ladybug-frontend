@@ -98,6 +98,13 @@
           </button>
         }
       }
+
+      @if (selectedReports.length > 0 && appVariablesService.getVariable('customReportActionButtonText') !== null) {
+        <button data-cy-test="customReportAction" class="btn btn-info" [title]="appVariablesService.getVariable('customReportActionButtonText')"
+                  (click)="processCustomReportAction()">
+            {{ appVariablesService.getVariable('customReportActionButtonText') }}
+        </button>
+      }
       <app-active-filters class="ml-2" (click)="toggleFilter()"/>
     </div>
     @if (hasTimedOut) {

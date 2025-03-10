@@ -63,6 +63,12 @@
           (click)="openDifferenceModal('saveRerun')"
         >Rerun
         </button>
+        @if (appVariablesService.getVariable('customReportActionButtonText') !== null) {
+          <button data-cy-test="customReportAction" class="btn btn-info" [title]="appVariablesService.getVariable('customReportActionButtonText')"
+              (click)="processCustomReportAction()">
+            {{ appVariablesService.getVariable("customReportActionButtonText") }}
+        </button>
+        }
         @if (editingEnabled) {
           <button
             data-cy-report="discard"
