@@ -1,3 +1,5 @@
+/* eslint sonarjs/no-gratuitous-expressions: 0 */
+
 import { Report } from '../shared/interfaces/report';
 
 export interface CompareData {
