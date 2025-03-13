@@ -21,6 +21,9 @@ export default [{
         "target/**/*",
         "node_modules/**/*",
         "cypress/**/*",
+        "src/app/app-routing.module.ts",
+        "src/app/app.component.spec.ts",
+        "src/app/app.component.ts",
     ],
 }, {
     settings: {
