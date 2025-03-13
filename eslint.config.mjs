@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
+import { fixupPluginRules } from "@eslint/compat";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,7 +37,6 @@ export default [{
 }, ...compat.extends(
     "plugin:@angular-eslint/recommended",
     "plugin:@angular-eslint/template/process-inline-templates",
-    "plugin:sonarjs/recommended",
     "plugin:unicorn/recommended",
     "plugin:prettier/recommended",
 ).map(config => ({
@@ -46,7 +46,7 @@ export default [{
     files: ["**/*.ts"],
 
     plugins: {
-        sonarjs,
+        sonarjs: fixupPluginRules(sonarjs),
         prettier,
     },
 
