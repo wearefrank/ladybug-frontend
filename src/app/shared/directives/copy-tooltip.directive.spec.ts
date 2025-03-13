@@ -7,20 +7,14 @@ import { CopyTooltipDirective } from './copy-tooltip.directive';
 
 @Component({
   template: ` <button [appCopyTooltip]="value">Click me</button>`,
+  imports: [MatTooltipModule, CopyTooltipDirective],
+  providers: [Clipboard],
 })
 class TestComponent {
   value = '';
 }
 
 describe('CopyTooltipDirective', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [TestComponent],
-      imports: [MatTooltipModule, CopyTooltipDirective],
-      providers: [Clipboard],
-    });
-  });
-
   it('should not show tooltip if value is an empty string', () => {
     const fixture = setup('');
     const button = fixture.debugElement.query(By.css('button'));
