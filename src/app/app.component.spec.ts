@@ -1,3 +1,6 @@
+/* eslint sonarjs/no-gratuitous-expressions: 0 */
+/* eslint sonarjs/no-extra-arguments: 0 */
+
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
