@@ -39,7 +39,7 @@
         </button>
         @if (ReportUtil.isCheckPoint(selectedNode)) {
           <button
-            data-cy-open-metadata-table
+            data-cy-open-messagecontext-table
             class="btn btn-info h-fit"
             title="Open message context table"
             (click)="toggleMessageContextTable()">
@@ -63,6 +63,12 @@
           (click)="openDifferenceModal('saveRerun')"
         >Rerun
         </button>
+        @if (appVariablesService.getVariable('customReportActionButtonText') !== null) {
+          <button data-cy-test="customReportAction" class="btn btn-info" [title]="appVariablesService.getVariable('customReportActionButtonText')"
+              (click)="processCustomReportAction()">
+            {{ appVariablesService.getVariable("customReportActionButtonText") }}
+        </button>
+        }
         @if (editingEnabled) {
           <button
             data-cy-report="discard"

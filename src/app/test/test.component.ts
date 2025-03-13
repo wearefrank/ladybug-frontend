@@ -8,6 +8,7 @@ import { catchError, Observable, of, Subscription } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { HelperService } from '../shared/services/helper.service';
 import { ToastService } from '../shared/services/toast.service';
+import { AppVariablesService } from '../shared/services/app.variables.service';
 import { UpdatePathSettings } from '../shared/interfaces/update-path-settings';
 import { TestFolderTreeComponent } from './test-folder-tree/test-folder-tree.component';
 import { FormsModule, NgModel, ReactiveFormsModule } from '@angular/forms';
@@ -73,6 +74,7 @@ export class TestComponent implements OnInit, OnDestroy {
     private errorHandler: ErrorHandling,
     protected testReportsService: TestReportsService,
     private tabService: TabService,
+    protected appVariablesService: AppVariablesService,
   ) {
     this.getStorageIdsFromLocalStorage();
     this.setGeneratorStatusFromLocalStorage();
@@ -347,5 +349,27 @@ export class TestComponent implements OnInit, OnDestroy {
       path = path.slice(0, -1);
     }
     this.testFileTreeComponent?.tree?.selectItem(path);
+  }
+
+  processCustomReportAction(): void {
+    this.httpService
+      .processCustomReportAction(
+        this.testReportsService.storageName,
+        this.helperService.getSelectedIds(this.filteredReports),
+      )
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: (data: Record<string, string>) => {
+          if (data.success) {
+            this.toastService.showSuccess(data.success);
+          }
+          if (data.error) {
+            this.toastService.showDanger(data.error);
+          }
+        },
+        error: () => {
+          this.toastService.showDanger('Failed to process custom report action');
+        },
+      });
   }
 }

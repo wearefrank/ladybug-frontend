@@ -102,5 +102,6 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     if (this.toolTipSuggestions) {
       return this.toolTipSuggestions[key as keyof Report];
     }
+    return null;
   }
 }

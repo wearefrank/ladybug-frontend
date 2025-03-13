@@ -98,11 +98,18 @@
           </button>
         }
       }
+
+      @if (selectedReports.length > 0 && appVariablesService.getVariable('customReportActionButtonText') !== null) {
+        <button data-cy-test="customReportAction" class="btn btn-info" [title]="appVariablesService.getVariable('customReportActionButtonText')"
+                  (click)="processCustomReportAction()">
+            {{ appVariablesService.getVariable('customReportActionButtonText') }}
+        </button>
+      }
       <app-active-filters class="ml-2" (click)="toggleFilter()"/>
     </div>
     @if (hasTimedOut) {
       <h4 class="progress-report-timeout">[One or more reports are in progress for more
-        than {{ (this.reportsInProgressThreshold ?? 1) / 1000 / 60 }} minutes]</h4>
+        than {{ (reportsInProgressThreshold ?? 1) / 1000 / 60 }} minutes]</h4>
     }
     <div data-cy-debug="table" class="table-responsive table-container">
       <table mat-table class="table mb-0" matSort [dataSource]="tableDataSource">

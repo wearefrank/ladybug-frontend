@@ -5,6 +5,6 @@ export interface TestListItem extends BaseReport {
   fullPath?: string;
   reranReport?: ReranReport | null;
   error?: string;
-  variableCsv?: string;
-  variableMap: Record<string, string>;
+  variablesCsv?: string;
+  variables: Record<string, string>;
 }
