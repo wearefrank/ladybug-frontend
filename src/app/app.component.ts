@@ -1,3 +1,5 @@
+/* eslint sonarjs/no-gratuitous-expressions: 0 */
+
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Location, NgOptimizedImage } from '@angular/common';
 import { Title } from '@angular/platform-browser';
