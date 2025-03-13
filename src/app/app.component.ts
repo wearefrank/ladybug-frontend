@@ -6,6 +6,7 @@ import { TestComponent } from './test/test.component';
 import { CompareData } from './compare/compare-data';
 import { SettingsService } from './shared/services/settings.service';
 import { TabService } from './shared/services/tab.service';
+import { AppVariablesService } from './shared/services/app.variables.service';
 import { catchError, Subscription } from 'rxjs';
 import { DebugComponent } from './debug/debug.component';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -51,12 +52,14 @@ export class AppComponent implements OnInit, OnDestroy {
     private httpService: HttpService,
     private errorHandler: ErrorHandling,
     private versionService: VersionService,
+    private appVariablesService: AppVariablesService,
   ) {}
 
   ngOnInit(): void {
     this.fetchAndSetFrontendVersion();
     this.subscribeToServices();
     this.getStubStrategies();
+    this.appVariablesService.fetchCustomReportActionButtonText();
   }
 
   ngOnDestroy(): void {
