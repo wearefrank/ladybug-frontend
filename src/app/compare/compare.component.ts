@@ -76,13 +76,6 @@ export class CompareComponent implements AfterViewInit, OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Test linting by introducing some errors
-    // 1: Unicorn try catch
-    try {
-      console.log('Something')
-    } catch (badName) {
-      console.log(badname);
-    }
     this.compareData = this.getData(this.getIdsFromPath());
     this.getStrategyFromLocalStorage();
     this.getViews();
