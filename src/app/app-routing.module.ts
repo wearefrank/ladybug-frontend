@@ -1,3 +1,5 @@
+/* eslint sonarjs/no-gratuitous-expressions: 0 */
+
 import { Injectable, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy, RouterModule, Routes } from '@angular/router';
 import { DebugComponent } from './debug/debug.component';
