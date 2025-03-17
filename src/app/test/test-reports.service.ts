@@ -8,10 +8,19 @@ import { ErrorHandling } from '../shared/classes/error-handling.service';
   providedIn: 'root',
 })
 export class TestReportsService {
-  private testReportsSubject: ReplaySubject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
-  testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
+  private testReportsSubject: ReplaySubject<TestListItem[]> = new ReplaySubject<
+    TestListItem[]
+  >(1);
+  testReports$: Observable<TestListItem[]> =
+    this.testReportsSubject.asObservable();
   private firstApiCall: boolean = true;
-  metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
+  metadataNames: string[] = [
+    'storageId',
+    'name',
+    'path',
+    'description',
+    'variables',
+  ];
   storageName: string = 'Test';
 
   constructor(
@@ -32,15 +41,21 @@ export class TestReportsService {
             this.testReportsSubject.next(sortedReports);
             this.firstApiCall = false;
           } else {
-            this.testReportsSubject.next(await this.matchRerunResults(sortedReports));
+            this.testReportsSubject.next(
+              await this.matchRerunResults(sortedReports),
+            );
           }
         },
       });
   }
 
   async matchRerunResults(reports: TestListItem[]) {
-    const oldReports: TestListItem[] = await firstValueFrom(this.testReportsSubject);
-    const filteredReports: TestListItem[] = oldReports.filter((r: TestListItem) => !!r.reranReport);
+    const oldReports: TestListItem[] = await firstValueFrom(
+      this.testReportsSubject,
+    );
+    const filteredReports: TestListItem[] = oldReports.filter(
+      (r: TestListItem) => !!r.reranReport,
+    );
     if (filteredReports.length > 0) {
       for (const report of reports) {
         for (const oldReport of filteredReports) {

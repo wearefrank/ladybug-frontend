@@ -12,7 +12,11 @@ export class ToastService {
 
   constructor() {}
 
-  public showDanger(body: string, detailedInfo?: string, toastCallback?: ToastCallback): void {
+  public showDanger(
+    body: string,
+    detailedInfo?: string,
+    toastCallback?: ToastCallback,
+  ): void {
     this.toastSubject.next({
       type: 'danger',
       message: body,
@@ -22,14 +26,26 @@ export class ToastService {
   }
 
   public showWarning(body: string, toastCallback?: ToastCallback): void {
-    this.toastSubject.next({ type: 'warning', message: body, toastCallback: toastCallback } as Toast);
+    this.toastSubject.next({
+      type: 'warning',
+      message: body,
+      toastCallback: toastCallback,
+    } as Toast);
   }
 
   public showSuccess(body: string, toastCallback?: ToastCallback): void {
-    this.toastSubject.next({ type: 'success', message: body, toastCallback: toastCallback } as Toast);
+    this.toastSubject.next({
+      type: 'success',
+      message: body,
+      toastCallback: toastCallback,
+    } as Toast);
   }
 
   public showInfo(body: string, toastCallback?: ToastCallback): void {
-    this.toastSubject.next({ type: 'info', message: body, toastCallback: toastCallback } as Toast);
+    this.toastSubject.next({
+      type: 'info',
+      message: body,
+      toastCallback: toastCallback,
+    } as Toast);
   }
 }

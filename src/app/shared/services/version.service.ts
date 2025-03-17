@@ -19,7 +19,9 @@ export class VersionService {
   async getFrontendVersion() {
     if (!this.frontendVersion) {
       try {
-        const packageJson = await firstValueFrom(this.httpClient.get<{ version: string }>(this.packageJsonPath));
+        const packageJson = await firstValueFrom(
+          this.httpClient.get<{ version: string }>(this.packageJsonPath),
+        );
         if (packageJson) {
           this.frontendVersion = packageJson.version;
         }
@@ -32,7 +34,9 @@ export class VersionService {
 
   async getBackendVersion() {
     if (!this.backendVersion) {
-      this.backendVersion = await firstValueFrom(this.httpService.getBackendVersion());
+      this.backendVersion = await firstValueFrom(
+        this.httpService.getBackendVersion(),
+      );
     }
     return this.backendVersion;
   }

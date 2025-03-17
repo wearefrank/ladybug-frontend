@@ -26,7 +26,8 @@ export class ReportAlertMessageComponent implements OnChanges {
         this.report.stubbed ||
         !this.report.message ||
         this.report.encoding ||
-        (this.report.preTruncatedMessageLength && this.report.preTruncatedMessageLength > 0) ||
+        (this.report.preTruncatedMessageLength &&
+          this.report.preTruncatedMessageLength > 0) ||
         this.report.stubNotFound
       );
     }

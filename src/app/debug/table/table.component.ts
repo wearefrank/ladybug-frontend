@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
@@ -14,7 +22,13 @@ import { ReportData } from '../../shared/interfaces/report-data';
 import { TableCellShortenerPipe } from '../../shared/pipes/table-cell-shortener.pipe';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
-import { FormControl, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import {
   NgbDropdown,
   NgbDropdownButtonItem,
@@ -76,7 +90,8 @@ export class TableComponent implements OnInit, OnDestroy {
   @Output() viewChange: EventEmitter<View> = new EventEmitter<View>();
   @Output() openReportEvent: EventEmitter<Report> = new EventEmitter<Report>();
 
-  @ViewChild(TableSettingsModalComponent) protected tableSettingsModal!: TableSettingsModalComponent;
+  @ViewChild(TableSettingsModalComponent)
+  protected tableSettingsModal!: TableSettingsModalComponent;
   @ViewChild(DeleteModalComponent) protected deleteModal!: DeleteModalComponent;
 
   @ViewChild(MatSort)
@@ -88,7 +103,8 @@ export class TableComponent implements OnInit, OnDestroy {
   protected metadataCount: number = 0;
   protected selectedReports: Report[] = [];
   protected hasTimedOut: boolean = false;
-  protected tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
+  protected tableDataSource: MatTableDataSource<Report> =
+    new MatTableDataSource<Report>();
   protected tableSettings: TableSettings = {
     reportMetadata: [],
     tableLoaded: false,
@@ -105,13 +121,18 @@ export class TableComponent implements OnInit, OnDestroy {
   protected tableSpacing?: string;
   protected fontSize?: string;
   protected checkboxSize?: string;
-  protected openInProgress: FormControl = new FormControl(1, this.defaultReportInProgressValidators);
+  protected openInProgress: FormControl = new FormControl(
+    1,
+    this.defaultReportInProgressValidators,
+  );
 
   private reportsInProgress: Record<string, number> = {};
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
   private get selectedReportIds(): number[] {
-    return this.selectedReports.map((report: Report): number => report.storageId);
+    return this.selectedReports.map(
+      (report: Report): number => report.storageId,
+    );
   }
 
   private showMultipleFiles?: boolean;
@@ -141,39 +162,46 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   subscribeToObservables(): void {
-    const tableSpacingSubscription: Subscription = this.settingsService.tableSpacingObservable.subscribe({
-      next: (value: number) => {
-        this.setTableSpacing(value);
-        this.setFontSize(value);
-        this.setCheckBoxSize(value);
-      },
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    const tableSpacingSubscription: Subscription =
+      this.settingsService.tableSpacingObservable.subscribe({
+        next: (value: number) => {
+          this.setTableSpacing(value);
+          this.setFontSize(value);
+          this.setCheckBoxSize(value);
+        },
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     this.subscriptions.add(tableSpacingSubscription);
-    const showMultipleSubscription: Subscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
-      next: (value: boolean) => (this.showMultipleFiles = value),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    const showMultipleSubscription: Subscription =
+      this.settingsService.showMultipleAtATimeObservable.subscribe({
+        next: (value: boolean) => (this.showMultipleFiles = value),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     this.subscriptions.add(showMultipleSubscription);
-    const showFilterSubscription: Subscription = this.filterService.showFilter$.subscribe({
-      next: (show: boolean) => (this.tableSettings.showFilter = show),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    const showFilterSubscription: Subscription =
+      this.filterService.showFilter$.subscribe({
+        next: (show: boolean) => (this.tableSettings.showFilter = show),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     this.subscriptions.add(showFilterSubscription);
-    const filterContextSubscription: Subscription = this.filterService.filterContext$.subscribe({
-      next: (context: Map<string, string>) => this.changeFilter(context),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    const filterContextSubscription: Subscription =
+      this.filterService.filterContext$.subscribe({
+        next: (context: Map<string, string>) => this.changeFilter(context),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
     this.subscriptions.add(filterContextSubscription);
-    const refreshAll = this.debugTab.refreshAll$.subscribe((condition?: RefreshCondition) => this.refresh(condition));
+    const refreshAll = this.debugTab.refreshAll$.subscribe(
+      (condition?: RefreshCondition) => this.refresh(condition),
+    );
     this.subscriptions.add(refreshAll);
-    const refreshTable = this.debugTab.refreshTable$.subscribe((condition?: RefreshCondition) =>
-      this.refresh(condition),
+    const refreshTable = this.debugTab.refreshTable$.subscribe(
+      (condition?: RefreshCondition) => this.refresh(condition),
     );
     this.subscriptions.add(refreshTable);
-    const amountOfRecordsInTableSubscription = this.settingsService.amountOfRecordsInTableObservable.subscribe(
-      (value) => (this.tableSettings.displayAmount = value),
-    );
+    const amountOfRecordsInTableSubscription =
+      this.settingsService.amountOfRecordsInTableObservable.subscribe(
+        (value) => (this.tableSettings.displayAmount = value),
+      );
     this.subscriptions.add(amountOfRecordsInTableSubscription);
   }
 
@@ -260,7 +288,8 @@ export class TableComponent implements OnInit, OnDestroy {
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (settings: OptionsSettings) => {
-          this.tableSettings.numberOfReportsInProgress = settings.reportsInProgress;
+          this.tableSettings.numberOfReportsInProgress =
+            settings.reportsInProgress;
           this.tableSettings.estimatedMemoryUsage = settings.estMemory;
           this.loadReportInProgressDates();
           this.openInProgress.setValue(1);
@@ -274,7 +303,11 @@ export class TableComponent implements OnInit, OnDestroy {
 
   loadReportInProgressDates(): void {
     let hasChanged: boolean = false;
-    for (let index = 1; index <= this.tableSettings.numberOfReportsInProgress; index++) {
+    for (
+      let index = 1;
+      index <= this.tableSettings.numberOfReportsInProgress;
+      index++
+    ) {
       this.httpService
         .getReportInProgress(index)
         .pipe(catchError(this.errorHandler.handleError()))
@@ -295,7 +328,8 @@ export class TableComponent implements OnInit, OnDestroy {
 
   reportsInProgressMetThreshold(report: Report): boolean {
     return (
-      Date.now() - new Date(this.reportsInProgress[report.correlationId]).getTime() >
+      Date.now() -
+        new Date(this.reportsInProgress[report.correlationId]).getTime() >
       (this.reportsInProgressThreshold ?? 0)
     );
   }
@@ -320,7 +354,9 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   toggleSelectAll(): void {
-    if (this.selectedReports.length === this.tableSettings.reportMetadata.length) {
+    if (
+      this.selectedReports.length === this.tableSettings.reportMetadata.length
+    ) {
       this.setCheckedForAllReports(false);
       this.selectedReports = [];
     } else {
@@ -352,7 +388,10 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   openReportInTab(): void {
-    const reportTab: Report | undefined = this.tableSettings.reportMetadata.find((report: Report) => report.checked);
+    const reportTab: Report | undefined =
+      this.tableSettings.reportMetadata.find(
+        (report: Report) => report.checked,
+      );
     if (!reportTab) {
       this.toastService.showDanger('Could not find report that was selected.');
       return;
@@ -399,7 +438,9 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   deleteSelected(): void {
-    const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
+    const reportIds = this.helperService.getSelectedIds(
+      this.tableSettings.reportMetadata,
+    );
     if (reportIds.length > 0) {
       this.httpService
         .deleteReport(reportIds, this.currentView.storageName)
@@ -425,10 +466,17 @@ export class TableComponent implements OnInit, OnDestroy {
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (data: Record<string, CompareReport>) => {
-          const originalReport = this.transformCompareToReport(data[this.selectedReportIds[0]]);
-          const runResultReport = this.transformCompareToReport(data[this.selectedReportIds[1]]);
+          const originalReport = this.transformCompareToReport(
+            data[this.selectedReportIds[0]],
+          );
+          const runResultReport = this.transformCompareToReport(
+            data[this.selectedReportIds[1]],
+          );
 
-          const id: string = this.tabService.createCompareTabId(originalReport, runResultReport);
+          const id: string = this.tabService.createCompareTabId(
+            originalReport,
+            runResultReport,
+          );
           this.tabService.openNewCompareTab({
             id: id,
             originalReport: originalReport,
@@ -501,7 +549,9 @@ export class TableComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (report: Report) => {
           this.openReportEvent.next(report);
-          this.toastService.showSuccess(`Opened report in progress with index [${index}]`);
+          this.toastService.showSuccess(
+            `Opened report in progress with index [${index}]`,
+          );
         },
       });
   }
@@ -513,20 +563,29 @@ export class TableComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (): void => {
           this.loadReportInProgressSettings();
-          this.toastService.showSuccess(`Deleted report in progress with index [${index}]`);
+          this.toastService.showSuccess(
+            `Deleted report in progress with index [${index}]`,
+          );
         },
       });
   }
 
   downloadReports(exportBinary: boolean, exportXML: boolean): void {
-    const selectedReports = this.tableSettings.reportMetadata.filter((report) => report.checked);
+    const selectedReports = this.tableSettings.reportMetadata.filter(
+      (report) => report.checked,
+    );
 
     if (selectedReports.length > 0) {
       let queryString: string = '';
       for (let report of selectedReports) {
         queryString += `id=${report.storageId}&`;
       }
-      this.helperService.download(queryString, this.currentView.storageName, exportBinary, exportXML);
+      this.helperService.download(
+        queryString,
+        this.currentView.storageName,
+        exportBinary,
+        exportXML,
+      );
     } else {
       this.toastService.showWarning('No reports selected to download');
     }
@@ -579,7 +638,9 @@ export class TableComponent implements OnInit, OnDestroy {
       const MAX_AMOUNT_OF_FILTER_SUGGESTIONS: number = 15;
       this.tableSettings.uniqueValues.set(
         lowerHeaderName,
-        uniqueValues.size < MAX_AMOUNT_OF_FILTER_SUGGESTIONS ? this.sortUniqueValues(uniqueValues) : [],
+        uniqueValues.size < MAX_AMOUNT_OF_FILTER_SUGGESTIONS
+          ? this.sortUniqueValues(uniqueValues)
+          : [],
       );
       this.filterService.setCurrentRecords(this.tableSettings.uniqueValues);
     }
@@ -623,7 +684,9 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   processCustomReportAction(): void {
-    const reportIds = this.helperService.getSelectedIds(this.tableSettings.reportMetadata);
+    const reportIds = this.helperService.getSelectedIds(
+      this.tableSettings.reportMetadata,
+    );
     if (reportIds.length > 0) {
       this.httpService
         .processCustomReportAction(this.currentView.storageName, reportIds)
@@ -638,7 +701,9 @@ export class TableComponent implements OnInit, OnDestroy {
             }
           },
           error: () => {
-            this.toastService.showDanger('Failed to process custom report action');
+            this.toastService.showDanger(
+              'Failed to process custom report action',
+            );
           },
         });
     }

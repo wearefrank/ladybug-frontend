@@ -25,7 +25,10 @@ export const basicContentTypes = ['raw'] as const;
 export type BasicView = (typeof basicContentTypes)[number];
 export const prettyContentTypes = ['xml', 'json'] as const;
 export type PrettyView = (typeof prettyContentTypes)[number];
-export const editorViewsConst = [...basicContentTypes, ...prettyContentTypes] as const;
+export const editorViewsConst = [
+  ...basicContentTypes,
+  ...prettyContentTypes,
+] as const;
 export type EditorView = (typeof editorViewsConst)[number];
 
 @Component({
@@ -33,7 +36,12 @@ export type EditorView = (typeof editorViewsConst)[number];
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.css',
   standalone: true,
-  imports: [MonacoEditorModule, ReactiveFormsModule, FormsModule, TitleCasePipe],
+  imports: [
+    MonacoEditorModule,
+    ReactiveFormsModule,
+    FormsModule,
+    TitleCasePipe,
+  ],
 })
 export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() height!: number;
@@ -88,7 +96,11 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
     if (changes['height']) {
       this.calculateHeight();
     }
-    if (changes['readOnlyMode'] && changes['readOnlyMode'].currentValue != undefined && this.editor) {
+    if (
+      changes['readOnlyMode'] &&
+      changes['readOnlyMode'].currentValue != undefined &&
+      this.editor
+    ) {
       this.updateReadOnlyMode();
     }
   }
@@ -109,7 +121,8 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
 
   calculateHeight() {
     if (this.statusBar) {
-      this.calculatedHeight = this.height - this.statusBar.nativeElement.offsetHeight;
+      this.calculatedHeight =
+        this.height - this.statusBar.nativeElement.offsetHeight;
       this.cdr.detectChanges();
     }
   }
@@ -119,15 +132,19 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   subscribeToSettings(): void {
-    const showSearchWindowOnLoad: Subscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe(
-      (value: boolean) => {
-        this.showSearchWindowOnLoad = value;
-      },
-    );
+    const showSearchWindowOnLoad: Subscription =
+      this.settingsService.showSearchWindowOnLoadObservable.subscribe(
+        (value: boolean) => {
+          this.showSearchWindowOnLoad = value;
+        },
+      );
     this.subscriptions.add(showSearchWindowOnLoad);
-    const prettifyOnLoad: Subscription = this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
-      this.showPrettifyOnLoad = value;
-    });
+    const prettifyOnLoad: Subscription =
+      this.settingsService.prettifyOnLoadObservable.subscribe(
+        (value: boolean) => {
+          this.showPrettifyOnLoad = value;
+        },
+      );
     this.subscriptions.add(prettifyOnLoad);
   }
 
@@ -194,7 +211,11 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
           });
       }
       if (this.currentView === 'json' && this.contentType === 'json') {
-        this.editorContent = JSON.stringify(JSON.parse(this.editorContent), null, this.INDENT_TWO_SPACES);
+        this.editorContent = JSON.stringify(
+          JSON.parse(this.editorContent),
+          null,
+          this.INDENT_TWO_SPACES,
+        );
         this.isPrettified = true;
       }
     }

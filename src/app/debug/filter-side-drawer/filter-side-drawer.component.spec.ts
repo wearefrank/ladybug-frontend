@@ -5,7 +5,10 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { FormsModule } from '@angular/forms';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { View } from '../../shared/interfaces/view';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 
 describe('FilterSideDrawerComponent', () => {
   let component: FilterSideDrawerComponent;
@@ -14,12 +17,18 @@ describe('FilterSideDrawerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MatAutocompleteModule, FormsModule, FilterSideDrawerComponent],
-      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FilterSideDrawerComponent);
     component = fixture.componentInstance;
-    component.currentView = { storageName: 'mockStorage', metadataNames: ['mockMetadata'] } as View;
+    component.currentView = {
+      storageName: 'mockStorage',
+      metadataNames: ['mockMetadata'],
+    } as View;
     fixture.detectChanges();
   });
 

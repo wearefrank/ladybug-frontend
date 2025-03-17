@@ -20,15 +20,23 @@ import { TableSettings } from '../interfaces/table-settings';
   providedIn: 'root',
 })
 export class HttpService {
-  private readonly headers: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json');
+  private readonly headers: HttpHeaders = new HttpHeaders().set(
+    'Content-Type',
+    'application/json',
+  );
 
   constructor(private http: HttpClient) {}
 
   getViews(): Observable<View[]> {
-    return this.http.get<Record<string, View>>('api/testtool/views').pipe(map((response) => Object.values(response)));
+    return this.http
+      .get<Record<string, View>>('api/testtool/views')
+      .pipe(map((response) => Object.values(response)));
   }
 
-  getMetadataReports(settings: TableSettings, view: View): Observable<Report[]> {
+  getMetadataReports(
+    settings: TableSettings,
+    view: View,
+  ): Observable<Report[]> {
     return this.http.get<Report[]>(`api/metadata/${view.storageName}/`, {
       params: {
         limit: settings.displayAmount,
@@ -67,14 +75,18 @@ export class HttpService {
     return this.http.get<number>('api/testtool/in-progress/threshold-time');
   }
 
-  getTestReports(metadataNames: string[], storage: string): Observable<TestListItem[]> {
+  getTestReports(
+    metadataNames: string[],
+    storage: string,
+  ): Observable<TestListItem[]> {
     return this.http.get<TestListItem[]>(`api/metadata/${storage}/`, {
       params: { metadataNames: metadataNames },
     });
   }
 
   getReport(reportId: number, storage: string): Observable<Report> {
-    const transformationEnabled = localStorage.getItem('transformationEnabled') === 'true';
+    const transformationEnabled =
+      localStorage.getItem('transformationEnabled') === 'true';
     return this.http
       .get<
         Record<string, Report | string>
@@ -89,8 +101,12 @@ export class HttpService {
       );
   }
 
-  getReports(reportIds: number[], storage: string): Observable<Record<string, CompareReport>> {
-    const transformationEnabled = localStorage.getItem('transformationEnabled') === 'true';
+  getReports(
+    reportIds: number[],
+    storage: string,
+  ): Observable<Record<string, CompareReport>> {
+    const transformationEnabled =
+      localStorage.getItem('transformationEnabled') === 'true';
     return this.http
       .get<
         Record<string, CompareReport>
@@ -111,14 +127,24 @@ export class HttpService {
     body: UpdateReport | UpdateCheckpoint,
     storage: string,
   ): Observable<UpdateReportResponse> {
-    return this.http.post<UpdateReportResponse>(`api/report/${storage}/${reportId}`, body);
+    return this.http.post<UpdateReportResponse>(
+      `api/report/${storage}/${reportId}`,
+      body,
+    );
   }
 
-  copyReport(data: Record<string, number[]>, storage: string): Observable<void> {
+  copyReport(
+    data: Record<string, number[]>,
+    storage: string,
+  ): Observable<void> {
     return this.http.put<void>(`api/report/store/${storage}`, data);
   }
 
-  updatePath(reportIds: number[], storage: string, map: UpdatePathSettings): Observable<void> {
+  updatePath(
+    reportIds: number[],
+    storage: string,
+    map: UpdatePathSettings,
+  ): Observable<void> {
     return this.http.put<void>(`api/report/move/${storage}`, map, {
       params: { storageIds: reportIds },
     });
@@ -146,8 +172,12 @@ export class HttpService {
     });
   }
 
-  getTransformation(defaultTransformation: boolean): Observable<Transformation> {
-    return this.http.get<Transformation>(`api/testtool/transformation/${defaultTransformation}`);
+  getTransformation(
+    defaultTransformation: boolean,
+  ): Observable<Transformation> {
+    return this.http.get<Transformation>(
+      `api/testtool/transformation/${defaultTransformation}`,
+    );
   }
 
   getSettings(): Observable<OptionsSettings> {
@@ -172,7 +202,11 @@ export class HttpService {
     });
   }
 
-  cloneReport(storage: string, storageId: number, map: CloneReport): Observable<void> {
+  cloneReport(
+    storage: string,
+    storageId: number,
+    map: CloneReport,
+  ): Observable<void> {
     return this.http.post<void>(`api/report/move/${storage}/${storageId}`, map);
   }
 
@@ -193,10 +227,17 @@ export class HttpService {
   //   });
   // }
 
-  getUnmatchedCheckpoints(storageName: string, storageId: number, viewName: string): Observable<string[]> {
-    return this.http.get<string[]>(`api/report/${storageName}/${storageId}/checkpoints/uids`, {
-      params: { view: viewName, invert: true },
-    });
+  getUnmatchedCheckpoints(
+    storageName: string,
+    storageId: number,
+    viewName: string,
+  ): Observable<string[]> {
+    return this.http.get<string[]>(
+      `api/report/${storageName}/${storageId}/checkpoints/uids`,
+      {
+        params: { view: viewName, invert: true },
+      },
+    );
   }
 
   getWarningsAndErrors(storageName: string): Observable<string | undefined> {
@@ -218,7 +259,13 @@ export class HttpService {
     });
   }
 
-  processCustomReportAction(storage: string, reportIds: number[]): Observable<void> {
-    return this.http.post<void>(`api/report/customreportaction?storage=` + storage, reportIds);
+  processCustomReportAction(
+    storage: string,
+    reportIds: number[],
+  ): Observable<void> {
+    return this.http.post<void>(
+      `api/report/customreportaction?storage=` + storage,
+      reportIds,
+    );
   }
 }

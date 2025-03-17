@@ -22,10 +22,11 @@ export class ActiveFiltersComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.filterContextSubscription = this.filterService.filterContext$.subscribe({
-      next: (context: Map<string, string>) => this.changeFilter(context),
-      error: () => catchError(this.errorHandler.handleError()),
-    });
+    this.filterContextSubscription =
+      this.filterService.filterContext$.subscribe({
+        next: (context: Map<string, string>) => this.changeFilter(context),
+        error: () => catchError(this.errorHandler.handleError()),
+      });
   }
 
   ngOnDestroy(): void {

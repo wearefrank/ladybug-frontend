@@ -10,10 +10,16 @@ import { AngularSplitModule } from 'angular-split';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSortModule } from '@angular/material/sort';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { AppRouteReuseStrategy, AppRoutingModule } from './app/app-routing.module';
+import {
+  AppRouteReuseStrategy,
+  AppRoutingModule,
+} from './app/app-routing.module';
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -21,6 +27,7 @@ if (environment.production) {
   enableProdMode();
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function main() {
   bootstrapApplication(AppComponent, {
     providers: [

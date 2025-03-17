@@ -30,7 +30,11 @@ export class DifferenceModalComponent {
     private toastService: ToastService,
   ) {}
 
-  open(differences: ReportDifference[], saveOrDiscardType: ChangesAction, stubChange?: boolean): void {
+  open(
+    differences: ReportDifference[],
+    saveOrDiscardType: ChangesAction,
+    stubChange?: boolean,
+  ): void {
     this.stubChange = !!stubChange;
     this.reportDifferences = differences;
     this.saveOrDiscardType = saveOrDiscardType;

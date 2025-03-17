@@ -1,4 +1,10 @@
-import { Component, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { View } from '../../interfaces/view';
 import { Subject } from 'rxjs';
 

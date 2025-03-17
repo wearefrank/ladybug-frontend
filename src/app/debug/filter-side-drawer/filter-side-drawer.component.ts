@@ -22,17 +22,28 @@ import { ShortenedTableHeaderPipe } from '../../shared/pipes/shortened-table-hea
         style({ transform: 'translateX(100%)' }),
         animate('300ms ease-in', style({ transform: 'translateX(0)' })),
       ]),
-      transition(':leave', animate('300ms ease-out', style({ transform: 'translateX(100%)' }))),
+      transition(
+        ':leave',
+        animate('300ms ease-out', style({ transform: 'translateX(100%)' })),
+      ),
     ]),
   ],
-  imports: [MatAutocompleteModule, FormsModule, TitleCasePipe, ShortenedTableHeaderPipe],
+  imports: [
+    MatAutocompleteModule,
+    FormsModule,
+    TitleCasePipe,
+    ShortenedTableHeaderPipe,
+  ],
 })
 export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   @Input({ required: true }) currentView!: View;
 
   protected shouldShowFilter?: boolean;
   protected metadataLabels?: string[];
-  protected currentRecords: Map<string, Array<string>> = new Map<string, Array<string>>();
+  protected currentRecords: Map<string, Array<string>> = new Map<
+    string,
+    Array<string>
+  >();
   protected metadataTypes?: Map<string, string>;
   protected toolTipSuggestions?: Report;
 
@@ -54,26 +65,32 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   }
 
   setSubscriptions(): void {
-    const showFilterSubscription: Subscription = this.filterService.showFilter$.subscribe({
-      next: (show: boolean) => {
-        this.shouldShowFilter = show;
-        this.filterService.toggleShowFilterSidePanel(show);
-      },
-    });
+    const showFilterSubscription: Subscription =
+      this.filterService.showFilter$.subscribe({
+        next: (show: boolean) => {
+          this.shouldShowFilter = show;
+          this.filterService.toggleShowFilterSidePanel(show);
+        },
+      });
     this.subscriptions.add(showFilterSubscription);
-    const metadataLabelsSubscription: Subscription = this.filterService.metadataLabels$.subscribe({
-      next: (metadataLabels: string[]) => {
-        this.metadataLabels = metadataLabels;
-      },
-    });
+    const metadataLabelsSubscription: Subscription =
+      this.filterService.metadataLabels$.subscribe({
+        next: (metadataLabels: string[]) => {
+          this.metadataLabels = metadataLabels;
+        },
+      });
     this.subscriptions.add(metadataLabelsSubscription);
-    const currentRecordSubscription: Subscription = this.filterService.currentRecords$.subscribe({
-      next: (records: Map<string, Array<string>>) => (this.currentRecords = records),
-    });
+    const currentRecordSubscription: Subscription =
+      this.filterService.currentRecords$.subscribe({
+        next: (records: Map<string, Array<string>>) =>
+          (this.currentRecords = records),
+      });
     this.subscriptions.add(currentRecordSubscription);
-    const metadataTypesSubscription: Subscription = this.filterService.metadataTypes$.subscribe({
-      next: (metadataTypes: Map<string, string>) => (this.metadataTypes = metadataTypes),
-    });
+    const metadataTypesSubscription: Subscription =
+      this.filterService.metadataTypes$.subscribe({
+        next: (metadataTypes: Map<string, string>) =>
+          (this.metadataTypes = metadataTypes),
+      });
     this.subscriptions.add(metadataTypesSubscription);
   }
 

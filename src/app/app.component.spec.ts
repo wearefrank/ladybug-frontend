@@ -1,13 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { VersionService } from './shared/services/version.service';
 import { provideRouter } from '@angular/router';
 
 class MockVersionService {
-  getFrontendVersion = jasmine.createSpy('getFrontendVersion').and.returnValue(Promise.resolve('1.0-TEST'));
+  getFrontendVersion = jasmine
+    .createSpy('getFrontendVersion')
+    .and.returnValue(Promise.resolve('1.0-TEST'));
 }
 
 describe('AppComponent', () => {

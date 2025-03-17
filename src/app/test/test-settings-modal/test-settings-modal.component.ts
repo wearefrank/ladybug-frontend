@@ -1,6 +1,10 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  UntypedFormControl,
+  UntypedFormGroup,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-test-settings-modal',
@@ -15,7 +19,8 @@ export class TestSettingsModalComponent {
     showReportStorageIds: new UntypedFormControl(false),
     showCheckpointIds: new UntypedFormControl(false),
   });
-  @Output() updateShowStorageIds: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() updateShowStorageIds: EventEmitter<boolean> =
+    new EventEmitter<boolean>();
 
   constructor(private modalService: NgbModal) {}
 
@@ -25,8 +30,12 @@ export class TestSettingsModalComponent {
   }
 
   saveSettings(): void {
-    const showStorageIds: string = this.settingsForm.get('showReportStorageIds')?.value.toString();
-    const showCheckpointIds: string = this.settingsForm.get('showCheckpointIds')?.value.toString();
+    const showStorageIds: string = this.settingsForm
+      .get('showReportStorageIds')
+      ?.value.toString();
+    const showCheckpointIds: string = this.settingsForm
+      .get('showCheckpointIds')
+      ?.value.toString();
     localStorage.setItem('showReportStorageIds', showStorageIds);
     localStorage.setItem('showCheckpointIds', showCheckpointIds);
     this.updateShowStorageIds.next(showStorageIds === 'true');
@@ -40,11 +49,15 @@ export class TestSettingsModalComponent {
 
   loadSettings(): void {
     if (localStorage.getItem('showReportStorageIds')) {
-      this.settingsForm.get('showReportStorageIds')?.setValue(localStorage.getItem('showReportStorageIds') === 'true');
+      this.settingsForm
+        .get('showReportStorageIds')
+        ?.setValue(localStorage.getItem('showReportStorageIds') === 'true');
     }
 
     if (localStorage.getItem('showCheckpointIds')) {
-      this.settingsForm.get('showCheckpointIds')?.setValue(localStorage.getItem('showCheckpointIds') === 'true');
+      this.settingsForm
+        .get('showCheckpointIds')
+        ?.setValue(localStorage.getItem('showCheckpointIds') === 'true');
     }
   }
 }

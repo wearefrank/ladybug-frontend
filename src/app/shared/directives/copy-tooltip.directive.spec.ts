@@ -49,7 +49,8 @@ describe('CopyTooltipDirective', () => {
 });
 
 function setup(value: string): ComponentFixture<TestComponent> {
-  const fixture: ComponentFixture<TestComponent> = TestBed.createComponent(TestComponent);
+  const fixture: ComponentFixture<TestComponent> =
+    TestBed.createComponent(TestComponent);
   const component: TestComponent = fixture.componentInstance;
   component.value = value;
   fixture.detectChanges();

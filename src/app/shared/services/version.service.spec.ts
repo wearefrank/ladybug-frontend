@@ -1,8 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 
 import { VersionService } from './version.service';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 
 describe('VersionService', () => {
   let service: VersionService;
@@ -11,7 +17,10 @@ describe('VersionService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     });
     service = TestBed.inject(VersionService);
     httpTestingController = TestBed.inject(HttpTestingController);
@@ -26,9 +35,13 @@ describe('VersionService', () => {
     const backendVersionPromise = service.getBackendVersion();
     const mockPackageJson = { version: '1.0-TEST' };
 
-    const frontendVersionReq = httpTestingController.expectOne(service.packageJsonPath);
+    const frontendVersionReq = httpTestingController.expectOne(
+      service.packageJsonPath,
+    );
 
-    const backendVersionReg = httpTestingController.expectOne('api/testtool/version');
+    const backendVersionReg = httpTestingController.expectOne(
+      'api/testtool/version',
+    );
     frontendVersionReq.flush(mockPackageJson);
     backendVersionReg.flush('3.0-TEST');
 

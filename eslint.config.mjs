@@ -46,6 +46,9 @@ export default [
       '@typescript-eslint/explicit-function-return-type': 'error',
       '@typescript-eslint/triple-slash-reference': 'warn',
       '@typescript-eslint/member-ordering': 'error',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'no-unused-vars': 'warn',
+      '@typescript-eslint/no-inferrable-types': 'warn',
 
       // Angular
       ...angularPlugin.configs.recommended.rules,

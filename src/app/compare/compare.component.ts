@@ -8,7 +8,10 @@ import { MetadataTableComponent } from '../shared/components/metadata-table/meta
 import { MessagecontextTableComponent } from '../shared/components/messagecontext-table/messagecontext-table.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TitleCasePipe } from '@angular/common';
-import { NodeLinkStrategy, nodeLinkStrategyConst } from '../shared/enums/node-link-strategy';
+import {
+  NodeLinkStrategy,
+  nodeLinkStrategyConst,
+} from '../shared/enums/node-link-strategy';
 import { Report } from '../shared/interfaces/report';
 import { Checkpoint } from '../shared/interfaces/checkpoint';
 import { ReportUtil } from '../shared/util/report-util';
@@ -83,7 +86,10 @@ export class CompareComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit(): void {
     if (this.compareData) {
-      this.renderDiffs(this.compareData.originalReport.xml, this.compareData.runResultReport.xml);
+      this.renderDiffs(
+        this.compareData.originalReport.xml,
+        this.compareData.runResultReport.xml,
+      );
       this.showReports();
     } else {
       this.router.navigate([DebugComponent.ROUTER_PATH]);
@@ -98,9 +104,13 @@ export class CompareComponent implements AfterViewInit, OnInit {
         if (this.compareData) {
           const filteredViews = this.filterViews(views, this.compareData);
           if (filteredViews.length > 0) {
-            this.views = filteredViews.sort((a, b) => a.name.localeCompare(b.name));
+            this.views = filteredViews.sort((a, b) =>
+              a.name.localeCompare(b.name),
+            );
             if (this.compareData.viewName) {
-              const view = this.views.find((v) => v.name === this.compareData!.viewName);
+              const view = this.views.find(
+                (v) => v.name === this.compareData!.viewName,
+              );
               if (view) {
                 this.changeView(view);
                 return;
@@ -136,7 +146,12 @@ export class CompareComponent implements AfterViewInit, OnInit {
     }
     for (let storageView of storageViews) {
       for (let checkpointView of checkpointMatcherViews) {
-        if (this.arraysEqual(storageView.metadataNames, checkpointView.metadataNames)) {
+        if (
+          this.arraysEqual(
+            storageView.metadataNames,
+            checkpointView.metadataNames,
+          )
+        ) {
           filteredViews.push(storageView);
           //If the storageView has been added, go to the next storageView by exiting the nested for loop
           break;
@@ -175,18 +190,27 @@ export class CompareComponent implements AfterViewInit, OnInit {
 
   private getStrategyFromLocalStorage(): void {
     if (this.compareData) {
-      const strategy: string | null = localStorage.getItem(this.compareData.viewName + '.NodeLinkStrategy');
-      this.nodeLinkStrategy = strategy ? (strategy as NodeLinkStrategy) : 'NONE';
+      const strategy: string | null = localStorage.getItem(
+        this.compareData.viewName + '.NodeLinkStrategy',
+      );
+      this.nodeLinkStrategy = strategy
+        ? (strategy as NodeLinkStrategy)
+        : 'NONE';
     }
   }
 
   private showReports(): void {
-    this.compareTreeComponent.createTrees(this.compareData!.originalReport, this.compareData!.runResultReport);
+    this.compareTreeComponent.createTrees(
+      this.compareData!.originalReport,
+      this.compareData!.runResultReport,
+    );
   }
 
   protected syncLeftAndRight(): void {
-    this.leftNode = this.compareTreeComponent.leftTree.getSelected().originalValue;
-    this.rightNode = this.compareTreeComponent.rightTree.getSelected().originalValue;
+    this.leftNode =
+      this.compareTreeComponent.leftTree.getSelected().originalValue;
+    this.rightNode =
+      this.compareTreeComponent.rightTree.getSelected().originalValue;
     if (ReportUtil.isReport(this.leftNode)) {
       this.leftReport = { ...this.leftNode };
     }
@@ -205,12 +229,17 @@ export class CompareComponent implements AfterViewInit, OnInit {
   }
 
   private extractMessage(selectedNode: Report | Checkpoint): string {
-    return ReportUtil.isReport(selectedNode) ? selectedNode.xml : selectedNode.message;
+    return ReportUtil.isReport(selectedNode)
+      ? selectedNode.xml
+      : selectedNode.message;
   }
 
   protected changeNodeLinkStrategy(): void {
     if (this.compareData && this.nodeLinkStrategy) {
-      localStorage.setItem(this.compareData.viewName + '.NodeLinkStrategy', this.nodeLinkStrategy);
+      localStorage.setItem(
+        this.compareData.viewName + '.NodeLinkStrategy',
+        this.nodeLinkStrategy,
+      );
     }
   }
 
@@ -242,7 +271,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
       .getUnmatchedCheckpoints(storageName, storageId, view.name)
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
-        next: (response: string[]) => SimpleFileTreeUtil.hideOrShowCheckpoints(response, treeElements),
+        next: (response: string[]) =>
+          SimpleFileTreeUtil.hideOrShowCheckpoints(response, treeElements),
       });
   }
 }

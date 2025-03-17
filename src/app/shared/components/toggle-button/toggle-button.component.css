@@ -27,19 +27,19 @@
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  transition: .4s;
+  transition: 0.4s;
   border-radius: 1.38125rem; /* 65% of original border-radius */
 }
 
 .slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 1.05625rem; /* 65% of original height */
   width: 1.05625rem; /* 65% of original width */
   left: 0.1625rem; /* 65% of original left position */
   bottom: 0.165rem; /* 65% of original bottom position */
   background-color: white;
-  transition: .4s;
+  transition: 0.4s;
   border-radius: 50%;
 }
 
@@ -48,7 +48,7 @@ input:checked + .slider {
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 0.0625rem #2196F3; /* 1px / 16 */
+  box-shadow: 0 0 0.0625rem #2196f3; /* 1px / 16 */
 }
 
 input:checked + .slider:before {

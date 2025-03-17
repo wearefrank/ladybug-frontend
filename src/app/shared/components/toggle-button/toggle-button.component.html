@@ -3,7 +3,12 @@
     <span class="mr-1">{{ labels.off }}</span>
   }
   <label class="switch">
-    <input type="checkbox" [checked]="value" [value]="value" (change)="onChange()">
+    <input
+      type="checkbox"
+      [checked]="value"
+      [value]="value"
+      (change)="onChange()"
+    />
     <span class="slider round"></span>
   </label>
   @if (labels) {

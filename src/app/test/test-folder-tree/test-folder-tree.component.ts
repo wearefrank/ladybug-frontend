@@ -1,7 +1,12 @@
 import { Component, Output, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
-import { CreateTreeItem, FileTreeOptions, NgSimpleFileTree, NgSimpleFileTreeModule } from 'ng-simple-file-tree';
+import {
+  CreateTreeItem,
+  FileTreeOptions,
+  NgSimpleFileTree,
+  NgSimpleFileTreeModule,
+} from 'ng-simple-file-tree';
 import { TestListItem } from '../../shared/interfaces/test-list-item';
 
 @Component({
@@ -26,7 +31,8 @@ export class TestFolderTreeComponent {
     doubleClickToOpenFolders: false,
     expandAllFolders: true,
     highlightOpenFolders: false,
-    autoSelectCondition: (item: CreateTreeItem) => item.path === this.rootFolder.name,
+    autoSelectCondition: (item: CreateTreeItem) =>
+      item.path === this.rootFolder.name,
     determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };
 
@@ -54,13 +60,19 @@ export class TestFolderTreeComponent {
     this.tree.addItem(this.rootFolder);
   }
 
-  createFolderForRemainingPath(itemToAdd: CreateTreeItem, routeParts: string[], currentLocation: CreateTreeItem) {
+  createFolderForRemainingPath(
+    itemToAdd: CreateTreeItem,
+    routeParts: string[],
+    currentLocation: CreateTreeItem,
+  ) {
     if (routeParts.length === 0) {
       return;
     }
 
     const nextRoutePart = routeParts[0];
-    let newFolder: CreateTreeItem | undefined = currentLocation.children?.find((child) => child.name === nextRoutePart);
+    let newFolder: CreateTreeItem | undefined = currentLocation.children?.find(
+      (child) => child.name === nextRoutePart,
+    );
     currentLocation.children ??= [];
 
     if (!newFolder) {
@@ -72,6 +84,10 @@ export class TestFolderTreeComponent {
       currentLocation.children.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    this.createFolderForRemainingPath(itemToAdd, routeParts.slice(1), newFolder);
+    this.createFolderForRemainingPath(
+      itemToAdd,
+      routeParts.slice(1),
+      newFolder,
+    );
   }
 }

@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -66,7 +72,10 @@ export class CompareTreeComponent {
       return this.namesMatch(item.name, this.leftReport?.name);
     }
     if (ReportUtil.isCheckPoint(item)) {
-      const checkpoint: Checkpoint | null = this.findCorrespondingCheckpoint(item, this.leftReport);
+      const checkpoint: Checkpoint | null = this.findCorrespondingCheckpoint(
+        item,
+        this.leftReport,
+      );
       return this.namesMatch(item.name, checkpoint?.name);
     }
     return '';
@@ -97,13 +106,19 @@ export class CompareTreeComponent {
         break;
       }
       case 'CHECKPOINT_NUMBER': {
-        this.selectByCheckPointNumber(otherSide, treeItem.originalValue as Report | Checkpoint);
+        this.selectByCheckPointNumber(
+          otherSide,
+          treeItem.originalValue as Report | Checkpoint,
+        );
       }
     }
     this.compareEvent.emit();
   }
 
-  selectByCheckPointNumber(tree: NgSimpleFileTree, treeItem: Report | Checkpoint): void {
+  selectByCheckPointNumber(
+    tree: NgSimpleFileTree,
+    treeItem: Report | Checkpoint,
+  ): void {
     if (ReportUtil.isReport(treeItem)) {
       tree.selectItem(tree.items[0].path);
     } else if (ReportUtil.isCheckPoint(treeItem)) {
@@ -111,12 +126,17 @@ export class CompareTreeComponent {
     }
   }
 
-  selectCheckpoint(tree: NgSimpleFileTree, item: FileTreeItem, checkpointToMatch: Checkpoint): void {
+  selectCheckpoint(
+    tree: NgSimpleFileTree,
+    item: FileTreeItem,
+    checkpointToMatch: Checkpoint,
+  ): void {
     if (item.children) {
       for (const child of item.children) {
         const checkpoint = child.originalValue as Checkpoint;
         if (
-          ReportUtil.getCheckpointIdFromUid(checkpoint.uid) === ReportUtil.getCheckpointIdFromUid(checkpointToMatch.uid)
+          ReportUtil.getCheckpointIdFromUid(checkpoint.uid) ===
+          ReportUtil.getCheckpointIdFromUid(checkpointToMatch.uid)
         ) {
           tree.selectItem(child.path);
           return;
@@ -143,7 +163,8 @@ export class CompareTreeComponent {
       for (let checkpoint of checkpoints) {
         if (
           ReportUtil.isCheckPoint(itemToMatch) &&
-          ReportUtil.getCheckpointIdFromUid(checkpoint.uid) === ReportUtil.getCheckpointIdFromUid(itemToMatch.uid)
+          ReportUtil.getCheckpointIdFromUid(checkpoint.uid) ===
+            ReportUtil.getCheckpointIdFromUid(itemToMatch.uid)
         ) {
           return checkpoint;
         }

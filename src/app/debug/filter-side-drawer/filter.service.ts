@@ -10,15 +10,22 @@ export class FilterService {
   private filterContextSubject: Subject<Map<string, string>> = new Subject();
   private currentRecordsSubject: Subject<Map<string, string[]>> = new Subject();
   private metadataTypesSubject: Subject<Map<string, string>> = new Subject();
-  private filterErrorSubject: Subject<[boolean, Map<string, string>]> = new Subject();
-  private filterSidePanelVisibleSubject: Subject<boolean> = new Subject<boolean>();
+  private filterErrorSubject: Subject<[boolean, Map<string, string>]> =
+    new Subject();
+  private filterSidePanelVisibleSubject: Subject<boolean> =
+    new Subject<boolean>();
 
-  filterSidePanel$: Observable<boolean> = this.filterSidePanelVisibleSubject.asObservable();
+  filterSidePanel$: Observable<boolean> =
+    this.filterSidePanelVisibleSubject.asObservable();
   showFilter$: Observable<boolean> = this.showFilterSubject.asObservable();
-  metadataLabels$: Observable<string[]> = this.metadataLabelsSubject.asObservable();
-  currentRecords$: Observable<Map<string, string[]>> = this.currentRecordsSubject.asObservable();
-  metadataTypes$: Observable<Map<string, string>> = this.metadataTypesSubject.asObservable();
-  filterContext$: Observable<Map<string, string>> = this.filterContextSubject.pipe(debounceTime(300));
+  metadataLabels$: Observable<string[]> =
+    this.metadataLabelsSubject.asObservable();
+  currentRecords$: Observable<Map<string, string[]>> =
+    this.currentRecordsSubject.asObservable();
+  metadataTypes$: Observable<Map<string, string>> =
+    this.metadataTypesSubject.asObservable();
+  filterContext$: Observable<Map<string, string>> =
+    this.filterContextSubject.pipe(debounceTime(300));
 
   private metadataLabels: string[] = [];
   private filters: Map<string, string> = new Map<string, string>();

@@ -3,7 +3,10 @@ import { DebugComponent } from './debug.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { routes } from '../app-routing.module';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 
 describe('DebugComponent', () => {
   let component: DebugComponent;
@@ -12,7 +15,10 @@ describe('DebugComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [DebugComponent, RouterTestingModule.withRoutes(routes)],
-      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
   });
 
