@@ -1,21 +1,10 @@
-<!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
 <div class="px-1 pt-1" id="ladybug-tabs">
   <ul class="nav nav-tabs">
     <li data-cy-nav-tab="debugTab" class="nav-item">
-      <a
-        class="nav-link"
-        routerLinkActive="active"
-        [routerLink]="debugComponentPath"
-        >Debug</a
-      >
+      <a class="nav-link" routerLinkActive="active" [routerLink]="debugComponentPath">Debug</a>
     </li>
     <li data-cy-nav-tab="testTab" class="nav-item">
-      <a
-        class="nav-link"
-        routerLinkActive="active"
-        [routerLink]="testComponentPath"
-        >Test</a
-      >
+      <a class="nav-link" routerLinkActive="active" [routerLink]="testComponentPath">Test</a>
     </li>
 
     @for (tab of tabs; track tab) {
@@ -27,11 +16,11 @@
       </li>
     }
     <li class="version" id="version">
-      <img ngSrc="favicon.ico" alt="" width="64" height="64" class="mascot" />
+      <img ngSrc="favicon.ico" alt="" width="64" height="64" class="mascot">
       <a>v{{ frontendVersion }}</a>
     </li>
   </ul>
-  <router-outlet />
+  <router-outlet></router-outlet>
 </div>
 
-<app-toast />
+<app-toast></app-toast>

@@ -7,18 +7,14 @@
           [currentView]="currentView"
           (openReportEvent)="addReportToTree($event)"
           (viewChange)="onViewChange($event)"
-        />
+        ></app-table>
       }
     </div>
   </div>
   <div class="border-bottom"></div>
   <div id="bottom-half" class="row bottom mb-0 pb-0 w-100">
     @if (currentView) {
-      <app-report
-        #reportComponent
-        [newTab]="false"
-        [currentView]="currentView"
-      />
+      <app-report #reportComponent [newTab]="false" [currentView]="currentView"></app-report>
     }
   </div>
 </div>

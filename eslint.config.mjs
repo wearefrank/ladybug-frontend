@@ -71,51 +71,6 @@ export default [
       'prettier/prettier': 'warn',
     },
   },
-  {
-    files: ['**/*.html'],
-    languageOptions: {
-      parser: angularTemplateParser,
-    },
-    plugins: {
-      '@angular-eslint': angularPlugin,
-      '@angular-eslint/template': angularTemplate,
-      prettier: prettierPlugin,
-    },
-    rules: {
-      // Angular template
-      ...angularTemplate.configs.recommended.rules,
-      ...angularTemplate.configs.accessibility.rules,
-      '@angular-eslint/template/prefer-self-closing-tags': 'error',
-      '@angular-eslint/template/no-interpolation-in-attributes': ['error'],
-      '@angular-eslint/template/click-events-have-key-events': 'off',
-      '@angular-eslint/template/interactive-supports-focus': [
-        'error',
-        {
-          allowList: ['li'],
-        },
-      ],
-      '@angular-eslint/contextual-decorator': 'warn',
-      '@angular-eslint/prefer-signals': 'error',
-      '@angular-eslint/template/attributes-order': [
-        'error',
-        {
-          alphabetical: false,
-          order: [
-            'TEMPLATE_REFERENCE',
-            'ATTRIBUTE_BINDING',
-            'STRUCTURAL_DIRECTIVE',
-            'INPUT_BINDING',
-            'TWO_WAY_BINDING',
-            'OUTPUT_BINDING',
-          ],
-        },
-      ],
-
-      // Prettier
-      ...eslintConfigPrettier.rules,
-      'prettier/prettier': ['error', { parser: 'angular' }],
-    },
-  },
   // Unicorn
   eslintPluginUnicorn.configs['flat/recommended'],
   {

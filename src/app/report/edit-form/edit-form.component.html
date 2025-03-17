@@ -1,47 +1,25 @@
-<!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
 <div class="m-1" data-cy-report-edit-form>
   @if (editForm) {
     <form [formGroup]="editForm">
       <div class="form-group">
         <label>Name</label>
-        <input
-          data-cy-report-edit-form="name"
-          type="text"
-          class="form-control"
-          placeholder="Name"
-          [formControlName]="nameKey"
-        />
+        <input data-cy-report-edit-form="name" type="text" class="form-control" placeholder="Name" [formControlName]="nameKey">
       </div>
       <div class="form-group">
         <label>Description</label>
-        <input
-          class="form-control"
-          placeholder="Description"
-          [formControlName]="descriptionKey"
-        />
+        <input class="form-control" placeholder="Description" [formControlName]="descriptionKey">
       </div>
       <div class="form-group">
         <label>Path</label>
-        <input
-          type="text"
-          class="form-control"
-          placeholder="/path/to/report/"
-          [formControlName]="pathKey"
-        />
+        <input type="text" class="form-control" placeholder="/path/to/report/" [formControlName]="pathKey">
       </div>
       <div class="form-group">
         <label>Transformation</label>
-        <textarea
-          class="form-control transformation"
-          [formControlName]="transformationKey"
-        ></textarea>
+        <textarea class="form-control transformation" [formControlName]="transformationKey"></textarea>
       </div>
       <div class="form-group">
         <label>Variables</label>
-        <textarea
-          class="form-control variables"
-          [formControlName]="variablesKey"
-        ></textarea>
+        <textarea class="form-control variables" [formControlName]="variablesKey"></textarea>
       </div>
     </form>
   }

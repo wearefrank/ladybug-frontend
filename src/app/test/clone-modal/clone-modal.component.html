@@ -1,4 +1,3 @@
-<!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
 <ng-template #modal let-modal>
   <div class="modal-header">
     <h5 class="modal-title" id="cloneModal">Clone Report</h5>
@@ -10,19 +9,11 @@
     <div class="modal-body container">
       <div class="form-group">
         <label>Variables CSV</label>
-        <textarea
-          class="form-control"
-          formControlName="variables"
-          rows="5"
-        ></textarea>
+        <textarea class="form-control" formControlName="variables" rows="5"></textarea>
       </div>
       <div class="form-group">
         <label>Report input message to clone</label>
-        <textarea
-          class="form-control"
-          formControlName="message"
-          rows="5"
-        ></textarea>
+        <textarea class="form-control" formControlName="message" rows="5"></textarea>
       </div>
     </div>
     <div class="modal-footer">

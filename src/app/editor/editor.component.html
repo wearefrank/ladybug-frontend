@@ -7,41 +7,25 @@
       [style.height]="calculatedHeight - 27 + 'px'"
       [(ngModel)]="editorContent"
       (onInit)="initEditor($event)"
-      (ngModelChange)="onChange($event)"
-    />
+      (ngModelChange)="onChange($event)">
+    </ngx-monaco-editor>
     <div #statusBarElement class="status-bar">
       <div class="left-side">
         @if (!readOnlyMode) {
-          <div
-            class="status"
-            [title]="
-              unsavedChanges
-                ? 'This file has unsaved changed, press ctrl + s to save'
-                : 'No unsaved changes'
-            "
-          >
+          <div class="status"
+               [title]="unsavedChanges ? 'This file has unsaved changed, press ctrl + s to save' : 'No unsaved changes'">
             <i class="bi bi-floppy"></i>
-            <span class="status-text">{{
-              unsavedChanges ? 'Unsaved' : 'Saved'
-            }}</span>
+            <span class="status-text">{{ unsavedChanges ? 'Unsaved' : 'Saved' }}</span>
           </div>
         }
-        <div
-          class="status"
-          [title]="
-            editorFocused
-              ? 'Editor is in focus, commands can be run: press F1 for options'
-              : 'Editor is not in focus, click on the editor to focus'
-          "
-        >
+        <div class="status"
+             [title]="editorFocused ? 'Editor is in focus, commands can be run: press F1 for options' : 'Editor is not in focus, click on the editor to focus'">
           @if (editorFocused) {
             <i class="bi bi-eye-fill icon-size"></i>
           } @else {
             <i class="bi bi-eye-slash-fill icon-size"></i>
           }
-          <span class="status-text">{{
-            editorFocused ? 'Focused' : 'Unfocused'
-          }}</span>
+          <span class="status-text">{{ editorFocused ? 'Focused' : 'Unfocused' }}</span>
         </div>
       </div>
       <div class="right-side">
@@ -52,12 +36,9 @@
             [title]="'Current view: ' + currentView"
             [disabled]="availableViews.length <= 1"
             [(ngModel)]="currentView"
-            (ngModelChange)="onViewChange($event)"
-          >
+            (ngModelChange)="onViewChange($event)">
             @for (view of availableViews; track view) {
-              <option [selected]="view === currentView" [ngValue]="view">
-                {{ view | titlecase }}
-              </option>
+              <option [selected]="view === currentView" [ngValue]="view">{{ view|titlecase }}</option>
             }
           </select>
         }
@@ -65,3 +46,6 @@
     </div>
   </div>
 }
+
+
+

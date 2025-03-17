@@ -1,4 +1,3 @@
-<!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
 <ng-template #modal let-modal>
   <div class="modal-header">
     <h5 class="modal-title" id="settingsModal">Options</h5>
@@ -8,44 +7,22 @@
   </div>
   <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
     <div class="modal-body">
-      <div class="form-group form-check-inline">
-        <input
-          data-cy-test-settings="showStorageIds"
-          class="form-check-input"
-          type="checkbox"
-          formControlName="showReportStorageIds"
-        />
-        <label class="form-check-label transform-label">
-          Show report storage IDs
-        </label>
-      </div>
-      <div class="form-group form-check-inline">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          formControlName="showCheckpointIds"
-        />
-        <label class="form-check-label transform-label">
-          Show checkpoint IDs
-        </label>
-      </div>
+        <div class="form-group form-check-inline">
+          <input data-cy-test-settings="showStorageIds" class="form-check-input" type="checkbox" formControlName="showReportStorageIds" >
+          <label class="form-check-label transform-label">
+            Show report storage IDs
+          </label>
+        </div>
+        <div class="form-group form-check-inline">
+          <input class="form-check-input" type="checkbox" formControlName="showCheckpointIds">
+          <label class="form-check-label transform-label">
+            Show checkpoint IDs
+          </label>
+        </div>
     </div>
     <div class="modal-footer">
-      <button
-        type="button"
-        class="btn btn-info"
-        (click)="resetSettings(); modal.dismiss()"
-      >
-        <i class="fa fa-undo"></i>
-      </button>
-      <button
-        data-cy-test-settings="save"
-        type="submit"
-        class="btn btn-info"
-        (click)="modal.dismiss()"
-      >
-        <i class="fa fa-save"></i>
-      </button>
+      <button type="button" class="btn btn-info" (click)="resetSettings(); modal.dismiss();"><i class="fa fa-undo"></i></button>
+      <button data-cy-test-settings="save" type="submit" class="btn btn-info" (click)="modal.dismiss()"><i class="fa fa-save"></i></button>
     </div>
   </form>
 </ng-template>
