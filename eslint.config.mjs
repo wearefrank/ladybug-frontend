@@ -1,21 +1,16 @@
-import sonarjs from "eslint-plugin-sonarjs";
-import prettier from "eslint-plugin-prettier";
-import tsParser from "@typescript-eslint/parser";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
-import { fixupPluginRules } from "@eslint/compat";
+import typescriptParser from '@typescript-eslint/parser';
+import prettierPlugin from 'eslint-plugin-prettier';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import angularPlugin from '@angular-eslint/eslint-plugin';
+import angularTemplate from '@angular-eslint/eslint-plugin-template';
+import angularTemplateParser from '@angular-eslint/template-parser';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+import js from '@eslint/js';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
-
-export default [{
+export default [
+  {
     ignores: [
         "projects/**/*",
         "dist/**/*",
@@ -23,91 +18,98 @@ export default [{
         "node_modules/**/*",
         "cypress/**/*",
     ],
-}, {
-    settings: {
-        "import/resolver": {
-            node: {
-                extensions: [".js", ".jsx", ".ts", ".tsx"],
-            },
-        },
-    },
-}, ...compat.extends(
-    "plugin:@angular-eslint/recommended",
-    "plugin:@angular-eslint/template/process-inline-templates",
-    "plugin:unicorn/recommended",
-    "plugin:prettier/recommended",
-).map(config => ({
-    ...config,
-    files: ["**/*.ts"],
-})), {
-    files: ["**/*.ts"],
-
-    plugins: {
-        sonarjs: fixupPluginRules(sonarjs),
-        prettier,
-    },
-
+  },
+  {
+    files: ['**/*.ts'],
     languageOptions: {
-        parser: tsParser,
-        ecmaVersion: 5,
-        sourceType: "script",
+      parser: typescriptParser,
+      parserOptions: {
+        project: ['./tsconfig.json', './tsconfig.app.json', './tsconfig.spec.json'],
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      '@angular-eslint': angularPlugin,
+      prettier: prettierPlugin,
+    },
+    rules: {
+      // TypeScript
+      ...tsPlugin.configs.recommended.rules,
+      ...tsPlugin.configs.stylistic.rules,
+      '@typescript-eslint/explicit-function-return-type': 'error',
+      '@typescript-eslint/triple-slash-reference': 'warn',
+      '@typescript-eslint/member-ordering': 'error',
 
-        parserOptions: {
-            project: ["tsconfig.json"],
-            createDefaultProgram: true,
+      // Angular
+      ...angularPlugin.configs.recommended.rules,
+      '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'app', style: 'camelCase' }],
+      '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'app', style: 'kebab-case' }],
+
+      // EcmaScript
+      ...js.configs.recommended.rules,
+      'prefer-template': 'error',
+      'no-undef': 'off',
+
+      // Prettier
+      ...eslintConfigPrettier.rules,
+      'prettier/prettier': 'warn',
+    },
+  },
+  {
+    files: ['**/*.html'],
+    languageOptions: {
+      parser: angularTemplateParser,
+    },
+    plugins: {
+      '@angular-eslint': angularPlugin,
+      '@angular-eslint/template': angularTemplate,
+      prettier: prettierPlugin,
+    },
+    rules: {
+      // Angular template
+      ...angularTemplate.configs.recommended.rules,
+      ...angularTemplate.configs.accessibility.rules,
+      '@angular-eslint/template/prefer-self-closing-tags': 'error',
+      '@angular-eslint/template/no-interpolation-in-attributes': ['error'],
+      '@angular-eslint/template/click-events-have-key-events': 'off',
+      '@angular-eslint/template/interactive-supports-focus': [
+        'error',
+        {
+          allowList: ['li'],
         },
-    },
+      ],
+      '@angular-eslint/contextual-decorator': 'warn',
+      '@angular-eslint/prefer-signals': 'error',
+      '@angular-eslint/template/attributes-order': [
+        'error',
+        {
+          alphabetical: false,
+          order: [
+            'TEMPLATE_REFERENCE',
+            'ATTRIBUTE_BINDING',
+            'STRUCTURAL_DIRECTIVE',
+            'INPUT_BINDING',
+            'TWO_WAY_BINDING',
+            'OUTPUT_BINDING',
+          ],
+        },
+      ],
 
+      // Prettier
+      ...eslintConfigPrettier.rules,
+      'prettier/prettier': ['error', { parser: 'angular' }],
+    },
+  },
+  // Unicorn
+  eslintPluginUnicorn.configs.recommended,
+  {
     rules: {
-        "@angular-eslint/directive-selector": ["error", {
-            type: "attribute",
-            prefix: "app",
-            style: "camelCase",
-        }],
-
-        "@angular-eslint/component-selector": ["error", {
-            type: "element",
-            prefix: "app",
-            style: "kebab-case",
-        }],
-
-        "prettier/prettier": ["error", {
-            endOfLine: "auto",
-            printWidth: 120,
-        }],
-
-        "unicorn/no-array-for-each": "off",
-        "unicorn/no-null": "off",
-        "unicorn/prevent-abbreviations": "off",
-        "sonarjs/cognitive-complexity": ["error", 18],
-        "sonarjs/no-duplicate-string": ["error", 5],
+      'unicorn/prevent-abbreviations': 'warn',
+      'unicorn/no-array-reduce': 'off',
+      'unicorn/prefer-ternary': 'warn',
+      'unicorn/no-null': 'off',
+      'unicorn/prefer-dom-node-text-content': 'warn',
     },
-}, ...compat.extends("plugin:@angular-eslint/template/recommended").map(config => ({
-    ...config,
-    files: ["**/*.html"],
-})), {
-    files: ["**/*.html"],
-    rules: {},
-}, ...compat.extends("plugin:@angular-eslint/template/recommended").map(config => ({
-    ...config,
-    files: ["**/*.html"],
-})), {
-    files: ["**/*.html"],
-
-    rules: {
-        "@angular-eslint/template/attributes-order": ["error", {
-            alphabetical: false,
-
-            order: [
-                "TEMPLATE_REFERENCE",
-                "ATTRIBUTE_BINDING",
-                "STRUCTURAL_DIRECTIVE",
-                "INPUT_BINDING",
-                "TWO_WAY_BINDING",
-                "OUTPUT_BINDING",
-            ],
-        }],
-
-        "@angular-eslint/template/no-interpolation-in-attributes": ["error"],
-    },
-}];
+  },
+  eslintPluginPrettierRecommended,
+];
