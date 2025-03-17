@@ -8,6 +8,8 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import js from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import { fixupPluginRules } from "@eslint/compat";
+import sonarjs from "eslint-plugin-sonarjs";
 
 export default [
   {
@@ -30,6 +32,7 @@ export default [
     plugins: {
       '@typescript-eslint': tsPlugin,
       '@angular-eslint': angularPlugin,
+      sonarjs: fixupPluginRules(sonarjs),
       prettier: prettierPlugin,
     },
     rules: {
@@ -101,7 +104,7 @@ export default [
     },
   },
   // Unicorn
-  eslintPluginUnicorn.configs.recommended,
+  eslintPluginUnicorn.configs["flat/recommended"],
   {
     rules: {
       'unicorn/prevent-abbreviations': 'warn',
