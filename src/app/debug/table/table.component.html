@@ -1,8 +1,6 @@
 @if (tableSettings.tableLoaded) {
   <div data-cy-debug="root" class="table-wrapper">
-    <app-filter-side-drawer
-      [currentView]="currentView"
-    ></app-filter-side-drawer>
+    <app-filter-side-drawer [currentView]="currentView" />
     <div class="button-row">
       <button
         data-cy-debug="refresh"
@@ -320,5 +318,5 @@
 
 <app-table-settings-modal
   (openLatestReportsEvent)="openLatestReports($event)"
-></app-table-settings-modal>
-<app-delete-modal (confirmDeleteEvent)="deleteAll()"></app-delete-modal>
+/>
+<app-delete-modal (confirmDeleteEvent)="deleteAll()" />

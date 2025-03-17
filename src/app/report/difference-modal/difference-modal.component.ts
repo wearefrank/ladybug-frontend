@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Component, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
 import { TitleCasePipe } from '@angular/common';
@@ -16,14 +17,14 @@ export type ChangesAction = (typeof changesActionConst)[number];
   styleUrl: './difference-modal.component.css',
 })
 export class DifferenceModalComponent {
-  protected saveOrDiscardType!: ChangesAction;
-  protected reportDifferences?: ReportDifference[];
-  protected stubChange: boolean = false;
-  protected activeModal?: NgbModalRef;
   @Output() saveChangesEvent: Subject<boolean> = new Subject<boolean>();
   @Output() discardChangesEvent: Subject<void> = new Subject<void>();
   @Output() rerunEvent: Subject<void> = new Subject<void>();
   @ViewChild('modal') protected modal!: TemplateRef<DifferenceModalComponent>;
+  protected saveOrDiscardType!: ChangesAction;
+  protected reportDifferences?: ReportDifference[];
+  protected stubChange: boolean = false;
+  protected activeModal?: NgbModalRef;
 
   constructor(
     private modalService: NgbModal,

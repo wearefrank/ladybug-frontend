@@ -27,7 +27,7 @@ export const ReportUtil = {
     return undefined;
   },
 
-  hasValidUid(uid: string) {
+  hasValidUid(uid: string): boolean {
     return !uid.includes('null');
   },
   getCheckpointIdFromUid(uid: string): number {

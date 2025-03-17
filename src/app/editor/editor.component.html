@@ -8,8 +8,7 @@
       [(ngModel)]="editorContent"
       (onInit)="initEditor($event)"
       (ngModelChange)="onChange($event)"
-    >
-    </ngx-monaco-editor>
+    />
     <div #statusBarElement class="status-bar">
       <div class="left-side">
         @if (!readOnlyMode) {

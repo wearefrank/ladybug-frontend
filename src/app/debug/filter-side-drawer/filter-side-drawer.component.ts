@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/array-type */
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FilterService } from './filter.service';
 import { catchError, Subscription } from 'rxjs';
@@ -115,6 +117,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     this.filterService.updateFilterContext(metadataName, '');
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   getTooltipSuggestion(key: string) {
     if (this.toolTipSuggestions) {
       return this.toolTipSuggestions[key as keyof Report];

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unused-vars */
 import {
   Component,
   EventEmitter,
@@ -106,7 +108,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  getApplicationVersions() {
+  getApplicationVersions(): void {
     this.versionService
       .getFrontendVersion()
       .then((frontendVersion: string): void => {
@@ -169,7 +171,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     );
   }
 
-  closeSettingsModal() {
+  closeSettingsModal(): void {
     this.activeSettingsModal?.close();
     if (this.unsavedChanges) {
       this.activeUnsavedChangesModal = this.modalService.open(

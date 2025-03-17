@@ -1,8 +1,6 @@
 <div class="row h-100">
   <div class="col-3 resizable-horizontal p-2 border-right">
-    <app-test-folder-tree
-      (changeFolderEvent)="changeFilter($event)"
-    ></app-test-folder-tree>
+    <app-test-folder-tree (changeFolderEvent)="changeFilter($event)" />
   </div>
   <div class="col">
     <div class="buttons pt-1">
@@ -176,18 +174,13 @@
         (changePath)="selectItemInFolderTree($event)"
         (fullyLoaded)="childComponentsLoaded()"
         (runEvent)="run($event)"
-      >
-      </app-test-table>
+      />
     }
   </div>
 </div>
 
 <app-test-settings-modal
   (updateShowStorageIds)="updateShowStorageIds($event)"
-></app-test-settings-modal>
-<app-clone-modal
-  (cloneReportEvent)="testReportsService.getReports()"
-></app-clone-modal>
-<app-delete-modal
-  (confirmDeleteEvent)="deleteReports($event)"
-></app-delete-modal>
+/>
+<app-clone-modal (cloneReportEvent)="testReportsService.getReports()" />
+<app-delete-modal (confirmDeleteEvent)="deleteReports($event)" />

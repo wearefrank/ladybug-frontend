@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
 import { Injectable, NgModule } from '@angular/core';
 import {
   ActivatedRouteSnapshot,

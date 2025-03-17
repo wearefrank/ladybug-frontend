@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ChangeDetectorRef,
   Component,
@@ -48,8 +50,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() readOnlyMode: boolean = true;
   @Output() saveReport: Subject<string> = new Subject<string>();
   @ViewChild('statusBarElement') statusBar?: ElementRef;
-  protected readonly INDENT_TWO_SPACES: string = '  ';
-  protected calculatedHeight: number = this.height;
   editor!: IEditor;
   unsavedChanges: boolean = false;
   options: any = {
@@ -69,7 +69,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   isPrettified: boolean = false;
   currentView: EditorView = 'raw';
   editorFocused: boolean = false;
-  private subscriptions: Subscription = new Subscription();
   editorChangesSubject: Subject<string> = new Subject<string>();
 
   //Settings attributes
@@ -78,10 +77,22 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   availableViews!: EditorView[];
   contentType!: EditorView;
 
+  protected readonly INDENT_TWO_SPACES: string = '  ';
+  protected calculatedHeight: number = this.height;
+  private subscriptions: Subscription = new Subscription();
+
   constructor(
     private settingsService: SettingsService,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  @HostListener('window:keydown', ['$event'])
+  keyBoardListener(event: KeyboardEvent): void {
+    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+      event.preventDefault();
+      this.onSave();
+    }
+  }
 
   ngOnInit(): void {
     this.subscribeToEditorChanges();
@@ -105,21 +116,13 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  @HostListener('window:keydown', ['$event'])
-  keyBoardListener(event: KeyboardEvent): void {
-    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
-      event.preventDefault();
-      this.onSave();
-    }
-  }
-
   onSave(): void {
     if (this.unsavedChanges) {
       this.save();
     }
   }
 
-  calculateHeight() {
+  calculateHeight(): void {
     if (this.statusBar) {
       this.calculatedHeight =
         this.height - this.statusBar.nativeElement.offsetHeight;

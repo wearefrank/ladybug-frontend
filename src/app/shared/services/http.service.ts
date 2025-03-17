@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
@@ -68,7 +69,7 @@ export class HttpService {
   }
 
   deleteReportInProgress(index: number): Observable<Report> {
-    return this.http.delete<Report>('api/testtool/in-progress/' + index);
+    return this.http.delete<Report>(`api/testtool/in-progress/${index}`);
   }
 
   getReportsInProgressThresholdTime(): Observable<number> {
@@ -264,7 +265,7 @@ export class HttpService {
     reportIds: number[],
   ): Observable<void> {
     return this.http.post<void>(
-      `api/report/customreportaction?storage=` + storage,
+      `api/report/customreportaction?storage=${storage}`,
       reportIds,
     );
   }

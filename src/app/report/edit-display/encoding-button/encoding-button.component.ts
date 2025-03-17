@@ -1,10 +1,10 @@
+/* eslint-disable no-unused-vars */
 import {
   Component,
   EventEmitter,
   Input,
   OnChanges,
   Output,
-  SimpleChanges,
 } from '@angular/core';
 import { ReportUtil } from '../../../shared/util/report-util';
 import { ToastService } from '../../../shared/services/toast.service';
@@ -27,7 +27,7 @@ export class EncodingButtonComponent implements OnChanges {
 
   constructor(private toastService: ToastService) {}
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     this.showEncodingButton =
       ReportUtil.isCheckPoint(this.selectedNode) &&
       this.selectedNode.encoding === 'Base64';

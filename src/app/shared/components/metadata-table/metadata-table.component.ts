@@ -14,7 +14,7 @@ import { ReportUtil } from '../../util/report-util';
   imports: [ClipboardModule, MatTooltipModule, CopyTooltipDirective],
 })
 export class MetadataTableComponent {
-  protected readonly ReportUtil = ReportUtil;
-
   @Input({ required: true }) report!: Report | Checkpoint;
+
+  protected readonly ReportUtil = ReportUtil;
 }

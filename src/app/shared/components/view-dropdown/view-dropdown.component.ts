@@ -15,9 +15,9 @@ import { Subject } from 'rxjs';
   styleUrl: './view-dropdown.component.css',
 })
 export class ViewDropdownComponent implements OnChanges {
+  @Output() viewChanged = new Subject<View>();
   @Input({ required: true }) views!: View[];
   @Input({ required: true }) currentView!: View;
-  @Output() viewChanged: Subject<View> = new Subject();
 
   viewDropdownBoxWidth!: string;
 

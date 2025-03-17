@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Directive, HostListener, Input } from '@angular/core';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Clipboard } from '@angular/cdk/clipboard';

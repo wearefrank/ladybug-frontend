@@ -10,10 +10,9 @@ import { Checkpoint } from '../../shared/interfaces/checkpoint';
   styleUrl: './report-alert-message.component.css',
 })
 export class ReportAlertMessageComponent implements OnChanges {
-  protected readonly ReportUtil = ReportUtil;
-
-  protected anyAlertMessagesPresent: boolean = false;
   @Input({ required: true }) report!: Report | Checkpoint;
+  protected readonly ReportUtil = ReportUtil;
+  protected anyAlertMessagesPresent: boolean = false;
 
   ngOnChanges(): void {
     this.checkIfAnyAlertMessagesPresent();

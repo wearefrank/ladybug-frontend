@@ -42,7 +42,7 @@ export class TestFolderTreeComponent {
     this.tree.selectItem(this.rootFolder.path!);
   }
 
-  resetTree() {
+  resetTree(): void {
     this.tree.items = [];
     this.rootFolder.children = [];
   }
@@ -64,7 +64,7 @@ export class TestFolderTreeComponent {
     itemToAdd: CreateTreeItem,
     routeParts: string[],
     currentLocation: CreateTreeItem,
-  ) {
+  ): void {
     if (routeParts.length === 0) {
       return;
     }

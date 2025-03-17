@@ -39,6 +39,15 @@ export class ReportHierarchyTransformer {
     return report;
   }
 
+  getImage(type: CheckpointType, encoding: string, level: number): string {
+    let iconClass = CHECKPOINT_TYPE_STRINGS[type];
+    if (encoding === this.THROWABLE_ENCODER) {
+      iconClass += ' red';
+    }
+    iconClass += level % 2 == 0 ? ' even' : ' odd';
+    return iconClass;
+  }
+
   private handleStartpoint(checkpoint: Checkpoint): void {
     if (this.startPointStack.length > 0) {
       this.addCheckpointToParent(checkpoint, this.startPointStack);
@@ -76,14 +85,5 @@ export class ReportHierarchyTransformer {
       parentStartpoint.checkpoints = [];
     }
     parentStartpoint.checkpoints.push(checkpoint);
-  }
-
-  getImage(type: CheckpointType, encoding: string, level: number): string {
-    let iconClass = CHECKPOINT_TYPE_STRINGS[type];
-    if (encoding === this.THROWABLE_ENCODER) {
-      iconClass += ' red';
-    }
-    iconClass += level % 2 == 0 ? ' even' : ' odd';
-    return iconClass;
   }
 }

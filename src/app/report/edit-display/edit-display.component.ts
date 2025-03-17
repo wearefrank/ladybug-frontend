@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unused-vars */
 import {
   ChangeDetectorRef,
   Component,
@@ -78,15 +80,9 @@ import { Router } from '@angular/router';
   ],
 })
 export class EditDisplayComponent implements OnChanges {
-  protected readonly ReportUtil = ReportUtil;
-  protected readonly Number: NumberConstructor = Number;
-  protected readonly StubStrategy = StubStrategy;
-  protected calculatedHeight: number = 340;
-
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
   @Input() newTab: boolean = true;
-
   @ViewChild(EditorComponent) editor!: EditorComponent;
   @ViewChild(EditFormComponent) editFormComponent!: EditFormComponent;
   @ViewChild(DifferenceModalComponent)
@@ -105,6 +101,11 @@ export class EditDisplayComponent implements OnChanges {
   stub?: number;
   stubStrategy?: string;
 
+  protected readonly ReportUtil = ReportUtil;
+  protected readonly Number: NumberConstructor = Number;
+  protected readonly StubStrategy = StubStrategy;
+  protected calculatedHeight: number = 340;
+
   constructor(
     private modalService: NgbModal,
     private httpService: HttpService,
@@ -118,7 +119,7 @@ export class EditDisplayComponent implements OnChanges {
     protected appVariablesService: AppVariablesService,
   ) {}
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['containerHeight']) {
       const topComponentHeight = this.topComponent
         ? this.topComponent?.nativeElement.offsetHeight
@@ -411,7 +412,7 @@ export class EditDisplayComponent implements OnChanges {
     }
   }
 
-  showNotEditableWarning() {
+  showNotEditableWarning(): void {
     this.toastService.showWarning(
       'This storage is readonly, copy to the test tab to edit this report.',
       {

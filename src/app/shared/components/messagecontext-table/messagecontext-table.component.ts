@@ -26,22 +26,21 @@ import { ReportUtil } from '../../util/report-util';
   ],
 })
 export class MessagecontextTableComponent implements OnInit, OnChanges {
-  protected readonly ReportUtil = ReportUtil;
-
   @Input({ required: true }) report!: Report | Checkpoint;
   messageContextData: [string, string][] = [];
+  protected readonly ReportUtil = ReportUtil;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.updateMessageContextData();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes.report) {
       this.updateMessageContextData();
     }
   }
 
-  private updateMessageContextData() {
+  private updateMessageContextData(): void {
     const messageContext = ReportUtil.isCheckPoint(this.report)
       ? this.report.messageContext
       : null;

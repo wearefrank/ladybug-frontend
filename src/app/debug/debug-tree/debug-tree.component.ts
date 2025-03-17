@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unused-vars */
 import {
   Component,
   EventEmitter,
@@ -39,10 +41,6 @@ export class DebugTreeComponent implements OnDestroy {
 
   showMultipleAtATime!: boolean;
   subscriptions: Subscription = new Subscription();
-
-  private _currentView!: View;
-  private lastReport?: Report | null;
-
   treeOptions: FileTreeOptions = {
     hierarchyLines: {
       vertical: true,
@@ -54,6 +52,9 @@ export class DebugTreeComponent implements OnDestroy {
     determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };
 
+  private _currentView!: View;
+  private lastReport?: Report | null;
+
   constructor(
     private httpService: HttpService,
     private settingsService: SettingsService,
@@ -63,7 +64,15 @@ export class DebugTreeComponent implements OnDestroy {
     this.subscribeToSubscriptions();
   }
 
-  ngOnDestroy() {
+  @Input({ required: true }) set currentView(value: View) {
+    if (this._currentView !== value) {
+      // TODO: Check if the current reports are part of the view
+      this.hideOrShowCheckpointsBasedOnView(value);
+    }
+    this._currentView = value;
+  }
+
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
@@ -88,21 +97,13 @@ export class DebugTreeComponent implements OnDestroy {
     this.subscriptions.add(refreshTree);
   }
 
-  @Input({ required: true }) set currentView(value: View) {
-    if (this._currentView !== value) {
-      // TODO: Check if the current reports are part of the view
-      this.hideOrShowCheckpointsBasedOnView(value);
-    }
-    this._currentView = value;
-  }
-
   hideOrShowCheckpointsBasedOnView(currentView: View): void {
     if (this.tree) {
       this.checkUnmatchedCheckpoints(this.getTreeReports(), currentView);
     }
   }
 
-  checkUnmatchedCheckpoints(reports: Report[], currentView: View) {
+  checkUnmatchedCheckpoints(reports: Report[], currentView: View): void {
     for (let report of reports) {
       if (report.storageName === currentView.storageName) {
         this.httpService
@@ -159,17 +160,6 @@ export class DebugTreeComponent implements OnDestroy {
     }
   }
 
-  private selectFirstCheckpoint(rootNodePath: string) {
-    const last = this.tree.items.length - 1;
-    const lastAdded = this.tree.items[last];
-    if (lastAdded.children) {
-      const firstCheckpoint = lastAdded.children[0];
-      this.tree.selectItem(firstCheckpoint.path);
-    } else {
-      this.tree.selectItem(rootNodePath);
-    }
-  }
-
   closeEntireTree(): void {
     this.debugTab.setAnyReportsOpen(false);
     this.closeEntireTreeEvent.emit();
@@ -208,7 +198,7 @@ export class DebugTreeComponent implements OnDestroy {
       this.tree.getSelected().originalValue.storageId;
     let lastSelectedReport: FileTreeItem | undefined;
 
-    const shouldProcessReport = (reportId: number) =>
+    const shouldProcessReport = (reportId: number): boolean =>
       !condition?.reportIds || condition.reportIds.includes(reportId);
 
     for (const index in this.tree.items) {
@@ -243,5 +233,16 @@ export class DebugTreeComponent implements OnDestroy {
     const transformedReport: Report =
       new ReportHierarchyTransformer().transform(response);
     return this.tree.createItemToFileItem(transformedReport);
+  }
+
+  private selectFirstCheckpoint(rootNodePath: string): void {
+    const last = this.tree.items.length - 1;
+    const lastAdded = this.tree.items[last];
+    if (lastAdded.children) {
+      const firstCheckpoint = lastAdded.children[0];
+      this.tree.selectItem(firstCheckpoint.path);
+    } else {
+      this.tree.selectItem(rootNodePath);
+    }
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
@@ -88,7 +89,7 @@ export class TestComponent implements OnInit, OnDestroy {
     localStorage.removeItem('generatorEnabled');
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.testReportServiceSubscription?.unsubscribe();
   }
 
@@ -166,6 +167,7 @@ export class TestComponent implements OnInit, OnDestroy {
       this.httpService
         .runReport(this.testReportsService.storageName, report.storageId)
         .pipe(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           catchError((error: HttpErrorResponse): Observable<any> => {
             report.error = error.message;
             return of(error);
@@ -370,20 +372,6 @@ export class TestComponent implements OnInit, OnDestroy {
     }
   }
 
-  protected childComponentsLoaded(): void {
-    setTimeout(() => {
-      this.childrenLoaded = true;
-    });
-  }
-
-  protected selectItemInFolderTree(report: TestListItem): void {
-    let path = report.path;
-    if (path.endsWith('/')) {
-      path = path.slice(0, -1);
-    }
-    this.testFileTreeComponent?.tree?.selectItem(path);
-  }
-
   processCustomReportAction(): void {
     this.httpService
       .processCustomReportAction(
@@ -406,5 +394,19 @@ export class TestComponent implements OnInit, OnDestroy {
           );
         },
       });
+  }
+
+  protected childComponentsLoaded(): void {
+    setTimeout(() => {
+      this.childrenLoaded = true;
+    });
+  }
+
+  protected selectItemInFolderTree(report: TestListItem): void {
+    let path = report.path;
+    if (path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
+    this.testFileTreeComponent?.tree?.selectItem(path);
   }
 }

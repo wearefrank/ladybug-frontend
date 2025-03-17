@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 import { CompareData } from './compare-data';
@@ -45,9 +46,9 @@ import { ReportAlertMessageComponent } from '../report/report-alert-message/repo
   ],
 })
 export class CompareComponent implements AfterViewInit, OnInit {
-  protected readonly ReportUtil = ReportUtil;
   static readonly ROUTER_PATH: string = 'compare';
   @ViewChild(CompareTreeComponent) compareTreeComponent!: CompareTreeComponent;
+  protected readonly ReportUtil = ReportUtil;
   protected readonly nodeLinkStrategyConst = nodeLinkStrategyConst;
   protected nodeLinkStrategy!: NodeLinkStrategy;
   protected diffOptions = {
@@ -96,6 +97,56 @@ export class CompareComponent implements AfterViewInit, OnInit {
     }
   }
 
+  protected syncLeftAndRight(): void {
+    this.leftNode =
+      this.compareTreeComponent.leftTree.getSelected().originalValue;
+    this.rightNode =
+      this.compareTreeComponent.rightTree.getSelected().originalValue;
+    if (ReportUtil.isReport(this.leftNode)) {
+      this.leftReport = { ...this.leftNode };
+    }
+    if (ReportUtil.isReport(this.rightNode)) {
+      this.rightReport = { ...this.rightNode };
+    }
+    this.showDifference();
+  }
+
+  protected showDifference(): void {
+    if (this.leftNode && this.rightNode) {
+      const leftSide: string = this.extractMessage(this.leftNode);
+      const rightSide: string = this.extractMessage(this.rightNode);
+      this.renderDiffs(leftSide, rightSide);
+    }
+  }
+
+  protected changeNodeLinkStrategy(): void {
+    if (this.compareData && this.nodeLinkStrategy) {
+      localStorage.setItem(
+        `${this.compareData.viewName}.NodeLinkStrategy`,
+        this.nodeLinkStrategy,
+      );
+    }
+  }
+
+  protected changeView(view: View): void {
+    if (this.leftReport?.storageName && this.rightReport?.storageName) {
+      this.hideOrShowCheckpoints(
+        view,
+        this.leftReport.storageName,
+        this.leftReport.storageId,
+        this.compareTreeComponent.leftTree.elements.toArray(),
+      );
+      this.hideOrShowCheckpoints(
+        view,
+        this.rightReport.storageName,
+        this.rightReport.storageId,
+        this.compareTreeComponent.rightTree.elements.toArray(),
+      );
+    }
+    this.currentView = view;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   private getViews() {
     this.httpService
       .getViews()
@@ -191,7 +242,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
   private getStrategyFromLocalStorage(): void {
     if (this.compareData) {
       const strategy: string | null = localStorage.getItem(
-        this.compareData.viewName + '.NodeLinkStrategy',
+        `${this.compareData.viewName}.NodeLinkStrategy`,
       );
       this.nodeLinkStrategy = strategy
         ? (strategy as NodeLinkStrategy)
@@ -206,59 +257,10 @@ export class CompareComponent implements AfterViewInit, OnInit {
     );
   }
 
-  protected syncLeftAndRight(): void {
-    this.leftNode =
-      this.compareTreeComponent.leftTree.getSelected().originalValue;
-    this.rightNode =
-      this.compareTreeComponent.rightTree.getSelected().originalValue;
-    if (ReportUtil.isReport(this.leftNode)) {
-      this.leftReport = { ...this.leftNode };
-    }
-    if (ReportUtil.isReport(this.rightNode)) {
-      this.rightReport = { ...this.rightNode };
-    }
-    this.showDifference();
-  }
-
-  protected showDifference(): void {
-    if (this.leftNode && this.rightNode) {
-      const leftSide: string = this.extractMessage(this.leftNode);
-      const rightSide: string = this.extractMessage(this.rightNode);
-      this.renderDiffs(leftSide, rightSide);
-    }
-  }
-
   private extractMessage(selectedNode: Report | Checkpoint): string {
     return ReportUtil.isReport(selectedNode)
       ? selectedNode.xml
       : selectedNode.message;
-  }
-
-  protected changeNodeLinkStrategy(): void {
-    if (this.compareData && this.nodeLinkStrategy) {
-      localStorage.setItem(
-        this.compareData.viewName + '.NodeLinkStrategy',
-        this.nodeLinkStrategy,
-      );
-    }
-  }
-
-  protected changeView(view: View): void {
-    if (this.leftReport?.storageName && this.rightReport?.storageName) {
-      this.hideOrShowCheckpoints(
-        view,
-        this.leftReport.storageName,
-        this.leftReport.storageId,
-        this.compareTreeComponent.leftTree.elements.toArray(),
-      );
-      this.hideOrShowCheckpoints(
-        view,
-        this.rightReport.storageName,
-        this.rightReport.storageId,
-        this.compareTreeComponent.rightTree.elements.toArray(),
-      );
-    }
-    this.currentView = view;
   }
 
   private hideOrShowCheckpoints(

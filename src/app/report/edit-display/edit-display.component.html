@@ -1,3 +1,4 @@
+<!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
 <div #topComponent [hidden]="!displayReport">
   <div
     class="d-flex flex-row justify-content-between align-items-center"
@@ -63,9 +64,7 @@
             title="Open message context table"
             (click)="toggleMessageContextTable()"
           >
-            {{
-              messageContextTableVisible | booleanToString: 'Hide' : 'Show'
-            }}
+            {{ messageContextTableVisible | booleanToString: 'Hide' : 'Show' }}
             messagecontext
           </button>
         }
@@ -75,7 +74,7 @@
           [labels]="{ on: 'Edit', off: 'View' }"
           [value]="editingEnabled"
           (valueChanged)="toggleEditMode($event)"
-        ></app-toggle-button>
+        />
 
         <span class="button-divider">&#124;</span>
         <button
@@ -129,7 +128,7 @@
         <app-encoding-button
           [selectedNode]="selectedNode"
           (updatedMessageEvent)="editor.setNewReport($event)"
-        ></app-encoding-button>
+        />
 
         @if (ReportUtil.isReport(selectedNode)) {
           <div

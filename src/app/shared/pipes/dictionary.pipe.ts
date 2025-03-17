@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/array-type */
 import { Pipe, PipeTransform } from '@angular/core';
 import { KeyValue } from '@angular/common';
 

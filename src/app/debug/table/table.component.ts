@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/array-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/member-ordering */
 import {
   Component,
   EventEmitter,
@@ -238,7 +242,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadReportInProgressSettings();
   }
 
-  retrieveRecords(showToast: boolean = true) {
+  retrieveRecords(showToast: boolean = true): void {
     this.httpService
       .getMetadataReports(this.tableSettings, this.currentView)
       .pipe(catchError(this.errorHandler.handleError()))
@@ -523,7 +527,7 @@ export class TableComponent implements OnInit, OnDestroy {
       });
   }
 
-  openSelectedReport(storageId: number) {
+  openSelectedReport(storageId: number): void {
     this.selectedReportStorageId = storageId;
     this.openReport(storageId);
   }

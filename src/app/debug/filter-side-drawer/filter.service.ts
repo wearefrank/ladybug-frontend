@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/array-type */
+/* eslint-disable @typescript-eslint/member-ordering */
+/* eslint-disable @typescript-eslint/consistent-generic-constructors */
 import { Injectable } from '@angular/core';
-import { debounceTime, filter, Observable, Subject } from 'rxjs';
+import { debounceTime, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -75,7 +78,7 @@ export class FilterService {
     this.metadataTypesSubject.next(this.metadataTypes);
   }
 
-  toggleShowFilterSidePanel(value: boolean) {
+  toggleShowFilterSidePanel(value: boolean): void {
     this.filterSidePanelVisibleSubject.next(value);
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -48,7 +49,7 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.reportData = this.tabService.activeReportTabs.get(
       this.getIdFromPath(),
     );
@@ -73,16 +74,16 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  listenToHeight() {
+  listenToHeight(): void {
     const resizeObserver$ = fromEventPattern<ResizeObserverEntry[]>(
       (handler: NodeEventHandler) => {
         const resizeObserver = new ResizeObserver(handler);
         resizeObserver.observe(this.host.nativeElement);
-        return () => resizeObserver.disconnect();
+        return (): void => resizeObserver.disconnect();
       },
     );
 

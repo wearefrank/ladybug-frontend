@@ -6,11 +6,10 @@ import { Toast, ToastCallback } from '../interfaces/toast';
   providedIn: 'root',
 })
 export class ToastService {
-  private toastSubject: Subject<Toast> = new ReplaySubject(1);
-  toastObservable: Observable<Toast> = this.toastSubject.asObservable();
   readonly TOASTER_LINE_LENGTH: number = 37;
-
-  constructor() {}
+  private toastSubject: Subject<Toast> = new ReplaySubject(1);
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  toastObservable: Observable<Toast> = this.toastSubject.asObservable();
 
   public showDanger(
     body: string,
