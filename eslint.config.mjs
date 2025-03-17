@@ -8,17 +8,17 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import js from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
-import { fixupPluginRules } from "@eslint/compat";
-import sonarjs from "eslint-plugin-sonarjs";
+import { fixupPluginRules } from '@eslint/compat';
+import sonarjs from 'eslint-plugin-sonarjs';
 
 export default [
   {
     ignores: [
-        "projects/**/*",
-        "dist/**/*",
-        "target/**/*",
-        "node_modules/**/*",
-        "cypress/**/*",
+      'projects/**/*',
+      'dist/**/*',
+      'target/**/*',
+      'node_modules/**/*',
+      'cypress/**/*',
     ],
   },
   {
@@ -26,7 +26,11 @@ export default [
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
-        project: ['./tsconfig.json', './tsconfig.app.json', './tsconfig.spec.json'],
+        project: [
+          './tsconfig.json',
+          './tsconfig.app.json',
+          './tsconfig.spec.json',
+        ],
       },
     },
     plugins: {
@@ -45,8 +49,14 @@ export default [
 
       // Angular
       ...angularPlugin.configs.recommended.rules,
-      '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'app', style: 'camelCase' }],
-      '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'app', style: 'kebab-case' }],
+      '@angular-eslint/directive-selector': [
+        'error',
+        { type: 'attribute', prefix: 'app', style: 'camelCase' },
+      ],
+      '@angular-eslint/component-selector': [
+        'error',
+        { type: 'element', prefix: 'app', style: 'kebab-case' },
+      ],
 
       // EcmaScript
       ...js.configs.recommended.rules,
@@ -104,7 +114,7 @@ export default [
     },
   },
   // Unicorn
-  eslintPluginUnicorn.configs["flat/recommended"],
+  eslintPluginUnicorn.configs['flat/recommended'],
   {
     rules: {
       'unicorn/prevent-abbreviations': 'warn',
