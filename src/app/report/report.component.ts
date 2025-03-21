@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -33,7 +34,7 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
   @ViewChild(EditDisplayComponent) displayComponent!: EditDisplayComponent;
   @Input({ required: true }) currentView!: View;
-  @Input() newTab: boolean = true;
+  @Input() newTab = true;
   calculatedHeight!: number;
   treeWidth: Subject<void> = new Subject<void>();
   reportData?: ReportData;
@@ -48,7 +49,7 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.reportData = this.tabService.activeReportTabs.get(this.getIdFromPath());
     if (!this.reportData) {
       this.router.navigate([DebugComponent.ROUTER_PATH]);
@@ -71,15 +72,15 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  listenToHeight() {
+  listenToHeight(): void {
     const resizeObserver$ = fromEventPattern<ResizeObserverEntry[]>((handler: NodeEventHandler) => {
       const resizeObserver = new ResizeObserver(handler);
       resizeObserver.observe(this.host.nativeElement);
-      return () => resizeObserver.disconnect();
+      return (): void => resizeObserver.disconnect();
     });
 
     const resizeSubscription = resizeObserver$.pipe(debounceTime(50)).subscribe((entries: ResizeObserverEntry[]) => {

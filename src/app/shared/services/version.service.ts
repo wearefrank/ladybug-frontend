@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Injectable } from '@angular/core';
 import { HttpService } from './http.service';
 import { firstValueFrom } from 'rxjs';
@@ -16,7 +17,7 @@ export class VersionService {
     private httpClient: HttpClient,
   ) {}
 
-  async getFrontendVersion() {
+  async getFrontendVersion(): Promise<string> {
     if (!this.frontendVersion) {
       try {
         const packageJson = await firstValueFrom(this.httpClient.get<{ version: string }>(this.packageJsonPath));
@@ -30,7 +31,7 @@ export class VersionService {
     return this.frontendVersion!;
   }
 
-  async getBackendVersion() {
+  async getBackendVersion(): Promise<string> {
     if (!this.backendVersion) {
       this.backendVersion = await firstValueFrom(this.httpService.getBackendVersion());
     }

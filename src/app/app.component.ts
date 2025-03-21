@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Location, NgOptimizedImage } from '@angular/common';
 import { Title } from '@angular/platform-browser';
@@ -28,19 +29,16 @@ import { VersionService } from './shared/services/version.service';
   imports: [RouterLinkActive, RouterLink, RouterOutlet, ToastComponent, NgOptimizedImage],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  frontendVersion?: string;
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
   @ViewChild(TestComponent) testComponent!: TestComponent;
-
-  title: string = 'ladybug';
+  frontendVersion?: string;
+  title = 'ladybug';
   tabs: Tab[] = [];
-
-  protected readonly debugComponentPath: string = `/${DebugComponent.ROUTER_PATH}`;
-  protected readonly testComponentPath: string = `/${TestComponent.ROUTER_PATH}`;
-
   newTabSubscription!: Subscription;
   newCompareTabSubscription!: Subscription;
   closeTabSubscription!: Subscription;
+  protected readonly debugComponentPath: string = `/${DebugComponent.ROUTER_PATH}`;
+  protected readonly testComponentPath: string = `/${TestComponent.ROUTER_PATH}`;
 
   constructor(
     private titleService: Title,
@@ -66,7 +64,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.unsubscribeAll();
   }
 
-  async fetchAndSetFrontendVersion() {
+  async fetchAndSetFrontendVersion(): Promise<void> {
     this.frontendVersion = await this.versionService.getFrontendVersion();
     this.titleService.setTitle(`Ladybug - v${this.frontendVersion}`);
   }
@@ -138,7 +136,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  closeTabEvent(tab: Tab, event: MouseEvent) {
+  closeTabEvent(tab: Tab, event: MouseEvent): void {
     event.stopPropagation();
     event.preventDefault();
     this.closeTab(tab);

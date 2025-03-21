@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
 import { Injectable, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy, RouterModule, Routes } from '@angular/router';
 import { DebugComponent } from './debug/debug.component';
@@ -86,8 +88,8 @@ export class AppRouteReuseStrategy implements RouteReuseStrategy {
     return this.storedRoutes[path] || null;
   }
 
-  shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
-    return future.routeConfig === curr.routeConfig;
+  shouldReuseRoute(future: ActivatedRouteSnapshot, current: ActivatedRouteSnapshot): boolean {
+    return future.routeConfig === current.routeConfig;
   }
 
   private getRouteId(route: ActivatedRouteSnapshot): string {

@@ -47,6 +47,8 @@ describe('ToastComponent', () => {
     toastDebugElement.triggerEventHandler('click', null);
 
     // Assert that the modal opens and the selectedAlert is set correctly
-    expect(mockNgbModal.open).toHaveBeenCalledWith(component.modal, { size: 'lg' });
+    expect(mockNgbModal.open).toHaveBeenCalledWith(component.modal, {
+      size: 'lg',
+    });
   });
 });

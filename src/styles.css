@@ -1,15 +1,17 @@
-@import "node_modules/bootstrap/dist/css/bootstrap.min.css";
-@import "node_modules/bootstrap-icons/font/bootstrap-icons.css";
+@import 'node_modules/bootstrap/dist/css/bootstrap.min.css';
+@import 'node_modules/bootstrap-icons/font/bootstrap-icons.css';
 
 body {
-  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  font-family:
+    'open sans', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
   font-size: 0.7rem !important;
   line-height: 1 !important;
   background-color: #f3f3f4 !important;
   position: relative;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
 }
@@ -47,7 +49,15 @@ html, body {
   font-size: 0.8rem;
 }
 
-.btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active, .open .dropdown-toggle.btn-info, .btn-info:active:focus, .btn-info:active:hover, .btn-info.active:hover, .btn-info.active:focus {
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active,
+.open .dropdown-toggle.btn-info,
+.btn-info:active:focus,
+.btn-info:active:hover,
+.btn-info.active:hover,
+.btn-info.active:focus {
   background-color: #21b9bb;
   border-color: #21b9bb;
   outline: none !important;

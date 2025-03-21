@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
@@ -7,7 +8,7 @@ import { Report } from '../interfaces/report';
 import { CompareReport } from '../interfaces/compare-reports';
 import { TestListItem } from '../interfaces/test-list-item';
 import { CloneReport } from '../interfaces/clone-report';
-import { UploadParams } from '../interfaces/upload-params';
+import { UploadParams as UploadParameters } from '../interfaces/upload-params';
 import { UpdatePathSettings } from '../interfaces/update-path-settings';
 import { TestResult } from '../interfaces/test-result';
 import { UpdateReport } from '../interfaces/update-report';
@@ -60,7 +61,7 @@ export class HttpService {
   }
 
   deleteReportInProgress(index: number): Observable<Report> {
-    return this.http.delete<Report>('api/testtool/in-progress/' + index);
+    return this.http.delete<Report>(`api/testtool/in-progress/${index}`);
   }
 
   getReportsInProgressThresholdTime(): Observable<number> {
@@ -136,7 +137,7 @@ export class HttpService {
     });
   }
 
-  postSettings(settings: UploadParams): Observable<void> {
+  postSettings(settings: UploadParameters): Observable<void> {
     return this.http.post<void>('api/testtool', settings);
   }
 
@@ -219,6 +220,6 @@ export class HttpService {
   }
 
   processCustomReportAction(storage: string, reportIds: number[]): Observable<void> {
-    return this.http.post<void>(`api/report/customreportaction?storage=` + storage, reportIds);
+    return this.http.post<void>(`api/report/customreportaction?storage=${storage}`, reportIds);
   }
 }

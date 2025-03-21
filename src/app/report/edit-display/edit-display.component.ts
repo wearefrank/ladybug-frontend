@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unused-vars */
 import { ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
 import {
@@ -67,15 +69,9 @@ import { Router } from '@angular/router';
   ],
 })
 export class EditDisplayComponent implements OnChanges {
-  protected readonly ReportUtil = ReportUtil;
-  protected readonly Number: NumberConstructor = Number;
-  protected readonly StubStrategy = StubStrategy;
-  protected calculatedHeight: number = 340;
-
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
-  @Input() newTab: boolean = true;
-
+  @Input() newTab = true;
   @ViewChild(EditorComponent) editor!: EditorComponent;
   @ViewChild(EditFormComponent) editFormComponent!: EditFormComponent;
   @ViewChild(DifferenceModalComponent)
@@ -83,16 +79,21 @@ export class EditDisplayComponent implements OnChanges {
   @ViewChild('topComponent') topComponent?: ElementRef;
   @ViewChild('editToggleButton') editToggleButton!: ToggleButtonComponent;
 
-  editingEnabled: boolean = false;
-  editingChildNode: boolean = false;
-  editingRootNode: boolean = false;
-  metadataTableVisible: boolean = false;
-  messageContextTableVisible: boolean = false;
-  displayReport: boolean = false;
+  editingEnabled = false;
+  editingChildNode = false;
+  editingRootNode = false;
+  metadataTableVisible = false;
+  messageContextTableVisible = false;
+  displayReport = false;
   rerunResult?: TestResult;
   selectedNode?: Report | Checkpoint;
   stub?: number;
   stubStrategy?: string;
+
+  protected readonly ReportUtil = ReportUtil;
+  protected readonly Number: NumberConstructor = Number;
+  protected readonly StubStrategy = StubStrategy;
+  protected calculatedHeight = 340;
 
   constructor(
     private modalService: NgbModal,
@@ -107,7 +108,7 @@ export class EditDisplayComponent implements OnChanges {
     protected appVariablesService: AppVariablesService,
   ) {}
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['containerHeight']) {
       const topComponentHeight = this.topComponent ? this.topComponent?.nativeElement.offsetHeight : 47;
       this.calculatedHeight = this.containerHeight - topComponentHeight;
@@ -170,7 +171,7 @@ export class EditDisplayComponent implements OnChanges {
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
     const node: Report | Checkpoint = this.selectedNode!;
-    let queryString: string = 'id=';
+    let queryString = 'id=';
     if (ReportUtil.isReport(node)) {
       queryString += String(node.storageId);
     } else if (ReportUtil.isCheckPoint(node)) {
@@ -371,7 +372,7 @@ export class EditDisplayComponent implements OnChanges {
     }
   }
 
-  showNotEditableWarning() {
+  showNotEditableWarning(): void {
     this.toastService.showWarning('This storage is readonly, copy to the test tab to edit this report.', {
       buttonText: 'Copy to testtab',
       callback: () => {

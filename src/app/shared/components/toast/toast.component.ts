@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { Toast } from '../../interfaces/toast';
@@ -18,8 +19,8 @@ export class ToastComponent implements OnInit, OnDestroy {
   @ViewChild('modal') modal!: TemplateRef<Element>;
   selected!: Toast;
   toasts: Toast[] = [];
-  justCopied: boolean = false;
-  filterPanelVisible: boolean = false;
+  justCopied = false;
+  filterPanelVisible = false;
 
   private subscriptions: Subscription = new Subscription();
 

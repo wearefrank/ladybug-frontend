@@ -22,7 +22,7 @@
       "es2023",
       "dom"
     ],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

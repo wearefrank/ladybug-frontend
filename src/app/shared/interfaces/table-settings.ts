@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/array-type */
 import { Report } from './report';
 
 export interface TableSettings {

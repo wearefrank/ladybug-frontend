@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true,
 })
 export class ShortenedTableHeaderPipe implements PipeTransform {
-  private shortenedTableHeaders: Map<string, string> = new Map([
+  private shortenedTableHeaders = new Map<string, string>([
     ['Storage Id', 'Storage Id'],
     ['End time', 'End time'],
     ['Duration', 'Duration'],

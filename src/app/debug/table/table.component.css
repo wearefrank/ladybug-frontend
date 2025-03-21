@@ -9,7 +9,7 @@
 }
 
 .upload {
-  display: none
+  display: none;
 }
 
 .table-wrapper {
@@ -104,7 +104,8 @@ td.mat-mdc-cell {
   margin: 0.25rem 0.25rem 0.75rem 0.25rem;
 }
 
-.button-row, .progress-buttons {
+.button-row,
+.progress-buttons {
   display: flex;
   flex-direction: row;
   align-items: center;

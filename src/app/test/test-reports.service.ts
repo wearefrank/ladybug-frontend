@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Injectable } from '@angular/core';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { HttpService } from '../shared/services/http.service';
@@ -8,11 +9,12 @@ import { ErrorHandling } from '../shared/classes/error-handling.service';
   providedIn: 'root',
 })
 export class TestReportsService {
-  private testReportsSubject: ReplaySubject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
-  testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
-  private firstApiCall: boolean = true;
   metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
-  storageName: string = 'Test';
+  storageName = 'Test';
+  private testReportsSubject: ReplaySubject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
+  private firstApiCall = true;
 
   constructor(
     private httpService: HttpService,
@@ -38,7 +40,7 @@ export class TestReportsService {
       });
   }
 
-  async matchRerunResults(reports: TestListItem[]) {
+  async matchRerunResults(reports: TestListItem[]): Promise<TestListItem[]> {
     const oldReports: TestListItem[] = await firstValueFrom(this.testReportsSubject);
     const filteredReports: TestListItem[] = oldReports.filter((r: TestListItem) => !!r.reranReport);
     if (filteredReports.length > 0) {

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Report } from '../../shared/interfaces/report';
@@ -17,9 +19,9 @@ import { TestListItem } from '../../shared/interfaces/test-list-item';
   imports: [ReactiveFormsModule],
 })
 export class CloneModalComponent {
+  @Output() cloneReportEvent = new EventEmitter<any>();
   @ViewChild('modal') modal?: any;
   activeModal?: NgbActiveModal;
-  @Output() cloneReportEvent = new EventEmitter<any>();
   report: Report = {} as Report;
   currentView = {
     storageName: 'Test',
@@ -36,7 +38,7 @@ export class CloneModalComponent {
     private toastService: ToastService,
   ) {}
 
-  open(selectedReport: TestListItem) {
+  open(selectedReport: TestListItem): void {
     this.httpService
       .getReport(selectedReport.storageId, this.currentView.storageName)
       .pipe(catchError(this.errorHandler.handleError()))
@@ -49,7 +51,7 @@ export class CloneModalComponent {
       });
   }
 
-  generateClones() {
+  generateClones(): void {
     const map: CloneReport = {
       csv: this.variablesForm.value.variablesCsv,
       message: this.variablesForm.value.message,

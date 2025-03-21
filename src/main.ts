@@ -21,6 +21,7 @@ if (environment.production) {
   enableProdMode();
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function main() {
   bootstrapApplication(AppComponent, {
     providers: [

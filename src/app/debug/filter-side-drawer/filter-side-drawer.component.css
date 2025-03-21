@@ -51,7 +51,7 @@
 
 .metadata-input-label {
   font-weight: bold;
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 
 .metadata-input-container {
@@ -59,7 +59,7 @@
 }
 
 .filter-option {
-  font-size: .9rem;
+  font-size: 0.9rem;
   word-break: break-all;
   border-bottom: 1px solid lightgray;
 }

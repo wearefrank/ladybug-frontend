@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/array-type */
+/* eslint-disable @typescript-eslint/member-ordering */
+/* eslint-disable @typescript-eslint/consistent-generic-constructors */
 import { Injectable } from '@angular/core';
-import { debounceTime, filter, Observable, Subject } from 'rxjs';
+import { debounceTime, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +33,7 @@ export class FilterService {
 
   setMetadataLabels(metadataLabels: Array<string>): void {
     //Safely transform old filter to filter with new metadata columns
-    let wasChanged: boolean = false;
+    let wasChanged = false;
     for (const metadataLabel of this.metadataLabels) {
       if (!metadataLabels.includes(metadataLabel)) {
         this.filters.delete(metadataLabel);
@@ -68,7 +71,7 @@ export class FilterService {
     this.metadataTypesSubject.next(this.metadataTypes);
   }
 
-  toggleShowFilterSidePanel(value: boolean) {
+  toggleShowFilterSidePanel(value: boolean): void {
     this.filterSidePanelVisibleSubject.next(value);
   }
 }

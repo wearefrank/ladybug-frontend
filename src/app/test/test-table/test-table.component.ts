@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   AfterContentChecked,
   ChangeDetectionStrategy,
@@ -57,12 +58,12 @@ import { NgClass, NgIf } from '@angular/common';
 })
 export class TestTableComponent implements OnChanges, AfterContentChecked {
   @Input({ required: true }) reports!: TestListItem[];
-  @Input() currentFilter: string = '';
+  @Input() currentFilter = '';
   @Input() showStorageIds?: boolean;
   @Output() runEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
   @Output() fullyLoaded: EventEmitter<void> = new EventEmitter<void>();
   @Output() changePath: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
-  amountOfSelectedReports: number = 0;
+  amountOfSelectedReports = 0;
   protected displayedColumns: string[] = [];
 
   constructor(

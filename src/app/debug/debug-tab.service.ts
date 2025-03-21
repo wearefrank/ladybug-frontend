@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/member-ordering */
+/* eslint-disable @typescript-eslint/consistent-generic-constructors */
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { RefreshCondition } from '../shared/interfaces/refresh-condition';
@@ -6,7 +8,7 @@ import { RefreshCondition } from '../shared/interfaces/refresh-condition';
   providedIn: 'root',
 })
 export class DebugTabService {
-  private anyReportsOpen: boolean = false;
+  private anyReportsOpen = false;
 
   private refreshAllSubject: Subject<RefreshCondition | undefined> = new Subject();
   private refreshTableSubject: Subject<RefreshCondition | undefined> = new Subject();

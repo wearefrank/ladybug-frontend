@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
@@ -48,24 +49,27 @@ export type UpdatePathAction = (typeof updatePathActionConst)[number];
 export class TestComponent implements OnInit, OnDestroy {
   static readonly ROUTER_PATH: string = 'test';
 
+  @ViewChild(CloneModalComponent) protected cloneModal!: CloneModalComponent;
+  @ViewChild(TestSettingsModalComponent)
+  protected testSettingsModal!: TestSettingsModalComponent;
+  @ViewChild(DeleteModalComponent) protected deleteModal!: DeleteModalComponent;
+  @ViewChild(TestFolderTreeComponent)
+  protected testFileTreeComponent?: TestFolderTreeComponent;
+  @ViewChild('moveToInput', { read: NgModel })
+  protected moveToInputModel?: NgModel;
+  @ViewChild(TestTableComponent)
+  protected testTableComponent?: TestTableComponent;
+
   protected reports: TestListItem[] = [];
   protected filteredReports: TestListItem[] = [];
-  protected generatorEnabled: boolean = false;
-  protected currentFilter: string = '';
-  protected loading: boolean = true;
-
+  protected generatorEnabled = false;
+  protected currentFilter = '';
+  protected loading = true;
   protected showStorageIds?: boolean;
-
-  @ViewChild(CloneModalComponent) protected cloneModal!: CloneModalComponent;
-  @ViewChild(TestSettingsModalComponent) protected testSettingsModal!: TestSettingsModalComponent;
-  @ViewChild(DeleteModalComponent) protected deleteModal!: DeleteModalComponent;
-  @ViewChild(TestFolderTreeComponent) protected testFileTreeComponent?: TestFolderTreeComponent;
-  @ViewChild('moveToInput', { read: NgModel }) protected moveToInputModel?: NgModel;
-  @ViewChild(TestTableComponent) protected testTableComponent?: TestTableComponent;
+  protected childrenLoaded = false;
 
   private updatePathAction: UpdatePathAction = 'move';
   private testReportServiceSubscription?: Subscription;
-  protected childrenLoaded: boolean = false;
 
   constructor(
     private httpService: HttpService,
@@ -85,7 +89,7 @@ export class TestComponent implements OnInit, OnDestroy {
     localStorage.removeItem('generatorEnabled');
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.testReportServiceSubscription?.unsubscribe();
   }
 
@@ -153,6 +157,7 @@ export class TestComponent implements OnInit, OnDestroy {
       this.httpService
         .runReport(this.testReportsService.storageName, report.storageId)
         .pipe(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           catchError((error: HttpErrorResponse): Observable<any> => {
             report.error = error.message;
             return of(error);
@@ -228,7 +233,7 @@ export class TestComponent implements OnInit, OnDestroy {
   downloadSelected(): void {
     const selectedReports: TestListItem[] = this.getSelectedReports();
     if (selectedReports.length > 0) {
-      let queryString: string = '';
+      let queryString = '';
       for (let report of selectedReports) {
         queryString += `id=${report.storageId}&`;
       }
@@ -337,20 +342,6 @@ export class TestComponent implements OnInit, OnDestroy {
     }
   }
 
-  protected childComponentsLoaded(): void {
-    setTimeout(() => {
-      this.childrenLoaded = true;
-    });
-  }
-
-  protected selectItemInFolderTree(report: TestListItem): void {
-    let path = report.path;
-    if (path.endsWith('/')) {
-      path = path.slice(0, -1);
-    }
-    this.testFileTreeComponent?.tree?.selectItem(path);
-  }
-
   processCustomReportAction(): void {
     this.httpService
       .processCustomReportAction(
@@ -371,5 +362,19 @@ export class TestComponent implements OnInit, OnDestroy {
           this.toastService.showDanger('Failed to process custom report action');
         },
       });
+  }
+
+  protected childComponentsLoaded(): void {
+    setTimeout(() => {
+      this.childrenLoaded = true;
+    });
+  }
+
+  protected selectItemInFolderTree(report: TestListItem): void {
+    let path = report.path;
+    if (path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
+    this.testFileTreeComponent?.tree?.selectItem(path);
   }
 }

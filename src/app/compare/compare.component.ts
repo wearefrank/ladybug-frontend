@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 import { CompareData } from './compare-data';
@@ -12,7 +13,7 @@ import { NodeLinkStrategy, nodeLinkStrategyConst } from '../shared/enums/node-li
 import { Report } from '../shared/interfaces/report';
 import { Checkpoint } from '../shared/interfaces/checkpoint';
 import { ReportUtil } from '../shared/util/report-util';
-import { StrReplacePipe } from '../shared/pipes/str-replace.pipe';
+import { StrReplacePipe as StringReplacePipe } from '../shared/pipes/str-replace.pipe';
 import { ViewDropdownComponent } from '../shared/components/view-dropdown/view-dropdown.component';
 import { View } from '../shared/interfaces/view';
 import { HttpService } from '../shared/services/http.service';
@@ -36,15 +37,15 @@ import { ReportAlertMessageComponent } from '../report/report-alert-message/repo
     ReactiveFormsModule,
     TitleCasePipe,
     FormsModule,
-    StrReplacePipe,
+    StringReplacePipe,
     ViewDropdownComponent,
     ReportAlertMessageComponent,
   ],
 })
 export class CompareComponent implements AfterViewInit, OnInit {
-  protected readonly ReportUtil = ReportUtil;
   static readonly ROUTER_PATH: string = 'compare';
   @ViewChild(CompareTreeComponent) compareTreeComponent!: CompareTreeComponent;
+  protected readonly ReportUtil = ReportUtil;
   protected readonly nodeLinkStrategyConst = nodeLinkStrategyConst;
   protected nodeLinkStrategy!: NodeLinkStrategy;
   protected diffOptions = {
@@ -90,7 +91,51 @@ export class CompareComponent implements AfterViewInit, OnInit {
     }
   }
 
-  private getViews() {
+  protected syncLeftAndRight(): void {
+    this.leftNode = this.compareTreeComponent.leftTree.getSelected().originalValue;
+    this.rightNode = this.compareTreeComponent.rightTree.getSelected().originalValue;
+    if (ReportUtil.isReport(this.leftNode)) {
+      this.leftReport = { ...this.leftNode };
+    }
+    if (ReportUtil.isReport(this.rightNode)) {
+      this.rightReport = { ...this.rightNode };
+    }
+    this.showDifference();
+  }
+
+  protected showDifference(): void {
+    if (this.leftNode && this.rightNode) {
+      const leftSide: string = this.extractMessage(this.leftNode);
+      const rightSide: string = this.extractMessage(this.rightNode);
+      this.renderDiffs(leftSide, rightSide);
+    }
+  }
+
+  protected changeNodeLinkStrategy(): void {
+    if (this.compareData && this.nodeLinkStrategy) {
+      localStorage.setItem(`${this.compareData.viewName}.NodeLinkStrategy`, this.nodeLinkStrategy);
+    }
+  }
+
+  protected changeView(view: View): void {
+    if (this.leftReport?.storageName && this.rightReport?.storageName) {
+      this.hideOrShowCheckpoints(
+        view,
+        this.leftReport.storageName,
+        this.leftReport.storageId,
+        this.compareTreeComponent.leftTree.elements.toArray(),
+      );
+      this.hideOrShowCheckpoints(
+        view,
+        this.rightReport.storageName,
+        this.rightReport.storageId,
+        this.compareTreeComponent.rightTree.elements.toArray(),
+      );
+    }
+    this.currentView = view;
+  }
+
+  private getViews(): void | undefined {
     this.httpService
       .getViews()
       .pipe(catchError(this.errorHandler.handleError()))
@@ -152,8 +197,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
     }
     const sorted1 = array1.toSorted();
     const sorted2 = array2.toSorted();
-    for (let i = 0; i < array1.length; i++) {
-      if (sorted1[i] !== sorted2[i]) {
+    for (let index = 0; index < array1.length; index++) {
+      if (sorted1[index] !== sorted2[index]) {
         return false;
       }
     }
@@ -175,7 +220,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
 
   private getStrategyFromLocalStorage(): void {
     if (this.compareData) {
-      const strategy: string | null = localStorage.getItem(this.compareData.viewName + '.NodeLinkStrategy');
+      const strategy: string | null = localStorage.getItem(`${this.compareData.viewName}.NodeLinkStrategy`);
       this.nodeLinkStrategy = strategy ? (strategy as NodeLinkStrategy) : 'NONE';
     }
   }
@@ -184,52 +229,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
     this.compareTreeComponent.createTrees(this.compareData!.originalReport, this.compareData!.runResultReport);
   }
 
-  protected syncLeftAndRight(): void {
-    this.leftNode = this.compareTreeComponent.leftTree.getSelected().originalValue;
-    this.rightNode = this.compareTreeComponent.rightTree.getSelected().originalValue;
-    if (ReportUtil.isReport(this.leftNode)) {
-      this.leftReport = { ...this.leftNode };
-    }
-    if (ReportUtil.isReport(this.rightNode)) {
-      this.rightReport = { ...this.rightNode };
-    }
-    this.showDifference();
-  }
-
-  protected showDifference(): void {
-    if (this.leftNode && this.rightNode) {
-      const leftSide: string = this.extractMessage(this.leftNode);
-      const rightSide: string = this.extractMessage(this.rightNode);
-      this.renderDiffs(leftSide, rightSide);
-    }
-  }
-
   private extractMessage(selectedNode: Report | Checkpoint): string {
     return ReportUtil.isReport(selectedNode) ? selectedNode.xml : selectedNode.message;
-  }
-
-  protected changeNodeLinkStrategy(): void {
-    if (this.compareData && this.nodeLinkStrategy) {
-      localStorage.setItem(this.compareData.viewName + '.NodeLinkStrategy', this.nodeLinkStrategy);
-    }
-  }
-
-  protected changeView(view: View): void {
-    if (this.leftReport?.storageName && this.rightReport?.storageName) {
-      this.hideOrShowCheckpoints(
-        view,
-        this.leftReport.storageName,
-        this.leftReport.storageId,
-        this.compareTreeComponent.leftTree.elements.toArray(),
-      );
-      this.hideOrShowCheckpoints(
-        view,
-        this.rightReport.storageName,
-        this.rightReport.storageId,
-        this.compareTreeComponent.rightTree.elements.toArray(),
-      );
-    }
-    this.currentView = view;
   }
 
   private hideOrShowCheckpoints(

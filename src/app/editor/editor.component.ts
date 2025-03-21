@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ChangeDetectorRef,
   Component,
@@ -37,13 +39,11 @@ export type EditorView = (typeof editorViewsConst)[number];
 })
 export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() height!: number;
-  @Input() readOnlyMode: boolean = true;
+  @Input() readOnlyMode = true;
   @Output() saveReport: Subject<string> = new Subject<string>();
   @ViewChild('statusBarElement') statusBar?: ElementRef;
-  protected readonly INDENT_TWO_SPACES: string = '  ';
-  protected calculatedHeight: number = this.height;
   editor!: IEditor;
-  unsavedChanges: boolean = false;
+  unsavedChanges = false;
   options: any = {
     theme: 'vs-light',
     language: 'xml',
@@ -58,22 +58,33 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   rawFile!: string;
   editorContent?: string;
   editorContentCopy?: string;
-  isPrettified: boolean = false;
+  isPrettified = false;
   currentView: EditorView = 'raw';
-  editorFocused: boolean = false;
-  private subscriptions: Subscription = new Subscription();
+  editorFocused = false;
   editorChangesSubject: Subject<string> = new Subject<string>();
 
   //Settings attributes
-  showPrettifyOnLoad: boolean = true;
-  showSearchWindowOnLoad: boolean = true;
+  showPrettifyOnLoad = true;
+  showSearchWindowOnLoad = true;
   availableViews!: EditorView[];
   contentType!: EditorView;
+
+  protected readonly INDENT_TWO_SPACES: string = '  ';
+  protected calculatedHeight: number = this.height;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private settingsService: SettingsService,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  @HostListener('window:keydown', ['$event'])
+  keyBoardListener(event: KeyboardEvent): void {
+    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+      event.preventDefault();
+      this.onSave();
+    }
+  }
 
   ngOnInit(): void {
     this.subscribeToEditorChanges();
@@ -93,21 +104,13 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  @HostListener('window:keydown', ['$event'])
-  keyBoardListener(event: KeyboardEvent): void {
-    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
-      event.preventDefault();
-      this.onSave();
-    }
-  }
-
   onSave(): void {
     if (this.unsavedChanges) {
       this.save();
     }
   }
 
-  calculateHeight() {
+  calculateHeight(): void {
     if (this.statusBar) {
       this.calculatedHeight = this.height - this.statusBar.nativeElement.offsetHeight;
       this.cdr.detectChanges();
@@ -246,11 +249,11 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
 
   checkIfFileIsXml(value: string): boolean {
     if (value) {
-      for (let i = 0; i < value.length; i++) {
-        if (value.charAt(i) === ' ' || value.charAt(i) === '\t') {
+      for (let index = 0; index < value.length; index++) {
+        if (value.charAt(index) === ' ' || value.charAt(index) === '\t') {
           continue;
         }
-        return value.charAt(i) === '<';
+        return value.charAt(index) === '<';
       }
     }
     return false;

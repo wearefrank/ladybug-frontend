@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unused-vars */
 import { Component, EventEmitter, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormGroup, ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -26,8 +28,8 @@ export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('unsavedChangesModal')
   protected unsavedChangesModalElement!: TemplateRef<HTMLElement>;
 
-  protected showMultipleAtATime: boolean = false;
-  protected unsavedChanges: boolean = false;
+  protected showMultipleAtATime = false;
+  protected unsavedChanges = false;
 
   protected backendVersion?: string;
   protected frontendVersion?: string;
@@ -47,9 +49,9 @@ export class TableSettingsModalComponent implements OnDestroy {
 
   protected readonly spacingOptions: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
-  protected tableSpacing: number = 1;
-  protected showSearchWindowOnLoad: boolean = true;
-  protected prettifyOnLoad: boolean = true;
+  protected tableSpacing = 1;
+  protected showSearchWindowOnLoad = true;
+  protected prettifyOnLoad = true;
   protected settingsForm: FormGroup = new FormGroup({
     [this.showMultipleFilesKey]: new UntypedFormControl(this.settingsService.defaultShowMultipleFilesAtATime),
     [this.showSearchWindowOnLoadKey]: new UntypedFormControl(this.settingsService.defaultShowSearchWindowOnLoad),
@@ -83,7 +85,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  getApplicationVersions() {
+  getApplicationVersions(): void {
     this.versionService.getFrontendVersion().then((frontendVersion: string): void => {
       this.frontendVersion = frontendVersion;
     });
@@ -128,7 +130,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.activeSettingsModal = this.modalService.open(this.settingsModalElement);
   }
 
-  closeSettingsModal() {
+  closeSettingsModal(): void {
     this.activeSettingsModal?.close();
     if (this.unsavedChanges) {
       this.activeUnsavedChangesModal = this.modalService.open(this.unsavedChangesModalElement, { backdrop: 'static' });
