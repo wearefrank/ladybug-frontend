@@ -135,8 +135,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
     this.currentView = view;
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  private getViews() {
+  private getViews(): void | undefined {
     this.httpService
       .getViews()
       .pipe(catchError(this.errorHandler.handleError()))
