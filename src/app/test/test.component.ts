@@ -62,11 +62,11 @@ export class TestComponent implements OnInit, OnDestroy {
 
   protected reports: TestListItem[] = [];
   protected filteredReports: TestListItem[] = [];
-  protected generatorEnabled: boolean = false;
-  protected currentFilter: string = '';
-  protected loading: boolean = true;
+  protected generatorEnabled = false;
+  protected currentFilter = '';
+  protected loading = true;
   protected showStorageIds?: boolean;
-  protected childrenLoaded: boolean = false;
+  protected childrenLoaded = false;
 
   private updatePathAction: UpdatePathAction = 'move';
   private testReportServiceSubscription?: Subscription;
@@ -94,8 +94,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   getStorageIdsFromLocalStorage(): void {
-    this.showStorageIds =
-      localStorage.getItem('showReportStorageIds') === 'true';
+    this.showStorageIds = localStorage.getItem('showReportStorageIds') === 'true';
   }
 
   updateShowStorageIds(show: boolean): void {
@@ -103,8 +102,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   setGeneratorStatusFromLocalStorage(): void {
-    const generatorStatus: string | null =
-      localStorage.getItem('generatorEnabled');
+    const generatorStatus: string | null = localStorage.getItem('generatorEnabled');
     if (generatorStatus && generatorStatus.length <= 5) {
       this.generatorEnabled = generatorStatus === 'true';
     } else {
@@ -114,10 +112,7 @@ export class TestComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (response: OptionsSettings) => {
             this.generatorEnabled = response.generatorEnabled;
-            localStorage.setItem(
-              'generatorEnabled',
-              String(this.generatorEnabled),
-            );
+            localStorage.setItem('generatorEnabled', String(this.generatorEnabled));
           },
         });
     }
@@ -128,20 +123,17 @@ export class TestComponent implements OnInit, OnDestroy {
     if (path && path.endsWith('/')) {
       path = path.slice(0, -1);
     }
-    this.testReportServiceSubscription =
-      this.testReportsService.testReports$.subscribe({
-        next: (value: TestListItem[]) => {
-          this.reports = value;
-          if (this.testFileTreeComponent) {
-            this.testFileTreeComponent.setData(this.reports);
-            this.testFileTreeComponent.tree.selectItem(
-              path ?? this.testFileTreeComponent.rootFolder.name,
-            );
-          }
-          this.matches();
-          this.loading = false;
-        },
-      });
+    this.testReportServiceSubscription = this.testReportsService.testReports$.subscribe({
+      next: (value: TestListItem[]) => {
+        this.reports = value;
+        if (this.testFileTreeComponent) {
+          this.testFileTreeComponent.setData(this.reports);
+          this.testFileTreeComponent.tree.selectItem(path ?? this.testFileTreeComponent.rootFolder.name);
+        }
+        this.matches();
+        this.loading = false;
+      },
+    });
     this.testReportsService.getReports();
   }
 
@@ -149,9 +141,7 @@ export class TestComponent implements OnInit, OnDestroy {
     if (this.getSelectedReports().length === 1) {
       this.cloneModal.open(this.getSelectedReports()[0]);
     } else {
-      this.toastService.showWarning(
-        'Make sure only one report is selected at a time',
-      );
+      this.toastService.showWarning('Make sure only one report is selected at a time');
     }
   }
 
@@ -210,8 +200,7 @@ export class TestComponent implements OnInit, OnDestroy {
     const reportsToBeDeleted: TestListItem[] = this.getSelectedReports();
     if (
       this.filteredReports &&
-      (reportsToBeDeleted.length > 0 ||
-        (deleteAllReports && this.filteredReports.length > 0))
+      (reportsToBeDeleted.length > 0 || (deleteAllReports && this.filteredReports.length > 0))
     ) {
       this.deleteModal.open(deleteAllReports, reportsToBeDeleted);
     } else {
@@ -224,10 +213,7 @@ export class TestComponent implements OnInit, OnDestroy {
       this.deleteAllReports();
     } else if (this.reports) {
       this.httpService
-        .deleteReport(
-          this.helperService.getSelectedIds(this.filteredReports),
-          this.testReportsService.storageName,
-        )
+        .deleteReport(this.helperService.getSelectedIds(this.filteredReports), this.testReportsService.storageName)
         .pipe(catchError(this.errorHandler.handleError()))
         .subscribe({
           next: () => this.loadData(this.currentFilter),
@@ -247,16 +233,11 @@ export class TestComponent implements OnInit, OnDestroy {
   downloadSelected(): void {
     const selectedReports: TestListItem[] = this.getSelectedReports();
     if (selectedReports.length > 0) {
-      let queryString: string = '';
+      let queryString = '';
       for (let report of selectedReports) {
         queryString += `id=${report.storageId}&`;
       }
-      this.helperService.download(
-        queryString,
-        this.testReportsService.storageName,
-        true,
-        false,
-      );
+      this.helperService.download(queryString, this.testReportsService.storageName, true, false);
     } else {
       this.toastService.showWarning('No Report Selected!');
     }
@@ -278,9 +259,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   copySelected(): void {
-    const copiedIds: number[] = this.helperService.getSelectedIds(
-      this.filteredReports,
-    );
+    const copiedIds: number[] = this.helperService.getSelectedIds(this.filteredReports);
     const data: Record<string, number[]> = {
       [this.testReportsService.storageName]: copiedIds,
     };
@@ -293,9 +272,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   updatePath(): void {
-    const reportIds: number[] = this.helperService.getSelectedIds(
-      this.filteredReports,
-    );
+    const reportIds: number[] = this.helperService.getSelectedIds(this.filteredReports);
     if (reportIds.length > 0) {
       const path: string = this.transformPath(this.moveToInputModel?.value);
       const map: UpdatePathSettings = {
@@ -318,10 +295,7 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   changeFilter(filter: string): void {
-    this.currentFilter =
-      filter === this.testFileTreeComponent?.rootFolder.path
-        ? ''
-        : this.transformPath(filter);
+    this.currentFilter = filter === this.testFileTreeComponent?.rootFolder.path ? '' : this.transformPath(filter);
     this.matches();
   }
 
@@ -348,15 +322,11 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   getSelectedReports(): TestListItem[] {
-    return (
-      this.filteredReports.filter((item: TestListItem) => item.checked) ?? []
-    );
+    return this.filteredReports.filter((item: TestListItem) => item.checked) ?? [];
   }
 
   openCompareTab(): void {
-    const checkedReportIds = this.testTableComponent?.reports
-      .filter((r) => r.checked)
-      .map((r) => r.storageId);
+    const checkedReportIds = this.testTableComponent?.reports.filter((r) => r.checked).map((r) => r.storageId);
     if (checkedReportIds && checkedReportIds.length == 2) {
       this.httpService
         .getReports(checkedReportIds, this.testReportsService.storageName)
@@ -389,9 +359,7 @@ export class TestComponent implements OnInit, OnDestroy {
           }
         },
         error: () => {
-          this.toastService.showDanger(
-            'Failed to process custom report action',
-          );
+          this.toastService.showDanger('Failed to process custom report action');
         },
       });
   }

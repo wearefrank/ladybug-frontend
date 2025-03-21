@@ -1,13 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/consistent-indexed-object-style */
 import { Injectable, NgModule } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  DetachedRouteHandle,
-  RouteReuseStrategy,
-  RouterModule,
-  Routes,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy, RouterModule, Routes } from '@angular/router';
 import { DebugComponent } from './debug/debug.component';
 import { TestComponent } from './test/test.component';
 import { CompareComponent } from './compare/compare.component';
@@ -64,20 +58,15 @@ export class AppRouteReuseStrategy implements RouteReuseStrategy {
     return true;
   }
 
-  store(
-    route: ActivatedRouteSnapshot,
-    handle: DetachedRouteHandle | null,
-  ): void {
+  store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void {
     if (route.routeConfig && handle) {
       const path = route.routeConfig.path || '';
       const id = this.getRouteId(route);
 
       if (path.startsWith('report') || path.startsWith('compare')) {
         if (
-          (path.startsWith('report') &&
-            this.tabService.activeReportTabs.has(id)) ||
-          (path.startsWith('compare') &&
-            this.tabService.activeCompareTabs.has(id))
+          (path.startsWith('report') && this.tabService.activeReportTabs.has(id)) ||
+          (path.startsWith('compare') && this.tabService.activeCompareTabs.has(id))
         ) {
           this.storedRoutes[path] = handle;
         } else {
@@ -99,11 +88,8 @@ export class AppRouteReuseStrategy implements RouteReuseStrategy {
     return this.storedRoutes[path] || null;
   }
 
-  shouldReuseRoute(
-    future: ActivatedRouteSnapshot,
-    curr: ActivatedRouteSnapshot,
-  ): boolean {
-    return future.routeConfig === curr.routeConfig;
+  shouldReuseRoute(future: ActivatedRouteSnapshot, current: ActivatedRouteSnapshot): boolean {
+    return future.routeConfig === current.routeConfig;
   }
 
   private getRouteId(route: ActivatedRouteSnapshot): string {

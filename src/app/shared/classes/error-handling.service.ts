@@ -18,10 +18,7 @@ export class ErrorHandling {
         this.toastService.showWarning(message);
       } else if (message && message.includes('- detailed error message -')) {
         const errorMessageParts = message.split('- detailed error message -');
-        this.toastService.showDanger(
-          errorMessageParts[0],
-          errorMessageParts[1],
-        );
+        this.toastService.showDanger(errorMessageParts[0], errorMessageParts[1]);
       } else {
         this.toastService.showDanger(error.message, '');
       }

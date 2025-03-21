@@ -8,21 +8,15 @@ import { RefreshCondition } from '../shared/interfaces/refresh-condition';
   providedIn: 'root',
 })
 export class DebugTabService {
-  private anyReportsOpen: boolean = false;
+  private anyReportsOpen = false;
 
-  private refreshAllSubject: Subject<RefreshCondition | undefined> =
-    new Subject();
-  private refreshTableSubject: Subject<RefreshCondition | undefined> =
-    new Subject();
-  private refreshTreeSubject: Subject<RefreshCondition | undefined> =
-    new Subject();
+  private refreshAllSubject: Subject<RefreshCondition | undefined> = new Subject();
+  private refreshTableSubject: Subject<RefreshCondition | undefined> = new Subject();
+  private refreshTreeSubject: Subject<RefreshCondition | undefined> = new Subject();
 
-  refreshAll$: Observable<RefreshCondition | undefined> =
-    this.refreshAllSubject.asObservable();
-  refreshTable$: Observable<RefreshCondition | undefined> =
-    this.refreshTableSubject.asObservable();
-  refreshTree$: Observable<RefreshCondition | undefined> =
-    this.refreshTreeSubject.asObservable();
+  refreshAll$: Observable<RefreshCondition | undefined> = this.refreshAllSubject.asObservable();
+  refreshTable$: Observable<RefreshCondition | undefined> = this.refreshTableSubject.asObservable();
+  refreshTree$: Observable<RefreshCondition | undefined> = this.refreshTreeSubject.asObservable();
 
   // triggers a refresh that refreshes both the debug table and the debug tree
   refreshAll(condition: RefreshCondition): void {

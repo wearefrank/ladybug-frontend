@@ -1,9 +1,6 @@
 import { Report } from '../interfaces/report';
 import { Checkpoint } from '../interfaces/checkpoint';
-import {
-  CHECKPOINT_TYPE_STRINGS,
-  CheckpointType,
-} from '../enums/checkpoint-type';
+import { CHECKPOINT_TYPE_STRINGS, CheckpointType } from '../enums/checkpoint-type';
 
 export class ReportHierarchyTransformer {
   private readonly THROWABLE_ENCODER: string = 'printStackTrace()';
@@ -14,15 +11,8 @@ export class ReportHierarchyTransformer {
     const checkpoints: Checkpoint[] = report.checkpoints;
     for (const checkpoint of checkpoints) {
       checkpoint.parentReport = report;
-      checkpoint.iconClass = this.getImage(
-        checkpoint.type,
-        checkpoint.encoding ?? '',
-        checkpoint.level,
-      );
-      if (
-        checkpoint.type === CheckpointType.Startpoint ||
-        checkpoint.type === CheckpointType.ThreadStartpoint
-      ) {
+      checkpoint.iconClass = this.getImage(checkpoint.type, checkpoint.encoding ?? '', checkpoint.level);
+      if (checkpoint.type === CheckpointType.Startpoint || checkpoint.type === CheckpointType.ThreadStartpoint) {
         this.handleStartpoint(checkpoint);
       } else if (
         checkpoint.type === CheckpointType.Endpoint ||
@@ -76,10 +66,7 @@ export class ReportHierarchyTransformer {
     }
   }
 
-  private addCheckpointToParent(
-    checkpoint: Checkpoint,
-    startPointStack: Checkpoint[],
-  ): void {
+  private addCheckpointToParent(checkpoint: Checkpoint, startPointStack: Checkpoint[]): void {
     const parentStartpoint = startPointStack.at(-1)!;
     if (!parentStartpoint.checkpoints) {
       parentStartpoint.checkpoints = [];

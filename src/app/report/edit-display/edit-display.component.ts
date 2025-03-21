@@ -1,14 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
-import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  SimpleChanges,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
 import {
   NgbDropdown,
@@ -30,10 +22,7 @@ import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
 import { catchError } from 'rxjs';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { EditFormComponent } from '../edit-form/edit-form.component';
-import {
-  ChangesAction,
-  DifferenceModalComponent,
-} from '../difference-modal/difference-modal.component';
+import { ChangesAction, DifferenceModalComponent } from '../difference-modal/difference-modal.component';
 import { ToggleButtonComponent } from '../../shared/components/toggle-button/toggle-button.component';
 import { ToastService } from '../../shared/services/toast.service';
 import { AppVariablesService } from '../../shared/services/app.variables.service';
@@ -82,7 +71,7 @@ import { Router } from '@angular/router';
 export class EditDisplayComponent implements OnChanges {
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
-  @Input() newTab: boolean = true;
+  @Input() newTab = true;
   @ViewChild(EditorComponent) editor!: EditorComponent;
   @ViewChild(EditFormComponent) editFormComponent!: EditFormComponent;
   @ViewChild(DifferenceModalComponent)
@@ -90,12 +79,12 @@ export class EditDisplayComponent implements OnChanges {
   @ViewChild('topComponent') topComponent?: ElementRef;
   @ViewChild('editToggleButton') editToggleButton!: ToggleButtonComponent;
 
-  editingEnabled: boolean = false;
-  editingChildNode: boolean = false;
-  editingRootNode: boolean = false;
-  metadataTableVisible: boolean = false;
-  messageContextTableVisible: boolean = false;
-  displayReport: boolean = false;
+  editingEnabled = false;
+  editingChildNode = false;
+  editingRootNode = false;
+  metadataTableVisible = false;
+  messageContextTableVisible = false;
+  displayReport = false;
   rerunResult?: TestResult;
   selectedNode?: Report | Checkpoint;
   stub?: number;
@@ -104,7 +93,7 @@ export class EditDisplayComponent implements OnChanges {
   protected readonly ReportUtil = ReportUtil;
   protected readonly Number: NumberConstructor = Number;
   protected readonly StubStrategy = StubStrategy;
-  protected calculatedHeight: number = 340;
+  protected calculatedHeight = 340;
 
   constructor(
     private modalService: NgbModal,
@@ -121,9 +110,7 @@ export class EditDisplayComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['containerHeight']) {
-      const topComponentHeight = this.topComponent
-        ? this.topComponent?.nativeElement.offsetHeight
-        : 47;
+      const topComponentHeight = this.topComponent ? this.topComponent?.nativeElement.offsetHeight : 47;
       this.calculatedHeight = this.containerHeight - topComponentHeight;
       this.cdr.detectChanges();
     }
@@ -184,7 +171,7 @@ export class EditDisplayComponent implements OnChanges {
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
     const node: Report | Checkpoint = this.selectedNode!;
-    let queryString: string = 'id=';
+    let queryString = 'id=';
     if (ReportUtil.isReport(node)) {
       queryString += String(node.storageId);
     } else if (ReportUtil.isCheckPoint(node)) {
@@ -196,12 +183,7 @@ export class EditDisplayComponent implements OnChanges {
       this.toastService.showDanger('Could not find report to download');
       return;
     }
-    this.helperService.download(
-      `${queryString}&`,
-      this.currentView.storageName,
-      exportBinary,
-      exportXML,
-    );
+    this.helperService.download(`${queryString}&`, this.currentView.storageName, exportBinary, exportXML);
     this.toastService.showSuccess('Report Downloaded!');
   }
 
@@ -210,14 +192,8 @@ export class EditDisplayComponent implements OnChanges {
     let reportDifferences: ReportDifference[] = [];
     if (ReportUtil.isReport(node) && this.editFormComponent) {
       reportDifferences = this.editFormComponent.getDifferences();
-    } else if (
-      ReportUtil.isCheckPoint(node) &&
-      this.editor?.getValue() !== node.message
-    ) {
-      const diff = new DiffMatchPatch().diff_main(
-        node.message ?? '',
-        this.editor?.getValue(),
-      );
+    } else if (ReportUtil.isCheckPoint(node) && this.editor?.getValue() !== node.message) {
+      const diff = new DiffMatchPatch().diff_main(node.message ?? '', this.editor?.getValue());
       reportDifferences.push({
         name: 'message',
         originalValue: node.message,
@@ -232,9 +208,7 @@ export class EditDisplayComponent implements OnChanges {
   }
 
   getReportValues(checkpointId?: string): UpdateReport | UpdateCheckpoint {
-    return checkpointId
-      ? this.getReportValuesForChildNode(checkpointId)
-      : this.getReportValuesForRootNode();
+    return checkpointId ? this.getReportValuesForChildNode(checkpointId) : this.getReportValuesForRootNode();
   }
 
   getReportValuesForRootNode(): UpdateReport {
@@ -268,10 +242,7 @@ export class EditDisplayComponent implements OnChanges {
   }
 
   updateReportStubStrategy(strategy: string): void {
-    if (
-      ReportUtil.isReport(this.selectedNode) &&
-      this.selectedNode.stubStrategy !== strategy
-    ) {
+    if (ReportUtil.isReport(this.selectedNode) && this.selectedNode.stubStrategy !== strategy) {
       this.openStubDifferenceModal(this.selectedNode.stubStrategy, strategy);
     }
   }
@@ -287,9 +258,7 @@ export class EditDisplayComponent implements OnChanges {
 
   openStubDifferenceModal(originalValue: string, difference: string): void {
     if (this.editingEnabled) {
-      this.toastService.showWarning(
-        'Save or discard your changes before updating the stub strategy',
-      );
+      this.toastService.showWarning('Save or discard your changes before updating the stub strategy');
     } else {
       const reportDifferences: ReportDifference[] = [];
       reportDifferences.push({
@@ -315,9 +284,7 @@ export class EditDisplayComponent implements OnChanges {
       }
       let body;
       if (stubChange) {
-        body = checkpointId
-          ? { stub: this.stub, checkpointId: checkpointId }
-          : { stubStrategy: this.stubStrategy };
+        body = checkpointId ? { stub: this.stub, checkpointId: checkpointId } : { stubStrategy: this.stubStrategy };
       } else {
         body = this.getReportValues(checkpointId);
       }
@@ -327,11 +294,7 @@ export class EditDisplayComponent implements OnChanges {
     }
   }
 
-  updateReport(
-    storageId: string,
-    body: UpdateReport | UpdateCheckpoint,
-    node: Report | Checkpoint,
-  ): void {
+  updateReport(storageId: string, body: UpdateReport | UpdateCheckpoint, node: Report | Checkpoint): void {
     this.httpService
       .updateReport(storageId, body, this.currentView.storageName)
       .pipe(catchError(this.errorHandler.handleError()))
@@ -339,10 +302,7 @@ export class EditDisplayComponent implements OnChanges {
         next: (response: UpdateReportResponse) => {
           response.report.xml = response.xml;
           if (ReportUtil.isCheckPoint(node)) {
-            this.selectedNode = ReportUtil.getCheckpointFromReport(
-              response.report,
-              node.uid,
-            );
+            this.selectedNode = ReportUtil.getCheckpointFromReport(response.report, node.uid);
           } else if (ReportUtil.isReport(node)) {
             this.selectedNode = response.report;
           }
@@ -413,15 +373,12 @@ export class EditDisplayComponent implements OnChanges {
   }
 
   showNotEditableWarning(): void {
-    this.toastService.showWarning(
-      'This storage is readonly, copy to the test tab to edit this report.',
-      {
-        buttonText: 'Copy to testtab',
-        callback: () => {
-          this.copyReport();
-        },
+    this.toastService.showWarning('This storage is readonly, copy to the test tab to edit this report.', {
+      buttonText: 'Copy to testtab',
+      callback: () => {
+        this.copyReport();
       },
-    );
+    });
     setTimeout(() => {
       this.editToggleButton.value = false;
     });
@@ -444,9 +401,7 @@ export class EditDisplayComponent implements OnChanges {
       reportId = ReportUtil.getStorageIdFromUid(node.uid);
     }
     if (reportId == undefined) {
-      this.toastService.showDanger(
-        'Could not find report to apply custom action',
-      );
+      this.toastService.showDanger('Could not find report to apply custom action');
     } else {
       this.httpService
         .processCustomReportAction(this.currentView.storageName, [reportId])
@@ -461,9 +416,7 @@ export class EditDisplayComponent implements OnChanges {
             }
           },
           error: () => {
-            this.toastService.showDanger(
-              'Failed to process custom report action',
-            );
+            this.toastService.showDanger('Failed to process custom report action');
           },
         });
     }

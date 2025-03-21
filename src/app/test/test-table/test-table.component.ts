@@ -58,14 +58,12 @@ import { NgClass, NgIf } from '@angular/common';
 })
 export class TestTableComponent implements OnChanges, AfterContentChecked {
   @Input({ required: true }) reports!: TestListItem[];
-  @Input() currentFilter: string = '';
+  @Input() currentFilter = '';
   @Input() showStorageIds?: boolean;
-  @Output() runEvent: EventEmitter<TestListItem> =
-    new EventEmitter<TestListItem>();
+  @Output() runEvent: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
   @Output() fullyLoaded: EventEmitter<void> = new EventEmitter<void>();
-  @Output() changePath: EventEmitter<TestListItem> =
-    new EventEmitter<TestListItem>();
-  amountOfSelectedReports: number = 0;
+  @Output() changePath: EventEmitter<TestListItem> = new EventEmitter<TestListItem>();
+  amountOfSelectedReports = 0;
   protected displayedColumns: string[] = [];
 
   constructor(
@@ -100,14 +98,7 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
     if (this.showStorageIds) {
       this.displayedColumns.push('storageId');
     }
-    this.displayedColumns.push(
-      'run',
-      'name',
-      'description',
-      'variables',
-      'runResults',
-      'options',
-    );
+    this.displayedColumns.push('run', 'name', 'description', 'variables', 'runResults', 'options');
   }
 
   openReport(storageId: number): void {
@@ -178,10 +169,7 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
   }
 
   toggleSelectAll(): void {
-    this.amountOfSelectedReports =
-      this.amountOfSelectedReports === this.reports.length
-        ? 0
-        : this.reports.length;
+    this.amountOfSelectedReports = this.amountOfSelectedReports === this.reports.length ? 0 : this.reports.length;
     if (this.amountOfSelectedReports > 0) {
       this.setCheckedForAllReports(true);
     } else {

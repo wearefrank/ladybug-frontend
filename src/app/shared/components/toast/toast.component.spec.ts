@@ -14,9 +14,7 @@ describe('ToastComponent', () => {
   let mockNgbModal: jasmine.SpyObj<NgbModal>;
 
   beforeEach(async () => {
-    mockToastService = jasmine.createSpyObj('ToastService', [
-      'toastObservable',
-    ]);
+    mockToastService = jasmine.createSpyObj('ToastService', ['toastObservable']);
     mockToastService.toastObservable = of({
       title: 'Test Toast',
       message: 'Detailed error message',
@@ -43,9 +41,7 @@ describe('ToastComponent', () => {
   });
 
   it('should open modal when a toast with detailed message is clicked', () => {
-    const toastDebugElement: DebugElement = fixture.debugElement.query(
-      By.css('ngb-toast'),
-    );
+    const toastDebugElement: DebugElement = fixture.debugElement.query(By.css('ngb-toast'));
 
     // Simulate click on the toast item
     toastDebugElement.triggerEventHandler('click', null);

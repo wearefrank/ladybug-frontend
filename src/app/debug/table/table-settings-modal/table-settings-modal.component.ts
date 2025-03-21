@@ -1,18 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
-import {
-  Component,
-  EventEmitter,
-  OnDestroy,
-  Output,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
-import {
-  FormGroup,
-  ReactiveFormsModule,
-  UntypedFormControl,
-} from '@angular/forms';
+import { Component, EventEmitter, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
+import { FormGroup, ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
 import { SettingsService } from '../../../shared/services/settings.service';
@@ -33,23 +22,21 @@ import { DebugTabService } from '../../debug-tab.service';
   imports: [ReactiveFormsModule, CopyTooltipDirective],
 })
 export class TableSettingsModalComponent implements OnDestroy {
-  @Output() openLatestReportsEvent: EventEmitter<number> =
-    new EventEmitter<number>();
+  @Output() openLatestReportsEvent: EventEmitter<number> = new EventEmitter<number>();
 
   @ViewChild('modal') protected settingsModalElement!: TemplateRef<HTMLElement>;
   @ViewChild('unsavedChangesModal')
   protected unsavedChangesModalElement!: TemplateRef<HTMLElement>;
 
-  protected showMultipleAtATime: boolean = false;
-  protected unsavedChanges: boolean = false;
+  protected showMultipleAtATime = false;
+  protected unsavedChanges = false;
 
   protected backendVersion?: string;
   protected frontendVersion?: string;
 
   //Form Control Name keys
   protected readonly showMultipleFilesKey: string = 'showMultipleFilesAtATime';
-  protected readonly showSearchWindowOnLoadKey: string =
-    'showSearchWindowOnLoad';
+  protected readonly showSearchWindowOnLoadKey: string = 'showSearchWindowOnLoad';
   protected readonly prettifyOnLoadKey: string = 'prettifyOnLoad';
   protected readonly tableSpacingKey: string = 'tableSpacing';
   protected readonly generatorEnabledKey: string = 'generatorEnabled';
@@ -62,25 +49,15 @@ export class TableSettingsModalComponent implements OnDestroy {
 
   protected readonly spacingOptions: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
-  protected tableSpacing: number = 1;
-  protected showSearchWindowOnLoad: boolean = true;
-  protected prettifyOnLoad: boolean = true;
+  protected tableSpacing = 1;
+  protected showSearchWindowOnLoad = true;
+  protected prettifyOnLoad = true;
   protected settingsForm: FormGroup = new FormGroup({
-    [this.showMultipleFilesKey]: new UntypedFormControl(
-      this.settingsService.defaultShowMultipleFilesAtATime,
-    ),
-    [this.showSearchWindowOnLoadKey]: new UntypedFormControl(
-      this.settingsService.defaultShowSearchWindowOnLoad,
-    ),
-    [this.prettifyOnLoadKey]: new UntypedFormControl(
-      this.settingsService.defaultPrettifyOnLoad,
-    ),
-    [this.tableSpacingKey]: new UntypedFormControl(
-      this.settingsService.defaultTableSpacing,
-    ),
-    [this.generatorEnabledKey]: new UntypedFormControl(
-      this.defaultGeneratorEnabled,
-    ),
+    [this.showMultipleFilesKey]: new UntypedFormControl(this.settingsService.defaultShowMultipleFilesAtATime),
+    [this.showSearchWindowOnLoadKey]: new UntypedFormControl(this.settingsService.defaultShowSearchWindowOnLoad),
+    [this.prettifyOnLoadKey]: new UntypedFormControl(this.settingsService.defaultPrettifyOnLoad),
+    [this.tableSpacingKey]: new UntypedFormControl(this.settingsService.defaultTableSpacing),
+    [this.generatorEnabledKey]: new UntypedFormControl(this.defaultGeneratorEnabled),
     [this.regexFilterKey]: new UntypedFormControl(this.defaultRegexValue),
     [this.transformationEnabledKey]: new UntypedFormControl(true),
     [this.transformationKey]: new UntypedFormControl(''),
@@ -109,83 +86,60 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   getApplicationVersions(): void {
-    this.versionService
-      .getFrontendVersion()
-      .then((frontendVersion: string): void => {
-        this.frontendVersion = frontendVersion;
-      });
-    this.versionService
-      .getBackendVersion()
-      .then((backendVersion: string): void => {
-        this.backendVersion = backendVersion;
-      });
+    this.versionService.getFrontendVersion().then((frontendVersion: string): void => {
+      this.frontendVersion = frontendVersion;
+    });
+    this.versionService.getBackendVersion().then((backendVersion: string): void => {
+      this.backendVersion = backendVersion;
+    });
   }
 
   subscribeToSettingsServiceObservables(): void {
-    const showMultipleSubscription: Subscription =
-      this.settingsService.showMultipleAtATimeObservable.subscribe({
-        next: (value: boolean): void => {
-          this.showMultipleAtATime = value;
-          this.settingsForm
-            .get(this.showMultipleFilesKey)
-            ?.setValue(this.showMultipleAtATime);
-        },
-      });
+    const showMultipleSubscription: Subscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
+      next: (value: boolean): void => {
+        this.showMultipleAtATime = value;
+        this.settingsForm.get(this.showMultipleFilesKey)?.setValue(this.showMultipleAtATime);
+      },
+    });
     this.subscriptions.add(showMultipleSubscription);
-    const tableSpacingSubscription: Subscription =
-      this.settingsService.tableSpacingObservable.subscribe({
-        next: (value: number): void => {
-          this.tableSpacing = value;
-          this.settingsForm
-            .get(this.tableSpacingKey)
-            ?.setValue(this.tableSpacing);
-        },
-      });
+    const tableSpacingSubscription: Subscription = this.settingsService.tableSpacingObservable.subscribe({
+      next: (value: number): void => {
+        this.tableSpacing = value;
+        this.settingsForm.get(this.tableSpacingKey)?.setValue(this.tableSpacing);
+      },
+    });
     this.subscriptions.add(tableSpacingSubscription);
-    const showSearchWindowOnLoad: Subscription =
-      this.settingsService.showSearchWindowOnLoadObservable.subscribe({
-        next: (value: boolean): void => {
-          this.showSearchWindowOnLoad = value;
-          this.settingsForm
-            .get(this.showSearchWindowOnLoadKey)
-            ?.setValue(this.showSearchWindowOnLoad);
-        },
-      });
+    const showSearchWindowOnLoad: Subscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe({
+      next: (value: boolean): void => {
+        this.showSearchWindowOnLoad = value;
+        this.settingsForm.get(this.showSearchWindowOnLoadKey)?.setValue(this.showSearchWindowOnLoad);
+      },
+    });
     this.subscriptions.add(showSearchWindowOnLoad);
-    const prettifyOnLoad: Subscription =
-      this.settingsService.prettifyOnLoadObservable.subscribe({
-        next: (value: boolean) => {
-          this.prettifyOnLoad = value;
-          this.settingsForm
-            .get(this.prettifyOnLoadKey)
-            ?.setValue(this.prettifyOnLoad);
-        },
-      });
+    const prettifyOnLoad: Subscription = this.settingsService.prettifyOnLoadObservable.subscribe({
+      next: (value: boolean) => {
+        this.prettifyOnLoad = value;
+        this.settingsForm.get(this.prettifyOnLoadKey)?.setValue(this.prettifyOnLoad);
+      },
+    });
     this.subscriptions.add(prettifyOnLoad);
   }
 
   async open(): Promise<void> {
     await this.loadSettings();
-    this.activeSettingsModal = this.modalService.open(
-      this.settingsModalElement,
-    );
+    this.activeSettingsModal = this.modalService.open(this.settingsModalElement);
   }
 
   closeSettingsModal(): void {
     this.activeSettingsModal?.close();
     if (this.unsavedChanges) {
-      this.activeUnsavedChangesModal = this.modalService.open(
-        this.unsavedChangesModalElement,
-        { backdrop: 'static' },
-      );
+      this.activeUnsavedChangesModal = this.modalService.open(this.unsavedChangesModalElement, { backdrop: 'static' });
     }
   }
 
   async loadSettings(): Promise<void> {
     const settingsResponse: OptionsSettings = await firstValueFrom(
-      this.httpService
-        .getSettings()
-        .pipe(catchError(this.errorHandler.handleError())),
+      this.httpService.getSettings().pipe(catchError(this.errorHandler.handleError())),
     );
     this.saveResponseSetting(settingsResponse);
     if (localStorage.getItem('transformationEnabled')) {
@@ -193,23 +147,13 @@ export class TableSettingsModalComponent implements OnDestroy {
         .get(this.transformationEnabledKey)
         ?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }
-    this.settingsForm
-      .get(this.showSearchWindowOnLoadKey)
-      ?.setValue(this.showSearchWindowOnLoad);
-    this.settingsForm
-      .get(this.prettifyOnLoadKey)
-      ?.setValue(this.prettifyOnLoad);
-    this.settingsForm
-      .get(this.showMultipleFilesKey)
-      ?.setValue(this.showMultipleAtATime);
+    this.settingsForm.get(this.showSearchWindowOnLoadKey)?.setValue(this.showSearchWindowOnLoad);
+    this.settingsForm.get(this.prettifyOnLoadKey)?.setValue(this.prettifyOnLoad);
+    this.settingsForm.get(this.showMultipleFilesKey)?.setValue(this.showMultipleAtATime);
     const transformationResponse = await firstValueFrom(
-      this.httpService
-        .getTransformation(false)
-        .pipe(catchError(this.errorHandler.handleError())),
+      this.httpService.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),
     );
-    this.settingsForm
-      .get(this.transformationKey)
-      ?.setValue(transformationResponse.transformation);
+    this.settingsForm.get(this.transformationKey)?.setValue(transformationResponse.transformation);
     if (!this.formValueOnStart) {
       this.formValueOnStart = this.settingsForm.value;
     }
@@ -223,26 +167,16 @@ export class TableSettingsModalComponent implements OnDestroy {
   saveSettings(): void {
     this.saveToLocalStorage();
     const transformation = this.settingsForm.get(this.transformationKey)?.value;
-    this.httpService
-      .postTransformation(transformation)
-      .pipe(catchError(this.errorHandler.handleError()))
-      .subscribe();
+    this.httpService.postTransformation(transformation).pipe(catchError(this.errorHandler.handleError())).subscribe();
     const tableSpacing = this.settingsForm.get(this.tableSpacingKey);
     this.settingsService.setTableSpacing(Number(tableSpacing?.value));
-    const showMultipleAtATime = this.settingsForm.get(
-      this.showMultipleFilesKey,
-    );
+    const showMultipleAtATime = this.settingsForm.get(this.showMultipleFilesKey);
     this.settingsService.setShowMultipleAtATime(showMultipleAtATime?.value);
-    const showSearchWindowOnLoad = this.settingsForm.get(
-      this.showSearchWindowOnLoadKey,
-    );
-    this.settingsService.setShowSearchWindowOnLoad(
-      showSearchWindowOnLoad?.value,
-    );
+    const showSearchWindowOnLoad = this.settingsForm.get(this.showSearchWindowOnLoadKey);
+    this.settingsService.setShowSearchWindowOnLoad(showSearchWindowOnLoad?.value);
     const prettifyOnLoad = this.settingsForm.get(this.prettifyOnLoadKey);
     this.settingsService.setPrettifyOnLoad(prettifyOnLoad?.value);
-    const generatorEnabled: boolean =
-      this.settingsForm.get(this.generatorEnabledKey)?.value === 'Enabled';
+    const generatorEnabled: boolean = this.settingsForm.get(this.generatorEnabledKey)?.value === 'Enabled';
     const regexValue = this.settingsForm.get(this.regexFilterKey)?.value;
     const regexFilter = regexValue === '' ? this.defaultRegexValue : regexValue;
     const data: UploadParams = {
@@ -265,14 +199,8 @@ export class TableSettingsModalComponent implements OnDestroy {
   }
 
   saveToLocalStorage(): void {
-    localStorage.setItem(
-      'generatorEnabled',
-      this.settingsForm.get(this.generatorEnabledKey)?.value,
-    );
-    localStorage.setItem(
-      'transformationEnabled',
-      this.settingsForm.get(this.transformationEnabledKey)?.value,
-    );
+    localStorage.setItem('generatorEnabled', this.settingsForm.get(this.generatorEnabledKey)?.value);
+    localStorage.setItem('transformationEnabled', this.settingsForm.get(this.transformationEnabledKey)?.value);
   }
 
   openLatestReports(amount: number): void {
@@ -286,19 +214,13 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.settingsService.setPrettifyOnLoad();
     this.settingsService.setShowSearchWindowOnLoad();
     const optionsResponse = await firstValueFrom(
-      this.httpService
-        .resetSettings()
-        .pipe(catchError(this.errorHandler.handleError())),
+      this.httpService.resetSettings().pipe(catchError(this.errorHandler.handleError())),
     );
     this.saveResponseSetting(optionsResponse);
     const transformationResponse = await firstValueFrom(
-      this.httpService
-        .getTransformation(true)
-        .pipe(catchError(this.errorHandler.handleError())),
+      this.httpService.getTransformation(true).pipe(catchError(this.errorHandler.handleError())),
     );
-    this.settingsForm
-      .get(this.transformationKey)
-      ?.setValue(transformationResponse.transformation);
+    this.settingsForm.get(this.transformationKey)?.setValue(transformationResponse.transformation);
     this.saveSettings();
     this.activeSettingsModal?.close();
   }

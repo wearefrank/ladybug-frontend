@@ -34,7 +34,7 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
   @ViewChild(EditDisplayComponent) displayComponent!: EditDisplayComponent;
   @Input({ required: true }) currentView!: View;
-  @Input() newTab: boolean = true;
+  @Input() newTab = true;
   calculatedHeight!: number;
   treeWidth: Subject<void> = new Subject<void>();
   reportData?: ReportData;
@@ -50,9 +50,7 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.reportData = this.tabService.activeReportTabs.get(
-      this.getIdFromPath(),
-    );
+    this.reportData = this.tabService.activeReportTabs.get(this.getIdFromPath());
     if (!this.reportData) {
       this.router.navigate([DebugComponent.ROUTER_PATH]);
     }
@@ -79,21 +77,17 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   listenToHeight(): void {
-    const resizeObserver$ = fromEventPattern<ResizeObserverEntry[]>(
-      (handler: NodeEventHandler) => {
-        const resizeObserver = new ResizeObserver(handler);
-        resizeObserver.observe(this.host.nativeElement);
-        return (): void => resizeObserver.disconnect();
-      },
-    );
+    const resizeObserver$ = fromEventPattern<ResizeObserverEntry[]>((handler: NodeEventHandler) => {
+      const resizeObserver = new ResizeObserver(handler);
+      resizeObserver.observe(this.host.nativeElement);
+      return (): void => resizeObserver.disconnect();
+    });
 
-    const resizeSubscription = resizeObserver$
-      .pipe(debounceTime(50))
-      .subscribe((entries: ResizeObserverEntry[]) => {
-        const entry = (entries[0] as unknown as ResizeObserverEntry[])[0];
-        this.calculatedHeight = entry.target.clientHeight;
-        this.cdr.detectChanges();
-      });
+    const resizeSubscription = resizeObserver$.pipe(debounceTime(50)).subscribe((entries: ResizeObserverEntry[]) => {
+      const entry = (entries[0] as unknown as ResizeObserverEntry[])[0];
+      this.calculatedHeight = entry.target.clientHeight;
+      this.cdr.detectChanges();
+    });
     this.subscriptions.add(resizeSubscription);
   }
 

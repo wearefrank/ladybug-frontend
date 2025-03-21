@@ -11,11 +11,7 @@ export class ToastService {
   // eslint-disable-next-line @typescript-eslint/member-ordering
   toastObservable: Observable<Toast> = this.toastSubject.asObservable();
 
-  public showDanger(
-    body: string,
-    detailedInfo?: string,
-    toastCallback?: ToastCallback,
-  ): void {
+  public showDanger(body: string, detailedInfo?: string, toastCallback?: ToastCallback): void {
     this.toastSubject.next({
       type: 'danger',
       message: body,

@@ -23,7 +23,7 @@ export class DifferenceModalComponent {
   @ViewChild('modal') protected modal!: TemplateRef<DifferenceModalComponent>;
   protected saveOrDiscardType!: ChangesAction;
   protected reportDifferences?: ReportDifference[];
-  protected stubChange: boolean = false;
+  protected stubChange = false;
   protected activeModal?: NgbModalRef;
 
   constructor(
@@ -31,11 +31,7 @@ export class DifferenceModalComponent {
     private toastService: ToastService,
   ) {}
 
-  open(
-    differences: ReportDifference[],
-    saveOrDiscardType: ChangesAction,
-    stubChange?: boolean,
-  ): void {
+  open(differences: ReportDifference[], saveOrDiscardType: ChangesAction, stubChange?: boolean): void {
     this.stubChange = !!stubChange;
     this.reportDifferences = differences;
     this.saveOrDiscardType = saveOrDiscardType;

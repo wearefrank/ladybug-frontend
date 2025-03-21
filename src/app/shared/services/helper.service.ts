@@ -5,15 +5,8 @@ import { BaseReport } from '../interfaces/base-report';
   providedIn: 'root',
 })
 export class HelperService {
-  download(
-    queryString: string,
-    storage: string,
-    exportBinary: boolean,
-    exportXML: boolean,
-  ): void {
-    window.open(
-      `api/report/download/${storage}/${exportBinary}/${exportXML}?${queryString.slice(0, -1)}`,
-    );
+  download(queryString: string, storage: string, exportBinary: boolean, exportXML: boolean): void {
+    window.open(`api/report/download/${storage}/${exportBinary}/${exportXML}?${queryString.slice(0, -1)}`);
   }
 
   getSelectedIds(reports: BaseReport[]): number[] {

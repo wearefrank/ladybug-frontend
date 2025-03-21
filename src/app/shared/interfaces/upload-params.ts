@@ -1,4 +1,4 @@
-export interface UploadParams {
+export interface UploadParameters {
   generatorEnabled: boolean;
   regexFilter: string;
 }

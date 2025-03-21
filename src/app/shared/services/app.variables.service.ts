@@ -22,10 +22,7 @@ export class AppVariablesService {
             this.variables = data;
           }),
           catchError((error) => {
-            console.error(
-              'Error fetching custom report action button text',
-              error,
-            );
+            console.error('Error fetching custom report action button text', error);
             return of(null);
           }),
         )

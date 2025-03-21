@@ -4,11 +4,7 @@ import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
-import {
-  ReactiveFormsModule,
-  UntypedFormControl,
-  UntypedFormGroup,
-} from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { CloneReport } from 'src/app/shared/interfaces/clone-report';
 import { catchError } from 'rxjs';
 import { ErrorHandling } from '../../shared/classes/error-handling.service';
@@ -49,9 +45,7 @@ export class CloneModalComponent {
       .subscribe({
         next: (report: Report) => {
           this.report = report;
-          this.variablesForm
-            .get('message')
-            ?.setValue(this.report.inputCheckpoint?.message);
+          this.variablesForm.get('message')?.setValue(this.report.inputCheckpoint?.message);
           this.activeModal = this.modalService.open(this.modal);
         },
       });

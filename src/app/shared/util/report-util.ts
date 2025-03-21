@@ -2,12 +2,7 @@ import { Report } from '../interfaces/report';
 import { Checkpoint } from '../interfaces/checkpoint';
 import { CreateTreeItem, FileTreeItem } from 'ng-simple-file-tree';
 
-type ReportOrCheckpoint =
-  | Report
-  | Checkpoint
-  | CreateTreeItem
-  | FileTreeItem
-  | undefined;
+type ReportOrCheckpoint = Report | Checkpoint | CreateTreeItem | FileTreeItem | undefined;
 
 export const ReportUtil = {
   isReport(node: ReportOrCheckpoint): node is Report {
@@ -37,8 +32,6 @@ export const ReportUtil = {
     return +uid.split('#')[0];
   },
   isFromCrudStorage(node: Report | Checkpoint): boolean {
-    return ReportUtil.isCheckPoint(node)
-      ? node.parentReport.crudStorage
-      : node.crudStorage;
+    return ReportUtil.isCheckPoint(node) ? node.parentReport.crudStorage : node.crudStorage;
   },
 };

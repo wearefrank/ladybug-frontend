@@ -17,11 +17,9 @@ export class TabService {
   private closeTabSubject: Subject<CloseTab> = new ReplaySubject();
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  openReportInTab$: Observable<ReportData> =
-    this.openReportInTabSubject.asObservable();
+  openReportInTab$: Observable<ReportData> = this.openReportInTabSubject.asObservable();
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  openInCompare$: Observable<CompareData> =
-    this.openInCompareSubject.asObservable();
+  openInCompare$: Observable<CompareData> = this.openInCompareSubject.asObservable();
   // eslint-disable-next-line @typescript-eslint/member-ordering
   closeTab$: Observable<CloseTab> = this.closeTabSubject.asObservable();
 

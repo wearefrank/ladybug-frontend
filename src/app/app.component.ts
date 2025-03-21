@@ -10,12 +10,7 @@ import { TabService } from './shared/services/tab.service';
 import { AppVariablesService } from './shared/services/app.variables.service';
 import { catchError, Subscription } from 'rxjs';
 import { DebugComponent } from './debug/debug.component';
-import {
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-} from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Tab } from './shared/interfaces/tab';
 import { ReportData } from './shared/interfaces/report-data';
 import { ToastComponent } from './shared/components/toast/toast.component';
@@ -31,19 +26,13 @@ import { VersionService } from './shared/services/version.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   standalone: true,
-  imports: [
-    RouterLinkActive,
-    RouterLink,
-    RouterOutlet,
-    ToastComponent,
-    NgOptimizedImage,
-  ],
+  imports: [RouterLinkActive, RouterLink, RouterOutlet, ToastComponent, NgOptimizedImage],
 })
 export class AppComponent implements OnInit, OnDestroy {
   @ViewChild(CompareComponent) compareComponent!: CompareComponent;
   @ViewChild(TestComponent) testComponent!: TestComponent;
   frontendVersion?: string;
-  title: string = 'ladybug';
+  title = 'ladybug';
   tabs: Tab[] = [];
   newTabSubscription!: Subscription;
   newCompareTabSubscription!: Subscription;
@@ -81,26 +70,18 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   subscribeToServices(): void {
-    this.newTabSubscription = this.tabService.openReportInTab$.subscribe(
-      (value: ReportData) => {
-        this.openReportInSeparateTab(value);
-      },
-    );
-    this.newCompareTabSubscription = this.tabService.openInCompare$.subscribe(
-      (value: CompareData) => {
-        this.openNewCompareTab(value);
-      },
-    );
-    this.closeTabSubscription = this.tabService.closeTab$.subscribe(
-      (value: CloseTab) => {
-        const tab: Tab | undefined = this.tabs.find(
-          (t: Tab) => t.id === value.id,
-        );
-        if (tab) {
-          this.closeTab(tab);
-        }
-      },
-    );
+    this.newTabSubscription = this.tabService.openReportInTab$.subscribe((value: ReportData) => {
+      this.openReportInSeparateTab(value);
+    });
+    this.newCompareTabSubscription = this.tabService.openInCompare$.subscribe((value: CompareData) => {
+      this.openNewCompareTab(value);
+    });
+    this.closeTabSubscription = this.tabService.closeTab$.subscribe((value: CloseTab) => {
+      const tab: Tab | undefined = this.tabs.find((t: Tab) => t.id === value.id);
+      if (tab) {
+        this.closeTab(tab);
+      }
+    });
   }
 
   unsubscribeAll(): void {
@@ -116,9 +97,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   openReportInSeparateTab(data: ReportData): void {
-    const tabIndex: number = this.tabs.findIndex(
-      (tab: Tab): boolean => tab.id === String(data.report.storageId),
-    );
+    const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id === String(data.report.storageId));
     if (tabIndex == -1) {
       this.tabs.push({
         key: data.report.name,
@@ -132,13 +111,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   openNewCompareTab(data: CompareData): void {
-    const tabId = this.tabService.createCompareTabId(
-      data.originalReport,
-      data.runResultReport,
-    );
-    const tabIndex: number = this.tabs.findIndex(
-      (tab: Tab): boolean => tab.id == tabId,
-    );
+    const tabId = this.tabService.createCompareTabId(data.originalReport, data.runResultReport);
+    const tabIndex: number = this.tabs.findIndex((tab: Tab): boolean => tab.id == tabId);
     if (tabIndex == -1) {
       data.id = tabId;
       this.tabs.push({

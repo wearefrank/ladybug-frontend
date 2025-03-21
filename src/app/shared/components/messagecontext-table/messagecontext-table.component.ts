@@ -1,10 +1,4 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  OnChanges,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
@@ -18,12 +12,7 @@ import { ReportUtil } from '../../util/report-util';
   templateUrl: './messagecontext-table.component.html',
   styleUrls: ['./../metadata-table/metadata-table.component.css'],
   standalone: true,
-  imports: [
-    ClipboardModule,
-    MatTooltipModule,
-    CopyTooltipDirective,
-    CommonModule,
-  ],
+  imports: [ClipboardModule, MatTooltipModule, CopyTooltipDirective, CommonModule],
 })
 export class MessagecontextTableComponent implements OnInit, OnChanges {
   @Input({ required: true }) report!: Report | Checkpoint;
@@ -41,11 +30,7 @@ export class MessagecontextTableComponent implements OnInit, OnChanges {
   }
 
   private updateMessageContextData(): void {
-    const messageContext = ReportUtil.isCheckPoint(this.report)
-      ? this.report.messageContext
-      : null;
-    this.messageContextData = messageContext
-      ? Object.entries(messageContext)
-      : [];
+    const messageContext = ReportUtil.isCheckPoint(this.report) ? this.report.messageContext : null;
+    this.messageContextData = messageContext ? Object.entries(messageContext) : [];
   }
 }

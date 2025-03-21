@@ -1,10 +1,4 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { View } from '../../interfaces/view';
 import { Subject } from 'rxjs';
 
@@ -33,7 +27,7 @@ export class ViewDropdownComponent implements OnChanges {
 
   calculateViewDropDownWidth(): void {
     if (this.views) {
-      let longestViewName: string = '';
+      let longestViewName = '';
       for (const view of this.views) {
         if (view.name.length > longestViewName.length) {
           longestViewName = view.name;

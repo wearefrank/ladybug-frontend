@@ -1,11 +1,5 @@
 /* eslint-disable no-unused-vars */
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { Toast } from '../../interfaces/toast';
 import { ToastService } from '../../services/toast.service';
@@ -25,8 +19,8 @@ export class ToastComponent implements OnInit, OnDestroy {
   @ViewChild('modal') modal!: TemplateRef<Element>;
   selected!: Toast;
   toasts: Toast[] = [];
-  justCopied: boolean = false;
-  filterPanelVisible: boolean = false;
+  justCopied = false;
+  filterPanelVisible = false;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -37,17 +31,13 @@ export class ToastComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const toastSubscription = this.toastService.toastObservable.subscribe(
-      (toast: Toast): void => {
-        this.toasts.push(toast);
-      },
-    );
+    const toastSubscription = this.toastService.toastObservable.subscribe((toast: Toast): void => {
+      this.toasts.push(toast);
+    });
     this.subscriptions.add(toastSubscription);
-    const filterSubscription = this.filterService.filterSidePanel$.subscribe(
-      (value) => {
-        this.filterPanelVisible = value;
-      },
-    );
+    const filterSubscription = this.filterService.filterSidePanel$.subscribe((value) => {
+      this.filterPanelVisible = value;
+    });
     this.subscriptions.add(filterSubscription);
   }
 

@@ -18,8 +18,7 @@ export class EditFormComponent implements OnInit {
   protected readonly nameKey: string & keyof Report = 'name';
   protected readonly descriptionKey: string & keyof Report = 'description';
   protected readonly pathKey: string & keyof Report = 'path';
-  protected readonly transformationKey: string & keyof Report =
-    'transformation';
+  protected readonly transformationKey: string & keyof Report = 'transformation';
   protected readonly variablesKey: string & keyof Report = 'variablesCsv';
 
   ngOnInit(): void {
@@ -39,13 +38,8 @@ export class EditFormComponent implements OnInit {
 
   getDifference(name: keyof Report): ReportDifference {
     const originalValue =
-      this.report[name] !== undefined && this.report[name] !== null
-        ? String(this.report[name])
-        : '';
-    const difference = new DiffMatchPatch().diff_main(
-      originalValue,
-      this.editForm.get(name)?.value ?? '',
-    );
+      this.report[name] !== undefined && this.report[name] !== null ? String(this.report[name]) : '';
+    const difference = new DiffMatchPatch().diff_main(originalValue, this.editForm.get(name)?.value ?? '');
     return {
       name: name,
       originalValue: originalValue,
