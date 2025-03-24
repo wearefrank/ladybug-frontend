@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
 import { Injectable, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy, RouterModule, Routes } from '@angular/router';
 import { DebugComponent } from './debug/debug.component';
@@ -43,7 +42,7 @@ export class AppRoutingModule {}
   providedIn: 'root',
 })
 export class AppRouteReuseStrategy implements RouteReuseStrategy {
-  storedRoutes: { [key: string]: DetachedRouteHandle } = {};
+  storedRoutes: Record<string, DetachedRouteHandle> = {};
 
   constructor(private tabService: TabService) {
     this.tabService.closeTab$.subscribe((closeTab) => {
