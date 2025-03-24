@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-/* eslint-disable @typescript-eslint/consistent-generic-constructors */
 import { Injectable } from '@angular/core';
 import { debounceTime, Observable, Subject } from 'rxjs';
 
@@ -7,13 +6,13 @@ import { debounceTime, Observable, Subject } from 'rxjs';
   providedIn: 'root',
 })
 export class FilterService {
-  private showFilterSubject: Subject<boolean> = new Subject();
-  private metadataLabelsSubject: Subject<string[]> = new Subject();
-  private filterContextSubject: Subject<Map<string, string>> = new Subject();
-  private currentRecordsSubject: Subject<Map<string, string[]>> = new Subject();
-  private metadataTypesSubject: Subject<Map<string, string>> = new Subject();
-  private filterErrorSubject: Subject<[boolean, Map<string, string>]> = new Subject();
-  private filterSidePanelVisibleSubject: Subject<boolean> = new Subject<boolean>();
+  private showFilterSubject = new Subject<boolean>();
+  private metadataLabelsSubject = new Subject<string[]>();
+  private filterContextSubject = new Subject<Map<string, string>>();
+  private currentRecordsSubject = new Subject<Map<string, string[]>>();
+  private metadataTypesSubject = new Subject<Map<string, string>>();
+  private filterErrorSubject = new Subject<[boolean, Map<string, string>]>();
+  private filterSidePanelVisibleSubject = new Subject<boolean>();
 
   filterSidePanel$: Observable<boolean> = this.filterSidePanelVisibleSubject.asObservable();
   showFilter$: Observable<boolean> = this.showFilterSubject.asObservable();
