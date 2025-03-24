@@ -42,7 +42,7 @@ export class TestReportsService {
 
   async matchRerunResults(reports: TestListItem[]): Promise<TestListItem[]> {
     const oldReports: TestListItem[] = await firstValueFrom(this.testReportsSubject);
-    const filteredReports: TestListItem[] = oldReports.filter((r: TestListItem) => !!r.reranReport);
+    const filteredReports: TestListItem[] = oldReports.filter((report: TestListItem) => !!report.reranReport);
     if (filteredReports.length > 0) {
       for (const report of reports) {
         for (const oldReport of filteredReports) {
