@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/member-ordering */
@@ -102,7 +101,7 @@ export class TableComponent implements OnInit, OnDestroy {
     currentFilters: new Map<string, string>(),
     numberOfReportsInProgress: 0,
     estimatedMemoryUsage: '',
-    uniqueValues: new Map<string, Array<string>>(),
+    uniqueValues: new Map<string, string[]>(),
   };
 
   protected reportsInProgressThreshold?: number;

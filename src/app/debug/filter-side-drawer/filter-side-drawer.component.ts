@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/array-type */
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FilterService } from './filter.service';
 import { catchError, Subscription } from 'rxjs';
@@ -35,7 +34,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
 
   protected shouldShowFilter?: boolean;
   protected metadataLabels?: string[];
-  protected currentRecords: Map<string, Array<string>> = new Map<string, Array<string>>();
+  protected currentRecords: Map<string, string[]> = new Map<string, string[]>();
   protected metadataTypes?: Map<string, string>;
   protected toolTipSuggestions?: Report;
 
@@ -71,7 +70,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     });
     this.subscriptions.add(metadataLabelsSubscription);
     const currentRecordSubscription: Subscription = this.filterService.currentRecords$.subscribe({
-      next: (records: Map<string, Array<string>>) => (this.currentRecords = records),
+      next: (records: Map<string, string[]>) => (this.currentRecords = records),
     });
     this.subscriptions.add(currentRecordSubscription);
     const metadataTypesSubscription: Subscription = this.filterService.metadataTypes$.subscribe({

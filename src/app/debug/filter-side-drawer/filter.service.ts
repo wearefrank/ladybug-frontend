@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/array-type */
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable @typescript-eslint/consistent-generic-constructors */
 import { Injectable } from '@angular/core';
@@ -9,7 +8,7 @@ import { debounceTime, Observable, Subject } from 'rxjs';
 })
 export class FilterService {
   private showFilterSubject: Subject<boolean> = new Subject();
-  private metadataLabelsSubject: Subject<Array<string>> = new Subject();
+  private metadataLabelsSubject: Subject<string[]> = new Subject();
   private filterContextSubject: Subject<Map<string, string>> = new Subject();
   private currentRecordsSubject: Subject<Map<string, string[]>> = new Subject();
   private metadataTypesSubject: Subject<Map<string, string>> = new Subject();
@@ -31,7 +30,7 @@ export class FilterService {
     this.showFilterSubject.next(show);
   }
 
-  setMetadataLabels(metadataLabels: Array<string>): void {
+  setMetadataLabels(metadataLabels: string[]): void {
     //Safely transform old filter to filter with new metadata columns
     let wasChanged = false;
     for (const metadataLabel of this.metadataLabels) {
@@ -62,7 +61,7 @@ export class FilterService {
     this.filterContextSubject.next(this.filters);
   }
 
-  setCurrentRecords(records: Map<string, Array<string>>): void {
+  setCurrentRecords(records: Map<string, string[]>): void {
     this.currentRecordsSubject.next(records);
   }
 

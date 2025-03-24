@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/array-type */
 import { Report } from './report';
 
 export interface TableSettings {
@@ -9,5 +8,5 @@ export interface TableSettings {
   tableLoaded: boolean;
   numberOfReportsInProgress: number;
   estimatedMemoryUsage: string;
-  uniqueValues: Map<string, Array<string>>;
+  uniqueValues: Map<string, string[]>;
 }
