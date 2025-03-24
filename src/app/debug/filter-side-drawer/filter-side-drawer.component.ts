@@ -103,4 +103,9 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   getTooltipSuggestion<K extends keyof Report>(key: K): Report[K] | undefined {
     return this.toolTipSuggestions?.[key];
   }
+
+  // TODO: Get rid of this cast by using type keyof Report for every metadata label.
+  toKeyofReport(raw: string): keyof Report {
+    return raw as keyof Report;
+  }
 }
