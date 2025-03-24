@@ -12,6 +12,7 @@ import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { ShortenedTableHeaderPipe } from '../../shared/pipes/shortened-table-header.pipe';
+import { Checkpoint } from 'src/app/shared/interfaces/checkpoint';
 
 @Component({
   standalone: true,
@@ -100,11 +101,10 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     this.filterService.updateFilterContext(metadataName, '');
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  getTooltipSuggestion(key: string) {
+  getTooltipSuggestion(key: string): Partial<Report> | Checkpoint[] | string | number | boolean | undefined {
     if (this.toolTipSuggestions) {
       return this.toolTipSuggestions[key as keyof Report];
     }
-    return null;
+    return undefined;
   }
 }
