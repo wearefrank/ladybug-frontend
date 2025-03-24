@@ -100,10 +100,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     this.filterService.updateFilterContext(metadataName, '');
   }
 
-  getTooltipSuggestion(key: string): Partial<Report> | Checkpoint[] | string | number | boolean | undefined {
-    if (this.toolTipSuggestions) {
-      return this.toolTipSuggestions[key as keyof Report];
-    }
-    return undefined;
+  getTooltipSuggestion<K extends keyof Report>(key: K): Report[K] | undefined {
+    return this.toolTipSuggestions?.[key];
   }
 }
