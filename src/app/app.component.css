@@ -4,11 +4,13 @@
   align-items: center;
 }
 
-.nav-link, .nav-link a {
+.nav-link,
+.nav-link a {
   color: #a7b1c2;
 }
 
-.nav-link.active, .nav-link.active a {
+.nav-link.active,
+.nav-link.active a {
   color: #495057;
 }
 

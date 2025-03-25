@@ -1,5 +1,4 @@
-
-input[type=text] {
+input[type='text'] {
   width: 30px;
   height: 30px;
   box-sizing: border-box;
@@ -14,7 +13,7 @@ input[type=text] {
   transition: width 0.4s ease-in-out;
 }
 
-input[type=text]:focus {
+input[type='text']:focus {
   width: 30%;
 }
 

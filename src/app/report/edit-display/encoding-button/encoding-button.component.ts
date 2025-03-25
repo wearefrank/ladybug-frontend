@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+/* eslint-disable no-unused-vars */
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { ReportUtil } from '../../../shared/util/report-util';
 import { ToastService } from '../../../shared/services/toast.service';
 import { Checkpoint } from '../../../shared/interfaces/checkpoint';
@@ -14,12 +15,12 @@ import { Report } from '../../../shared/interfaces/report';
 export class EncodingButtonComponent implements OnChanges {
   @Input({ required: true }) selectedNode!: Report | Checkpoint;
   @Output() updatedMessageEvent: EventEmitter<string> = new EventEmitter<string>();
-  buttonType: string = 'Base64';
-  showEncodingButton: boolean = false;
+  buttonType = 'Base64';
+  showEncodingButton = false;
 
   constructor(private toastService: ToastService) {}
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     this.showEncodingButton = ReportUtil.isCheckPoint(this.selectedNode) && this.selectedNode.encoding === 'Base64';
   }
 

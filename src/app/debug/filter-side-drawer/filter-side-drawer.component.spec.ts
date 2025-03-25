@@ -19,7 +19,10 @@ describe('FilterSideDrawerComponent', () => {
 
     fixture = TestBed.createComponent(FilterSideDrawerComponent);
     component = fixture.componentInstance;
-    component.currentView = { storageName: 'mockStorage', metadataNames: ['mockMetadata'] } as View;
+    component.currentView = {
+      storageName: 'mockStorage',
+      metadataNames: ['mockMetadata'],
+    } as View;
     fixture.detectChanges();
   });
 

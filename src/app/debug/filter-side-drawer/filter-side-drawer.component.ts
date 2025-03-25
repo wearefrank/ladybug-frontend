@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FilterService } from './filter.service';
 import { catchError, Subscription } from 'rxjs';
@@ -10,6 +11,7 @@ import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { ShortenedTableHeaderPipe } from '../../shared/pipes/shortened-table-header.pipe';
+import { Checkpoint } from 'src/app/shared/interfaces/checkpoint';
 
 @Component({
   standalone: true,
@@ -32,7 +34,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
 
   protected shouldShowFilter?: boolean;
   protected metadataLabels?: string[];
-  protected currentRecords: Map<string, Array<string>> = new Map<string, Array<string>>();
+  protected currentRecords: Map<string, string[]> = new Map<string, string[]>();
   protected metadataTypes?: Map<string, string>;
   protected toolTipSuggestions?: Report;
 
@@ -68,7 +70,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     });
     this.subscriptions.add(metadataLabelsSubscription);
     const currentRecordSubscription: Subscription = this.filterService.currentRecords$.subscribe({
-      next: (records: Map<string, Array<string>>) => (this.currentRecords = records),
+      next: (records: Map<string, string[]>) => (this.currentRecords = records),
     });
     this.subscriptions.add(currentRecordSubscription);
     const metadataTypesSubscription: Subscription = this.filterService.metadataTypes$.subscribe({
@@ -98,10 +100,12 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     this.filterService.updateFilterContext(metadataName, '');
   }
 
-  getTooltipSuggestion(key: string) {
-    if (this.toolTipSuggestions) {
-      return this.toolTipSuggestions[key as keyof Report];
-    }
-    return null;
+  getTooltipSuggestion<K extends keyof Report>(key: K): Report[K] | undefined {
+    return this.toolTipSuggestions?.[key];
+  }
+
+  // TODO: Get rid of this cast by using type keyof Report for every metadata label.
+  toKeyofReport(raw: string): keyof Report {
+    return raw as keyof Report;
   }
 }

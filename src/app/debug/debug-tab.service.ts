@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { RefreshCondition } from '../shared/interfaces/refresh-condition';
@@ -6,11 +7,11 @@ import { RefreshCondition } from '../shared/interfaces/refresh-condition';
   providedIn: 'root',
 })
 export class DebugTabService {
-  private anyReportsOpen: boolean = false;
+  private anyReportsOpen = false;
 
-  private refreshAllSubject: Subject<RefreshCondition | undefined> = new Subject();
-  private refreshTableSubject: Subject<RefreshCondition | undefined> = new Subject();
-  private refreshTreeSubject: Subject<RefreshCondition | undefined> = new Subject();
+  private refreshAllSubject = new Subject<RefreshCondition | undefined>();
+  private refreshTableSubject = new Subject<RefreshCondition | undefined>();
+  private refreshTreeSubject = new Subject<RefreshCondition | undefined>();
 
   refreshAll$: Observable<RefreshCondition | undefined> = this.refreshAllSubject.asObservable();
   refreshTable$: Observable<RefreshCondition | undefined> = this.refreshTableSubject.asObservable();

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
@@ -10,12 +12,13 @@ import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angu
   imports: [ReactiveFormsModule],
 })
 export class TestSettingsModalComponent {
+  @Output() updateShowStorageIds: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   @ViewChild('modal') modal!: any;
   settingsForm = new UntypedFormGroup({
     showReportStorageIds: new UntypedFormControl(false),
     showCheckpointIds: new UntypedFormControl(false),
   });
-  @Output() updateShowStorageIds: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private modalService: NgbModal) {}
 

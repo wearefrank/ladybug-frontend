@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
@@ -76,7 +79,8 @@ export class TableComponent implements OnInit, OnDestroy {
   @Output() viewChange: EventEmitter<View> = new EventEmitter<View>();
   @Output() openReportEvent: EventEmitter<Report> = new EventEmitter<Report>();
 
-  @ViewChild(TableSettingsModalComponent) protected tableSettingsModal!: TableSettingsModalComponent;
+  @ViewChild(TableSettingsModalComponent)
+  protected tableSettingsModal!: TableSettingsModalComponent;
   @ViewChild(DeleteModalComponent) protected deleteModal!: DeleteModalComponent;
 
   @ViewChild(MatSort)
@@ -85,9 +89,9 @@ export class TableComponent implements OnInit, OnDestroy {
     this.tableDataSource.sort = this.tableDataSort;
   }
 
-  protected metadataCount: number = 0;
+  protected metadataCount = 0;
   protected selectedReports: Report[] = [];
-  protected hasTimedOut: boolean = false;
+  protected hasTimedOut = false;
   protected tableDataSource: MatTableDataSource<Report> = new MatTableDataSource<Report>();
   protected tableSettings: TableSettings = {
     reportMetadata: [],
@@ -97,7 +101,7 @@ export class TableComponent implements OnInit, OnDestroy {
     currentFilters: new Map<string, string>(),
     numberOfReportsInProgress: 0,
     estimatedMemoryUsage: '',
-    uniqueValues: new Map<string, Array<string>>(),
+    uniqueValues: new Map<string, string[]>(),
   };
 
   protected reportsInProgressThreshold?: number;
@@ -109,7 +113,6 @@ export class TableComponent implements OnInit, OnDestroy {
 
   private reportsInProgress: Record<string, number> = {};
 
-  // eslint-disable-next-line unicorn/consistent-function-scoping
   private get selectedReportIds(): number[] {
     return this.selectedReports.map((report: Report): number => report.storageId);
   }
@@ -182,13 +185,13 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   setFontSize(value: number): void {
-    const fontSizeSpacingModifier: number = 1.2;
-    const defaultFontSize: number = 8;
+    const fontSizeSpacingModifier = 1.2;
+    const defaultFontSize = 8;
     this.fontSize = `${defaultFontSize + value * fontSizeSpacingModifier}pt`;
   }
 
   setCheckBoxSize(value: number): void {
-    const defaultCheckBoxSize: number = 13;
+    const defaultCheckBoxSize = 13;
     this.checkboxSize = `${defaultCheckBoxSize + value}px`;
   }
 
@@ -202,7 +205,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.retrieveRecords();
   }
 
-  loadData(showToast: boolean = true): void {
+  loadData(showToast = true): void {
     this.tableSettings.tableLoaded = false;
     this.retrieveRecords(showToast);
     this.loadMetadataCount();
@@ -210,7 +213,7 @@ export class TableComponent implements OnInit, OnDestroy {
     this.loadReportInProgressSettings();
   }
 
-  retrieveRecords(showToast: boolean = true) {
+  retrieveRecords(showToast = true): void {
     this.httpService
       .getMetadataReports(this.tableSettings, this.currentView)
       .pipe(catchError(this.errorHandler.handleError()))
@@ -273,7 +276,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadReportInProgressDates(): void {
-    let hasChanged: boolean = false;
+    let hasChanged = false;
     for (let index = 1; index <= this.tableSettings.numberOfReportsInProgress; index++) {
       this.httpService
         .getReportInProgress(index)
@@ -475,7 +478,7 @@ export class TableComponent implements OnInit, OnDestroy {
       });
   }
 
-  openSelectedReport(storageId: number) {
+  openSelectedReport(storageId: number): void {
     this.selectedReportStorageId = storageId;
     this.openReport(storageId);
   }
@@ -522,7 +525,7 @@ export class TableComponent implements OnInit, OnDestroy {
     const selectedReports = this.tableSettings.reportMetadata.filter((report) => report.checked);
 
     if (selectedReports.length > 0) {
-      let queryString: string = '';
+      let queryString = '';
       for (let report of selectedReports) {
         queryString += `id=${report.storageId}&`;
       }
@@ -576,7 +579,7 @@ export class TableComponent implements OnInit, OnDestroy {
           uniqueValues.add(element[headerName]);
         }
       }
-      const MAX_AMOUNT_OF_FILTER_SUGGESTIONS: number = 15;
+      const MAX_AMOUNT_OF_FILTER_SUGGESTIONS = 15;
       this.tableSettings.uniqueValues.set(
         lowerHeaderName,
         uniqueValues.size < MAX_AMOUNT_OF_FILTER_SUGGESTIONS ? this.sortUniqueValues(uniqueValues) : [],

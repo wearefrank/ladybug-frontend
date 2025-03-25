@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export const enum CheckpointType {
   Startpoint = 1,
   Endpoint,
@@ -10,7 +11,7 @@ export const enum CheckpointType {
   ThreadEndpoint,
 }
 
-export const CHECKPOINT_TYPE_STRINGS: { [key in CheckpointType]: string } = {
+export const CHECKPOINT_TYPE_STRINGS: Record<CheckpointType, string> = {
   [CheckpointType.Startpoint]: 'bi bi-arrow-bar-right icon-size bolder-icon',
   [CheckpointType.Endpoint]: 'bi bi-arrow-bar-left icon-size bolder-icon',
   [CheckpointType.Abortpoint]: 'bi bi-x-lg red icon-size scale-down bolder-icon',

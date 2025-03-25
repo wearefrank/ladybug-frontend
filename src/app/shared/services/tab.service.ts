@@ -9,16 +9,19 @@ import { Report } from '../interfaces/report';
   providedIn: 'root',
 })
 export class TabService {
+  activeReportTabs = new Map<string, ReportData>();
+  activeCompareTabs = new Map<string, CompareData>();
+
   private openReportInTabSubject: Subject<ReportData> = new ReplaySubject();
   private openInCompareSubject: Subject<CompareData> = new ReplaySubject();
   private closeTabSubject: Subject<CloseTab> = new ReplaySubject();
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   openReportInTab$: Observable<ReportData> = this.openReportInTabSubject.asObservable();
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   openInCompare$: Observable<CompareData> = this.openInCompareSubject.asObservable();
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   closeTab$: Observable<CloseTab> = this.closeTabSubject.asObservable();
-
-  activeReportTabs: Map<string, ReportData> = new Map();
-  activeCompareTabs: Map<string, CompareData> = new Map();
 
   openNewTab(value: ReportData): void {
     this.activeReportTabs.set(value.report.storageId.toString(), value);

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TestListItem } from '../../interfaces/test-list-item';
@@ -35,7 +36,7 @@ export class DeleteModalComponent {
     this.activeModal = this.modalService.open(this.modal, options);
   }
 
-  deleteReports() {
+  deleteReports(): void {
     this.confirmDeleteEvent.emit(this.deleteAllReports);
     this.activeModal?.close();
   }

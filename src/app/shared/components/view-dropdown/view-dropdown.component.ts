@@ -9,9 +9,9 @@ import { Subject } from 'rxjs';
   styleUrl: './view-dropdown.component.css',
 })
 export class ViewDropdownComponent implements OnChanges {
+  @Output() viewChanged = new Subject<View>();
   @Input({ required: true }) views!: View[];
   @Input({ required: true }) currentView!: View;
-  @Output() viewChanged: Subject<View> = new Subject();
 
   viewDropdownBoxWidth!: string;
 
@@ -27,7 +27,7 @@ export class ViewDropdownComponent implements OnChanges {
 
   calculateViewDropDownWidth(): void {
     if (this.views) {
-      let longestViewName: string = '';
+      let longestViewName = '';
       for (const view of this.views) {
         if (view.name.length > longestViewName.length) {
           longestViewName = view.name;

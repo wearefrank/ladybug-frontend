@@ -21,7 +21,7 @@ if (environment.production) {
   enableProdMode();
 }
 
-function main() {
+function main(): void {
   bootstrapApplication(AppComponent, {
     providers: [
       {

@@ -8,5 +8,5 @@ export interface TableSettings {
   tableLoaded: boolean;
   numberOfReportsInProgress: number;
   estimatedMemoryUsage: string;
-  uniqueValues: Map<string, Array<string>>;
+  uniqueValues: Map<string, string[]>;
 }
