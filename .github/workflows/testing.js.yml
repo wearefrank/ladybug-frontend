@@ -53,25 +53,34 @@ jobs:
         run: git checkout ${{ github.event.inputs.frontendCommitToCheckout }}
         working-directory: "ladybug-frontend"
 
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9.4
+          run_install: false
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: 'pnpm'
           cache-dependency-path: 'ladybug-frontend/package-lock.json'
-      - name: Cache npm dependencies
-        uses: actions/cache@v4
+      - name: Get pnpm store directory
+        id: store-path
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT  
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
         with:
-          working-directory: ladybug-frontend
-          path: '~/.npm'
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: ${{ steps.store-path.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-
-      - name: Show npm version
-        run: npm -v
+            ${{ runner.os }}-pnpm-store-
+      - name: Show pnpm version (before pnpm install)
+        run: pnpm -v
         working-directory: ladybug-frontend
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
         working-directory: ladybug-frontend
 
       - name: Install Cypress
@@ -91,14 +100,14 @@ jobs:
         working-directory: ladybug-frontend
 
       - name: Run linter
-        run: npm run lint
+        run: pnpm run lint
         if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         working-directory: ladybug-frontend
       - name: Run Karma tests
         working-directory: ladybug-frontend
-        run: npm run test-headless
+        run: pnpm run test-headless
       - name: Build project
-        run: npm run build
+        run: pnpm run build
         if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         working-directory: ladybug-frontend
 
@@ -191,12 +200,9 @@ jobs:
         if: ${{ github.event.inputs.useRealFrontend != 'true' }}
         with:
           working-directory: ladybug-frontend
-          install-command: npm ci --legacy-peer-deps
-          # In the past there were arguments --proxy-config and --host
-          # to ng serve, but that broke when the package manager
-          # was changed from pnpm to npm.
+          install-command: pnpm install --frozen-lockfile
           start: |
-            npm run ng serve ladybug
+            pnpm run ng serve ladybug
           wait-on: "http://localhost:8090, http://localhost:4200"
           wait-on-timeout: 1000
           spec: ${{ matrix.selected-specs }}
@@ -208,7 +214,7 @@ jobs:
           working-directory: ladybug-frontend
           # Without this line, this GitHub Action tries to
           # install dependencies without the --legacy-peer-deps option
-          install-command: npm ci --legacy-peer-deps
+          install-command: pnpm install --frozen-lockfile
           wait-on: "http://localhost:8090"
           wait-on-timeout: 1000
           spec: ${{ matrix.selected-specs }}
