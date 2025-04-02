@@ -25,14 +25,14 @@
     "@angular/common": "19.2.2",
     "@angular/compiler": "19.2.2",
     "@angular/core": "19.2.1",
-    "@angular/forms": "19.2.2",
+    "@angular/forms": "19.2.4",
     "@angular/localize": "19.2.1",
     "@angular/material": "19.2.6",
     "@angular/platform-browser": "19.2.1",
     "@angular/platform-browser-dynamic": "19.2.1",
     "@angular/router": "19.2.2",
     "@materia-ui/ngx-monaco-editor": "^6.0.0",
-    "@ng-bootstrap/ng-bootstrap": "17.0.1",
+    "@ng-bootstrap/ng-bootstrap": "18.0.0",
     "@popperjs/core": "^2.11.8",
     "ace-builds": "^1.37.5",
     "angular-split": "^19.0.0",
@@ -52,14 +52,14 @@
     "zone.js": "0.15.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^19.2.1",
+    "@angular-devkit/build-angular": "^19.2.5",
     "@angular-eslint/builder": "19.2.1",
     "@angular-eslint/eslint-plugin": "19.2.1",
     "@angular-eslint/eslint-plugin-template": "^19.2.1",
     "@angular-eslint/schematics": "19.2.1",
     "@angular-eslint/template-parser": "19.2.1",
     "@angular/cli": "19.2.3",
-    "@angular/compiler-cli": "19.2.1",
+    "@angular/compiler-cli": "19.2.4",
     "@eslint/compat": "^1.2.7",
     "@eslint/js": "^9.22.0",
     "@prettier/plugin-xml": "^3.2.2",
@@ -78,7 +78,7 @@
     "eslint-plugin-sonarjs": "^0.11.0",
     "eslint-plugin-unicorn": "^56.0.1",
     "husky": "^9.1.7",
-    "jasmine-core": "5.5.0",
+    "jasmine-core": "5.6.0",
     "karma": "6.4.4",
     "karma-chrome-launcher": "3.2.0",
     "karma-coverage": "2.2.1",
@@ -87,7 +87,7 @@
     "prettier": "^3.5.3",
     "prettier-plugin-autocorrect": "^0.4.1",
     "start-server-and-test": "^2.0.10",
-    "typescript": "5.5.4"
+    "typescript": "5.8.2"
   },
   "publishConfig": {
     "access": "public"
