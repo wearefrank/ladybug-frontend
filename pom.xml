@@ -43,16 +43,16 @@
         </configuration>
         <executions>
           <execution>
-            <id>npm install</id>
+            <id>pnpm install</id>
             <goals>
               <goal>exec</goal>
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <executable>npm</executable>
+              <executable>pnpm</executable>
               <arguments>
-                <argument>ci</argument>
-                <argument>--legacy-peer-deps</argument>
+                <argument>install</argument>
+                <argument>--frozen-lockfile</argument>
               </arguments>
             </configuration>
           </execution>
@@ -63,7 +63,7 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <executable>npm</executable>
+              <executable>pnpm</executable>
               <arguments>
                 <argument>run</argument>
                 <argument>build</argument>
@@ -93,7 +93,7 @@
         <version>3.3.1</version>
         <executions>
           <execution>
-            <id>copy npm dist to Maven build folder</id>
+            <id>copy pnpm dist to Maven build folder</id>
             <phase>process-resources</phase>
             <goals>
               <goal>copy-resources</goal>
