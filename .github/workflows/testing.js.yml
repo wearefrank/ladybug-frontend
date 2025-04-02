@@ -63,7 +63,7 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-          cache-dependency-path: 'ladybug-frontend/package-lock.json'
+          cache-dependency-path: 'ladybug-frontend/pnpm-lock.yaml'
       - name: Get pnpm store directory
         id: store-path
         shell: bash
