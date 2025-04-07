@@ -199,8 +199,8 @@ importers:
         specifier: ^3.5.3
         version: 3.5.3
       prettier-plugin-autocorrect:
-        specifier: ^0.4.1
-        version: 0.4.1(prettier@3.5.3)
+        specifier: ^0.4.2
+        version: 0.4.2(prettier@3.5.3)
       start-server-and-test:
         specifier: ^2.0.10
         version: 2.0.11
@@ -4517,11 +4517,11 @@ packages:
     resolution: {integrity: sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w==}
     engines: {node: '>=6.0.0'}
 
-  prettier-plugin-autocorrect@0.4.1:
-    resolution: {integrity: sha512-smL0VQEG+T4tIuOCCgxCTVeBpM3ybmmxIevitU2ktPyY0MtW1StyNJxt36i0jz19er+AsaklBFwCmj+ZUph+0w==}
+  prettier-plugin-autocorrect@0.4.2:
+    resolution: {integrity: sha512-OBC/Z8+rTAOS7kjbOznFqk2f+7g37qLO3MGpe4E/MR5tlwiWwsO1I9AFs8Ipi0RL9WxGTXponD89YPnQEfKG1w==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
-      prettier: ^3.0.0
+      prettier: ^3.0.3
 
   prettier@3.5.3:
     resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
@@ -10208,7 +10208,7 @@ snapshots:
     dependencies:
       fast-diff: 1.3.0
 
-  prettier-plugin-autocorrect@0.4.1(prettier@3.5.3):
+  prettier-plugin-autocorrect@0.4.2(prettier@3.5.3):
     dependencies:
       autocorrect-node: 2.13.3
       prettier: 3.5.3
