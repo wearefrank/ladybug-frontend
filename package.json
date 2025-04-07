@@ -85,7 +85,7 @@
     "karma-jasmine": "5.1.0",
     "karma-jasmine-html-reporter": "2.1.0",
     "prettier": "^3.5.3",
-    "prettier-plugin-autocorrect": "^0.4.1",
+    "prettier-plugin-autocorrect": "^0.4.2",
     "start-server-and-test": "^2.0.10",
     "typescript": "5.8.2"
   },
