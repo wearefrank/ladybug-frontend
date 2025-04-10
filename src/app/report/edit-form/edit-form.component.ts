@@ -146,7 +146,10 @@ export class EditFormComponent implements OnInit {
       }
     }
     this.buildVariableControls();
-    if (this.variables.length === 0 || this.variables.at(-1).name || this.variables.at(-1).value) {
+    if (
+      this.variables.length === 0 ||
+      ((this.variables.at(-1)?.name.trim().length ?? 0) > 0 && (this.variables.at(-1)?.value.trim().length ?? 0) > 0)
+    ) {
       this.addEmptyVariable();
     }
   }
