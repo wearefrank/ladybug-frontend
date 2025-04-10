@@ -44,10 +44,10 @@ export class EditFormComponent implements OnInit {
         },
         { updateOn: 'change' },
       );
+      this.variables = this.initVariables(this.report.variables);
+      this.buildVariableControls();
+      this.addEmptyVariable();
     }
-    this.variables = this.initVariables(this.report.variables);
-    this.buildVariableControls();
-    this.addEmptyVariable();
   }
 
   getDifference(name: keyof Report): ReportDifference {
