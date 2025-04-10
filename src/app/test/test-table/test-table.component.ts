@@ -182,4 +182,20 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
       report.checked = value;
     }
   }
+
+  convertToKeyValueFormat(input: string): string {
+    const lines = input.split('\n');
+    if (lines.length < 2) {
+      throw new Error('Input must have at least two lines');
+    }
+
+    const keys = lines[0].split(';');
+    const values = lines[1].split(';');
+
+    if (keys.length !== values.length) {
+      throw new Error('Keys and values must have the same number of elements');
+    }
+
+    return keys.map((key, index) => `${key}=${values[index]}`).join('\n');
+  }
 }

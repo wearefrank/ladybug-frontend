@@ -17,7 +17,7 @@ export interface Report extends BaseReport {
   stub: number;
   stubStrategy: string;
   transformation: string;
-  variablesCsv: string;
+  variables: Record<string, string>;
   storageName: string;
   xml: string; // Custom for the xml representation of the report
   id: string; // Custom
