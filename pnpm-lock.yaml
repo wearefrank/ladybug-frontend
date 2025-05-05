@@ -154,11 +154,11 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       cypress:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.3.2
+        version: 14.3.2
       cypress-file-upload:
         specifier: ^5.0.8
-        version: 5.0.8(cypress@14.0.1)
+        version: 5.0.8(cypress@14.3.2)
       eslint:
         specifier: ^9.21.0
         version: 9.25.1(jiti@1.21.7)
@@ -2702,8 +2702,8 @@ packages:
     peerDependencies:
       cypress: '>3.0.0'
 
-  cypress@14.0.1:
-    resolution: {integrity: sha512-gBAvKZE3f6eBaW1v8OtrwAFP90rjNZjjOO40M2KvOvmwVXk96Ps5Yjyck1EzGkXmNCaC/8kXFOY/1KD/wsaWpQ==}
+  cypress@14.3.2:
+    resolution: {integrity: sha512-n+yGD2ZFFKgy7I3YtVpZ7BcFYrrDMcKj713eOZdtxPttpBjCyw/R8dLlFSsJPouneGN7A/HOSRyPJ5+3/gKDoA==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
 
@@ -8442,11 +8442,11 @@ snapshots:
 
   custom-event@1.0.1: {}
 
-  cypress-file-upload@5.0.8(cypress@14.0.1):
+  cypress-file-upload@5.0.8(cypress@14.3.2):
     dependencies:
-      cypress: 14.0.1
+      cypress: 14.3.2
 
-  cypress@14.0.1:
+  cypress@14.3.2:
     dependencies:
       '@cypress/request': 3.0.8
       '@cypress/xvfb': 1.2.4(supports-color@8.1.1)
