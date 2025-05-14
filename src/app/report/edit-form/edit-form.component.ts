@@ -175,18 +175,11 @@ export class EditFormComponent implements OnInit {
       path: this.editForm.get(this.pathKey)?.value,
       description: this.editForm.get(this.descriptionKey)?.value,
       transformation: this.editForm.get(this.transformationKey)?.value,
-      variables: this.variablesToCsv(variables),
+      variables: JSON.stringify(variables),
     };
   }
 
-  variablesToCsv(variables: Record<string, string>): string {
-    const keys = Object.keys(variables);
-    const keysLine = keys.join(';');
-    const valuesLine = keys.map((key) => variables[key]).join(';');
-    return `${keysLine}\n${valuesLine}`;
-  }
-
-  initVariables(variables: Record<string, string> | null | undefined): Variable[] {
+  initVariables(variables: string): Variable[] {
     if (!variables) return [];
     return Object.entries(variables).map(([name, value]) => ({ name, value }));
   }
