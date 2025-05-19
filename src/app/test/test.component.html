@@ -21,7 +21,7 @@
       <section class="buttons button-section">
         <p class="button-section-title">All</p>
         <button class="btn btn-info" title="Reset" (click)="resetRunner()">Reset</button>
-        <button data-cy-test="deleteAll" class="btn btn-info" title="Delete all" (click)="openDeleteModal(true)">Delete
+        <button data-cy-test="deleteAll" class="btn btn-danger" title="Delete all" (click)="openDeleteModal(true)">Delete
           all
         </button>
       </section>
@@ -30,7 +30,7 @@
         <p class="button-section-title">Selected</p>
         <button data-cy-test="runAll" class="btn btn-info" title="Run selected reports" (click)="runSelected()"><i
           class="fa fa-play"></i></button>
-        <button data-cy-test="deleteSelected" class="btn btn-info" title="Delete selected reports"
+        <button data-cy-test="deleteSelected" class="btn btn-danger" title="Delete selected reports"
                 (click)="openDeleteModal(false)"><i class="fa fa-trash"></i></button>
         <button data-cy-test="copySelected" class="btn btn-info" title="Copy selected reports" (click)="copySelected()">
           <i class="fa fa-copy"></i></button>
