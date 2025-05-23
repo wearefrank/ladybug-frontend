@@ -16,7 +16,7 @@ export class TestFolderTreeComponent {
   @Output() changeFolderEvent: Subject<string> = new Subject<string>();
   readonly rootFolder: CreateTreeItem = {
     name: 'Reports',
-    path: '',
+    treePath: '',
   };
   treeOptions: FileTreeOptions = {
     hierarchyLines: {
@@ -26,7 +26,7 @@ export class TestFolderTreeComponent {
     doubleClickToOpenFolders: false,
     expandAllFolders: true,
     highlightOpenFolders: false,
-    autoSelectCondition: (item: CreateTreeItem) => item.path === this.rootFolder.name,
+    autoSelectCondition: (item: CreateTreeItem) => item.treePath === this.rootFolder.name,
     determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
   };
 
