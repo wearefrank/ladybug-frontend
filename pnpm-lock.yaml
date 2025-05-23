@@ -78,8 +78,8 @@ importers:
         specifier: 0.48.0
         version: 0.48.0
       ng-simple-file-tree:
-        specifier: ^0.1.28
-        version: 0.1.28(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(bootstrap-icons@1.13.1)
+        specifier: ^0.1.29
+        version: 0.1.29(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(bootstrap-icons@1.13.1)
       ngx-monaco-editor-v2:
         specifier: 19.0.2
         version: 19.0.2(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.0))(monaco-editor@0.48.0)
@@ -4359,7 +4359,7 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  ng-simple-file-tree@0.1.28:
+  ng-simple-file-tree@0.1.29:
     resolution: {integrity: sha512-R70UalZwJgiuf8fqlF1FpChusqUzxU8yi54VTl3eMdlWWQ/A+iWjKTk/6lwPImkNHOubcWQZMxstCsCV+NP7bA==}
     peerDependencies:
       '@angular/common': ^17.2.3
