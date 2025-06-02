@@ -48,7 +48,11 @@ describe('About deleting reports', () => {
   it('Delete button should be absent for log storage, present for database storage', () => {
     cy.get('[data-cy-change-view-dropdown]').select('Database storage');
     cy.get('[data-cy-debug="deleteSelected"]').should('be.visible');
+    // Temporary for video so I can check I made the test I wanted.
+    cy.wait(1000);
     cy.get('[data-cy-change-view-dropdown]').select('White box');
     cy.get('[data-cy-debug="deleteSelected"]').should('not.exist');
+    // Temporary for video so I can check I made the test I wanted.
+    cy.wait(1000);
   })
 });
