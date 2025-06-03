@@ -44,4 +44,11 @@ describe('About deleting reports', () => {
     cy.get('[data-cy-debug="deleteAll"]').click();
     cy.get('[data-cy-delete-modal="confirm"]').should('not.exist');
   });
+
+  it('Delete button should be absent for log storage, present for database storage', () => {
+    cy.get('[data-cy-change-view-dropdown]').select('Database storage');
+    cy.get('[data-cy-debug="deleteSelected"]').should('be.visible');
+    cy.get('[data-cy-change-view-dropdown]').select('White box');
+    cy.get('[data-cy-debug="deleteSelected"]').should('not.exist');
+  })
 });
