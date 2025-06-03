@@ -295,7 +295,11 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   changeFilter(filter: string): void {
-    this.currentFilter = filter === this.testFileTreeComponent?.rootFolder.path ? '' : this.transformPath(filter);
+    if (!filter || filter === this.testFileTreeComponent?.rootFolder.path) {
+      this.currentFilter = '';
+    } else {
+      this.currentFilter = this.transformPath(filter);
+    }
     this.matches();
   }
 
