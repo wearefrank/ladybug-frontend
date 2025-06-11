@@ -36,11 +36,11 @@
         Open Selected
       </button>
       @if (currentView.crudStorage) {
-        <button data-cy-debug="deleteSelected" class="btn btn-info btn-table" title="Delete selected reports" (click)="deleteSelected()">
+        <button data-cy-debug="deleteSelected" class="btn btn-danger btn-table" title="Delete selected reports" (click)="deleteSelected()">
           <i class="fa fa-trash"></i>
         </button>
       }
-      <button data-cy-debug="deleteAll" class="btn btn-info btn-table" title="Delete all reports" (click)="openDeleteModal()">
+      <button data-cy-debug="deleteAll" class="btn btn-danger btn-table" title="Delete all reports" (click)="openDeleteModal()">
         Delete all
       </button>
 

@@ -44,7 +44,7 @@
       <th mat-header-cell *matHeaderCellDef>Variables</th>
       <td mat-cell *matCellDef="let report">
         @if (report.variables) {
-          <span data-cy-test="variables">{{ report.variables }}</span>
+          <span data-cy-test="variables" style="white-space: pre-wrap;">{{ convertToKeyValueFormat(report.variables) }}</span>
         }
       </td>
     </ng-container>

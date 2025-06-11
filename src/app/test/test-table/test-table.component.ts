@@ -182,4 +182,17 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
       report.checked = value;
     }
   }
+
+  convertToKeyValueFormat(input: string): string {
+    if (!input) return '';
+    let obj: Record<string, string>;
+    try {
+      obj = JSON.parse(input);
+    } catch {
+      return input;
+    }
+    return Object.entries(obj)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('\n');
+  }
 }

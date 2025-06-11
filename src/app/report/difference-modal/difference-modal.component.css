@@ -1,3 +1,4 @@
 .changeBox {
   border: solid 1px lightgrey;
+  white-space: pre-wrap;
 }
