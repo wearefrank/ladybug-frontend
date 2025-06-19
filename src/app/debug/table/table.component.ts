@@ -535,6 +535,50 @@ export class TableComponent implements OnInit, OnDestroy {
     }
   }
 
+  downloadReportsAsCsv(): void {
+    this.httpService.getMetadataReports(this.tableSettings, this.currentView).subscribe({
+      next: (reports) => {
+        if (!reports?.length) {
+          this.toastService.showWarning('No data to export.');
+          return;
+        }
+
+        const csv = this.jsonToCsv(reports);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = globalThis.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'export.csv';
+        a.style.display = 'none';
+        document.body.append(a);
+        a.click();
+
+        // Clean up
+        globalThis.URL.revokeObjectURL(url);
+        a.remove();
+      },
+      error: () => {
+        this.toastService.showWarning('Failed to fetch data.');
+      },
+    });
+  }
+
+  private escapeCsvValue(value: any): string {
+    return `"${String(value ?? '').replaceAll('"', '""')}"`;
+  }
+
+  private jsonToCsv(items: any[]): string {
+    if (items.length === 0) return '';
+
+    const headers = Object.keys(items[0]);
+    const rows = items.map((row) =>
+      headers.map((field) => this.escapeCsvValue(row[field])).join(',')
+    );
+
+    return [headers.join(','), ...rows].join('\n');
+  }
+
   uploadReports(event: Event): void {
     const eventTarget = event.target as HTMLInputElement;
     const file: File | undefined = eventTarget.files?.[0];
