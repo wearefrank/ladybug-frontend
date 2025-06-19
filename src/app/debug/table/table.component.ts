@@ -572,9 +572,7 @@ export class TableComponent implements OnInit, OnDestroy {
     if (items.length === 0) return '';
 
     const headers = Object.keys(items[0]);
-    const rows = items.map((row) =>
-      headers.map((field) => this.escapeCsvValue(row[field])).join(',')
-    );
+    const rows = items.map((row) => headers.map((field) => this.escapeCsvValue(row[field])).join(','));
 
     return [headers.join(','), ...rows].join('\n');
   }
