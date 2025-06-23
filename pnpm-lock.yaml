@@ -154,11 +154,11 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       cypress:
-        specifier: 14.3.3
-        version: 14.3.3
+        specifier: 14.5.0
+        version: 14.5.0
       cypress-file-upload:
         specifier: ^5.0.8
-        version: 5.0.8(cypress@14.3.3)
+        version: 5.0.8(cypress@14.5.0)
       eslint:
         specifier: ^9.28.0
         version: 9.28.0(jiti@1.21.7)
@@ -2804,8 +2804,8 @@ packages:
     peerDependencies:
       cypress: '>3.0.0'
 
-  cypress@14.3.3:
-    resolution: {integrity: sha512-1Rz7zc9iqLww6BysaESqUhtIuaFHS7nL3wREovAKYsNhLTfX3TbcBWHWgEz70YimH2NkSOsm4oIcJJ9HYHOlew==}
+  cypress@14.5.0:
+    resolution: {integrity: sha512-1HOnKvWep0LkWuFwPeWkZ0TDl7ivi2/Mz+WNU4dfkeLJaFndS3Ow6TXT7YjuTqLFI2peJKzPKljVUFdymI2K5g==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
 
@@ -2989,8 +2989,8 @@ packages:
   encoding@0.1.13:
     resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
 
-  end-of-stream@1.4.4:
-    resolution: {integrity: sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==}
+  end-of-stream@1.4.5:
+    resolution: {integrity: sha512-ooEGc6HP26xXq/N+GCGOT0JKCLDGrq2bQUZrQ7gyrJiZANJ/8YDTxTpQBXGMn+WbIQXNVpyWymm7KYVICQnyOg==}
 
   engine.io-parser@5.2.3:
     resolution: {integrity: sha512-HqD3yTBfnBxIrbnM1DoD6Pcq8NECnh8d4As1Qgh0z5Gg3jRRIqijury0CL3ghu/edArpUYiYqQiDUQBIs4np3Q==}
@@ -3346,8 +3346,8 @@ packages:
   forever-agent@0.6.1:
     resolution: {integrity: sha512-j0KLYPhm6zeac4lz3oJ3o65qvgQCcPubiyotZrXqEaG4hNagNYO8qdlUrX5vwqv9ohqeT/Z3j6+yW067yWWdUw==}
 
-  form-data@4.0.2:
-    resolution: {integrity: sha512-hGfm/slu0ZabnNt4oaRZ6uREyfCj6P4fT/n6A1rGV+Z0VdGXjfOhVUpkn6qVQONHGIFwmveGXyDs75+nr6FM8w==}
+  form-data@4.0.3:
+    resolution: {integrity: sha512-qsITQPfmvMOSAdeyZ+12I1c+CKSstAFAwu+97zrnWAbIr5u8wfsExUzCesVLC8NgHuRUqNN4Zy6UPWUTRGslcA==}
     engines: {node: '>= 6'}
 
   forwarded@0.2.0:
@@ -3517,6 +3517,10 @@ packages:
   has-tostringtag@1.0.2:
     resolution: {integrity: sha512-NqADB8VjPFLM2V0VvHUewwwsw0ZWBaIdgo+ieHtK3hasLz4qeCRjYcqfB6AQrBggRKppKF8L52/VqdVsO47Dlw==}
     engines: {node: '>= 0.4'}
+
+  hasha@5.2.2:
+    resolution: {integrity: sha512-Hrp5vIK/xr5SkeN2onO32H0MgNZ0f17HRNH39WfL0SYUNOTZ5Lz1TJ8Pajo/87dYGEFlLMm7mIc/k/s6Bvz9HQ==}
+    engines: {node: '>=8'}
 
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
@@ -4806,8 +4810,8 @@ packages:
     engines: {node: '>= 0.10'}
     hasBin: true
 
-  pump@3.0.2:
-    resolution: {integrity: sha512-tUPXtzlGM8FE3P0ZL6DVs/3P58k9nk8/jZeQCurTJylQA8qFYzHFfhBJkuqyE0FifOsQ0uKWekiZ5g8wtr28cw==}
+  pump@3.0.3:
+    resolution: {integrity: sha512-todwxLMY7/heScKmntwQG8CXVkWUOdYxIvY2s0VWAAMh/nd8SoYiRaKjlr7+iCs984f2P8zvrfWcDDYVb73NfA==}
 
   punycode@1.4.1:
     resolution: {integrity: sha512-jmYNElW7yvO7TV33CjSmvSiE2yco3bV2czu/OzDKdMNVZQWfxCblURLhf+47syQRBntjfLdd/H0egrzIG+oaFQ==}
@@ -5453,6 +5457,10 @@ packages:
   type-fest@0.21.3:
     resolution: {integrity: sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==}
     engines: {node: '>=10'}
+
+  type-fest@0.8.1:
+    resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
+    engines: {node: '>=8'}
 
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
@@ -7009,7 +7017,7 @@ snapshots:
       combined-stream: 1.0.8
       extend: 3.0.2
       forever-agent: 0.6.1
-      form-data: 4.0.2
+      form-data: 4.0.3
       http-signature: 1.4.0
       is-typedarray: 1.0.0
       isstream: 0.1.2
@@ -8277,7 +8285,7 @@ snapshots:
   axios@1.9.0(debug@4.4.1):
     dependencies:
       follow-redirects: 1.15.9(debug@4.4.1)
-      form-data: 4.0.2
+      form-data: 4.0.3
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
@@ -8700,11 +8708,11 @@ snapshots:
 
   custom-event@1.0.1: {}
 
-  cypress-file-upload@5.0.8(cypress@14.3.3):
+  cypress-file-upload@5.0.8(cypress@14.5.0):
     dependencies:
-      cypress: 14.3.3
+      cypress: 14.5.0
 
-  cypress@14.3.3:
+  cypress@14.5.0:
     dependencies:
       '@cypress/request': 3.0.8
       '@cypress/xvfb': 1.2.4(supports-color@8.1.1)
@@ -8732,6 +8740,7 @@ snapshots:
       figures: 3.2.0
       fs-extra: 9.1.0
       getos: 3.2.1
+      hasha: 5.2.2
       is-installed-globally: 0.4.0
       lazy-ass: 1.6.0
       listr2: 3.14.0(enquirer@2.4.1)
@@ -8908,7 +8917,7 @@ snapshots:
       iconv-lite: 0.6.3
     optional: true
 
-  end-of-stream@1.4.4:
+  end-of-stream@1.4.5:
     dependencies:
       once: 1.4.0
 
@@ -9438,11 +9447,12 @@ snapshots:
 
   forever-agent@0.6.1: {}
 
-  form-data@4.0.2:
+  form-data@4.0.3:
     dependencies:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       es-set-tostringtag: 2.1.0
+      hasown: 2.0.2
       mime-types: 2.1.35
 
   forwarded@0.2.0: {}
@@ -9520,7 +9530,7 @@ snapshots:
 
   get-stream@5.2.0:
     dependencies:
-      pump: 3.0.2
+      pump: 3.0.3
 
   get-stream@6.0.1: {}
 
@@ -9615,6 +9625,11 @@ snapshots:
   has-tostringtag@1.0.2:
     dependencies:
       has-symbols: 1.1.0
+
+  hasha@5.2.2:
+    dependencies:
+      is-stream: 2.0.1
+      type-fest: 0.8.1
 
   hasown@2.0.2:
     dependencies:
@@ -10947,9 +10962,9 @@ snapshots:
     dependencies:
       event-stream: 3.3.4
 
-  pump@3.0.2:
+  pump@3.0.3:
     dependencies:
-      end-of-stream: 1.4.4
+      end-of-stream: 1.4.5
       once: 1.4.0
 
   punycode@1.4.1: {}
@@ -11718,6 +11733,8 @@ snapshots:
       prelude-ls: 1.2.1
 
   type-fest@0.21.3: {}
+
+  type-fest@0.8.1: {}
 
   type-is@1.6.18:
     dependencies:
