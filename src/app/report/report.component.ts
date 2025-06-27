@@ -4,7 +4,9 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
+  Output,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -35,6 +37,7 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild(EditDisplayComponent) displayComponent!: EditDisplayComponent;
   @Input({ required: true }) currentView!: View;
   @Input() newTab = true;
+  @Output() closeEntireTreeEvent = new EventEmitter<void>();
   calculatedHeight!: number;
   treeWidth: Subject<void> = new Subject<void>();
   reportData?: ReportData;
@@ -104,6 +107,7 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
       this.tabService.closeTab(this.reportData);
     }
     this.displayComponent.closeReport();
+    this.closeEntireTreeEvent.emit();
   }
 
   getIdFromPath(): string {

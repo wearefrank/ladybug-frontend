@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { AngularSplitModule, SplitComponent } from 'angular-split';
+import { CommonModule } from '@angular/common';
 import { Report } from '../shared/interfaces/report';
 import { TableComponent } from './table/table.component';
 import { ReportComponent } from '../report/report.component';
@@ -14,13 +16,20 @@ import { ErrorHandling } from '../shared/classes/error-handling.service';
   templateUrl: './debug.component.html',
   styleUrls: ['./debug.component.css'],
   standalone: true,
-  imports: [TableComponent, ReportComponent],
+  imports: [AngularSplitModule, CommonModule, TableComponent, ReportComponent],
 })
 export class DebugComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'debug';
   @ViewChild('reportComponent') customReportComponent!: ReportComponent;
+  @ViewChild(SplitComponent) splitter!: SplitComponent;
   currentView?: View;
   views?: View[];
+  hasItems = false;
+  bottomHeight = 300;
+
+  private isResizing = false;
+  private startY = 0;
+  private startHeight = 0;
 
   constructor(
     private httpService: HttpService,
@@ -31,8 +40,34 @@ export class DebugComponent implements OnInit {
   ngOnInit(): void {
     this.retrieveViews();
   }
+  closeEntireTree(): void {
+    this.hasItems = false;
+  }
+
+  startResizing(event: MouseEvent): void {
+    this.isResizing = true;
+    this.startY = event.clientY;
+    this.startHeight = this.bottomHeight;
+
+    document.addEventListener('mousemove', this.resizePane);
+    document.addEventListener('mouseup', this.stopResizing);
+  }
+
+  resizePane = (event: MouseEvent): void => {
+    if (!this.isResizing) return;
+
+    const delta = this.startY - event.clientY;
+    this.bottomHeight = Math.min(Math.max(this.startHeight + delta, 100), window.innerHeight - 100);
+  };
+
+  stopResizing = (): void => {
+    this.isResizing = false;
+    document.removeEventListener('mousemove', this.resizePane);
+    document.removeEventListener('mouseup', this.stopResizing);
+  };
 
   protected addReportToTree(report: Report): void {
+    this.hasItems = true;
     this.customReportComponent.addReportToTree(report);
   }
 

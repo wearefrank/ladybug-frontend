@@ -1,7 +1,6 @@
 .table-container {
-  resize: vertical;
-  overflow: auto;
-  height: 31vh;
+  overflow-y: scroll;
+  flex-grow: 1;
 }
 
 .highlight {
@@ -14,8 +13,9 @@
 
 .table-wrapper {
   width: 100% !important;
-  flex-flow: column;
+  flex-direction: column;
   height: 100%;
+  display: flex;
 }
 
 th {
