@@ -571,7 +571,7 @@ export class TableComponent implements OnInit, OnDestroy {
     return `"${String(value ?? '').replaceAll('"', '""')}"`;
   }
 
-  protected jsonToCsv(items: any[]): string {
+  jsonToCsv(items: any[]): string {
     if (items.length === 0) return '';
 
     const headers = Object.keys(items[0]);
