@@ -26,6 +26,9 @@
           <button ngbDropdownItem (click)="downloadReports(true, false)">
             Binary
           </button>
+          <button ngbDropdownItem (click)="downloadReportsAsCsv()">
+            CSV
+          </button>
         </div>
       </div>
       <button data-cy-debug="upload" class="btn btn-info" title="Upload" (click)="uploadFileTable.click()">
