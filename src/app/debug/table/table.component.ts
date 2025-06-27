@@ -544,19 +544,7 @@ export class TableComponent implements OnInit, OnDestroy {
         }
 
         const csv = this.jsonToCsv(reports);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-        const url = globalThis.URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'export.csv';
-        a.style.display = 'none';
-        document.body.append(a);
-        a.click();
-
-        // Clean up
-        globalThis.URL.revokeObjectURL(url);
-        a.remove();
+        this.triggerCsvDownload(csv, 'export.csv');
       },
       error: () => {
         this.toastService.showWarning('Failed to fetch data.');
@@ -564,11 +552,26 @@ export class TableComponent implements OnInit, OnDestroy {
     });
   }
 
+  private triggerCsvDownload(csv: string, filename: string): void {
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = globalThis.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.append(a);
+    a.click();
+
+    globalThis.URL.revokeObjectURL(url);
+    a.remove();
+  }
+
   private escapeCsvValue(value: any): string {
     return `"${String(value ?? '').replaceAll('"', '""')}"`;
   }
 
-  private jsonToCsv(items: any[]): string {
+  protected jsonToCsv(items: any[]): string {
     if (items.length === 0) return '';
 
     const headers = Object.keys(items[0]);
