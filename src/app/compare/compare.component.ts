@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 import { CompareData } from './compare-data';
 import { DiffEditorModel, MonacoEditorModule } from 'ngx-monaco-editor-v2';
@@ -45,6 +45,9 @@ import { ReportAlertMessageComponent } from '../report/report-alert-message/repo
 export class CompareComponent implements AfterViewInit, OnInit {
   static readonly ROUTER_PATH: string = 'compare';
   @ViewChild(CompareTreeComponent) compareTreeComponent!: CompareTreeComponent;
+
+  public tabService = inject(TabService);
+
   protected readonly ReportUtil = ReportUtil;
   protected readonly nodeLinkStrategyConst = nodeLinkStrategyConst;
   protected nodeLinkStrategy!: NodeLinkStrategy;
@@ -68,13 +71,10 @@ export class CompareComponent implements AfterViewInit, OnInit {
   protected views?: View[];
   protected currentView?: View;
 
-  constructor(
-    public tabService: TabService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private httpService: HttpService,
-    private errorHandler: ErrorHandling,
-  ) {}
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private httpService = inject(HttpService);
+  private errorHandler = inject(ErrorHandling);
 
   ngOnInit(): void {
     this.compareData = this.getData(this.getIdsFromPath());

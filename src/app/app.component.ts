@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Location, NgOptimizedImage } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { CompareComponent } from './compare/compare.component';
@@ -40,18 +40,14 @@ export class AppComponent implements OnInit, OnDestroy {
   protected readonly debugComponentPath: string = `/${DebugComponent.ROUTER_PATH}`;
   protected readonly testComponentPath: string = `/${TestComponent.ROUTER_PATH}`;
 
-  constructor(
-    private titleService: Title,
-    //make sure settings are retrieved from localstorage on startup by initializing the service on startup
-    private settingsService: SettingsService,
-    private tabService: TabService,
-    private router: Router,
-    private location: Location,
-    private httpService: HttpService,
-    private errorHandler: ErrorHandling,
-    private versionService: VersionService,
-    private appVariablesService: AppVariablesService,
-  ) {}
+  private titleService = inject(Title);
+  private tabService = inject(TabService);
+  private router = inject(Router);
+  private location = inject(Location);
+  private httpService = inject(HttpService);
+  private errorHandler = inject(ErrorHandling);
+  private versionService = inject(VersionService);
+  private appVariablesService = inject(AppVariablesService);
 
   ngOnInit(): void {
     this.fetchAndSetFrontendVersion();

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { DictionaryPipe } from '../../shared/pipes/dictionary.pipe';
 import { NgClass, TitleCasePipe } from '@angular/common';
 import { catchError, Subscription } from 'rxjs';
@@ -17,10 +17,8 @@ export class ActiveFiltersComponent implements OnInit, OnDestroy {
   protected activeFilters: Map<string, string> = new Map<string, string>();
   private filterContextSubscription: Subscription = new Subscription();
 
-  constructor(
-    private filterService: FilterService,
-    private errorHandler: ErrorHandling,
-  ) {}
+  private filterService = inject(FilterService);
+  private errorHandler = inject(ErrorHandling);
 
   ngOnInit(): void {
     this.filterContextSubscription = this.filterService.filterContext$.subscribe({

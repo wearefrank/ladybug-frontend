@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  inject,
   Input,
   OnDestroy,
   OnInit,
@@ -41,13 +42,11 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private host: ElementRef,
-    private tabService: TabService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-  ) {}
+  private host = inject(ElementRef);
+  private tabService = inject(TabService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.reportData = this.tabService.activeReportTabs.get(this.getIdFromPath());

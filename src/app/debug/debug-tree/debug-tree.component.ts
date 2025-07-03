@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
-import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { catchError, firstValueFrom, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
@@ -48,12 +48,12 @@ export class DebugTreeComponent implements OnDestroy {
   private _currentView!: View;
   private lastReport?: Report | null;
 
-  constructor(
-    private httpService: HttpService,
-    private settingsService: SettingsService,
-    private debugTab: DebugTabService,
-    private errorHandler: ErrorHandling,
-  ) {
+  private httpService = inject(HttpService);
+  private settingsService = inject(SettingsService);
+  private debugTab = inject(DebugTabService);
+  private errorHandler = inject(ErrorHandling);
+
+  constructor() {
     this.subscribeToSubscriptions();
   }
 

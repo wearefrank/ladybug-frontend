@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Injectable, NgModule } from '@angular/core';
+import { inject, Injectable, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy, RouterModule, Routes } from '@angular/router';
 import { DebugComponent } from './debug/debug.component';
 import { TestComponent } from './test/test.component';
@@ -43,8 +43,9 @@ export class AppRoutingModule {}
 })
 export class AppRouteReuseStrategy implements RouteReuseStrategy {
   storedRoutes: Record<string, DetachedRouteHandle> = {};
+  private tabService = inject(TabService);
 
-  constructor(private tabService: TabService) {
+  constructor() {
     this.tabService.closeTab$.subscribe((closeTab) => {
       const pathPrefix = closeTab.type === 'report' ? 'report' : 'compare';
       const routePath = `${pathPrefix}/${closeTab.id}`;

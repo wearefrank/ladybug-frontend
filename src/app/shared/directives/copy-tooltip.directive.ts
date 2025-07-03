@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Directive, HostListener, Input } from '@angular/core';
+import { Directive, HostListener, inject, Input } from '@angular/core';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Clipboard } from '@angular/cdk/clipboard';
 
@@ -11,10 +11,10 @@ import { Clipboard } from '@angular/cdk/clipboard';
 export class CopyTooltipDirective {
   @Input({ required: true, alias: 'appCopyTooltip' }) value!: string | number | undefined;
 
-  constructor(
-    private tooltipInstance: MatTooltip,
-    private clipboard: Clipboard,
-  ) {
+  private tooltipInstance = inject(MatTooltip);
+  private clipboard = inject(Clipboard);
+
+  constructor() {
     this.tooltipInstance.message = 'Copied';
   }
 

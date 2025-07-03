@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Output, ViewChild } from '@angular/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
@@ -31,12 +31,10 @@ export class CloneModalComponent {
     message: new UntypedFormControl(''),
   });
 
-  constructor(
-    private modalService: NgbModal,
-    private httpService: HttpService,
-    private errorHandler: ErrorHandling,
-    private toastService: ToastService,
-  ) {}
+  private modalService = inject(NgbModal);
+  private httpService = inject(HttpService);
+  private errorHandler = inject(ErrorHandling);
+  private toastService = inject(ToastService);
 
   open(selectedReport: TestListItem): void {
     this.httpService

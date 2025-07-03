@@ -5,6 +5,7 @@ import {
   Component,
   ElementRef,
   HostListener,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
@@ -73,10 +74,8 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   protected calculatedHeight: number = this.height;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private settingsService: SettingsService,
-    private cdr: ChangeDetectorRef,
-  ) {}
+  private settingsService = inject(SettingsService);
+  private cdr = inject(ChangeDetectorRef);
 
   @HostListener('window:keydown', ['$event'])
   keyBoardListener(event: KeyboardEvent): void {

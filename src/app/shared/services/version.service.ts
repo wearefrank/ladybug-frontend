@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpService } from './http.service';
 import { firstValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -12,10 +12,8 @@ export class VersionService {
   frontendVersion?: string;
   backendVersion?: string;
 
-  constructor(
-    private httpService: HttpService,
-    private httpClient: HttpClient,
-  ) {}
+  private httpService = inject(HttpService);
+  private httpClient = inject(HttpClient);
 
   async getFrontendVersion(): Promise<string> {
     if (!this.frontendVersion) {

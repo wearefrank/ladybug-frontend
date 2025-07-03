@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { Toast } from '../../interfaces/toast';
 import { ToastService } from '../../services/toast.service';
@@ -24,11 +24,9 @@ export class ToastComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private modalService: NgbModal,
-    private toastService: ToastService,
-    private filterService: FilterService,
-  ) {}
+  private modalService = inject(NgbModal);
+  private toastService = inject(ToastService);
+  private filterService = inject(FilterService);
 
   ngOnInit(): void {
     const toastSubscription = this.toastService.toastObservable.subscribe((toast: Toast): void => {

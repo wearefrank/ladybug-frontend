@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { View } from '../interfaces/view';
@@ -22,8 +22,7 @@ import { TableSettings } from '../interfaces/table-settings';
 })
 export class HttpService {
   private readonly headers: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json');
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getViews(): Observable<View[]> {
     return this.http.get<Record<string, View>>('api/testtool/views').pipe(map((response) => Object.values(response)));

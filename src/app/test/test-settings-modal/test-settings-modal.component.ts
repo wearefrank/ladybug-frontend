@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Output, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
@@ -20,7 +20,7 @@ export class TestSettingsModalComponent {
     showCheckpointIds: new UntypedFormControl(false),
   });
 
-  constructor(private modalService: NgbModal) {}
+  private modalService = inject(NgbModal);
 
   open(): void {
     this.loadSettings();

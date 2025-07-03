@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
@@ -68,18 +68,19 @@ export class TestComponent implements OnInit, OnDestroy {
   protected showStorageIds?: boolean;
   protected childrenLoaded = false;
 
+  protected testReportsService = inject(TestReportsService);
+  protected appVariablesService = inject(AppVariablesService);
+
   private updatePathAction: UpdatePathAction = 'move';
   private testReportServiceSubscription?: Subscription;
 
-  constructor(
-    private httpService: HttpService,
-    private helperService: HelperService,
-    private toastService: ToastService,
-    private errorHandler: ErrorHandling,
-    protected testReportsService: TestReportsService,
-    private tabService: TabService,
-    protected appVariablesService: AppVariablesService,
-  ) {
+  private httpService = inject(HttpService);
+  private helperService = inject(HelperService);
+  private toastService = inject(ToastService);
+  private errorHandler = inject(ErrorHandling);
+  private tabService = inject(TabService);
+
+  constructor() {
     this.getStorageIdsFromLocalStorage();
     this.setGeneratorStatusFromLocalStorage();
   }

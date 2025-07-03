@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { HttpService } from '../shared/services/http.service';
 import { catchError, firstValueFrom, Observable, ReplaySubject } from 'rxjs';
@@ -16,10 +16,10 @@ export class TestReportsService {
   testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
   private firstApiCall = true;
 
-  constructor(
-    private httpService: HttpService,
-    private errorHandler: ErrorHandling,
-  ) {
+  private httpService = inject(HttpService);
+  private errorHandler = inject(ErrorHandling);
+
+  constructor() {
     this.getReports();
   }
 
