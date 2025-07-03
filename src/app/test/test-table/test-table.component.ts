@@ -4,6 +4,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   Output,
@@ -66,13 +67,11 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
   amountOfSelectedReports = 0;
   protected displayedColumns: string[] = [];
 
-  constructor(
-    private httpService: HttpService,
-    private errorHandler: ErrorHandling,
-    private tabService: TabService,
-    private testReportsService: TestReportsService,
-    private toastService: ToastService,
-  ) {}
+  private httpService = inject(HttpService);
+  private errorHandler = inject(ErrorHandling);
+  private tabService = inject(TabService);
+  private testReportsService = inject(TestReportsService);
+  private toastService = inject(ToastService);
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['showStorageIds']) {

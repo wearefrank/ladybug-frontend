@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
 import { TableComponent } from './table/table.component';
 import { ReportComponent } from '../report/report.component';
@@ -22,11 +22,9 @@ export class DebugComponent implements OnInit {
   currentView?: View;
   views?: View[];
 
-  constructor(
-    private httpService: HttpService,
-    private toastService: ToastService,
-    private errorHandler: ErrorHandling,
-  ) {}
+  private httpService = inject(HttpService);
+  private toastService = inject(ToastService);
+  private errorHandler = inject(ErrorHandling);
 
   ngOnInit(): void {
     this.retrieveViews();

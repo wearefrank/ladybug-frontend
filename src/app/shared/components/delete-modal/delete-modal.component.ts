@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Output, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TestListItem } from '../../interfaces/test-list-item';
 
@@ -19,7 +19,7 @@ export class DeleteModalComponent {
   protected deleteQuestion?: string;
   protected deleteAllReports?: boolean;
 
-  constructor(private modalService: NgbModal) {}
+  private modalService = inject(NgbModal);
 
   open(deleteAllReports: boolean, reportsToBeDeleted?: TestListItem[]): void {
     this.deleteAllReports = deleteAllReports;

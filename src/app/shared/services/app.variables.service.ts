@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -10,8 +10,7 @@ import { catchError, tap } from 'rxjs/operators';
 // The idea of this service is to fetch fixed variables from the backend and store them in the service.
 export class AppVariablesService {
   private variables: Record<string, string> = {};
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   fetchCustomReportActionButtonText(): void {
     if (Object.keys(this.variables).length === 0) {

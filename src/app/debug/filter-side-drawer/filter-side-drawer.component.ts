@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FilterService } from './filter.service';
 import { catchError, Subscription } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
@@ -37,14 +37,12 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
   protected currentRecords: Map<string, string[]> = new Map<string, string[]>();
   protected metadataTypes?: Map<string, string>;
   protected toolTipSuggestions?: Report;
+  protected filterService = inject(FilterService);
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    protected filterService: FilterService,
-    private httpService: HttpService,
-    private errorHandler: ErrorHandling,
-  ) {}
+  private httpService = inject(HttpService);
+  private errorHandler = inject(ErrorHandling);
 
   ngOnInit(): void {
     this.setSubscriptions();

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-unused-vars */
-import { Component, EventEmitter, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
+/* eslint-disable @typescript-eslint/member-ordering */
+import { Component, EventEmitter, inject, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormGroup, ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../../shared/services/http.service';
@@ -27,6 +27,16 @@ export class TableSettingsModalComponent implements OnDestroy {
   @ViewChild('modal') protected settingsModalElement!: TemplateRef<HTMLElement>;
   @ViewChild('unsavedChangesModal')
   protected unsavedChangesModalElement!: TemplateRef<HTMLElement>;
+
+  // Cannot be defined after protected members because they
+  // are used to initialize the protected members.
+  private modalService = inject(NgbModal);
+  private httpService = inject(HttpService);
+  private settingsService = inject(SettingsService);
+  private toastService = inject(ToastService);
+  private errorHandler = inject(ErrorHandling);
+  private versionService = inject(VersionService);
+  private debugTabService = inject(DebugTabService);
 
   protected showMultipleAtATime = false;
   protected unsavedChanges = false;
@@ -68,15 +78,7 @@ export class TableSettingsModalComponent implements OnDestroy {
   private activeSettingsModal?: NgbActiveModal;
   private activeUnsavedChangesModal?: NgbActiveModal;
 
-  constructor(
-    private modalService: NgbModal,
-    private httpService: HttpService,
-    private settingsService: SettingsService,
-    private toastService: ToastService,
-    private errorHandler: ErrorHandling,
-    private versionService: VersionService,
-    private debugTabService: DebugTabService,
-  ) {
+  constructor() {
     this.getApplicationVersions();
     this.subscribeToSettingsServiceObservables();
   }

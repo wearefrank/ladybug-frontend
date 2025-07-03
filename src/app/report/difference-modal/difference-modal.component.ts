@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Component, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, inject, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
 import { TitleCasePipe } from '@angular/common';
 import { Subject } from 'rxjs';
@@ -26,10 +26,8 @@ export class DifferenceModalComponent {
   protected stubChange = false;
   protected activeModal?: NgbModalRef;
 
-  constructor(
-    private modalService: NgbModal,
-    private toastService: ToastService,
-  ) {}
+  private modalService = inject(NgbModal);
+  private toastService = inject(ToastService);
 
   open(differences: ReportDifference[], saveOrDiscardType: ChangesAction, stubChange?: boolean): void {
     this.stubChange = !!stubChange;

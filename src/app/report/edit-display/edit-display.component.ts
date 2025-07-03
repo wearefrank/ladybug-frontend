@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
-import { ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  inject,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
 import {
   NgbDropdown,
@@ -95,18 +104,17 @@ export class EditDisplayComponent implements OnChanges {
   protected readonly StubStrategy = StubStrategy;
   protected calculatedHeight = 340;
 
-  constructor(
-    private modalService: NgbModal,
-    private httpService: HttpService,
-    private helperService: HelperService,
-    private toastService: ToastService,
-    private errorHandler: ErrorHandling,
-    private testReportsService: TestReportsService,
-    private debugTab: DebugTabService,
-    private cdr: ChangeDetectorRef,
-    private router: Router,
-    protected appVariablesService: AppVariablesService,
-  ) {}
+  protected appVariablesService = inject(AppVariablesService);
+
+  private modalService = inject(NgbModal);
+  private httpService = inject(HttpService);
+  private helperService = inject(HelperService);
+  private toastService = inject(ToastService);
+  private errorHandler = inject(ErrorHandling);
+  private testReportsService = inject(TestReportsService);
+  private debugTab = inject(DebugTabService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['containerHeight']) {

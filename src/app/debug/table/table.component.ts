@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
 import { TableSettingsModalComponent } from './table-settings-modal/table-settings-modal.component';
@@ -89,6 +89,8 @@ export class TableComponent implements OnInit, OnDestroy {
     this.tableDataSource.sort = this.tableDataSort;
   }
 
+  public helperService = inject(HelperService);
+
   protected metadataCount = 0;
   protected selectedReports: Report[] = [];
   protected hasTimedOut = false;
@@ -111,6 +113,8 @@ export class TableComponent implements OnInit, OnDestroy {
   protected checkboxSize?: string;
   protected openInProgress: FormControl = new FormControl(1, this.defaultReportInProgressValidators);
 
+  protected appVariablesService = inject(AppVariablesService);
+
   private reportsInProgress: Record<string, number> = {};
 
   private get selectedReportIds(): number[] {
@@ -120,17 +124,13 @@ export class TableComponent implements OnInit, OnDestroy {
   private showMultipleFiles?: boolean;
   private tableDataSort?: MatSort;
 
-  constructor(
-    private httpService: HttpService,
-    public helperService: HelperService,
-    private settingsService: SettingsService,
-    private toastService: ToastService,
-    private tabService: TabService,
-    private filterService: FilterService,
-    private errorHandler: ErrorHandling,
-    private debugTab: DebugTabService,
-    protected appVariablesService: AppVariablesService,
-  ) {}
+  private httpService = inject(HttpService);
+  private settingsService = inject(SettingsService);
+  private toastService = inject(ToastService);
+  private tabService = inject(TabService);
+  private filterService = inject(FilterService);
+  private errorHandler = inject(ErrorHandling);
+  private debugTab = inject(DebugTabService);
 
   ngOnInit(): void {
     localStorage.setItem('transformationEnabled', 'true');
