@@ -68,7 +68,7 @@
     "@types/jasmine": "5.1.8",
     "@types/node": "24.0.3",
     "@typescript-eslint/eslint-plugin": "^8.33.1",
-    "@typescript-eslint/parser": "^8.33.1",
+    "@typescript-eslint/parser": "^8.35.1",
     "chai-match": "^1.1.1",
     "cypress": "14.5.0",
     "cypress-file-upload": "^5.0.8",
