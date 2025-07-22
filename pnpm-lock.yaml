@@ -54,8 +54,8 @@ importers:
         specifier: ^1.41.0
         version: 1.41.0
       angular-split:
-        specifier: ^19.0.0
-        version: 19.0.0(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
+        specifier: ^20.0.0
+        version: 20.0.0(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       bootstrap:
         specifier: '4'
         version: 4.6.2(jquery@3.7.1)(popper.js@1.16.1)
@@ -2245,8 +2245,8 @@ packages:
   ajv@8.17.1:
     resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
 
-  angular-split@19.0.0:
-    resolution: {integrity: sha512-vQqXWLcCimFmInu2lpGKIfS9FtYBgKmoWenPjeYkHSRdWmb7HLGlQoNPj1oALrwdhIWFPdySgp0BIXDe2IAepQ==}
+  angular-split@20.0.0:
+    resolution: {integrity: sha512-MtoR8NeFgzBDqiXaSbXPGFqpYsNsaI5W8w2mM/JpYyyU9hkrQ8b3GVhxraR/kGFGEDVmfEUGaqmy2yG0hraOHQ==}
     peerDependencies:
       '@angular/common': '>=19.0.0'
       '@angular/core': '>=19.0.0'
@@ -8251,7 +8251,7 @@ snapshots:
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
 
-  angular-split@19.0.0(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2):
+  angular-split@20.0.0(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2):
     dependencies:
       '@angular/common': 19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/core': 19.2.1(rxjs@7.8.2)(zone.js@0.15.1)
