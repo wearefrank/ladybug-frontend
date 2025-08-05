@@ -22,6 +22,9 @@ on:
       backendCommitToCheckout:
         description: Tag or branch of the backend to test against
         required: false
+      test-webapp-branch:
+        description: If set, checkout this branch of ladybug-test-webapp
+        required: false
 
 jobs:
   testing:
@@ -154,6 +157,15 @@ jobs:
         with:
           repository: wearefrank/ladybug-test-webapp
           path: ladybug-test-webapp
+      - name: Fetch all tags of ladybug-test-webapp
+        if: ${{ github.event.inputs.test-webapp-branch }}
+        run: git fetch --all --tags
+        working-directory: ladybug-test-webapp
+      - name: Checkout required version of ladybug-test-webapp
+        if: ${{ github.event.inputs.test-webapp-branch }}
+        run: git checkout ${{ github.event.inputs.test-webapp-branch }}
+        working-directory: ladybug-test-webapp
+
 
       - name: Cache Frank!Runner dependencies - build
         uses: actions/cache@v3
