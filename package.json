@@ -30,7 +30,7 @@
     "@angular/material": "19.2.6",
     "@angular/platform-browser": "19.2.1",
     "@angular/platform-browser-dynamic": "19.2.1",
-    "@angular/router": "20.1.4",
+    "@angular/router": "20.1.6",
     "@materia-ui/ngx-monaco-editor": "^6.0.0",
     "@ng-bootstrap/ng-bootstrap": "18.0.0",
     "@popperjs/core": "^2.11.8",
