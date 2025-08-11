@@ -73,7 +73,7 @@
     "cypress": "14.5.3",
     "cypress-file-upload": "^5.0.8",
     "eslint": "^9.32.0",
-    "eslint-config-prettier": "^10.0.1",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-sonarjs": "^3.0.4",
     "eslint-plugin-unicorn": "^59.0.1",
