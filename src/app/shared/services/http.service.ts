@@ -125,15 +125,11 @@ export class HttpService {
   }
 
   uploadReport(formData: FormData): Observable<Report[]> {
-    return this.http.post<Report[]>('api/report/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return this.http.post<Report[]>('api/report/upload', formData);
   }
 
   uploadReportToStorage(formData: FormData, storage: string): Observable<void> {
-    return this.http.post<void>(`api/report/upload/${storage}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return this.http.post<void>(`api/report/upload/${storage}`, formData);
   }
 
   postSettings(settings: UploadParameters): Observable<void> {

@@ -139,8 +139,8 @@ importers:
         specifier: 1.0.36
         version: 1.0.36
       '@types/jasmine':
-        specifier: 5.1.8
-        version: 5.1.8
+        specifier: 5.1.9
+        version: 5.1.9
       '@types/node':
         specifier: 24.2.1
         version: 24.2.1
@@ -154,13 +154,13 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1
       cypress:
-        specifier: 14.5.3
-        version: 14.5.3
+        specifier: 15.0.0
+        version: 15.0.0
       cypress-file-upload:
         specifier: ^5.0.8
-        version: 5.0.8(cypress@14.5.3)
+        version: 5.0.8(cypress@15.0.0)
       eslint:
-        specifier: ^9.32.0
+        specifier: ^9.34.0
         version: 9.34.0(jiti@1.21.7)
       eslint-config-prettier:
         specifier: ^10.1.8
@@ -2162,8 +2162,8 @@ packages:
   '@types/http-proxy@1.17.16':
     resolution: {integrity: sha512-sdWoUajOB1cd0A8cRRQ1cfyWNbmFKLAqBB89Y8x5iYyG/mkJHc0YUH8pdWBy2omi9qtCpiIgGjuwO0dQST2l5w==}
 
-  '@types/jasmine@5.1.8':
-    resolution: {integrity: sha512-u7/CnvRdh6AaaIzYjCgUuVbREFgulhX05Qtf6ZtW+aOcjCKKVvKgpkPYJBFTZSHtFBYimzU4zP0V2vrEsq9Wcg==}
+  '@types/jasmine@5.1.9':
+    resolution: {integrity: sha512-8t4HtkW4wxiPVedMpeZ63n3vlWxEIquo/zc1Tm8ElU+SqVV7+D3Na2PWaJUp179AzTragMWVwkMv7mvty0NfyQ==}
 
   '@types/jquery@3.5.33':
     resolution: {integrity: sha512-SeyVJXlCZpEki5F0ghuYe+L+PprQta6nRZqhONt9F13dWBtR/ftoaIbdRQ7cis7womE+X2LKhsDdDtkkDhJS6g==}
@@ -2942,9 +2942,9 @@ packages:
     peerDependencies:
       cypress: '>3.0.0'
 
-  cypress@14.5.3:
-    resolution: {integrity: sha512-syLwKjDeMg77FRRx68bytLdlqHXDT4yBVh0/PPkcgesChYDjUZbwxLqMXuryYKzAyJsPsQHUDW1YU74/IYEUIA==}
-    engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
+  cypress@15.0.0:
+    resolution: {integrity: sha512-OH5Srk10qTzHYYt3BsP9V1DPYIAzms55s3xQn4mGmYO4k6pi25MCajDyPbiULfNDhNcthNQ2xmYvu1JdeEw1Hw==}
+    engines: {node: ^20.0.0 || ^22.0.0 || >=24.0.0}
     hasBin: true
 
   dashdash@1.14.1:
@@ -7820,7 +7820,7 @@ snapshots:
     dependencies:
       '@types/node': 24.2.1
 
-  '@types/jasmine@5.1.8': {}
+  '@types/jasmine@5.1.9': {}
 
   '@types/jquery@3.5.33':
     dependencies:
@@ -8663,11 +8663,11 @@ snapshots:
 
   custom-event@1.0.1: {}
 
-  cypress-file-upload@5.0.8(cypress@14.5.3):
+  cypress-file-upload@5.0.8(cypress@15.0.0):
     dependencies:
-      cypress: 14.5.3
+      cypress: 15.0.0
 
-  cypress@14.5.3:
+  cypress@15.0.0:
     dependencies:
       '@cypress/request': 3.0.9
       '@cypress/xvfb': 1.2.4(supports-color@8.1.1)
