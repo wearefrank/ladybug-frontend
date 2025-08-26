@@ -72,7 +72,7 @@
     "chai-match": "^1.1.1",
     "cypress": "14.5.3",
     "cypress-file-upload": "^5.0.8",
-    "eslint": "^9.32.0",
+    "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-sonarjs": "^3.0.4",
