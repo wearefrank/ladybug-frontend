@@ -75,14 +75,14 @@ importers:
         specifier: ^4.7.0
         version: 4.7.0
       monaco-editor:
-        specifier: 0.48.0
-        version: 0.48.0
+        specifier: 0.52.2
+        version: 0.52.2
       ng-simple-file-tree:
         specifier: ^0.1.29
         version: 0.1.29(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(bootstrap-icons@1.13.1)
       ngx-monaco-editor-v2:
         specifier: 19.0.2
-        version: 19.0.2(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(monaco-editor@0.48.0)
+        version: 19.0.2(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(monaco-editor@0.52.2)
       path:
         specifier: ^0.12.7
         version: 0.12.7
@@ -4486,8 +4486,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  monaco-editor@0.48.0:
-    resolution: {integrity: sha512-goSDElNqFfw7iDHMg8WDATkfcyeLTNpBHQpO8incK6p5qZt5G/1j41X0xdGzpIkGojGXM+QiRQyLjnfDVvrpwA==}
+  monaco-editor@0.52.2:
+    resolution: {integrity: sha512-GEQWEZmfkOGLdd3XK8ryrfWz3AIP8YymVXiPHEdewrUq7mh0qrKrfHLNCXcbB6sTnMLnOZ3ztSiKcciFUkIJwQ==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -10932,7 +10932,7 @@ snapshots:
 
   mkdirp@3.0.1: {}
 
-  monaco-editor@0.48.0: {}
+  monaco-editor@0.52.2: {}
 
   mrmime@2.0.1: {}
 
@@ -10991,11 +10991,11 @@ snapshots:
       bootstrap-icons: 1.13.1
       tslib: 2.8.1
 
-  ngx-monaco-editor-v2@19.0.2(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(monaco-editor@0.48.0):
+  ngx-monaco-editor-v2@19.0.2(@angular/common@19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(monaco-editor@0.52.2):
     dependencies:
       '@angular/common': 19.2.8(@angular/core@19.2.1(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/core': 19.2.1(rxjs@7.8.2)(zone.js@0.15.1)
-      monaco-editor: 0.48.0
+      monaco-editor: 0.52.2
       tslib: 2.8.1
 
   node-addon-api@6.1.0:
