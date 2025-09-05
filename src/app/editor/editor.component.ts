@@ -7,11 +7,9 @@ import {
   HostListener,
   inject,
   Input,
-  OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
   ViewChild,
   EventEmitter,
 } from '@angular/core';
@@ -42,7 +40,7 @@ interface PrettifyResult {
   standalone: true,
   imports: [MonacoEditorComponent, ReactiveFormsModule, FormsModule, TitleCasePipe],
 })
-export class EditorComponent implements OnInit, OnDestroy, OnChanges {
+export class EditorComponent implements OnInit, OnDestroy {
   @Input() height!: number;
   @Input() readOnlyMode = true;
   @Output() saveReportRequest = new EventEmitter<boolean>();
@@ -70,8 +68,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   contentType!: EditorView;
 
   editorFocused = false;
-
-  protected calculatedHeight: number = this.height;
 
   private actualEditorContent?: string | null;
 
@@ -102,22 +98,9 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
     this.editorFocused = focused;
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['height']) {
-      this.calculateHeight();
-    }
-  }
-
   onSave(): void {
     if (this.unsavedChanges && this.requestedEditorContent) {
       this.saveReportRequest.emit(true);
-    }
-  }
-
-  calculateHeight(): void {
-    if (this.statusBar) {
-      this.calculatedHeight = this.height - this.statusBar.nativeElement.offsetHeight;
-      this.cdr.detectChanges();
     }
   }
 
@@ -214,7 +197,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   setNewCheckpoint(value: string | null): void {
     console.log('Got checkpoint value null');
     this.originalCheckpointValue = value;
-    this.calculateHeight();
     this.setContentType();
     this.setAvailableViews();
     if (value !== undefined && value !== null && value !== '') {
