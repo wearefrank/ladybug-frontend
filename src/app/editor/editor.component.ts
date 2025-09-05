@@ -13,16 +13,15 @@ import {
   Output,
   SimpleChanges,
   ViewChild,
+  EventEmitter,
 } from '@angular/core';
 import * as prettierPluginHtml from 'prettier/plugins/html';
 import * as prettier from 'prettier';
 import { debounceTime, Subject, Subscription } from 'rxjs';
 import { SettingsService } from '../shared/services/settings.service';
-import { editor } from 'monaco-editor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TitleCasePipe } from '@angular/common';
-import IEditor = editor.IEditor;
+import { MonacoEditorComponent } from '../monaco-editor/monaco-editor.component';
 
 export const basicContentTypes = ['raw'] as const;
 export type BasicView = (typeof basicContentTypes)[number];
@@ -31,47 +30,52 @@ export type PrettyView = (typeof prettyContentTypes)[number];
 export const editorViewsConst = [...basicContentTypes, ...prettyContentTypes] as const;
 export type EditorView = (typeof editorViewsConst)[number];
 
+interface PrettifyResult {
+  text: string;
+  isPrettified: boolean;
+}
+
 @Component({
   selector: 'app-editor',
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.css',
   standalone: true,
-  imports: [MonacoEditorModule, ReactiveFormsModule, FormsModule, TitleCasePipe],
+  imports: [MonacoEditorComponent, ReactiveFormsModule, FormsModule, TitleCasePipe],
 })
 export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() height!: number;
   @Input() readOnlyMode = true;
-  @Output() saveReport: Subject<string> = new Subject<string>();
+  @Output() saveReportRequest = new EventEmitter<boolean>();
   @ViewChild('statusBarElement') statusBar?: ElementRef;
-  editor!: IEditor;
   unsavedChanges = false;
   options: any = {
     theme: 'vs-light',
     language: 'xml',
     inlineCompletionsAccessibilityVerbose: true,
     automaticLayout: true,
-    readOnly: this.readOnlyMode,
     padding: { bottom: 200 },
     selectOnLineNumbers: true,
     renderFinalNewline: false,
     scrollBeyondLastLine: false,
   };
-  rawFile!: string;
-  editorContent?: string;
-  editorContentCopy?: string;
+  requestedEditorContent?: string;
+  originalCheckpointValue?: string | null;
   isPrettified = false;
   currentView: EditorView = 'raw';
-  editorFocused = false;
   editorChangesSubject: Subject<string> = new Subject<string>();
 
   //Settings attributes
   showPrettifyOnLoad = true;
-  showSearchWindowOnLoad = true;
   availableViews!: EditorView[];
   contentType!: EditorView;
 
-  protected readonly INDENT_TWO_SPACES: string = '  ';
+  editorFocused = false;
+
   protected calculatedHeight: number = this.height;
+
+  private actualEditorContent?: string | null;
+
+  private readonly INDENT_TWO_SPACES: string = '  ';
   private subscriptions: Subscription = new Subscription();
 
   private settingsService = inject(SettingsService);
@@ -94,18 +98,19 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
     this.subscriptions.unsubscribe();
   }
 
+  onFocusedChanged(focused: boolean): void {
+    this.editorFocused = focused;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['height']) {
       this.calculateHeight();
     }
-    if (changes['readOnlyMode'] && changes['readOnlyMode'].currentValue != undefined && this.editor) {
-      this.updateReadOnlyMode();
-    }
   }
 
   onSave(): void {
-    if (this.unsavedChanges) {
-      this.save();
+    if (this.unsavedChanges && this.requestedEditorContent) {
+      this.saveReportRequest.emit(true);
     }
   }
 
@@ -116,17 +121,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  updateReadOnlyMode(): void {
-    this.editor.updateOptions({ readOnly: this.readOnlyMode });
-  }
-
   subscribeToSettings(): void {
-    const showSearchWindowOnLoad: Subscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe(
-      (value: boolean) => {
-        this.showSearchWindowOnLoad = value;
-      },
-    );
-    this.subscriptions.add(showSearchWindowOnLoad);
     const prettifyOnLoad: Subscription = this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
       this.showPrettifyOnLoad = value;
     });
@@ -134,35 +129,35 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   subscribeToEditorChanges(): void {
+    /*
     const editorChangesSubscription: Subscription = this.editorChangesSubject
       .pipe(debounceTime(300))
       .subscribe((value: string) => {
         this.checkIfTextIsPretty();
       });
     this.subscriptions.add(editorChangesSubscription);
+    */
+    const editorChangesSubscription: Subscription = this.editorChangesSubject.subscribe((value) => {
+      if (this.requestedEditorContent !== undefined && this.requestedEditorContent !== null) {
+        this.actualEditorContent = value;
+      } else {
+        this.actualEditorContent = null;
+      }
+    });
+    this.subscriptions.add(editorChangesSubscription);
   }
 
-  initEditor(editor: any): void {
-    if (editor) {
-      this.editor = editor;
-      editor.onDidFocusEditorWidget((): void => {
-        this.editorFocused = true;
-      });
-      editor.onDidBlurEditorWidget((): void => {
-        this.editorFocused = false;
-      });
-
-      this.checkIfTextIsPretty();
-      if (this.showPrettifyOnLoad) {
-        this.onViewChange(this.contentType);
-      }
+  initEditor(): void {
+    this.checkIfTextIsPretty();
+    if (this.showPrettifyOnLoad) {
+      this.onViewChange(this.contentType);
     }
   }
 
   checkIfTextIsPretty(): boolean {
-    if (this.editorContent) {
+    if (this.requestedEditorContent) {
       prettier
-        .check(this.editorContent, {
+        .check(this.requestedEditorContent, {
           parser: 'html',
           plugins: [prettierPluginHtml],
           bracketSameLine: true,
@@ -174,69 +169,82 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
 
   onViewChange(value: EditorView): void {
     this.currentView = value;
-    if (this.currentView === 'raw') {
-      this.editorContent = this.rawFile;
-    } else {
-      this.prettify();
+    if (this.originalCheckpointValue !== undefined && this.originalCheckpointValue !== null) {
+      if (this.currentView === 'raw') {
+        this.requestedEditorContent = this.originalCheckpointValue;
+        this.isPrettified = false;
+      } else {
+        this.prettify(this.originalCheckpointValue).then((prettifyResult) => {
+          this.requestedEditorContent = prettifyResult.text;
+          this.isPrettified = prettifyResult.isPrettified;
+        });
+      }
     }
   }
 
-  prettify(): void {
-    if (this.editorContent) {
+  private prettify(text: string): Promise<PrettifyResult> {
+    return new Promise<PrettifyResult>((resolve) => {
       if (this.currentView === 'xml' && this.contentType === 'xml') {
         prettier
-          .format(this.editorContent, {
+          .format(text, {
             parser: 'html',
             plugins: [prettierPluginHtml],
             bracketSameLine: true,
           })
           .then((result: string): void => {
-            this.setValue(result);
-            this.isPrettified = true;
+            resolve({ text: result, isPrettified: true });
           });
       }
       if (this.currentView === 'json' && this.contentType === 'json') {
-        this.editorContent = JSON.stringify(JSON.parse(this.editorContent), null, this.INDENT_TWO_SPACES);
-        this.isPrettified = true;
+        const jsonFormatted: string = JSON.stringify(JSON.parse(text), null, this.INDENT_TWO_SPACES);
+        resolve({ text: jsonFormatted, isPrettified: true });
       }
-    }
+      resolve({ text, isPrettified: false });
+    });
   }
 
-  save(): void {
-    if (this.editorContent) {
-      this.saveReport.next(this.editorContent);
-    }
-  }
-
-  onChange(event: string): void {
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  onActualEditorContentsChange(event: string): void {
+    console.log(`EditorComponent.onActualEditorContentsChange(): ${event.slice(0, 20)}`);
     this.editorChangesSubject.next(event);
-    this.unsavedChanges = event != this.editorContentCopy;
+    this.unsavedChanges = event !== this.originalCheckpointValue;
   }
 
-  setNewReport(value: string): void {
-    this.setValue(value);
-    this.editorContentCopy = value;
-    this.rawFile = value;
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  setNewCheckpoint(value: string | null): void {
+    console.log('Got checkpoint value null');
+    this.originalCheckpointValue = value;
     this.calculateHeight();
     this.setContentType();
     this.setAvailableViews();
-    if (value !== null || value !== '') {
+    if (value !== undefined && value !== null && value !== '') {
+      this.requestedEditorContent = value;
       this.checkIfTextIsPretty();
+      if (this.showPrettifyOnLoad && this.isPrettifiable(this.contentType)) {
+        this.onViewChange(this.contentType);
+        return;
+      }
+      this.onViewChange('raw');
     }
-    if (this.showPrettifyOnLoad && this.isPrettifiable(this.contentType)) {
-      this.onViewChange(this.contentType);
-      return;
-    }
-    this.onViewChange('raw');
   }
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   setContentType(): void {
-    if (this.checkIfFileIsXml(this.rawFile)) {
+    if (this.originalCheckpointValue === undefined) {
+      throw new Error(
+        'EditorComponent.setContentType: expected that originalCheckpointValue was set because we call this method when a new checkpoint is selected',
+      );
+    }
+    if (this.originalCheckpointValue === null) {
+      this.contentType = 'raw';
+      return;
+    }
+    if (this.checkIfFileIsXml(this.originalCheckpointValue)) {
       this.contentType = 'xml';
       return;
     }
     try {
-      if (this.rawFile && JSON.parse(this.rawFile)) {
+      if (this.originalCheckpointValue && JSON.parse(this.originalCheckpointValue)) {
         this.contentType = 'json';
         return;
       }
@@ -246,6 +254,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
     this.contentType = 'raw';
   }
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   checkIfFileIsXml(value: string): boolean {
     if (value) {
       for (let index = 0; index < value.length; index++) {
@@ -258,14 +267,12 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
     return false;
   }
 
-  setValue(value: string): void {
-    this.editorContent = value;
-  }
-
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   getValue(): string {
-    return this.editorContent ?? '';
+    return this.actualEditorContent ?? '';
   }
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   setAvailableViews(): void {
     const availableViews: EditorView[] = [...basicContentTypes];
     if (!availableViews.includes(this.contentType)) {
@@ -274,10 +281,12 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges {
     this.availableViews = availableViews;
   }
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   isPrettifiable(value: EditorView): boolean {
     return prettyContentTypes.includes(value as PrettyView);
   }
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   isBasicView(value: EditorView): boolean {
     return basicContentTypes.includes(value as BasicView);
   }

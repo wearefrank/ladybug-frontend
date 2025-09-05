@@ -41,9 +41,6 @@ importers:
       '@angular/router':
         specifier: 20.2.3
         version: 20.2.3(@angular/common@20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@20.2.3(@angular/animations@20.2.3(@angular/common@20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1)))(rxjs@7.8.2)
-      '@materia-ui/ngx-monaco-editor':
-        specifier: ^6.0.0
-        version: 6.0.0(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@ng-bootstrap/ng-bootstrap':
         specifier: 19.0.1
         version: 19.0.1(nfrzrzyqqp33vb4cataghiv2ye)
@@ -80,9 +77,6 @@ importers:
       ng-simple-file-tree:
         specifier: 0.1.29
         version: 0.1.29(@angular/common@20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(bootstrap-icons@1.13.1)
-      ngx-monaco-editor-v2:
-        specifier: 20.0.0
-        version: 20.0.0(@angular/common@20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(monaco-editor@0.48.0)
       path:
         specifier: ^0.12.7
         version: 0.12.7
@@ -1596,12 +1590,6 @@ packages:
     resolution: {integrity: sha512-IY+r3bxKW6Q6sIPiMC0L533DEfRJSXibjSI3Ft/w9Q8KQBNqEIvUFXt+09wV8S5BRk0a8uSF19YWxuRwEfI90g==}
     cpu: [x64]
     os: [win32]
-
-  '@materia-ui/ngx-monaco-editor@6.0.0':
-    resolution: {integrity: sha512-gTqNQjOGznZxOC0NlmKdKSGCJuTts8YmK4dsTQAGc5IgIV7cZdQWiW6AL742h0ruED6q0cAunEYjXT6jzHBoIQ==}
-    peerDependencies:
-      '@angular/core': '>=13.0.0'
-      rxjs: '>=6.0.0'
 
   '@modelcontextprotocol/sdk@1.17.3':
     resolution: {integrity: sha512-JPwUKWSsbzx+DLFznf/QZ32Qa+ptfbUlHhRLrBQBAFu9iI1iYvizM4p+zhhRDceSsPutXp4z+R/HPVphlIiclg==}
@@ -4636,13 +4624,6 @@ packages:
       '@angular/common': ^17.2.3
       '@angular/core': ^17.3.2
       bootstrap-icons: ^1.11.3
-
-  ngx-monaco-editor-v2@20.0.0:
-    resolution: {integrity: sha512-h0gWxuXKWqEReklnOrLzfa6KQ2aYkOB5f3TJurOxgJPztZKKE8kNKtsa2Zpjs+vQw8IgE9UIl79lueUuhys5aw==}
-    peerDependencies:
-      '@angular/common': 20.1.2
-      '@angular/core': 20.1.2
-      monaco-editor: ^0.52.2
 
   node-addon-api@6.1.0:
     resolution: {integrity: sha512-+eawOlIgy680F0kBzPUNFhMZGtJ1YmqM6l4+Crf4IkImjYrO/mqPwRMh352g23uIaQKFItcQ64I7KMaJxHgAVA==}
@@ -7715,12 +7696,6 @@ snapshots:
 
   '@lmdb/lmdb-win32-x64@3.4.2':
     optional: true
-
-  '@materia-ui/ngx-monaco-editor@6.0.0(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)':
-    dependencies:
-      '@angular/core': 20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1)
-      rxjs: 7.8.2
-      tslib: 2.8.1
 
   '@modelcontextprotocol/sdk@1.17.3':
     dependencies:
@@ -11015,13 +10990,6 @@ snapshots:
       '@angular/common': 20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/core': 20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1)
       bootstrap-icons: 1.13.1
-      tslib: 2.8.1
-
-  ngx-monaco-editor-v2@20.0.0(@angular/common@20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(monaco-editor@0.48.0):
-    dependencies:
-      '@angular/common': 20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
-      '@angular/core': 20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1)
-      monaco-editor: 0.48.0
       tslib: 2.8.1
 
   node-addon-api@6.1.0:

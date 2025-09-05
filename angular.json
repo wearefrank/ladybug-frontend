@@ -36,6 +36,11 @@
               },
               {
                 "glob": "**/*",
+                "input": "node_modules/monaco-editor/min/vs",
+                "output": "assets/monaco/vs"
+              },
+              {
+                "glob": "**/*",
                 "input": "node_modules/ace-edit/src-min/",
                 "output": "/assets/editor-min/"
               },

@@ -1,14 +1,16 @@
-@if (rawFile) {
+@if (originalCheckpointValue) {
   <div class="position-relative overflow-hidden" [style.height]="height + 'px'">
-    <ngx-monaco-editor
+    <app-monaco-editor #wafMonacoEditor
       data-cy-element-name="editor"
       class="editor"
+      (onInit)="initEditor()"
       [options]="options"
       [style.height]="calculatedHeight - 27 + 'px'"
-      [(ngModel)]="editorContent"
-      (onInit)="initEditor($event)"
-      (ngModelChange)="onChange($event)">
-    </ngx-monaco-editor>
+      [requestedEditorContents]="requestedEditorContent"
+      (actualEditorContentsChange)="onActualEditorContentsChange($event)"
+      [requestedReadOnly]="readOnlyMode"
+      (focusedChange)="onFocusedChanged($event)">
+    </app-monaco-editor>
     <div #statusBarElement class="status-bar">
       <div class="left-side">
         @if (!readOnlyMode) {

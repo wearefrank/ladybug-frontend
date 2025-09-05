@@ -130,9 +130,9 @@ export class EditDisplayComponent implements OnChanges {
     this.stub = node.stub;
     if (ReportUtil.isReport(this.selectedNode)) {
       this.stubStrategy = this.selectedNode.stubStrategy;
-      this.editor.setNewReport(this.selectedNode.xml);
+      this.editor.setNewCheckpoint(this.selectedNode.xml);
     } else if (ReportUtil.isCheckPoint(this.selectedNode)) {
-      this.editor.setNewReport(this.convertMessage(this.selectedNode));
+      this.editor.setNewCheckpoint(this.convertMessage(this.selectedNode));
     }
     this.rerunResult = undefined;
     this.displayReport = true;
@@ -174,7 +174,7 @@ export class EditDisplayComponent implements OnChanges {
     this.displayReport = false;
     this.editingRootNode = false;
     this.editingChildNode = false;
-    this.editor.setNewReport('');
+    this.editor.setNewCheckpoint('');
   }
 
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
@@ -196,6 +196,7 @@ export class EditDisplayComponent implements OnChanges {
   }
 
   openDifferenceModal(type: ChangesAction): void {
+    console.log(`openDifferenceModal with type=${type}`);
     const node: Report | Checkpoint = this.selectedNode!;
     let reportDifferences: ReportDifference[] = [];
     if (ReportUtil.isReport(node) && this.editFormComponent) {
@@ -328,7 +329,7 @@ export class EditDisplayComponent implements OnChanges {
     const node: Report | Checkpoint = this.selectedNode!;
     this.disableEditing();
     if (ReportUtil.isCheckPoint(node)) {
-      this.editor.setNewReport(node.message);
+      this.editor.setNewCheckpoint(node.message);
     }
     this.toastService.showSuccess('Changes discarded!');
   }
