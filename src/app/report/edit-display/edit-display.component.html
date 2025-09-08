@@ -84,7 +84,7 @@
           ><i class="fa fa-save"></i></button>
         }
         <app-encoding-button [selectedNode]="selectedNode"
-                             (updatedMessageEvent)="editor.setNewReport($event)"></app-encoding-button>
+                             (updatedMessageEvent)="editor.setNewCheckpoint($event)"></app-encoding-button>
 
 
         @if (ReportUtil.isReport(selectedNode)) {
@@ -141,6 +141,7 @@
   [hidden]="editingRootNode"
   [height]="calculatedHeight"
   [readOnlyMode]="!editingChildNode"
+  (saveReportRequest)="openDifferenceModal('save')"
 />
 
 @if (selectedNode) {

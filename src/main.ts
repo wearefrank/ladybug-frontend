@@ -5,7 +5,6 @@ import { AppComponent } from './app/app.component';
 import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { AngularSplitModule } from 'angular-split';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -37,7 +36,6 @@ function main(): void {
         FormsModule,
         MatProgressSpinnerModule,
         AngularSplitModule,
-        MonacoEditorModule.forRoot(),
         MatAutocompleteModule,
         ClipboardModule,
         NgSimpleFileTreeModule,

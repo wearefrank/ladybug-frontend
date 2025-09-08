@@ -2,7 +2,6 @@
 import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 import { CompareData } from './compare-data';
-import { DiffEditorModel, MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TabService } from '../shared/services/tab.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MetadataTableComponent } from '../shared/components/metadata-table/metadata-table.component';
@@ -33,7 +32,6 @@ import { ReportAlertMessageComponent } from '../report/report-alert-message/repo
     CompareTreeComponent,
     MetadataTableComponent,
     MessagecontextTableComponent,
-    MonacoEditorModule,
     ReactiveFormsModule,
     TitleCasePipe,
     FormsModule,
@@ -61,8 +59,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
     scrollBeyondLastLine: false,
     renderOverviewRuler: false,
   };
-  protected originalModel: DiffEditorModel = { code: '', language: 'xml' };
-  protected modifiedModel: DiffEditorModel = { code: '', language: 'xml' };
+  // protected originalModel: DiffEditorModel = { code: '', language: 'xml' };
+  // protected modifiedModel: DiffEditorModel = { code: '', language: 'xml' };
   protected leftReport?: Report;
   protected rightReport?: Report;
   protected leftNode?: Report | Checkpoint;
@@ -214,8 +212,10 @@ export class CompareComponent implements AfterViewInit, OnInit {
   }
 
   private renderDiffs(leftSide: string, rightSide: string): void {
+    /*
     this.originalModel = { ...this.originalModel, code: leftSide };
     this.modifiedModel = { ...this.originalModel, code: rightSide };
+    */
   }
 
   private getStrategyFromLocalStorage(): void {
