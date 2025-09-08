@@ -1,7 +1,5 @@
 :host {
-  height: 100%;
-  resize: vertical;
-  overflow: auto;
+  display: block;
 }
 
 :host.form-control {
@@ -10,8 +8,4 @@
 
 :host.form-control:focus-within {
   border: 1px solid #1ab394;
-}
-
-.editor {
-  height: 100%;
 }

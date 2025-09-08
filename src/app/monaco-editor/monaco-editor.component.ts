@@ -31,6 +31,7 @@ type AMDRequire = {
   styleUrls: ['./monaco-editor.component.scss'],
 })
 export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
+  @Input() height!: number;
   @Input() requestedEditorContents?: string;
   @Output() actualEditorContentsChange = new EventEmitter<string>();
   @Input() requestedReadOnly = true;
@@ -59,10 +60,20 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   }
 
   ngAfterViewInit(): void {
+    console.log(`Initial height: ${this.height}`);
+    // this.editorContainer.nativeElement.height = this.height;
     this.loadMonaco();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    const requestedHeightChange = changes['height'];
+    if (requestedHeightChange) {
+      console.log(`Requested height: ${requestedHeightChange.currentValue}`);
+      if (this.editorContainer) {
+        console.log('editorContainer is set');
+        this.editorContainer.nativeElement.height = requestedHeightChange.currentValue;
+      }
+    }
     const requestedEditorContentsChange = changes['requestedEditorContents'];
     if (
       requestedEditorContentsChange &&
@@ -148,6 +159,10 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     this.editor = monaco.editor.create(this.editorContainer.nativeElement, {
       value: this.requestedEditorContents,
       readOnly: this.requestedReadOnly,
+      dimension: {
+        width: 500,
+        height: this.height,
+      },
       theme: 'vs-light',
       language: 'xml',
       automaticLayout: true,

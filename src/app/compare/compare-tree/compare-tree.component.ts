@@ -84,13 +84,16 @@ export class CompareTreeComponent {
 
   syncTrees(treeSide: TreeSide): void {
     if (treeSide === 'left') {
+      console.log('CompareTreeComponent.syncTrees() left to right');
       this.selectItem(this.rightTree, this.leftTree.getSelected());
     } else if (treeSide === 'right') {
+      console.log('CompareTreeComponent.syncTrees() right to left');
       this.selectItem(this.leftTree, this.rightTree.getSelected());
     }
   }
 
   selectItem(otherSide: NgSimpleFileTree, treeItem: FileTreeItem): void {
+    console.log(`CompareTreeComponent.selectItem() treeItem=${treeItem.name}`);
     switch (this.nodeLinkStrategy) {
       case 'PATH': {
         otherSide.selectItem(treeItem.path);

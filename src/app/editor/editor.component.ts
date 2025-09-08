@@ -12,6 +12,9 @@ import {
   Output,
   ViewChild,
   EventEmitter,
+  SimpleChanges,
+  OnChanges,
+  AfterViewInit,
 } from '@angular/core';
 import * as prettierPluginHtml from 'prettier/plugins/html';
 import * as prettier from 'prettier';
@@ -40,8 +43,8 @@ interface PrettifyResult {
   standalone: true,
   imports: [MonacoEditorComponent, ReactiveFormsModule, FormsModule, TitleCasePipe],
 })
-export class EditorComponent implements OnInit, OnDestroy {
-  @Input() height!: number;
+export class EditorComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+  @Input() containerHeight!: number;
   @Input() readOnlyMode = true;
   @Output() saveReportRequest = new EventEmitter<boolean>();
   @ViewChild('statusBarElement') statusBar?: ElementRef;
@@ -61,6 +64,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   isPrettified = false;
   currentView: EditorView = 'raw';
   editorChangesSubject: Subject<string> = new Subject<string>();
+  calculatedHeight!: number;
 
   //Settings attributes
   showPrettifyOnLoad = true;
@@ -90,8 +94,20 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.subscribeToSettings();
   }
 
+  ngAfterViewInit(): void {
+    this.calculatedHeight = this.containerHeight - this.getStatusBarHeight();
+    console.log(`Initial calculated height is: ${this.calculatedHeight}`);
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const heightChange = changes['containerHeight'];
+    if (heightChange && !heightChange.isFirstChange()) {
+      this.calculatedHeight = heightChange.currentValue - this.getStatusBarHeight();
+    }
   }
 
   onFocusedChanged(focused: boolean): void {
@@ -163,6 +179,12 @@ export class EditorComponent implements OnInit, OnDestroy {
         });
       }
     }
+  }
+
+  private getStatusBarHeight(): number {
+    const result = this.statusBar ? this.statusBar?.nativeElement.offsetHeight : 40;
+    console.log(`Calculated status bar height: ${result}`);
+    return result;
   }
 
   private prettify(text: string): Promise<PrettifyResult> {

@@ -17,11 +17,13 @@ import { ViewDropdownComponent } from '../shared/components/view-dropdown/view-d
 import { View } from '../shared/interfaces/view';
 import { HttpService } from '../shared/services/http.service';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
-import { catchError } from 'rxjs';
+import { catchError, Subject } from 'rxjs';
 import { SimpleFileTreeUtil } from '../shared/util/simple-file-tree-util';
 import { DebugComponent } from '../debug/debug.component';
 import { TreeItemComponent } from 'ng-simple-file-tree';
 import { ReportAlertMessageComponent } from '../report/report-alert-message/report-alert-message.component';
+import { DiffEditorModel, MonacoDiffEditor } from '../monaco-diff-editor/monaco-diff-editor.component';
+import { AngularSplitModule } from 'angular-split';
 
 @Component({
   selector: 'app-compare',
@@ -29,6 +31,7 @@ import { ReportAlertMessageComponent } from '../report/report-alert-message/repo
   styleUrls: ['./compare.component.css'],
   standalone: true,
   imports: [
+    AngularSplitModule,
     CompareTreeComponent,
     MetadataTableComponent,
     MessagecontextTableComponent,
@@ -38,6 +41,7 @@ import { ReportAlertMessageComponent } from '../report/report-alert-message/repo
     StringReplacePipe,
     ViewDropdownComponent,
     ReportAlertMessageComponent,
+    MonacoDiffEditor,
   ],
 })
 export class CompareComponent implements AfterViewInit, OnInit {
@@ -59,8 +63,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
     scrollBeyondLastLine: false,
     renderOverviewRuler: false,
   };
-  // protected originalModel: DiffEditorModel = { code: '', language: 'xml' };
-  // protected modifiedModel: DiffEditorModel = { code: '', language: 'xml' };
+  protected originalModelRequestSubject = new Subject<DiffEditorModel>();
+  protected modifiedModelRequestSubject = new Subject<DiffEditorModel>();
   protected leftReport?: Report;
   protected rightReport?: Report;
   protected leftNode?: Report | Checkpoint;
@@ -103,6 +107,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
 
   protected showDifference(): void {
     if (this.leftNode && this.rightNode) {
+      console.log('Have left node and right node');
       const leftSide: string = this.extractMessage(this.leftNode);
       const rightSide: string = this.extractMessage(this.rightNode);
       this.renderDiffs(leftSide, rightSide);
@@ -212,10 +217,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
   }
 
   private renderDiffs(leftSide: string, rightSide: string): void {
-    /*
-    this.originalModel = { ...this.originalModel, code: leftSide };
-    this.modifiedModel = { ...this.originalModel, code: rightSide };
-    */
+    this.originalModelRequestSubject.next({ language: 'xml', code: leftSide });
+    this.modifiedModelRequestSubject.next({ language: 'xml', code: rightSide });
   }
 
   private getStrategyFromLocalStorage(): void {

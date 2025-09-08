@@ -1,5 +1,5 @@
 #container {
-  display: flex;
+  display: box;
   flex-direction: column;
   background-color: white;
   height: 94vh;
@@ -17,17 +17,17 @@
   }
 }
 
-.trees {
-  resize: vertical;
-  overflow: auto;
+.after-compare-header {
+  height: calc(100% - 40px);
 }
 
 .text-diff-container {
+  display: flex;
+  flex-direction: column;
   border-top: 1px solid #dee2e6;
   padding-top: 1.25rem;
-  height: 100%;
 }
 
 .diff-editor {
-  height: 100%;
+  flex: 50vh;
 }

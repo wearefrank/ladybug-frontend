@@ -139,7 +139,7 @@
 <app-editor
   data-cy-report="editor"
   [hidden]="editingRootNode"
-  [height]="calculatedHeight"
+  [containerHeight]="calculatedHeight"
   [readOnlyMode]="!editingChildNode"
   (saveReportRequest)="openDifferenceModal('save')"
 />

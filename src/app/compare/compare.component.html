@@ -13,36 +13,44 @@
     }
   </div>
 
-  @if (compareData) {
-    <app-compare-tree
-      class="trees"
-      [compareData]="compareData"
-      [nodeLinkStrategy]="nodeLinkStrategy"
-      (compareEvent)="syncLeftAndRight()"
-    />
-    <div class="text-diff-container pl-3 pb-2">
-      @if (leftNode && rightNode && compareTreeComponent) {
-        <div class="d-flex flex-row w-100">
-          <div class="flex flex-column">
-            <app-report-alert-message [report]="leftNode"/>
-            <app-metadata-table class="w-50" [report]="leftNode"/>
-            <app-messagecontext-table class="w-50" [report]="leftNode"/>
-          </div>
-          <div class="flex flex-column">
-            <app-report-alert-message [report]="rightNode"/>
-            <app-metadata-table class="w-50" [report]="rightNode"/>
-            <app-messagecontext-table class="w-50" [report]="rightNode"/>
-          </div>
-        </div>
-      }
-      <!--
-      <ngx-monaco-diff-editor
-        class="diff-editor"
-        [options]="diffOptions"
-        [originalModel]="originalModel"
-        [modifiedModel]="modifiedModel"
-      />
-      -->
-    </div>
-  }
+  <div class="after-compare-header">
+    @if (compareData) {
+      <as-split direction="vertical">
+        <as-split-area class="split-size" [size]="25">
+          <div class="trees">
+            <app-compare-tree
+              [compareData]="compareData"
+              [nodeLinkStrategy]="nodeLinkStrategy"
+              (compareEvent)="syncLeftAndRight()"
+            />
+          </div>    
+        </as-split-area>
+        <as-split-area [size]="75">
+          <div class="text-diff-container pl-3 pb-2">
+            @if (leftNode && rightNode && compareTreeComponent) {
+              <div class="d-flex flex-row w-100">
+                <div class="flex flex-column">
+                  <app-report-alert-message [report]="leftNode"/>
+                  <app-metadata-table class="w-50" [report]="leftNode"/>
+                  <app-messagecontext-table class="w-50" [report]="leftNode"/>
+                </div>
+                <div class="flex flex-column">
+                  <app-report-alert-message [report]="rightNode"/>
+                  <app-metadata-table class="w-50" [report]="rightNode"/>
+                  <app-messagecontext-table class="w-50" [report]="rightNode"/>
+                </div>
+              </div>
+            }
+            <div class="diff-editor">
+              <app-monaco-diff-editor
+                [options]="diffOptions"
+                [originalModelRequest$]="originalModelRequestSubject"
+                [modifiedModelRequest$]="modifiedModelRequestSubject"
+              />
+            </div>      
+          </div>    
+        </as-split-area>
+      </as-split>
+    }
+  </div>
 </div>

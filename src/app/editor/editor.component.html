@@ -1,8 +1,9 @@
 @if (originalCheckpointValue) {
-  <div class="position-relative overflow-hidden" [style.height]="height + 'px'">
+  <div class="position-relative overflow-hidden" [style.height]="containerHeight + 'px'">
     <div class="editor">
       <app-monaco-editor #wafMonacoEditor
         data-cy-element-name="editor"
+        [height]="calculatedHeight"
         (onInit)="initEditor()"
         [options]="options"
         [requestedEditorContents]="requestedEditorContent"
