@@ -47,10 +47,10 @@ export class MonacoDiffEditor implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     if (!this.originalModelRequest$) {
-      throw new Error('Please provide input originalModel$');
+      throw new Error('Please provide input originalModelRequest$');
     }
     if (!this.modifiedModelRequest$) {
-      throw new Error('Please provide input modifiedModel$');
+      throw new Error('Please provide input modifiedModelRequest$');
     }
     this.originalModelSubscription = this.originalModelRequest$!.subscribe((value) => this.showOriginal(value));
     this.modifiedModelSubscription = this.modifiedModelRequest$!.subscribe((value) => this.showModified(value));

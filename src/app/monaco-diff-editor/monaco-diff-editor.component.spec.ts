@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MonacoDiffEditor } from './monaco-diff-editor.component';
+import { DiffEditorModel, MonacoDiffEditor } from './monaco-diff-editor.component';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Subject } from 'rxjs';
 
 describe('MonacoDiffEditor', () => {
   let component: MonacoDiffEditor;
@@ -8,11 +10,14 @@ describe('MonacoDiffEditor', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MonacoDiffEditor],
+      imports: [MonacoDiffEditor, RouterTestingModule],
+      providers: [],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MonacoDiffEditor);
     component = fixture.componentInstance;
+    component.originalModelRequest$ = new Subject<DiffEditorModel>();
+    component.modifiedModelRequest$ = new Subject<DiffEditorModel>();
     fixture.detectChanges();
   });
 
