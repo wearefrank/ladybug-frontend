@@ -5,19 +5,92 @@
 //  * When prettified text is shown it should not be possible to edit it.
 //  * We keep track of whether there are unsaved changes.
 
-import { Observer } from "rxjs";
-
 export class MonacoAdapter {
-  setOriginalCheckpointValue(value: string | null): void {
+  private originalCheckpointValue?: string | null;
+  private editedToNull = false;
+  private editedCheckpointValue?: string | null;
+  private _hasUnsavedChanges = false;
 
+  hasCheckpoint(): boolean {
+    return this.originalCheckpointValue !== undefined;
   }
 
-  setEditedCheckpointValueObserver(obs: Observer<string | null>) {
-
+  hasUnsavedChanges(): boolean {
+    return this._hasUnsavedChanges;
   }
-  
-  clear() {
 
+  // Returns editor contents to request
+  setOriginalCheckpointValue(value: string | null): string {
+    this.originalCheckpointValue = value;
+    this.editedToNull = value === null;
+    this.updateEditedCheckpointValue(value);
+    return this.getRequestedEditorContents(this.originalCheckpointValue);
+  }
+
+  // Returns editor contents to request
+  setEditedToNull(value: boolean): string {
+    this.editedToNull = value;
+    if (value === false && this.editedCheckpointValue === null) {
+      this.updateEditedCheckpointValue('');
+    }
+    if (value === true && this.editedCheckpointValue !== null) {
+      this.updateEditedCheckpointValue(null);
+    }
+    return this.getRequestedEditorContents(this.editedCheckpointValue!);
+  }
+
+  getEditedToNull(): boolean {
+    return this.editedToNull;
+  }
+
+  getEditedCheckpointValue(): string | null {
+    if (this.editedCheckpointValue === undefined) {
+      throw new Error('MonacoAdapter.getEditedCheckpointValue() is not applicable because there is no checkpoint');
+    } else {
+      return this.editedCheckpointValue;
+    }
+  }
+
+  clear(): void {
+    this.originalCheckpointValue = undefined;
+    this.editedToNull = false;
+    this.editedCheckpointValue = undefined;
+    this._hasUnsavedChanges = false;
+  }
+
+  onEditorContentsChanged(value: string): void {
+    if (this.originalCheckpointValue === undefined) {
+      return;
+    }
+    if (value === '') {
+      this.updateEditedCheckpointValue(this.editedToNull ? null : '');
+    } else {
+      this.editedToNull = false;
+      this.updateEditedCheckpointValue(value);
+    }
+  }
+
+  private updateEditedCheckpointValue(value: string | null): void {
+    if (this.originalCheckpointValue === undefined) {
+      throw new Error('MonacoAdapter.updateEditedCheckpointValue(): Expected that there is a checkpoint');
+    }
+    this.editedCheckpointValue = value;
+    if (this.editedCheckpointValue === null && this.originalCheckpointValue === null) {
+      this._hasUnsavedChanges = false;
+    } else if (this.editedCheckpointValue !== null && this.originalCheckpointValue !== null) {
+      this._hasUnsavedChanges = this.editedCheckpointValue !== this.originalCheckpointValue;
+    } else {
+      this._hasUnsavedChanges = true;
+    }
+    console.log(`${this.originalCheckpointValue}, ${this.editedCheckpointValue}, ${this._hasUnsavedChanges}`);
+  }
+
+  private getRequestedEditorContents(forValue: string | null): string {
+    if (forValue === null) {
+      return '';
+    } else {
+      return forValue;
+    }
   }
 
   /*
@@ -29,16 +102,4 @@ export class MonacoAdapter {
 
   }
   */
-
-  onEditorContentsChanged(value: string) {
-
-  }
-
-  hasCheckpoint(): boolean {
-
-  }
-
-  hasUnsavedChanges(): boolean {
-
-  }
 }
