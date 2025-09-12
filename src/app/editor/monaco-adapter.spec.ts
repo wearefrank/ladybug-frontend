@@ -69,15 +69,24 @@ describe('Monaco adapter', () => {
     const instance = new MonacoAdapter();
     expect(instance.setOriginalCheckpointValue(null)).toEqual('');
     expect(instance.getEditedToNull()).toEqual(true);
-    console.log('From null to empty string');
-    expect(instance.setEditedToNull(false)).toEqual('');
+    // Editor contents does not change, so setEditedToNull() returns undefined
+    expect(instance.setEditedToNull(false)).toEqual(undefined);
     expect(instance.getEditedCheckpointValue()).toEqual('');
     expect(instance.getEditedToNull()).toEqual(false);
     expect(instance.hasUnsavedChanges()).toEqual(true);
-    // Check that this change remains as-is when the Monaco editor confirms
-    instance.onEditorContentsChanged('');
-    expect(instance.getEditedCheckpointValue()).toEqual('');
+  });
+
+  it('When we have a null checkpoint and request null then no effect', () => {
+    const instance = new MonacoAdapter();
+    expect(instance.setOriginalCheckpointValue(null)).toEqual('');
+    expect(instance.getEditedToNull()).toEqual(true);
+    expect(instance.setEditedToNull(true)).toEqual(undefined);
+  });
+
+  it('When we have a non-null checkpoint and request non-null then no effect', () => {
+    const instance = new MonacoAdapter();
+    expect(instance.setOriginalCheckpointValue('something')).toEqual('something');
     expect(instance.getEditedToNull()).toEqual(false);
-    expect(instance.hasUnsavedChanges()).toEqual(true);
+    expect(instance.setEditedToNull(false)).toEqual(undefined);
   });
 });

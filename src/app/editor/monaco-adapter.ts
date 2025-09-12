@@ -19,6 +19,10 @@ export class MonacoAdapter {
     return this._hasUnsavedChanges;
   }
 
+  getEditedToNull(): boolean {
+    return this.editedToNull;
+  }
+
   // Returns editor contents to request
   setOriginalCheckpointValue(value: string | null): string {
     this.originalCheckpointValue = value;
@@ -27,8 +31,12 @@ export class MonacoAdapter {
     return this.getRequestedEditorContents(this.originalCheckpointValue);
   }
 
-  // Returns editor contents to request
-  setEditedToNull(value: boolean): string {
+  // Returns editor contents to request or undefined if the editor does not need updating
+  setEditedToNull(value: boolean): string | undefined {
+    if (this.originalCheckpointValue === undefined) {
+      throw new Error('MonacoAdapter.setEditedToNull(): Expected that there would be a checkpoint, doing nothing');
+    }
+    const existingEditorContent = this.getRequestedEditorContents(this.editedCheckpointValue!);
     this.editedToNull = value;
     if (value === false && this.editedCheckpointValue === null) {
       this.updateEditedCheckpointValue('');
@@ -36,11 +44,8 @@ export class MonacoAdapter {
     if (value === true && this.editedCheckpointValue !== null) {
       this.updateEditedCheckpointValue(null);
     }
-    return this.getRequestedEditorContents(this.editedCheckpointValue!);
-  }
-
-  getEditedToNull(): boolean {
-    return this.editedToNull;
+    const newEditorContents = this.getRequestedEditorContents(this.editedCheckpointValue!);
+    return newEditorContents === existingEditorContent ? undefined : newEditorContents;
   }
 
   getEditedCheckpointValue(): string | null {
@@ -75,22 +80,11 @@ export class MonacoAdapter {
       throw new Error('MonacoAdapter.updateEditedCheckpointValue(): Expected that there is a checkpoint');
     }
     this.editedCheckpointValue = value;
-    if (this.editedCheckpointValue === null && this.originalCheckpointValue === null) {
-      this._hasUnsavedChanges = false;
-    } else if (this.editedCheckpointValue !== null && this.originalCheckpointValue !== null) {
-      this._hasUnsavedChanges = this.editedCheckpointValue !== this.originalCheckpointValue;
-    } else {
-      this._hasUnsavedChanges = true;
-    }
-    console.log(`${this.originalCheckpointValue}, ${this.editedCheckpointValue}, ${this._hasUnsavedChanges}`);
+    this._hasUnsavedChanges = this.editedCheckpointValue !== this.originalCheckpointValue;
   }
 
   private getRequestedEditorContents(forValue: string | null): string {
-    if (forValue === null) {
-      return '';
-    } else {
-      return forValue;
-    }
+    return forValue === null ? '' : forValue;
   }
 
   /*
