@@ -233,7 +233,12 @@ export class CompareComponent implements AfterViewInit, OnInit {
   }
 
   private extractMessage(selectedNode: Report | Checkpoint): string {
-    return ReportUtil.isReport(selectedNode) ? selectedNode.xml : selectedNode.message;
+    // TODO: Fix null value
+    return ReportUtil.isReport(selectedNode)
+      ? selectedNode.xml
+      : selectedNode.message === null
+        ? 'null'
+        : selectedNode.message;
   }
 
   private hideOrShowCheckpoints(

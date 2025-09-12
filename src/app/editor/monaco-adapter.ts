@@ -9,11 +9,13 @@
 // 'pretty': Editor shows a prettified value that cannot be edited.
 type StatusType = 'no-checkpoint' | 'editable' | 'pretty';
 type FormatType = 'xml' | 'json' | 'none';
+export type ValueEditableType = 'monaco-editable' | 'not-monaco-editable' | 'not-editable';
 
 const INDENT_TWO_SPACES = '  ';
 
 export class MonacoAdapter {
-  isEditorReadOnly: boolean;
+  private isEditorReadOnly: boolean = true;
+  private valueEditable: ValueEditableType = 'not-editable';
   // Only when status is "no-checkpoint", then originalCheckpointValue and editedCheckpointValue can be undefined.
   private status: StatusType = 'no-checkpoint';
   private originalCheckpointValue?: string | null;
@@ -31,6 +33,23 @@ export class MonacoAdapter {
     this.isEditorReadOnly = initialIsEditorReadOnly;
   }
 
+  getMonacoEditingMakesSense(): boolean {
+    return this.valueEditable === 'monaco-editable';
+  }
+
+  getEditingMakesSense(): boolean {
+    return this.valueEditable === 'monaco-editable' || this.valueEditable === 'not-monaco-editable';
+  }
+
+  getEditorReadOnly(): boolean {
+    return this.isEditorReadOnly;
+  }
+
+  setEditorReadOnly(isReadOnly: boolean): void {
+    this.isEditorReadOnly = isReadOnly;
+    this.checkIntegrity('MonacoAdapter.setEditorReadOnly');
+  }
+
   hasCheckpoint(): boolean {
     return this.status !== 'no-checkpoint';
   }
@@ -44,13 +63,15 @@ export class MonacoAdapter {
   }
 
   // Returns editor contents to request
-  setOriginalCheckpointValue(value: string | null): string {
+  setOriginalCheckpointValue(value: string | null, valueEditable: ValueEditableType): string {
+    this.valueEditable = valueEditable;
     this.status = 'editable';
     this.originalCheckpointValue = value;
     this.editedToNull = value === null;
     this.updateEditedCheckpointValue(value);
     this.detectFormat();
     this.prettyEditorContents = undefined;
+    this.checkIntegrity('MonacoAdapter.setOriginalCheckpointValue()');
     return this.getRequestedEditorContents(this.originalCheckpointValue);
   }
 
@@ -121,6 +142,10 @@ export class MonacoAdapter {
 
   // Call when editor is hopefully not busy - check with isEditorStableForMs.
   detectFormat(): FormatType {
+    this.checkIntegrity('MonacoAdapter.detectFormat()');
+    if (this.status === 'pretty') {
+      return this.detectedFormat;
+    }
     if (this.status !== 'editable' || this.editedCheckpointValue === null) {
       this.detectedFormat = 'none';
     } else if (this.checkIfXml(this.editedCheckpointValue!)) {
@@ -165,6 +190,11 @@ export class MonacoAdapter {
   }
 
   private checkIntegrity(caller: string): void {
+    if (!this.isEditorReadOnly && !this.getMonacoEditingMakesSense()) {
+      throw new Error(
+        `MonacoAdapter.checkIntegrity() on behalf of ${caller}: The Monaco editor is not read-only while editing does not make sense`,
+      );
+    }
     if (this.status === 'no-checkpoint') {
       if (this.originalCheckpointValue !== undefined) {
         throw new Error(

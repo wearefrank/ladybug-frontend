@@ -139,7 +139,8 @@ export class EditDisplayComponent implements OnChanges {
   }
 
   convertMessage(checkpoint: Checkpoint): string {
-    let message: string = checkpoint.message;
+    // TODO: Fix for null
+    let message: string = checkpoint.message === null ? 'null' : checkpoint.message;
     if (checkpoint.encoding == 'Base64') {
       message = btoa(message);
     }
@@ -205,7 +206,7 @@ export class EditDisplayComponent implements OnChanges {
       const diff = new DiffMatchPatch().diff_main(node.message ?? '', this.editor?.getValue());
       reportDifferences.push({
         name: 'message',
-        originalValue: node.message,
+        originalValue: this.forDifference(node.message),
         difference: diff,
       });
     }
@@ -429,5 +430,9 @@ export class EditDisplayComponent implements OnChanges {
           },
         });
     }
+  }
+
+  private forDifference(value: string | null): string {
+    return value === null ? 'null' : `not null: ${value}`;
   }
 }
