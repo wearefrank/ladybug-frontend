@@ -18,12 +18,10 @@ import {
   NgbDropdownItem,
   NgbDropdownMenu,
   NgbDropdownToggle,
-  NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '../../shared/services/http.service';
 import DiffMatchPatch from 'diff-match-patch';
 import { HelperService } from '../../shared/services/helper.service';
-import { EditorComponent } from '../../editor/editor.component';
 import { Report } from '../../shared/interfaces/report';
 import { MetadataTableComponent } from '../../shared/components/metadata-table/metadata-table.component';
 import { MessagecontextTableComponent } from '../../shared/components/messagecontext-table/messagecontext-table.component';
@@ -52,11 +50,7 @@ import { StubStrategy } from '../../shared/enums/stub-strategy';
 import { ReportAlertMessageComponent } from '../report-alert-message/report-alert-message.component';
 import { Router } from '@angular/router';
 import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.component';
-
-const basicContentTypes = ['raw'] as const;
-const prettyContentTypes = ['xml', 'json'] as const;
-const editorViewsConst = [...basicContentTypes, ...prettyContentTypes] as const;
-type EditorView = (typeof editorViewsConst)[number];
+import { MonacoAdapter } from 'src/app/editor/monaco-adapter';
 
 @Component({
   selector: 'app-edit-display',
@@ -88,27 +82,23 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
   @Input() containerHeight!: number;
   @Input({ required: true }) currentView!: View;
   @Input() newTab = true;
-  @ViewChild(EditorComponent) editor!: EditorComponent;
   @ViewChild(EditFormComponent) editFormComponent!: EditFormComponent;
   @ViewChild(DifferenceModalComponent)
   differenceModal!: DifferenceModalComponent;
   @ViewChild('topComponent') topComponent?: ElementRef;
-  @ViewChild('statusBarElement') statusBar?: ElementRef;
   @ViewChild('editToggleButton') editToggleButton!: ToggleButtonComponent;
 
-  editingEnabled = false;
-  editingChildNode = false;
-  editingRootNode = false;
+  // These variables control directly what is shown.
+  selectedNode?: Report | Checkpoint;
   metadataTableVisible = false;
   messageContextTableVisible = false;
-  displayReport = false;
+  toggleEditingEnabled = false;
+  reportStubStrategy?: string;
+  checkpointStub?: number;
   rerunResult?: TestResult;
-  selectedNode?: Report | Checkpoint;
-  stub?: number;
-  stubStrategy?: string;
-
-  requestedEditorContent?: string;
-
+  isEditing: boolean = false;
+  originalCheckpointValue?: string | null;
+  monacoEditorHeight!: number;
   options: any = {
     theme: 'vs-light',
     language: 'xml',
@@ -119,15 +109,14 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
     renderFinalNewline: false,
     scrollBeyondLastLine: false,
   };
+  requestedMonacoEditorContent: string = '';
+  monacoEditorHasUnsavedChanges = false;
+  displayReport = false;
 
   protected readonly ReportUtil = ReportUtil;
   protected readonly Number: NumberConstructor = Number;
   protected readonly StubStrategy = StubStrategy;
-
   protected appVariablesService = inject(AppVariablesService);
-  protected monacoEditorHeight!: number;
-
-  private modalService = inject(NgbModal);
   private httpService = inject(HttpService);
   private helperService = inject(HelperService);
   private toastService = inject(ToastService);
@@ -137,8 +126,7 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
 
-  private originalCheckpointValue?: string | null;
-  private unsavedChanges = false;
+  private monacoCheckpointAdapter = new MonacoAdapter(true);
 
   ngAfterViewInit(): void {
     this.setMonacoEditorHeight();
@@ -151,20 +139,33 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
   }
 
   showReport(node: Report | Checkpoint): void {
-    this.disableEditing();
+    this.isEditing = false;
+    this.toggleEditingEnabled = false;
     this.selectedNode = node;
-    this.stub = node.stub;
+    this.metadataTableVisible = false;
+    this.messageContextTableVisible = false;
+    this.checkpointStub = node.stub;
+    this.rerunResult = undefined;
     if (ReportUtil.isReport(this.selectedNode)) {
-      this.stubStrategy = this.selectedNode.stubStrategy;
-      this.editor.setNewCheckpoint(this.selectedNode.xml);
+      this.reportStubStrategy = this.selectedNode.stubStrategy;
+      this.requestedMonacoEditorContent = this.selectedNode.xml;
     } else if (ReportUtil.isCheckPoint(this.selectedNode)) {
-      this.editor.setNewCheckpoint(this.convertMessage(this.selectedNode));
+      this.reportStubStrategy = undefined;
+      this.monacoCheckpointAdapter.clear();
+      // TODO: Edit convertMessage to allow null value.
+      // TODO: Do not allow editing binary values.
+      const originalCheckpointValue: string | null = this.convertMessage(this.selectedNode);
+      this.requestedMonacoEditorContent = this.monacoCheckpointAdapter.setOriginalCheckpointValue(originalCheckpointValue);
     }
     this.rerunResult = undefined;
     this.displayReport = true;
   }
 
-  convertMessage(checkpoint: Checkpoint): string {
+  onActualMonacoEditorContentsChange(value: string): void {
+
+  }
+
+  private convertMessage(checkpoint: Checkpoint): string {
     let message: string = checkpoint.message;
     if (checkpoint.encoding == 'Base64') {
       message = btoa(message);
@@ -199,7 +200,7 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
   closeReport(): void {
     this.displayReport = false;
     this.editingRootNode = false;
-    this.editingChildNode = false;
+    this.editingCheckpoint = false;
     this.editor.setNewCheckpoint('');
   }
 
@@ -263,17 +264,9 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
     if (ReportUtil.isReport(node)) {
       this.editingRootNode = true;
     } else {
-      this.editingChildNode = true;
+      this.editingCheckpoint = true;
     }
-    this.editingEnabled = true;
-  }
-
-  disableEditing(): void {
-    if (this.editingChildNode) {
-      this.editingChildNode = false;
-    }
-    this.editingRootNode = false;
-    this.editingEnabled = false;
+    this.toggleEditingEnabled = true;
   }
 
   updateReportStubStrategy(strategy: string): void {
@@ -292,7 +285,7 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
   }
 
   openStubDifferenceModal(originalValue: string, difference: string): void {
-    if (this.editingEnabled) {
+    if (this.toggleEditingEnabled) {
       this.toastService.showWarning('Save or discard your changes before updating the stub strategy');
     } else {
       const reportDifferences: ReportDifference[] = [];
@@ -319,7 +312,7 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
       }
       let body;
       if (stubChange) {
-        body = checkpointId ? { stub: this.stub, checkpointId: checkpointId } : { stubStrategy: this.stubStrategy };
+        body = checkpointId ? { stub: this.checkpointStub, checkpointId: checkpointId } : { stubStrategy: this.reportStubStrategy };
       } else {
         body = this.getReportValues(checkpointId);
       }
@@ -366,14 +359,6 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
 
   toggleMessageContextTable(): void {
     this.messageContextTableVisible = !this.messageContextTableVisible;
-  }
-
-  showEditorPossibilitiesModal(modal: any): void {
-    this.modalService.open(modal, {
-      backdrop: true,
-      backdropClass: 'modal-backdrop',
-      modalDialogClass: 'modal-window',
-    });
   }
 
   copyReport(): void {
@@ -457,22 +442,21 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
     }
   }
 
-  /* Copied */
+  private setMonacoEditorHeight(): void {
+    const topComponentHeight = this.topComponent ? this.topComponent?.nativeElement.offsetHeight : 47;
+    this.monacoEditorHeight = this.containerHeight - topComponentHeight;
+    this.cdr.detectChanges();
+  }
 
-  isPrettified = false;
-  currentView: EditorView = 'raw';
-  editorChangesSubject: Subject<string> = new Subject<string>();
+  /* Copied */
 
   //Settings attributes
   showPrettifyOnLoad = true;
   availableViews!: EditorView[];
   contentType!: EditorView;
 
-  editorFocused = false;
-
   private actualEditorContent?: string | null;
 
-  private readonly INDENT_TWO_SPACES: string = '  ';
   private subscriptions: Subscription = new Subscription();
 
   private settingsService = inject(SettingsService);
@@ -487,7 +471,6 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.subscribeToEditorChanges();
     this.subscribeToSettings();
   }
 
@@ -495,12 +478,8 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
     this.subscriptions.unsubscribe();
   }
 
-  onFocusedChanged(focused: boolean): void {
-    this.editorFocused = focused;
-  }
-
   onSave(): void {
-    if (this.unsavedChanges && this.requestedEditorContent) {
+    if (this.unsavedChanges && this.requestedMonacoEditorContent) {
       this.openDifferenceModal('save');
     }
   }
@@ -512,25 +491,6 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
     this.subscriptions.add(prettifyOnLoad);
   }
 
-  subscribeToEditorChanges(): void {
-    /*
-    const editorChangesSubscription: Subscription = this.editorChangesSubject
-      .pipe(debounceTime(300))
-      .subscribe((value: string) => {
-        this.checkIfTextIsPretty();
-      });
-    this.subscriptions.add(editorChangesSubscription);
-    */
-    const editorChangesSubscription: Subscription = this.editorChangesSubject.subscribe((value) => {
-      if (this.requestedEditorContent !== undefined && this.requestedEditorContent !== null) {
-        this.actualEditorContent = value;
-      } else {
-        this.actualEditorContent = null;
-      }
-    });
-    this.subscriptions.add(editorChangesSubscription);
-  }
-
   initEditor(): void {
     this.checkIfTextIsPretty();
     if (this.showPrettifyOnLoad) {
@@ -538,145 +498,8 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
     }
   }
 
-  checkIfTextIsPretty(): boolean {
-    if (this.requestedEditorContent) {
-      prettier
-        .check(this.requestedEditorContent, {
-          parser: 'html',
-          plugins: [prettierPluginHtml],
-          bracketSameLine: true,
-        })
-        .then((value: boolean) => (this.isPrettified = value));
-    }
-    return this.isPrettified;
-  }
-
-  onViewChange(value: EditorView): void {
-    this.currentView = value;
-    if (this.originalCheckpointValue !== undefined && this.originalCheckpointValue !== null) {
-      if (this.currentView === 'raw') {
-        this.requestedEditorContent = this.originalCheckpointValue;
-        this.isPrettified = false;
-      } else {
-        this.prettify(this.originalCheckpointValue).then((prettifyResult) => {
-          this.requestedEditorContent = prettifyResult.text;
-          this.isPrettified = prettifyResult.isPrettified;
-        });
-      }
-    }
-  }
-
-  private setMonacoEditorHeight(): void {
-    const topComponentHeight = this.topComponent ? this.topComponent?.nativeElement.offsetHeight : 47;
-    const statusBarHeight = this.statusBar ? this.statusBar?.nativeElement.offsetHeight : 40;
-    this.monacoEditorHeight = this.containerHeight - topComponentHeight - statusBarHeight;
-    this.cdr.detectChanges();
-  }
-
-  private prettify(text: string): Promise<PrettifyResult> {
-    return new Promise<PrettifyResult>((resolve) => {
-      if (this.currentView === 'xml' && this.contentType === 'xml') {
-        prettier
-          .format(text, {
-            parser: 'html',
-            plugins: [prettierPluginHtml],
-            bracketSameLine: true,
-          })
-          .then((result: string): void => {
-            resolve({ text: result, isPrettified: true });
-          });
-      }
-      if (this.currentView === 'json' && this.contentType === 'json') {
-        const jsonFormatted: string = JSON.stringify(JSON.parse(text), null, this.INDENT_TWO_SPACES);
-        resolve({ text: jsonFormatted, isPrettified: true });
-      }
-      resolve({ text, isPrettified: false });
-    });
-  }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  onActualEditorContentsChange(event: string): void {
-    console.log(`EditorComponent.onActualEditorContentsChange(): ${event.slice(0, 20)}`);
-    this.editorChangesSubject.next(event);
-    this.unsavedChanges = event !== this.originalCheckpointValue;
-  }
-
-  private setNewCheckpoint(value: string | null): void {
-    console.log('Got checkpoint value null');
-    this.originalCheckpointValue = value;
-    this.setContentType();
-    this.setAvailableViews();
-    if (value !== undefined && value !== null && value !== '') {
-      this.requestedEditorContent = value;
-      this.checkIfTextIsPretty();
-      if (this.showPrettifyOnLoad && this.isPrettifiable(this.contentType)) {
-        this.onViewChange(this.contentType);
-        return;
-      }
-      this.onViewChange('raw');
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  setContentType(): void {
-    if (this.originalCheckpointValue === undefined) {
-      throw new Error(
-        'EditorComponent.setContentType: expected that originalCheckpointValue was set because we call this method when a new checkpoint is selected',
-      );
-    }
-    if (this.originalCheckpointValue === null) {
-      this.contentType = 'raw';
-      return;
-    }
-    if (this.checkIfFileIsXml(this.originalCheckpointValue)) {
-      this.contentType = 'xml';
-      return;
-    }
-    try {
-      if (this.originalCheckpointValue && JSON.parse(this.originalCheckpointValue)) {
-        this.contentType = 'json';
-        return;
-      }
-    } catch {
-      //If error occurs, rawFile is not a json file
-    }
-    this.contentType = 'raw';
-  }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  checkIfFileIsXml(value: string): boolean {
-    if (value) {
-      for (let index = 0; index < value.length; index++) {
-        if (value.charAt(index) === ' ' || value.charAt(index) === '\t') {
-          continue;
-        }
-        return value.charAt(index) === '<';
-      }
-    }
-    return false;
-  }
-
   // eslint-disable-next-line @typescript-eslint/member-ordering
   getValue(): string {
     return this.actualEditorContent ?? '';
-  }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  setAvailableViews(): void {
-    const availableViews: EditorView[] = [...basicContentTypes];
-    if (!availableViews.includes(this.contentType)) {
-      availableViews.push(this.contentType);
-    }
-    this.availableViews = availableViews;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  isPrettifiable(value: EditorView): boolean {
-    return prettyContentTypes.includes(value as PrettyView);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  isBasicView(value: EditorView): boolean {
-    return basicContentTypes.includes(value as BasicView);
   }
 }

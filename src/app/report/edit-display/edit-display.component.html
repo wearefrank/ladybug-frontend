@@ -50,7 +50,7 @@
           #editToggleButton
           data-cy-report="toggleEdit"
           [labels]="{on: 'Edit', off: 'View'}"
-          [value]="editingEnabled"
+          [value]="toggleEditingEnabled"
           (valueChanged)="toggleEditMode($event)"
         ></app-toggle-button>
 
@@ -58,8 +58,8 @@
         <button
           data-cy-report="rerun"
           class="btn btn-info"
-          [title]=" editingEnabled ? 'Please save your changes to rerun the report' : 'Rerun this report'"
-          [disabled]="editingEnabled"
+          [title]=" toggleEditingEnabled ? 'Please save your changes to rerun the report' : 'Rerun this report'"
+          [disabled]="toggleEditingEnabled"
           (click)="openDifferenceModal('saveRerun')"
         >Rerun
         </button>
@@ -69,7 +69,7 @@
             {{ appVariablesService.getVariable("customReportActionButtonText") }}
         </button>
         }
-        @if (editingEnabled) {
+        @if (toggleEditingEnabled) {
           <button
             data-cy-report="discard"
             class="btn btn-danger"
@@ -80,16 +80,21 @@
             data-cy-report="save"
             class="btn btn-info"
             title="Save"
+            [disabled]="!monacoEditorHasUnsavedChanges"
             (click)="openDifferenceModal('save')"
           ><i class="fa fa-save"></i></button>
         }
+        <!--
+          TODO: Add button to edit to value null.
+          TODO: Reintroduce prettify.
+        -->
         <app-encoding-button [selectedNode]="selectedNode"
-                             (updatedMessageEvent)="editor.setNewCheckpoint($event)"></app-encoding-button>
+                             (updatedMessageEvent)="setNewCheckpoint($event)"></app-encoding-button>
 
 
         @if (ReportUtil.isReport(selectedNode)) {
           <div class="w-fit mx-1 my-0" [title]="reportStubStrategy.disabled ? 'This report is in a readonly storage, copy it to the test tab to make changes' : null">
-            <select #reportStubStrategy class="form-control" [disabled]="!ReportUtil.isFromCrudStorage(selectedNode)" [(ngModel)]="stubStrategy"
+            <select #reportStubStrategy class="form-control" [disabled]="!ReportUtil.isFromCrudStorage(selectedNode)" [(ngModel)]="reportStubStrategy"
                     (ngModelChange)="updateReportStubStrategy($event)">
               @for (strategy of StubStrategy.report; track strategy) {
                 <option [ngValue]="strategy" [selected]="selectedNode.stubStrategy === strategy">{{ strategy }}
@@ -99,7 +104,7 @@
           </div>
         } @else if (ReportUtil.isCheckPoint(selectedNode) && ReportUtil.hasValidUid(selectedNode.uid)) {
           <div class="w-fit mx-1 my-0" [title]="checkpointStubStrategy.disabled ? 'This report is in a readonly storage, copy it to the test tab to make changes' : null">
-            <select #checkpointStubStrategy class="form-control" [disabled]="!ReportUtil.isFromCrudStorage(selectedNode)" [(ngModel)]="stub"
+            <select #checkpointStubStrategy class="form-control" [disabled]="!ReportUtil.isFromCrudStorage(selectedNode)" [(ngModel)]="checkpointStub"
                     (ngModelChange)="updateCheckpointStubStrategy($event)">
               @for (strategy of StubStrategy.checkpoints; track strategy; let index = $index) {
                 <option [ngValue]="index - 1" [selected]="selectedNode.stub === index - 1">{{ strategy }}</option>
@@ -108,13 +113,6 @@
           </div>
         }
       }
-      <div
-        class="mr-2 cursor-pointer ml-auto"
-        title="Show possibilities with editor"
-        [style.visibility]="editingEnabled ? 'hidden' : 'visible'"
-        (click)="showEditorPossibilitiesModal(possibilitiesModal)"
-      ><i class="bi bi-info-circle info-circle-size"></i></div>
-    </div>
   </div>
 
   @if (rerunResult) {
@@ -133,18 +131,10 @@
 </div>
 
 
-@if (editingRootNode && ReportUtil.isReport(selectedNode)) {
+@if (isEditing && ReportUtil.isReport(selectedNode)) {
   <app-edit-form [report]="selectedNode"/>
 }
-<!--
-<app-editor
-  data-cy-report="editor"
-  [hidden]="editingRootNode"
-  [containerHeight]="calculatedHeight"
-  [readOnlyMode]="!editingChildNode"
-  (saveReportRequest)="openDifferenceModal('save')"
-/>
--->
+
 @if (originalCheckpointValue) {
   <div class="position-relative overflow-hidden" [style.height]="containerHeight + 'px'">
     <div class="editor">
@@ -153,46 +143,10 @@
         [height]="monacoEditorHeight"
         (onInit)="initEditor()"
         [options]="options"
-        [requestedEditorContents]="requestedEditorContent"
-        (actualEditorContentsChange)="onActualEditorContentsChange($event)"
-        [requestedReadOnly]="!editingChildNode"
-        (focusedChange)="onFocusedChanged($event)">
+        [requestedEditorContents]="requestedMonacoEditorContent"
+        (actualEditorContentsChange)="onActualMonacoEditorContentsChange($event)"
+        [requestedReadOnly]="!isEditing || ReportUtil.isReport(selectedNode)">
       </app-monaco-editor>
-    </div>
-    <div #statusBarElement class="status-bar">
-      <div class="status-left-side">
-        @if (!readOnlyMode) {
-          <div class="status"
-               [title]="unsavedChanges ? 'This file has unsaved changed, press ctrl + s to save' : 'No unsaved changes'">
-            <i class="bi bi-floppy"></i>
-            <span class="status-text">{{ unsavedChanges ? 'Unsaved' : 'Saved' }}</span>
-          </div>
-        }
-        <div class="status"
-             [title]="editorFocused ? 'Editor is in focus, commands can be run: press F1 for options' : 'Editor is not in focus, click on the editor to focus'">
-          @if (editorFocused) {
-            <i class="bi bi-eye-fill icon-size"></i>
-          } @else {
-            <i class="bi bi-eye-slash-fill icon-size"></i>
-          }
-          <span class="status-text">{{ editorFocused ? 'Focused' : 'Unfocused' }}</span>
-        </div>
-      </div>
-      <div class="status-right-side">
-        @if (availableViews) {
-          <select
-            class="status-drop-down"
-            data-cy-editor="viewDropDown"
-            [title]="'Current view: ' + currentView"
-            [disabled]="availableViews.length <= 1"
-            [(ngModel)]="currentView"
-            (ngModelChange)="onViewChange($event)">
-            @for (view of availableViews; track view) {
-              <option [selected]="view === currentView" [ngValue]="view">{{ view|titlecase }}</option>
-            }
-          </select>
-        }
-      </div>
     </div>
   </div>
 }
@@ -201,25 +155,3 @@
   <app-difference-modal (saveChangesEvent)="saveChanges($event)" (discardChangesEvent)="discardChanges()"
                         (rerunEvent)="rerunReport()"/>
 }
-
-<ng-template #possibilitiesModal let-modal>
-  <div class="modal-header d-flex align-items-center">
-    <div class="modal-title h5">Possibilities for editor</div>
-    <button type="button" class="close" (click)="modal.dismiss()">&times;</button>
-  </div>
-  <div class="modal-content pt-3 fs-3">
-    <p class="text-center mx-4 text-danger h6">
-      Please make sure that the editor is focused when running commands, which is shown with the eye
-      <i class="bi bi-eye-fill text-dark"></i>
-      icon.
-    </p>
-    <br>
-    <br>
-    <div class="mx-auto text-left">
-      <p><kbd>F1</kbd>: Show all possible commands</p>
-      <p><kbd>Ctrl + F</kbd>: Search document</p>
-      <p><kbd>Ctrl + G</kbd>: Go to line/column</p>
-      <p><kbd>Ctrl + A</kbd>: Select all</p>
-    </div>
-  </div>
-</ng-template>
