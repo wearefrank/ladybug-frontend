@@ -41,7 +41,7 @@
     }
     @if (report.preTruncatedMessageLength > 0) {
       <div class="btn btn-static px-2">
-        Message is truncated ({{ report.preTruncatedMessageLength - report.message.length }} characters removed)
+        Message is truncated ({{ report.preTruncatedMessageLength - (report.message?.length ?? 0)}} characters removed)
       </div>
     }
 

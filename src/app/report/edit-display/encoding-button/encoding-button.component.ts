@@ -30,14 +30,17 @@ export class EncodingButtonComponent implements OnChanges {
       this.toastService.showDanger('Could not find report to change encoding');
       return;
     }
-    let message: string;
-    if (this.buttonType == 'Base64') {
-      message = node.message;
-      this.updateButton(true);
-    } else {
-      message = btoa(node.message);
-      this.updateButton(false);
+    let message: string = '';
+    if (node.message !== null) {
+      if (this.buttonType == 'Base64') {
+        message = node.message;
+        this.updateButton(true);
+      } else {
+        message = btoa(node.message);
+        this.updateButton(false);
+      }
     }
+    // TODO: message value null not properly handled.
     this.updatedMessageEvent.emit(message);
   }
 

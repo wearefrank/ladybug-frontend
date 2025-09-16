@@ -232,7 +232,7 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
       const diff = new DiffMatchPatch().diff_main(node.message ?? '', this.editor?.getValue());
       reportDifferences.push({
         name: 'message',
-        originalValue: node.message,
+        originalValue: this.forDifference(node.message),
         difference: diff,
       });
     }
@@ -501,5 +501,9 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
   // eslint-disable-next-line @typescript-eslint/member-ordering
   getValue(): string {
     return this.actualEditorContent ?? '';
+  }
+
+  private forDifference(value: string | null): string {
+    return value === null ? 'null' : `not null: ${value}`;
   }
 }
