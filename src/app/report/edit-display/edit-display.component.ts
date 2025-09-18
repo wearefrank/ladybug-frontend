@@ -52,6 +52,11 @@ import { Router } from '@angular/router';
 import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.component';
 import { MonacoAdapter } from 'src/app/editor/monaco-adapter';
 
+interface ToastCallbackButton {
+  callbackButtonText: string,
+  callback: () => void
+}
+
 @Component({
   selector: 'app-edit-display',
   templateUrl: './edit-display.component.html',
@@ -146,31 +151,140 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
     this.messageContextTableVisible = false;
     this.checkpointStub = node.stub;
     this.rerunResult = undefined;
+    this.monacoCheckpointAdapter.clear();
     if (ReportUtil.isReport(this.selectedNode)) {
       this.reportStubStrategy = this.selectedNode.stubStrategy;
-      this.requestedMonacoEditorContent = this.selectedNode.xml;
+      this.requestedMonacoEditorContent = this.monacoCheckpointAdapter.setOriginalCheckpointValue(this.selectedNode.xml, 'not-monaco-editable');
     } else if (ReportUtil.isCheckPoint(this.selectedNode)) {
       this.reportStubStrategy = undefined;
-      this.monacoCheckpointAdapter.clear();
-      // TODO: Edit convertMessage to allow null value.
-      // TODO: Do not allow editing binary values.
-      const originalCheckpointValue: string | null = this.convertMessage(this.selectedNode);
-      this.requestedMonacoEditorContent = this.monacoCheckpointAdapter.setOriginalCheckpointValue(originalCheckpointValue);
+      const selectedNodeAsCheckpoint = this.selectedNode as Checkpoint;
+      if (selectedNodeAsCheckpoint.encoding) {
+        this.requestedMonacoEditorContent = this.monacoCheckpointAdapter.setOriginalCheckpointValue(selectedNodeAsCheckpoint.message, 'not-editable');
+      } else {
+        this.requestedMonacoEditorContent = this.monacoCheckpointAdapter.setOriginalCheckpointValue(selectedNodeAsCheckpoint.message, 'monaco-editable');
+      }
     }
+    this.applyMonacoAdapterChanges();
     this.rerunResult = undefined;
     this.displayReport = true;
   }
 
-  onActualMonacoEditorContentsChange(value: string): void {
-
+  closeReport(): void {
+    this.displayReport = false;
+    this.monacoCheckpointAdapter.clear();
+    this.applyMonacoAdapterChanges();
   }
 
-  private convertMessage(checkpoint: Checkpoint): string {
-    let message: string = checkpoint.message;
-    if (checkpoint.encoding == 'Base64') {
-      message = btoa(message);
+  copyReport(): void {
+    const node: Report | Checkpoint = this.selectedNode!;
+    let storageId: number;
+    storageId = ReportUtil.isReport(node)
+      ? node.storageId
+      : (node.storageId ?? Number.parseInt(node.uid.split('#')[0]));
+    const data: Record<string, number[]> = {
+      [this.currentView.storageName]: [storageId!],
+    };
+    this.httpService
+      .copyReport(data, 'Test')
+      .pipe(catchError(this.errorHandler.handleError()))
+      .subscribe({
+        next: () => {
+          this.testReportsService.getReports();
+          this.toastService.showSuccess('Copied report to testtab', {
+            buttonText: 'Go to test tab',
+            callback: () => this.router.navigate(['/test']),
+          });
+        },
+      }); // TODO: storage is hardcoded, fix issue #196 for this
+  }
+
+  downloadReport(exportBinary: boolean, exportXML: boolean): void {
+    const node: Report | Checkpoint = this.selectedNode!;
+    let queryString = 'id=';
+    if (ReportUtil.isReport(node)) {
+      queryString += String(node.storageId);
+    } else if (ReportUtil.isCheckPoint(node)) {
+      queryString += node.uid.split('#')[0];
+    } else {
+      queryString = '';
     }
-    return message;
+    if (!queryString) {
+      this.toastService.showDanger('Could not find report to download');
+      return;
+    }
+    this.helperService.download(`${queryString}&`, this.currentView.storageName, exportBinary, exportXML);
+    this.toastService.showSuccess('Report Downloaded!');
+  }
+
+  toggleMetadataTable(): void {
+    this.metadataTableVisible = !this.metadataTableVisible;
+  }
+
+  toggleMessageContextTable(): void {
+    this.messageContextTableVisible = !this.messageContextTableVisible;
+  }
+
+  toggleEditMode(value: boolean): void {
+    if (this.selectedNode && ReportUtil.isFromCrudStorage(this.selectedNode)) {
+      if (this.monacoCheckpointAdapter.getEditingMakesSense()) {
+        if(this.monacoCheckpointAdapter.getValueIsShownPretty()) {
+          this.showToastWarning('Cannot edit value that is shown prettified');
+        } else {
+          this.changeEditMode(value);
+        }
+      } else {
+        this.showToastWarning('Shown value is encoded, cannot edit');
+      }
+    } else {
+      this.showNotEditableWarning();
+    }
+  }
+
+  openDifferenceModal(type: ChangesAction): void {
+    const node: Report | Checkpoint = this.selectedNode!;
+    let reportDifferences: ReportDifference[] = [];
+    if (ReportUtil.isReport(node) && this.editFormComponent) {
+      reportDifferences = this.editFormComponent.getDifferences();
+    } else if (ReportUtil.isCheckPoint(node) && this.monacoEditorHasUnsavedChanges) {
+      const diff = new DiffMatchPatch().diff_main(
+        this.forDifference(this.monacoCheckpointAdapter.getOriginalCheckpointValue()),
+        this.forDifference(this.monacoCheckpointAdapter.getEditedCheckpointValue()));
+      reportDifferences.push({
+        name: 'message',
+        originalValue: this.forDifference(node.message),
+        difference: diff,
+      });
+    }
+
+    if (reportDifferences.length > 0) {
+      this.differenceModal.open(reportDifferences, type);
+    } else if (type === 'saveRerun') {
+      this.rerunReport();
+    }
+  }
+
+  saveChanges(stubChange: boolean): void {
+    if (this.selectedNode) {
+      const node: Report | Checkpoint = this.selectedNode;
+      let checkpointId: string | undefined;
+      let storageId: string;
+      if (ReportUtil.isReport(node)) {
+        storageId = String(node.storageId);
+      } else if (ReportUtil.isCheckPoint(node)) {
+        [storageId, checkpointId] = node.uid.split('#');
+      } else {
+        return;
+      }
+      let body;
+      if (stubChange) {
+        body = checkpointId ? { stub: this.checkpointStub, checkpointId: checkpointId } : { stubStrategy: this.reportStubStrategy };
+      } else {
+        body = this.getReportValues(checkpointId);
+      }
+      this.updateReport(storageId, body, node);
+    } else {
+      this.toastService.showWarning('Please select a node in the debug tree');
+    }
   }
 
   rerunReport(): void {
@@ -197,50 +311,8 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
     }
   }
 
-  closeReport(): void {
-    this.displayReport = false;
-    this.editingRootNode = false;
-    this.editingCheckpoint = false;
-    this.editor.setNewCheckpoint('');
-  }
-
-  downloadReport(exportBinary: boolean, exportXML: boolean): void {
-    const node: Report | Checkpoint = this.selectedNode!;
-    let queryString = 'id=';
-    if (ReportUtil.isReport(node)) {
-      queryString += String(node.storageId);
-    } else if (ReportUtil.isCheckPoint(node)) {
-      queryString += node.uid.split('#')[0];
-    } else {
-      queryString = '';
-    }
-    if (!queryString) {
-      this.toastService.showDanger('Could not find report to download');
-      return;
-    }
-    this.helperService.download(`${queryString}&`, this.currentView.storageName, exportBinary, exportXML);
-    this.toastService.showSuccess('Report Downloaded!');
-  }
-
-  openDifferenceModal(type: ChangesAction): void {
-    console.log(`openDifferenceModal with type=${type}`);
-    const node: Report | Checkpoint = this.selectedNode!;
-    let reportDifferences: ReportDifference[] = [];
-    if (ReportUtil.isReport(node) && this.editFormComponent) {
-      reportDifferences = this.editFormComponent.getDifferences();
-    } else if (ReportUtil.isCheckPoint(node) && this.editor?.getValue() !== node.message) {
-      const diff = new DiffMatchPatch().diff_main(node.message ?? '', this.editor?.getValue());
-      reportDifferences.push({
-        name: 'message',
-        originalValue: this.forDifference(node.message),
-        difference: diff,
-      });
-    }
-    if (reportDifferences.length > 0) {
-      this.differenceModal.open(reportDifferences, type);
-    } else {
-      this.rerunReport();
-    }
+  onActualMonacoEditorContentsChange(value: string): void {
+    this.monacoCheckpointAdapter.onEditorContentsChanged(value);
   }
 
   getReportValues(checkpointId?: string): UpdateReport | UpdateCheckpoint {
@@ -257,16 +329,6 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
       // checkpointMessage can only be updated when stub is not in request body
       checkpointMessage: this.editor.getValue(),
     };
-  }
-
-  editReport(): void {
-    const node: Report | Checkpoint = this.selectedNode!;
-    if (ReportUtil.isReport(node)) {
-      this.editingRootNode = true;
-    } else {
-      this.editingCheckpoint = true;
-    }
-    this.toggleEditingEnabled = true;
   }
 
   updateReportStubStrategy(strategy: string): void {
@@ -295,30 +357,6 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
         difference: difference,
       });
       this.differenceModal.open(reportDifferences, 'save', true);
-    }
-  }
-
-  saveChanges(stubChange: boolean): void {
-    if (this.selectedNode) {
-      const node: Report | Checkpoint = this.selectedNode;
-      let checkpointId: string | undefined;
-      let storageId: string;
-      if (ReportUtil.isReport(node)) {
-        storageId = String(node.storageId);
-      } else if (ReportUtil.isCheckPoint(node)) {
-        [storageId, checkpointId] = node.uid.split('#');
-      } else {
-        return;
-      }
-      let body;
-      if (stubChange) {
-        body = checkpointId ? { stub: this.checkpointStub, checkpointId: checkpointId } : { stubStrategy: this.reportStubStrategy };
-      } else {
-        body = this.getReportValues(checkpointId);
-      }
-      this.updateReport(storageId, body, node);
-    } else {
-      this.toastService.showWarning('Please select a node in the debug tree');
     }
   }
 
@@ -351,65 +389,6 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
       this.editor.setNewCheckpoint(node.message);
     }
     this.toastService.showSuccess('Changes discarded!');
-  }
-
-  toggleMetadataTable(): void {
-    this.metadataTableVisible = !this.metadataTableVisible;
-  }
-
-  toggleMessageContextTable(): void {
-    this.messageContextTableVisible = !this.messageContextTableVisible;
-  }
-
-  copyReport(): void {
-    const node: Report | Checkpoint = this.selectedNode!;
-    let storageId: number;
-    storageId = ReportUtil.isReport(node)
-      ? node.storageId
-      : (node.storageId ?? Number.parseInt(node.uid.split('#')[0]));
-    const data: Record<string, number[]> = {
-      [this.currentView.storageName]: [storageId!],
-    };
-    this.httpService
-      .copyReport(data, 'Test')
-      .pipe(catchError(this.errorHandler.handleError()))
-      .subscribe({
-        next: () => {
-          this.testReportsService.getReports();
-          this.toastService.showSuccess('Copied report to testtab', {
-            buttonText: 'Go to test tab',
-            callback: () => this.router.navigate(['/test']),
-          });
-        },
-      }); // TODO: storage is hardcoded, fix issue #196 for this
-  }
-
-  toggleEditMode(value: boolean): void {
-    if (this.selectedNode && ReportUtil.isFromCrudStorage(this.selectedNode)) {
-      this.changeEditMode(value);
-    } else {
-      this.showNotEditableWarning();
-    }
-  }
-
-  showNotEditableWarning(): void {
-    this.toastService.showWarning('This storage is readonly, copy to the test tab to edit this report.', {
-      buttonText: 'Copy to testtab',
-      callback: () => {
-        this.copyReport();
-      },
-    });
-    setTimeout(() => {
-      this.editToggleButton.value = false;
-    });
-  }
-
-  changeEditMode(value: boolean): void {
-    if (value) {
-      this.editReport();
-    } else {
-      this.disableEditing();
-    }
   }
 
   processCustomReportAction(): void {
@@ -446,6 +425,49 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
     const topComponentHeight = this.topComponent ? this.topComponent?.nativeElement.offsetHeight : 47;
     this.monacoEditorHeight = this.containerHeight - topComponentHeight;
     this.cdr.detectChanges();
+  }
+
+  private applyMonacoAdapterChanges() {
+    this.monacoEditorHasUnsavedChanges = this.monacoCheckpointAdapter.hasUnsavedChanges();
+  }
+
+  private changeEditMode(value: boolean): void {
+    if (value) {
+      this.isEditing = true;
+    } else {
+      this.disableEditing();
+    }
+  }
+
+  private disableEditing() {
+    this.isEditing = false;
+    const node: Report | Checkpoint = this.selectedNode!;
+    if (ReportUtil.isCheckPoint(node)) {
+      this.requestedMonacoEditorContent = this.monacoCheckpointAdapter.discardChanges();
+    }
+  }
+
+  private showNotEditableWarning(): void {
+    this.showToastWarning('This storage is readonly, copy to the test tab to edit this report.', {
+      callbackButtonText: 'Copy to testtab',
+      callback: () => this.copyReport()
+    })
+  }
+
+  private showToastWarning(buttonText: string, callback?: ToastCallbackButton) {
+    this.toastService.showWarning(buttonText,
+      callback ? {
+        buttonText: callback.callbackButtonText,
+        callback: callback.callback
+      } : undefined
+    );
+    setTimeout(() => {
+      this.editToggleButton.value = false;
+    });
+  }
+
+  private forDifference(value: string | null): string {
+    return value === null ? 'null' : `not null: ${value}`;
   }
 
   /* Copied */
@@ -501,9 +523,5 @@ export class EditDisplayComponent implements AfterViewInit, OnChanges {
   // eslint-disable-next-line @typescript-eslint/member-ordering
   getValue(): string {
     return this.actualEditorContent ?? '';
-  }
-
-  private forDifference(value: string | null): string {
-    return value === null ? 'null' : `not null: ${value}`;
   }
 }

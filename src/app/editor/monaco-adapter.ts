@@ -58,8 +58,28 @@ export class MonacoAdapter {
     return this._hasUnsavedChanges;
   }
 
+  getOriginalCheckpointValue(): string | null {
+    this.checkIntegrity('MonacoAdapter.getOriginalCheckpointValue()');
+    if (this.status === 'no-checkpoint') {
+      throw new Error('Cannot get original checkpoint value because there is no checkpoint');
+    }
+    return this.originalCheckpointValue!;
+  }
+
+  getEditedCheckpointValue(): string | null {
+    if (this.editedCheckpointValue === undefined) {
+      throw new Error('MonacoAdapter.getEditedCheckpointValue() is not applicable because there is no checkpoint');
+    } else {
+      return this.editedCheckpointValue;
+    }
+  }
+
   getEditedToNull(): boolean {
     return this.editedToNull;
+  }
+
+  getValueIsShownPretty() {
+    return this.status === 'pretty';
   }
 
   // Returns editor contents to request
@@ -73,6 +93,14 @@ export class MonacoAdapter {
     this.prettyEditorContents = undefined;
     this.checkIntegrity('MonacoAdapter.setOriginalCheckpointValue()');
     return this.getRequestedEditorContents(this.originalCheckpointValue);
+  }
+
+  discardChanges(): string {
+    this.checkIntegrity('MonacoAdapter.discardChanges()');
+    if (this.status === 'no-checkpoint') {
+      throw new Error(`Cannot discard changes because there is no checkpoint`);
+    }
+    return this.setOriginalCheckpointValue(this.originalCheckpointValue!, this.valueEditable);
   }
 
   // Returns editor contents to request or undefined if the editor does not need updating
@@ -92,14 +120,6 @@ export class MonacoAdapter {
     } else {
       this.detectFormat();
       return newEditorContents;
-    }
-  }
-
-  getEditedCheckpointValue(): string | null {
-    if (this.editedCheckpointValue === undefined) {
-      throw new Error('MonacoAdapter.getEditedCheckpointValue() is not applicable because there is no checkpoint');
-    } else {
-      return this.editedCheckpointValue;
     }
   }
 
