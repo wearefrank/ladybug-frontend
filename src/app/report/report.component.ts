@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { AngularSplitModule, SplitComponent } from 'angular-split';
 import { DebugTreeComponent } from '../debug/debug-tree/debug-tree.component';
-import { debounceTime, fromEventPattern, Subject, Subscription } from 'rxjs';
+import { debounceTime, fromEventPattern, Observable, Subject, Subscription } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { EditDisplayComponent } from './edit-display/edit-display.component';
 import { DebugComponent } from '../debug/debug.component';
@@ -21,6 +21,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ReportData } from '../shared/interfaces/report-data';
 import { View } from '../shared/interfaces/view';
 import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
+
+const MIN_HEIGHT = 20;
+const MARGIN_IF_NOT_NEW_TAB = 30;
 
 @Component({
   selector: 'app-report',
@@ -84,8 +87,7 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
 
     const resizeSubscription = resizeObserver$.pipe(debounceTime(50)).subscribe((entries: ResizeObserverEntry[]) => {
       const entry = (entries[0] as unknown as ResizeObserverEntry[])[0];
-      this.calculatedHeight = entry.target.clientHeight;
-      this.cdr.detectChanges();
+      this.handleHeightChanges(entry.target.clientHeight);
     });
     this.subscriptions.add(resizeSubscription);
   }
@@ -107,5 +109,16 @@ export class ReportComponent implements AfterViewInit, OnInit, OnDestroy {
 
   getIdFromPath(): string {
     return this.route.snapshot.paramMap.get('id') as string;
+  }
+
+  private handleHeightChanges(clientHeight: number): void {
+    this.calculatedHeight = clientHeight;
+    if (!this.newTab) {
+      this.calculatedHeight = this.calculatedHeight - MARGIN_IF_NOT_NEW_TAB;
+    }
+    if (this.calculatedHeight < MIN_HEIGHT) {
+      this.calculatedHeight = MIN_HEIGHT;
+    }
+    this.cdr.detectChanges();
   }
 }
