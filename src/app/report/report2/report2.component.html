@@ -1,0 +1,13 @@
+<as-split direction="horizontal">
+  <as-split-area class="split-size" [size]="25">
+    <app-debug-tree
+      [adjustWidth]="treeWidth.asObservable()"
+      [currentView]="currentView"
+      (closeEntireTreeEvent)="closeEntireTree()"
+      (selectReportEvent)="selectReport($event)"
+    />
+  </as-split-area>
+  <as-split-area class="right-side" [size]="75">
+    <!-- TODO: -->
+  </as-split-area>
+</as-split>
