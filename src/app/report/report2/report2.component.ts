@@ -2,20 +2,24 @@ import { ChangeDetectorRef, Component, ElementRef, inject, Input, ViewChild } fr
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularSplitModule, SplitComponent } from 'angular-split';
 import { debounceTime, fromEventPattern, Subject, Subscription } from 'rxjs';
-import { DebugTreeComponent } from 'src/app/debug/debug-tree/debug-tree.component';
-import { DebugComponent } from 'src/app/debug/debug.component';
-import { ReportData } from 'src/app/shared/interfaces/report-data';
+import { DebugTreeComponent } from '../../debug/debug-tree/debug-tree.component';
+import { DebugComponent } from '../../debug/debug.component';
+import { ReportData } from '../../shared/interfaces/report-data';
 import { Report } from '../../shared/interfaces/report';
-import { View } from 'src/app/shared/interfaces/view';
-import { TabService } from 'src/app/shared/services/tab.service';
+import { Checkpoint } from '../../shared/interfaces/checkpoint';
+import { View } from '../../shared/interfaces/view';
+import { TabService } from '../../shared/services/tab.service';
 import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
+import { EmptyState, ReportState, CheckpointState, State } from './state';
+import { ReportUtil } from '../../shared/util/report-util';
+import { MonacoEditorComponent } from '../../monaco-editor/monaco-editor.component';
 
 const MIN_HEIGHT = 20;
 const MARGIN_IF_NOT_NEW_TAB = 30;
 
 @Component({
   selector: 'app-report2',
-  imports: [AngularSplitModule, DebugTreeComponent],
+  imports: [AngularSplitModule, DebugTreeComponent, MonacoEditorComponent],
   templateUrl: './report2.component.html',
   styleUrl: './report2.component.css',
 })
@@ -25,9 +29,21 @@ export class Report2Component {
   @Input({ required: true }) currentView!: View;
   @ViewChild(SplitComponent) splitter!: SplitComponent;
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
-  calculatedHeight!: number;
-  treeWidth: Subject<void> = new Subject<void>();
-  reportData?: ReportData;
+
+  protected state: State = new EmptyState();
+  protected treeWidth: Subject<void> = new Subject<void>();
+  protected monacoEditorHeight!: number;
+  protected requestedMonacoEditorContent = '';
+  protected requestedMonacoReadOnly = false;
+  protected monacoOptions: Partial<monaco.editor.IStandaloneEditorConstructionOptions> = {
+    theme: 'vs-light',
+    language: 'xml',
+    inlineCompletionsAccessibilityVerbose: true,
+    automaticLayout: true,
+    padding: { bottom: 200 },
+    selectOnLineNumbers: true,
+    scrollBeyondLastLine: false,
+  };
 
   private host = inject(ElementRef);
   private tabService = inject(TabService);
@@ -35,10 +51,11 @@ export class Report2Component {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private subscriptions: Subscription = new Subscription();
+  private newTabReportData?: ReportData;
 
   ngOnInit(): void {
-    this.reportData = this.tabService.activeReportTabs.get(this.getIdFromPath());
-    if (!this.reportData) {
+    this.newTabReportData = this.tabService.activeReportTabs.get(this.getIdFromPath());
+    if (!this.newTabReportData) {
       this.router.navigate([DebugComponent.ROUTER_PATH]);
     }
     this.listenToHeight();
@@ -51,10 +68,10 @@ export class Report2Component {
       });
     }
     setTimeout(() => {
-      if (this.reportData) {
-        this.currentView = this.reportData.currentView;
+      if (this.newTabReportData) {
+        this.currentView = this.newTabReportData.currentView;
         // TODO: Show report in value region
-        this.addReportToTree(this.reportData.report);
+        this.addReportToTree(this.newTabReportData.report);
       }
     });
   }
@@ -63,7 +80,40 @@ export class Report2Component {
     this.subscriptions.unsubscribe();
   }
 
-  listenToHeight(): void {
+  addReportToTree(report: Report): void {
+    this.debugTreeComponent.addReportToTree(report);
+  }
+
+  closeEntireTree(): void {
+    if (this.newTab && this.newTabReportData) {
+      this.tabService.closeTab(this.newTabReportData);
+    }
+    this.state = new EmptyState();
+    this.handleNewState();
+  }
+
+  selectReport(node: Report | Checkpoint): void {
+    if (ReportUtil.isReport(node)) {
+      this.state = new ReportState(node as Report);
+    } else if (ReportUtil.isCheckPoint(node)) {
+      this.state = new CheckpointState(node as Checkpoint);
+    } else {
+      throw new Error('Cannot happen: node is not a Report and not a Checkpoint');
+    }
+    this.handleNewState();
+  }
+
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
+  protected onMonacoEditorContentChange(_editorText: string): void {}
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected initEditor(): void {}
+
+  private getIdFromPath(): string {
+    return this.route.snapshot.paramMap.get('id') as string;
+  }
+
+  private listenToHeight(): void {
     const resizeObserver$ = fromEventPattern<ResizeObserverEntry[]>((handler: NodeEventHandler) => {
       const resizeObserver = new ResizeObserver(handler);
       resizeObserver.observe(this.host.nativeElement);
@@ -77,34 +127,18 @@ export class Report2Component {
     this.subscriptions.add(resizeSubscription);
   }
 
-  addReportToTree(report: Report): void {
-    this.debugTreeComponent.addReportToTree(report);
-  }
-
-  closeEntireTree(): void {
-    if (this.newTab && this.reportData) {
-      this.tabService.closeTab(this.reportData);
-    }
-    // TODO: Close report in value region.
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  selectReport(currentReport: Report): void {
-    // TODO: Implement.
-  }
-
-  private getIdFromPath(): string {
-    return this.route.snapshot.paramMap.get('id') as string;
-  }
-
   private handleHeightChanges(clientHeight: number): void {
-    this.calculatedHeight = clientHeight;
+    this.monacoEditorHeight = clientHeight;
     if (!this.newTab) {
-      this.calculatedHeight = this.calculatedHeight - MARGIN_IF_NOT_NEW_TAB;
+      this.monacoEditorHeight = this.monacoEditorHeight - MARGIN_IF_NOT_NEW_TAB;
     }
-    if (this.calculatedHeight < MIN_HEIGHT) {
-      this.calculatedHeight = MIN_HEIGHT;
+    if (this.monacoEditorHeight < MIN_HEIGHT) {
+      this.monacoEditorHeight = MIN_HEIGHT;
     }
     this.cdr.detectChanges();
+  }
+
+  private handleNewState(): void {
+    this.requestedMonacoEditorContent = this.state.initialMonacoEditorText;
   }
 }

@@ -8,6 +8,17 @@
     />
   </as-split-area>
   <as-split-area class="right-side" [size]="75">
-    <!-- TODO: -->
+    @if (state.name !== 'empty') {
+      <div [style.height]="monacoEditorHeight + 'px'">
+        <app-monaco-editor #wafMonacoEditor
+          data-cy-element-name="editor"
+          (onInit)="initEditor()"
+          [options]="monacoOptions"
+          [requestedEditorContents]="requestedMonacoEditorContent"
+          (actualEditorContentsChange)="onMonacoEditorContentChange($event)"
+          [requestedReadOnly]="requestedMonacoReadOnly">
+        </app-monaco-editor>
+      </div>
+    }
   </as-split-area>
 </as-split>
