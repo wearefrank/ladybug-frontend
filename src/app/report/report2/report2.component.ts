@@ -63,20 +63,6 @@ export class Report2Component {
     this.subscriptions.unsubscribe();
   }
 
-  listenToHeight(): void {
-    const resizeObserver$ = fromEventPattern<ResizeObserverEntry[]>((handler: NodeEventHandler) => {
-      const resizeObserver = new ResizeObserver(handler);
-      resizeObserver.observe(this.host.nativeElement);
-      return (): void => resizeObserver.disconnect();
-    });
-
-    const resizeSubscription = resizeObserver$.pipe(debounceTime(50)).subscribe((entries: ResizeObserverEntry[]) => {
-      const entry = (entries[0] as unknown as ResizeObserverEntry[])[0];
-      this.handleHeightChanges(entry.target.clientHeight);
-    });
-    this.subscriptions.add(resizeSubscription);
-  }
-
   addReportToTree(report: Report): void {
     this.debugTreeComponent.addReportToTree(report);
   }
@@ -95,6 +81,20 @@ export class Report2Component {
 
   private getIdFromPath(): string {
     return this.route.snapshot.paramMap.get('id') as string;
+  }
+
+  private listenToHeight(): void {
+    const resizeObserver$ = fromEventPattern<ResizeObserverEntry[]>((handler: NodeEventHandler) => {
+      const resizeObserver = new ResizeObserver(handler);
+      resizeObserver.observe(this.host.nativeElement);
+      return (): void => resizeObserver.disconnect();
+    });
+
+    const resizeSubscription = resizeObserver$.pipe(debounceTime(50)).subscribe((entries: ResizeObserverEntry[]) => {
+      const entry = (entries[0] as unknown as ResizeObserverEntry[])[0];
+      this.handleHeightChanges(entry.target.clientHeight);
+    });
+    this.subscriptions.add(resizeSubscription);
   }
 
   private handleHeightChanges(clientHeight: number): void {

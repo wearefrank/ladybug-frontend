@@ -90,6 +90,9 @@ export class DebugTreeComponent implements OnDestroy {
   }
 
   hideOrShowCheckpointsBasedOnView(currentView: View): void {
+    console.log(
+      `DebugTreeComponent.hideOrShowCheckpointBasedOnView() with view ${currentView.name} which has currentView.hasCheckpointMatchers=${currentView.hasCheckpointMatchers}`,
+    );
     if (this.tree) {
       this.checkUnmatchedCheckpoints(this.getTreeReports(), currentView);
     }
