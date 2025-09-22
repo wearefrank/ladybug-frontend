@@ -139,11 +139,16 @@ export class EditDisplayComponent implements OnChanges {
   }
 
   convertMessage(checkpoint: Checkpoint): string {
-    let message: string = checkpoint.message;
-    if (checkpoint.encoding == 'Base64') {
-      message = btoa(message);
+    // TODO: Does not properly handle null messages
+    if (checkpoint.message === null) {
+      return '';
+    } else {
+      let message: string = checkpoint.message;
+      if (checkpoint.encoding == 'Base64') {
+        message = btoa(message);
+      }
+      return message;
     }
-    return message;
   }
 
   rerunReport(): void {
@@ -203,9 +208,10 @@ export class EditDisplayComponent implements OnChanges {
       reportDifferences = this.editFormComponent.getDifferences();
     } else if (ReportUtil.isCheckPoint(node) && this.editor?.getValue() !== node.message) {
       const diff = new DiffMatchPatch().diff_main(node.message ?? '', this.editor?.getValue());
+      // TODO: This does not properly handle null checkpoints.
       reportDifferences.push({
         name: 'message',
-        originalValue: node.message,
+        originalValue: node.message === null ? '' : node.message,
         difference: diff,
       });
     }

@@ -6,7 +6,7 @@ export interface Checkpoint {
   estimatedMemoryUsage: number;
   index: number;
   level: number;
-  message: string;
+  message: string | null;
   messageContext: Record<string, string>;
   messageClassName?: string;
   name: string;

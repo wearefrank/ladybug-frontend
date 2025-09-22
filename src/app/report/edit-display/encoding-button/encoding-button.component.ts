@@ -31,14 +31,19 @@ export class EncodingButtonComponent implements OnChanges {
       return;
     }
     let message: string;
-    if (this.buttonType == 'Base64') {
-      message = node.message;
-      this.updateButton(true);
+    // TODO: This does not properly handle null checkpoints
+    if (node.message === null) {
+      this.updatedMessageEvent.emit('');
     } else {
-      message = btoa(node.message);
-      this.updateButton(false);
+      if (this.buttonType == 'Base64') {
+        message = node.message;
+        this.updateButton(true);
+      } else {
+        message = btoa(node.message);
+        this.updateButton(false);
+      }
+      this.updatedMessageEvent.emit(message);
     }
-    this.updatedMessageEvent.emit(message);
   }
 
   updateButton(isConverted: boolean): void {

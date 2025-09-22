@@ -65,7 +65,7 @@
       </div>
       <div class="table-col">
         <div class="key">Number of characters</div>
-        @if (report.message && report.message.length > 0) {
+        @if (report.message && report.message !== null && report.message.length > 0) {
           <div class="value" [appCopyTooltip]="report.message.length">{{ report.message.length }}</div>
         } @else {
           <div class="value"></div>
