@@ -63,7 +63,6 @@ export class EditorComponent implements OnInit, OnDestroy {
   editorChangesSubject: Subject<string> = new Subject<string>();
 
   //Settings attributes
-  showPrettifyOnLoad = true;
   availableViews!: EditorView[];
   contentType!: EditorView;
 
@@ -87,7 +86,6 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscribeToEditorChanges();
-    this.subscribeToSettings();
   }
 
   ngOnDestroy(): void {
@@ -102,13 +100,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     if (this.unsavedChanges && this.requestedEditorContent) {
       this.saveReportRequest.emit(true);
     }
-  }
-
-  subscribeToSettings(): void {
-    const prettifyOnLoad: Subscription = this.settingsService.prettifyOnLoadObservable.subscribe((value: boolean) => {
-      this.showPrettifyOnLoad = value;
-    });
-    this.subscriptions.add(prettifyOnLoad);
   }
 
   subscribeToEditorChanges(): void {
@@ -132,9 +123,6 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   initEditor(): void {
     this.checkIfTextIsPretty();
-    if (this.showPrettifyOnLoad) {
-      this.onViewChange(this.contentType);
-    }
   }
 
   checkIfTextIsPretty(): boolean {
@@ -202,10 +190,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     if (value !== undefined && value !== null && value !== '') {
       this.requestedEditorContent = value;
       this.checkIfTextIsPretty();
-      if (this.showPrettifyOnLoad && this.isPrettifiable(this.contentType)) {
-        this.onViewChange(this.contentType);
-        return;
-      }
       this.onViewChange('raw');
     }
   }

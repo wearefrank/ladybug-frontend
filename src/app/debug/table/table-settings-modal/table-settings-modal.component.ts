@@ -46,8 +46,6 @@ export class TableSettingsModalComponent implements OnDestroy {
 
   //Form Control Name keys
   protected readonly showMultipleFilesKey: string = 'showMultipleFilesAtATime';
-  protected readonly showSearchWindowOnLoadKey: string = 'showSearchWindowOnLoad';
-  protected readonly prettifyOnLoadKey: string = 'prettifyOnLoad';
   protected readonly tableSpacingKey: string = 'tableSpacing';
   protected readonly generatorEnabledKey: string = 'generatorEnabled';
   protected readonly regexFilterKey: string = 'regexFilter';
@@ -60,12 +58,8 @@ export class TableSettingsModalComponent implements OnDestroy {
   protected readonly spacingOptions: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
   protected tableSpacing = 1;
-  protected showSearchWindowOnLoad = true;
-  protected prettifyOnLoad = true;
   protected settingsForm: FormGroup = new FormGroup({
     [this.showMultipleFilesKey]: new UntypedFormControl(this.settingsService.defaultShowMultipleFilesAtATime),
-    [this.showSearchWindowOnLoadKey]: new UntypedFormControl(this.settingsService.defaultShowSearchWindowOnLoad),
-    [this.prettifyOnLoadKey]: new UntypedFormControl(this.settingsService.defaultPrettifyOnLoad),
     [this.tableSpacingKey]: new UntypedFormControl(this.settingsService.defaultTableSpacing),
     [this.generatorEnabledKey]: new UntypedFormControl(this.defaultGeneratorEnabled),
     [this.regexFilterKey]: new UntypedFormControl(this.defaultRegexValue),
@@ -111,20 +105,6 @@ export class TableSettingsModalComponent implements OnDestroy {
       },
     });
     this.subscriptions.add(tableSpacingSubscription);
-    const showSearchWindowOnLoad: Subscription = this.settingsService.showSearchWindowOnLoadObservable.subscribe({
-      next: (value: boolean): void => {
-        this.showSearchWindowOnLoad = value;
-        this.settingsForm.get(this.showSearchWindowOnLoadKey)?.setValue(this.showSearchWindowOnLoad);
-      },
-    });
-    this.subscriptions.add(showSearchWindowOnLoad);
-    const prettifyOnLoad: Subscription = this.settingsService.prettifyOnLoadObservable.subscribe({
-      next: (value: boolean) => {
-        this.prettifyOnLoad = value;
-        this.settingsForm.get(this.prettifyOnLoadKey)?.setValue(this.prettifyOnLoad);
-      },
-    });
-    this.subscriptions.add(prettifyOnLoad);
   }
 
   async open(): Promise<void> {
@@ -149,8 +129,6 @@ export class TableSettingsModalComponent implements OnDestroy {
         .get(this.transformationEnabledKey)
         ?.setValue(localStorage.getItem('transformationEnabled') == 'true');
     }
-    this.settingsForm.get(this.showSearchWindowOnLoadKey)?.setValue(this.showSearchWindowOnLoad);
-    this.settingsForm.get(this.prettifyOnLoadKey)?.setValue(this.prettifyOnLoad);
     this.settingsForm.get(this.showMultipleFilesKey)?.setValue(this.showMultipleAtATime);
     const transformationResponse = await firstValueFrom(
       this.httpService.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),
@@ -174,10 +152,6 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.settingsService.setTableSpacing(Number(tableSpacing?.value));
     const showMultipleAtATime = this.settingsForm.get(this.showMultipleFilesKey);
     this.settingsService.setShowMultipleAtATime(showMultipleAtATime?.value);
-    const showSearchWindowOnLoad = this.settingsForm.get(this.showSearchWindowOnLoadKey);
-    this.settingsService.setShowSearchWindowOnLoad(showSearchWindowOnLoad?.value);
-    const prettifyOnLoad = this.settingsForm.get(this.prettifyOnLoadKey);
-    this.settingsService.setPrettifyOnLoad(prettifyOnLoad?.value);
     const generatorEnabled: boolean = this.settingsForm.get(this.generatorEnabledKey)?.value === 'Enabled';
     const regexValue = this.settingsForm.get(this.regexFilterKey)?.value;
     const regexFilter = regexValue === '' ? this.defaultRegexValue : regexValue;
@@ -213,8 +187,6 @@ export class TableSettingsModalComponent implements OnDestroy {
     this.settingsForm.reset();
     this.settingsService.setShowMultipleAtATime();
     this.settingsService.setTableSpacing();
-    this.settingsService.setPrettifyOnLoad();
-    this.settingsService.setShowSearchWindowOnLoad();
     const optionsResponse = await firstValueFrom(
       this.httpService.resetSettings().pipe(catchError(this.errorHandler.handleError())),
     );
