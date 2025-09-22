@@ -12,13 +12,13 @@ import { TabService } from '../../shared/services/tab.service';
 import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
 import { State } from './state';
 import { MonacoEditorComponent } from '../../monaco-editor/monaco-editor.component';
-
+import { NgTemplateOutlet } from '@angular/common';
 const MIN_HEIGHT = 20;
 const MARGIN_IF_NOT_NEW_TAB = 30;
 
 @Component({
   selector: 'app-report2',
-  imports: [AngularSplitModule, DebugTreeComponent, MonacoEditorComponent],
+  imports: [AngularSplitModule, DebugTreeComponent, MonacoEditorComponent, NgTemplateOutlet],
   templateUrl: './report2.component.html',
   styleUrl: './report2.component.css',
 })

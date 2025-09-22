@@ -9,28 +9,36 @@
   </as-split-area>
   <as-split-area class="right-side" [size]="75">
     @if (state.reportState) {
-      <div [style.height]="monacoEditorHeight + 'px'">
-        <app-monaco-editor
-          data-cy-element-name="reportEditor"
-          (onInit)="initEditor()"
-          [options]="monacoOptions"
-          [requestedEditorContents]="state.reportState.initialMonacoEditorText"
-          (actualEditorContentsChange)="onMonacoEditorContentChange($event)"
-          [requestedReadOnly]="requestedMonacoReadOnly">
-        </app-monaco-editor>
-      </div>
+      <ng-container *ngTemplateOutlet="shownReport"/>
     }
     @if (state.checkpointState) {
-      <div [style.height]="monacoEditorHeight + 'px'">
-        <app-monaco-editor
-          data-cy-element-name="checkpointEditor"
-          (onInit)="initEditor()"
-          [options]="monacoOptions"
-          [requestedEditorContents]="state.checkpointState.initialMonacoEditorText"
-          (actualEditorContentsChange)="onMonacoEditorContentChange($event)"
-          [requestedReadOnly]="requestedMonacoReadOnly">
-        </app-monaco-editor>
-      </div>
+      <ng-container *ngTemplateOutlet="shownCheckpoint"/>
     }
   </as-split-area>
 </as-split>
+
+<ng-template #shownReport>
+  <div [style.height]="monacoEditorHeight + 'px'">
+    <app-monaco-editor
+      data-cy-element-name="reportEditor"
+      (onInit)="initEditor()"
+      [options]="monacoOptions"
+      [requestedEditorContents]="state.reportState!.initialMonacoEditorText"
+      (actualEditorContentsChange)="onMonacoEditorContentChange($event)"
+      [requestedReadOnly]="requestedMonacoReadOnly">
+    </app-monaco-editor>
+  </div>
+</ng-template>
+
+<ng-template #shownCheckpoint>
+  <div [style.height]="monacoEditorHeight + 'px'">
+    <app-monaco-editor
+      data-cy-element-name="checkpointEditor"
+      (onInit)="initEditor()"
+      [options]="monacoOptions"
+      [requestedEditorContents]="state.checkpointState!.initialMonacoEditorText"
+      (actualEditorContentsChange)="onMonacoEditorContentChange($event)"
+      [requestedReadOnly]="requestedMonacoReadOnly">
+    </app-monaco-editor>
+  </div>
+</ng-template>
