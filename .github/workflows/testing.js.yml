@@ -235,53 +235,53 @@ jobs:
   
       - name: Show files
         run: tree -d -L 5 .
-        if: always()
+        if: failure()
 
       - name: Store log of Frank!Runner downloads
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: installFrankRunnerEnv.log ${{ matrix.spring-profile }}
           path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: serverStartLog.log ${{ matrix.spring-profile }}
           path: frank-runner/specials/ladybug/serverStartLog.log
       - name: Store build.properties
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: specials_build.properties ${{ matrix.spring-profile }}
           path: frank-runner/specials/ladybug/build.properties
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: logs ${{ matrix.spring-profile }}
           path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: screenshots ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/screenshots/
       - name: Store Cypress videos
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: videos ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/videos/
       - name: Store Cypress screenshots for Firefox
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: Firefix screenshots ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/firefox/screenshots/
       - name: Store Cypress videos for Firefox
         uses: actions/upload-artifact@v4
-        if: always()
+        if: failure()
         with:
           name: Firefox videos ${{ matrix.spring-profile }}
           path: ladybug-frontend/cypress/firefox/videos/
