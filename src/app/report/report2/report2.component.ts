@@ -10,8 +10,7 @@ import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { View } from '../../shared/interfaces/view';
 import { TabService } from '../../shared/services/tab.service';
 import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
-import { EmptyState, ReportState, CheckpointState, State } from './state';
-import { ReportUtil } from '../../shared/util/report-util';
+import { State } from './state';
 import { MonacoEditorComponent } from '../../monaco-editor/monaco-editor.component';
 
 const MIN_HEIGHT = 20;
@@ -30,7 +29,7 @@ export class Report2Component {
   @ViewChild(SplitComponent) splitter!: SplitComponent;
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
 
-  protected state: State = new EmptyState();
+  protected state: State = new State();
   protected treeWidth: Subject<void> = new Subject<void>();
   protected monacoEditorHeight!: number;
   protected requestedMonacoEditorContent = '';
@@ -88,19 +87,11 @@ export class Report2Component {
     if (this.newTab && this.newTabReportData) {
       this.tabService.closeTab(this.newTabReportData);
     }
-    this.state = new EmptyState();
-    this.handleNewState();
+    this.state.closeNode();
   }
 
   selectReport(node: Report | Checkpoint): void {
-    if (ReportUtil.isReport(node)) {
-      this.state = new ReportState(node as Report);
-    } else if (ReportUtil.isCheckPoint(node)) {
-      this.state = new CheckpointState(node as Checkpoint);
-    } else {
-      throw new Error('Cannot happen: node is not a Report and not a Checkpoint');
-    }
-    this.handleNewState();
+    this.state.newNode(node);
   }
 
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
@@ -136,9 +127,5 @@ export class Report2Component {
       this.monacoEditorHeight = MIN_HEIGHT;
     }
     this.cdr.detectChanges();
-  }
-
-  private handleNewState(): void {
-    this.requestedMonacoEditorContent = this.state.initialMonacoEditorText;
   }
 }

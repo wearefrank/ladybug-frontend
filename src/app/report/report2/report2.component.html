@@ -8,13 +8,25 @@
     />
   </as-split-area>
   <as-split-area class="right-side" [size]="75">
-    @if (state.name !== 'empty') {
+    @if (state.reportState) {
       <div [style.height]="monacoEditorHeight + 'px'">
-        <app-monaco-editor #wafMonacoEditor
-          data-cy-element-name="editor"
+        <app-monaco-editor
+          data-cy-element-name="reportEditor"
           (onInit)="initEditor()"
           [options]="monacoOptions"
-          [requestedEditorContents]="requestedMonacoEditorContent"
+          [requestedEditorContents]="state.reportState.initialMonacoEditorText"
+          (actualEditorContentsChange)="onMonacoEditorContentChange($event)"
+          [requestedReadOnly]="requestedMonacoReadOnly">
+        </app-monaco-editor>
+      </div>
+    }
+    @if (state.checkpointState) {
+      <div [style.height]="monacoEditorHeight + 'px'">
+        <app-monaco-editor
+          data-cy-element-name="checkpointEditor"
+          (onInit)="initEditor()"
+          [options]="monacoOptions"
+          [requestedEditorContents]="state.checkpointState.initialMonacoEditorText"
           (actualEditorContentsChange)="onMonacoEditorContentChange($event)"
           [requestedReadOnly]="requestedMonacoReadOnly">
         </app-monaco-editor>
