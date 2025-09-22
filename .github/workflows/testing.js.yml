@@ -1,9 +1,9 @@
 name: Testing
 on:
   push:
+    # Temporarily disabled for pull requests to save resources.
     branches:
       - master
-  pull_request:
   workflow_dispatch:
     inputs:
       useRealFrontend:
