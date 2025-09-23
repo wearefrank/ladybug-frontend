@@ -2,11 +2,100 @@ import { Report } from '../../shared/interfaces/report';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { ReportUtil } from '../../shared/util/report-util';
 
-export class ReportState {
-  readonly initialMonacoEditorText: string;
+export interface Variable {
+  name: string;
+  value: string;
+}
 
-  constructor(private report: Report) {
-    this.initialMonacoEditorText = report.xml;
+export interface PartialReport {
+  name: string;
+  description: string;
+  path: string;
+  transformation: string;
+  variables: string;
+  xml: string;
+}
+
+export class ReportState {
+  readonly originalName: string;
+  editedName: string;
+  readonly originalDescription: string;
+  editedDescription: string;
+  readonly originalPath: string;
+  editedPath: string;
+  readonly originalTransformation: string;
+  editedTransformation: string;
+  // TODO: Make readonly when method setVariables is no longer needed for testing.
+  originalVariables: Variable[];
+  editedVariables: Variable[];
+  duplicateVariables: Set<number> = new Set<number>();
+  readonly reportXml: string;
+
+  constructor(report: PartialReport) {
+    this.originalName = report.name;
+    this.reportXml = report.xml;
+    this.editedName = this.originalName;
+    this.originalDescription = report.description;
+    this.editedDescription = this.originalDescription;
+    this.originalPath = report.path;
+    this.editedPath = this.originalPath;
+    this.originalTransformation = report.transformation;
+    this.editedTransformation = this.originalTransformation;
+    this.originalVariables = ReportState.initVariables(report.variables);
+    this.editedVariables = ReportState.calculateEditedVariables(this.originalVariables);
+  }
+
+  // TODO: Fix issue with types. Report.variables is declared to be a string,
+  // but it is really an object.
+  static initVariables(variables: string | null): Variable[] {
+    console.log(`ReportState.initVariables(): transforming ${variables}`);
+    if (!variables) return [];
+    return Object.entries(variables).map(([name, value]) => ({ name, value }));
+  }
+
+  static calculateEditedVariables(originalVariables: Variable[]): Variable[] {
+    const result: Variable[] = [];
+    for (const original of originalVariables) {
+      result.push({ name: original.name, value: original.value });
+    }
+    // Empty row to allow user to add new variable.
+    result.push({ name: '', value: '' });
+    return result;
+  }
+
+  onInputChange(): void {
+    this.refreshDuplicateVariables();
+  }
+
+  removeVariable(index: number): void {
+    this.editedVariables.splice(index, 1);
+    this.refreshDuplicateVariables();
+  }
+
+  addEmptyVariableWhenNeeded(): void {
+    if (this.editedVariables.length > 0) {
+      const lastVariable: Variable = this.editedVariables.at(-1)!;
+      if (lastVariable.name.length > 0) {
+        this.editedVariables.push({ name: '', value: '' });
+      }
+    }
+  }
+
+  // For testing purposes
+  setVariables(variables: Variable[]): void {
+    this.originalVariables = variables;
+    this.editedVariables = ReportState.calculateEditedVariables(this.originalVariables);
+  }
+
+  private refreshDuplicateVariables(): void {
+    this.duplicateVariables = new Set<number>();
+    const variableNames = new Set<string>();
+    for (const [index, variable] of this.editedVariables.entries()) {
+      if (variableNames.has(variable.name)) {
+        this.duplicateVariables.add(index);
+      }
+      variableNames.add(variable.name);
+    }
   }
 }
 
