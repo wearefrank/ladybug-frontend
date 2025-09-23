@@ -48,7 +48,6 @@ export class ReportState {
   // TODO: Fix issue with types. Report.variables is declared to be a string,
   // but it is really an object.
   static initVariables(variables: string | null): Variable[] {
-    console.log(`ReportState.initVariables(): transforming ${variables}`);
     if (!variables) return [];
     return Object.entries(variables).map(([name, value]) => ({ name, value }));
   }
