@@ -75,5 +75,3 @@ export class Difference2ModalComponent {
     this.closeModal();
   }
 }
-
-

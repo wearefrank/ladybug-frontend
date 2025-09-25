@@ -20,5 +20,3 @@ describe('Difference2ModalComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-
-
