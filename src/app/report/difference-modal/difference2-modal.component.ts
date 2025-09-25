@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
 import { Component, inject, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ReportDifference } from '../../shared/interfaces/report-difference';
+import { ReportDifference2 } from '../../shared/interfaces/report-difference';
 import { TitleCasePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from '../../shared/services/toast.service';
 
+// TODO: Remove option 'saveRerun'
 export const changesActionConst = ['save', 'discard', 'saveRerun'] as const;
 export type ChangesAction = (typeof changesActionConst)[number];
 
@@ -17,20 +18,17 @@ export type ChangesAction = (typeof changesActionConst)[number];
   styleUrl: './difference2-modal.component.css',
 })
 export class Difference2ModalComponent {
-  @Output() saveChangesEvent: Subject<boolean> = new Subject<boolean>();
+  @Output() saveChangesEvent: Subject<void> = new Subject<void>();
   @Output() discardChangesEvent: Subject<void> = new Subject<void>();
-  @Output() rerunEvent: Subject<void> = new Subject<void>();
   @ViewChild('modal') protected modal!: TemplateRef<Difference2ModalComponent>;
   protected saveOrDiscardType!: ChangesAction;
-  protected reportDifferences?: ReportDifference[];
-  protected stubChange = false;
+  protected reportDifferences?: ReportDifference2[];
   protected activeModal?: NgbModalRef;
 
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
 
-  open(differences: ReportDifference[], saveOrDiscardType: ChangesAction, stubChange?: boolean): void {
-    this.stubChange = !!stubChange;
+  open(differences: ReportDifference2[], saveOrDiscardType: ChangesAction): void {
     this.reportDifferences = differences;
     this.saveOrDiscardType = saveOrDiscardType;
     this.activeModal = this.modalService.open(this.modal, {
@@ -59,19 +57,14 @@ export class Difference2ModalComponent {
     }
   }
 
-  onClickSave(): void {
+  onClickConfirm(): void {
     if (this.saveOrDiscardType === 'save') {
-      this.saveChangesEvent.next(this.stubChange);
+      this.saveChangesEvent.next();
     } else if (this.saveOrDiscardType === 'discard') {
       this.discardChangesEvent.next();
     } else {
       this.toastService.showWarning('Something went wrong.');
     }
-    this.closeModal();
-  }
-
-  onClickRerun(): void {
-    this.rerunEvent.next();
     this.closeModal();
   }
 }
