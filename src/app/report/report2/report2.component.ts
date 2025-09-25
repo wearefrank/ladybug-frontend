@@ -10,16 +10,16 @@ import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { View } from '../../shared/interfaces/view';
 import { TabService } from '../../shared/services/tab.service';
 import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
-import { State } from './state';
-import { MonacoEditorComponent } from '../../monaco-editor/monaco-editor.component';
-import { CommonModule, NgTemplateOutlet } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReportValueComponent } from './report-value/report-value.component';
+import { CheckpointValueComponent } from './checkpoint-value/checkpoint-value.component';
+import { ReportUtil } from '../../shared/util/report-util';
+
 const MIN_HEIGHT = 20;
 const MARGIN_IF_NOT_NEW_TAB = 30;
 
 @Component({
   selector: 'app-report2',
-  imports: [AngularSplitModule, DebugTreeComponent, MonacoEditorComponent, NgTemplateOutlet, FormsModule, CommonModule],
+  imports: [AngularSplitModule, DebugTreeComponent, ReportValueComponent, CheckpointValueComponent],
   templateUrl: './report2.component.html',
   styleUrl: './report2.component.css',
 })
@@ -30,20 +30,10 @@ export class Report2Component {
   @ViewChild(SplitComponent) splitter!: SplitComponent;
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
 
-  protected state: State = new State();
   protected treeWidth: Subject<void> = new Subject<void>();
   protected monacoEditorHeight!: number;
-  protected requestedMonacoEditorContent = '';
-  protected requestedMonacoReadOnly = false;
-  protected monacoOptions: Partial<monaco.editor.IStandaloneEditorConstructionOptions> = {
-    theme: 'vs-light',
-    language: 'xml',
-    inlineCompletionsAccessibilityVerbose: true,
-    automaticLayout: true,
-    padding: { bottom: 200 },
-    selectOnLineNumbers: true,
-    scrollBeyondLastLine: false,
-  };
+  protected reportNode?: Report;
+  protected checkpointNode?: Checkpoint;
 
   private host = inject(ElementRef);
   private tabService = inject(TabService);
@@ -88,11 +78,20 @@ export class Report2Component {
     if (this.newTab && this.newTabReportData) {
       this.tabService.closeTab(this.newTabReportData);
     }
-    this.state.closeNode();
+    this.reportNode = undefined;
+    this.checkpointNode = undefined;
   }
 
   selectReport(node: Report | Checkpoint): void {
-    this.state.newNode(node);
+    if (ReportUtil.isReport(node)) {
+      this.reportNode = node as Report;
+      this.checkpointNode = undefined;
+    } else if (ReportUtil.isCheckPoint(node)) {
+      this.reportNode = undefined;
+      this.checkpointNode = node as Checkpoint;
+    } else {
+      throw new Error('State.newNode(): Node is neither a Report nor a Checkpoint');
+    }
   }
 
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function

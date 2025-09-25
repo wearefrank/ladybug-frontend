@@ -1,11 +1,30 @@
-import { ReportState, Variable } from './state';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-describe('ReportState', () => {
+import { PartialReport, ReportValueComponent, Variable } from './report-value.component';
+
+describe('ReportValue', () => {
+  let component: ReportValueComponent;
+  let fixture: ComponentFixture<ReportValueComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [ReportValueComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ReportValueComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
   it('When report.variables is filled then it can be parsed as the list of variables', () => {
     const input = '{"My variable":"aap","Other variable":"noot","Third":"mies"}';
     // TODO: Fix error with types. Report.variables is declared as a string but it is actually an object.
     const inputAsObject = JSON.parse(input);
-    const parsedVariables: Variable[] = ReportState.initVariables(inputAsObject);
+    const parsedVariables: Variable[] = ReportValueComponent.initVariables(inputAsObject);
     expect(parsedVariables.length).toEqual(3);
     expect(parsedVariables[0].name).toEqual('My variable');
     expect(parsedVariables[0].value).toEqual('aap');
@@ -17,19 +36,13 @@ describe('ReportState', () => {
 
   it('When report.variables is empty then it is parsed as the empty list', () => {
     const input: string | null = null;
-    const parsedVariables: Variable[] = ReportState.initVariables(input);
+    const parsedVariables: Variable[] = ReportValueComponent.initVariables(input);
     expect(parsedVariables.length).toEqual(0);
   });
 
   it('When a report has duplicate variables then they are detected', () => {
-    const instance = new ReportState({
-      name: 'My name',
-      description: 'My description',
-      path: 'my/path',
-      transformation: 'dummy transformation',
-      variables: 'not applicable, have to fix type mismatch',
-      xml: 'dummy xml',
-    });
+    const instance = new ReportValueComponent();
+    instance.report = getAPartialReport();
     instance.setVariables([
       { name: 'duplicate', value: 'one' },
       { name: 'not-duplicate', value: 'two' },
@@ -41,14 +54,8 @@ describe('ReportState', () => {
   });
 
   it('When a report has no duplicate variables then they are not detected', () => {
-    const instance = new ReportState({
-      name: 'My name',
-      description: 'My description',
-      path: 'my/path',
-      transformation: 'dummy transformation',
-      variables: 'not applicable, have to fix type mismatch',
-      xml: 'dummy xml',
-    });
+    const instance = new ReportValueComponent();
+    instance.report = getAPartialReport();
     instance.setVariables([
       { name: 'duplicate', value: 'one' },
       { name: 'not-duplicate', value: 'two' },
@@ -58,14 +65,8 @@ describe('ReportState', () => {
   });
 
   it('When removing a variable is requested, the right variable goes away', () => {
-    const instance = new ReportState({
-      name: 'My name',
-      description: 'My description',
-      path: 'my/path',
-      transformation: 'dummy transformation',
-      variables: 'not applicable, have to fix type mismatch',
-      xml: 'dummy xml',
-    });
+    const instance = new ReportValueComponent();
+    instance.report = getAPartialReport();
     instance.setVariables([
       { name: 'first variable', value: 'one' },
       { name: 'second variable', value: 'two' },
@@ -85,14 +86,8 @@ describe('ReportState', () => {
   });
 
   it('When the new variable edit field has gotten a name then a new empty variable row is added', () => {
-    const instance = new ReportState({
-      name: 'My name',
-      description: 'My description',
-      path: 'my/path',
-      transformation: 'dummy transformation',
-      variables: 'not applicable, have to fix type mismatch',
-      xml: 'dummy xml',
-    });
+    const instance = new ReportValueComponent();
+    instance.report = getAPartialReport();
     instance.setVariables([]);
     expect(instance.editedVariables.length).toEqual(1);
     expect(instance.editedVariables[0].name).toEqual('');
@@ -103,3 +98,14 @@ describe('ReportState', () => {
     expect(instance.editedVariables[1].name).toEqual('');
   });
 });
+
+function getAPartialReport(): PartialReport {
+  return {
+    name: 'My name',
+    description: 'My description',
+    path: 'my/path',
+    transformation: 'dummy transformation',
+    variables: 'not applicable, have to fix type mismatch',
+    xml: 'dummy xml',
+  };
+}

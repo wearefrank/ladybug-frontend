@@ -8,80 +8,11 @@
     />
   </as-split-area>
   <as-split-area class="right-side" [size]="75">
-    @if (state.reportState) {
-      <ng-container *ngTemplateOutlet="shownReport"/>
+    @if (reportNode) {
+      <app-report-value [height]="monacoEditorHeight" [report]="reportNode"></app-report-value>
     }
-    @if (state.checkpointState) {
-      <ng-container *ngTemplateOutlet="shownCheckpoint"/>
+    @if (checkpointNode) {
+      <app-checkpoint-value [height]="monacoEditorHeight" [originalValue]="checkpointNode.message"></app-checkpoint-value>
     }
   </as-split-area>
 </as-split>
-
-<ng-template #shownReport>
-  <div [style.height]="monacoEditorHeight + 'px'">
-    <div class="form-group">
-      <label>Name</label>
-      <input [(ngModel)]="state.reportState!.editedName" data-cy-report-edit-form="name" class="form-control" placeholder="Name" (input)="state.reportState!.onInputChange()">
-    </div>
-    <div class="form-group">
-      <label>Description</label>
-      <input [(ngModel)]="state.reportState!.editedDescription" placeholder="Description" (input)="state.reportState!.onInputChange()">
-    </div>
-    <div class="form-group">
-      <label>Path</label>
-      <input [(ngModel)]="state.reportState!.editedPath" class="form-control" placeholder="/path/to/report/" (input)="state.reportState!.onInputChange()">
-    </div>
-    <div class="form-group">
-      <label>Transformation</label>
-      <textarea [(ngModel)]="state.reportState!.editedTransformation" class="form-control transformation" (input)="state.reportState!.onInputChange()"></textarea>
-    </div>
-
-    @for (variable of state.reportState!.editedVariables; track index; let index = $index) {
-      <div class="form-group row">
-        <label class="col-sm-1 control-label label-height-30">
-          @if (index === 0) {
-            <span>Variables:</span>
-          }
-        </label>
-        <div class="col-sm-5">
-          <input
-            [(ngModel)]="variable.name"
-            [ngClass]="{'is-invalid': state.reportState!.duplicateVariables.has(index)}"
-            class="form-control" placeholder="Name"
-            (input)="state.reportState!.onInputChange()"
-            (blur)="state.reportState!.addEmptyVariableWhenNeeded()">
-        </div>
-        <div class="col-sm-5">
-          <input [(ngModel)]="variable.value" [ngClass]="{'is-invalid': state.reportState!.duplicateVariables.has(index)}" class="form-control" placeholder="Value" (input)="state.reportState!.onInputChange()">
-        </div>
-        @if (index < state.reportState!.editedVariables.length - 1) {
-          <div class="col-sm-1">
-            <button type="button" class="btn btn-danger"><i class="fa fa-trash" (click)="state.reportState!.removeVariable(index)"></i></button>
-          </div>
-        }
-      </div>
-    }
-
-    <app-monaco-editor
-      data-cy-element-name="reportEditor"
-      (onInit)="initEditor()"
-      [options]="monacoOptions"
-      [requestedEditorContents]="state.reportState!.reportXml"
-      (actualEditorContentsChange)="onMonacoEditorContentChange($event)"
-      [requestedReadOnly]="requestedMonacoReadOnly">
-    </app-monaco-editor>
-  </div>
-</ng-template>
-
-<ng-template #shownCheckpoint>
-  <div [style.height]="monacoEditorHeight + 'px'">
-    <app-monaco-editor
-      data-cy-element-name="checkpointEditor"
-      (onInit)="initEditor()"
-      [options]="monacoOptions"
-      [requestedEditorContents]="state.checkpointState!.initialMonacoEditorText"
-      (actualEditorContentsChange)="onMonacoEditorContentChange($event)"
-      [requestedReadOnly]="requestedMonacoReadOnly">
-    </app-monaco-editor>
-  </div>
-</ng-template>

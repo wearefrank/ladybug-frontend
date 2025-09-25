@@ -1,0 +1,51 @@
+<div [style.height]="height + 'px'">
+    <div class="form-group">
+      <label>Name</label>
+      <input [(ngModel)]="editedName" data-cy-report-edit-form="name" class="form-control" placeholder="Name" (input)="onInputChange()">
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <input [(ngModel)]="editedDescription" placeholder="Description" (input)="onInputChange()">
+    </div>
+    <div class="form-group">
+      <label>Path</label>
+      <input [(ngModel)]="editedPath" class="form-control" placeholder="/path/to/report/" (input)="onInputChange()">
+    </div>
+    <div class="form-group">
+      <label>Transformation</label>
+      <textarea [(ngModel)]="editedTransformation" class="form-control transformation" (input)="onInputChange()"></textarea>
+    </div>
+
+    @for (variable of editedVariables; track index; let index = $index) {
+      <div class="form-group row">
+        <label class="col-sm-1 control-label label-height-30">
+          @if (index === 0) {
+            <span>Variables:</span>
+          }
+        </label>
+        <div class="col-sm-5">
+          <input
+            [(ngModel)]="variable.name"
+            [ngClass]="{'is-invalid': duplicateVariables.has(index)}"
+            class="form-control" placeholder="Name"
+            (input)="onInputChange()"
+            (blur)="addEmptyVariableWhenNeeded()">
+        </div>
+        <div class="col-sm-5">
+          <input [(ngModel)]="variable.value" [ngClass]="{'is-invalid': duplicateVariables.has(index)}" class="form-control" placeholder="Value" (input)="onInputChange()">
+        </div>
+        @if (index < editedVariables.length - 1) {
+          <div class="col-sm-1">
+            <button type="button" class="btn btn-danger"><i class="fa fa-trash" (click)="removeVariable(index)"></i></button>
+          </div>
+        }
+      </div>
+    }
+
+    <app-monaco-editor
+      data-cy-element-name="reportEditor"
+      [options]="monacoOptions"
+      [requestedEditorContents]="report?.xml"
+      [requestedReadOnly]="true">
+    </app-monaco-editor>
+  </div>
