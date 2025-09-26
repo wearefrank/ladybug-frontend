@@ -11,7 +11,15 @@ import sonarjs from 'eslint-plugin-sonarjs';
 
 export default [
   {
-    ignores: ['projects/**/*', 'dist/**/*', 'target/**/*', 'node_modules/**/*', 'cypress/**/*'],
+    ignores: [
+      'projects/**/*',
+      'dist/**/*',
+      'target/**/*',
+      'node_modules/**/*',
+      'cypress/**/*',
+      'karma.conf.js',
+      '.angular/**/*',
+    ],
   },
   {
     files: ['**/*.ts'],
