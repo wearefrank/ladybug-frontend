@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
+import { AngularSplitModule } from 'angular-split';
 
 export interface Variable {
   name: string;
@@ -19,7 +20,7 @@ export interface PartialReport {
 
 @Component({
   selector: 'app-report-value',
-  imports: [MonacoEditorComponent, CommonModule, FormsModule],
+  imports: [MonacoEditorComponent, CommonModule, FormsModule, AngularSplitModule],
   templateUrl: './report-value.component.html',
   styleUrl: './report-value.component.css',
 })
