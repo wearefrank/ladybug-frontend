@@ -25,6 +25,9 @@ export interface PartialReport {
   xml: string;
 }
 
+const HEIGHT_OF_FIXED_SIZE_ELEMENTS = 550;
+const MIN_MONACO_EDITOR_HEIGHT = 100;
+
 @Component({
   selector: 'app-report-value',
   imports: [MonacoEditorComponent, CommonModule, FormsModule, AngularSplitModule],
@@ -32,7 +35,6 @@ export interface PartialReport {
   styleUrl: './report-value.component.css',
 })
 export class ReportValueComponent implements OnInit {
-  @Input() height = 0;
   editedName = '';
   editedDescription = '';
   editedPath = '';
@@ -51,13 +53,28 @@ export class ReportValueComponent implements OnInit {
     selectOnLineNumbers: true,
     scrollBeyondLastLine: false,
   };
+  protected monacoEditorInitialHeight: number = 0;
   protected transformationContentRequestSubject = new ReplaySubject<string>();
   protected transformationReadOnlySubject = new ReplaySubject<boolean>();
   protected reportContentRequestSubject = new ReplaySubject<string>();
   protected reportReadOnlySubject = new ReplaySubject<boolean>();
+  private _height = 0;
   private _report?: PartialReport;
   private http = inject(HttpService);
   private errorHandler = inject(ErrorHandling);
+
+  get height(): number {
+    return this._height;
+  }
+
+  @Input() set height(theHeight: number) {
+    this._height = theHeight;
+    this.monacoEditorInitialHeight = this._height - HEIGHT_OF_FIXED_SIZE_ELEMENTS;
+    if (this.monacoEditorInitialHeight < MIN_MONACO_EDITOR_HEIGHT) {
+      this.monacoEditorInitialHeight = MIN_MONACO_EDITOR_HEIGHT;
+    }
+    console.log(`ReportValueComponent.set_height(): ${this._height}, ${this.monacoEditorInitialHeight}`);
+  }
 
   get report(): PartialReport | undefined {
     return this._report;

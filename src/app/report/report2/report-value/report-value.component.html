@@ -1,36 +1,17 @@
 <div [style.height]="height + 'px'">
   <as-split direction="vertical">
-    <as-split-area class="split-size" [size]="25">
+    <as-split-area class="split-size" [size]="100">
       <div class="form-group">
         <label>Name</label>
         <input [(ngModel)]="editedName" data-cy-report-edit-form="name" class="form-control" placeholder="Name" (input)="onInputChange()">
       </div>
       <div class="form-group">
         <label>Description</label>
-        <input [(ngModel)]="editedDescription" placeholder="Description" (input)="onInputChange()">
+        <input [(ngModel)]="editedDescription" class="form-control" placeholder="Description" (input)="onInputChange()">
       </div>
       <div class="form-group">
         <label>Path</label>
         <input [(ngModel)]="editedPath" class="form-control" placeholder="/path/to/report/" (input)="onInputChange()">
-      </div>
-      <div class="form-group">
-        <div class="d-flex flex-row align-items-center">
-          <label>Transformation</label>
-            <button id="copyTransformationButton"
-              data-cy-copy-transformation-to-report-form
-              class="btn btn-info h-fit"
-              title="Copy transformation"
-              (click)="copyDefaultTransformation()">
-              Copy default transformation
-            </button>
-          </div>
-        <div id="editTransformationArea">
-          <app-monaco-editor
-            [options]="monacoOptions"
-            [readOnlyRequest$]="transformationReadOnlySubject"
-            [editorContentRequest$]="transformationContentRequestSubject"
-            (actualEditorContentsChange)="onTransformationEdited($event)"/>
-        </div>
       </div>
       @for (variable of editedVariables; track index; let index = $index) {
         <div class="form-group row">
@@ -57,14 +38,34 @@
           }
         </div>
       }
-    </as-split-area>
-    <as-split-area class="split-size" [size]="75">
-      <app-monaco-editor
-        data-cy-element-name="reportEditor"
-        [options]="monacoOptions"
-        [editorContentRequest$]="reportContentRequestSubject"
-        [readOnlyRequest$]="reportReadOnlySubject">
-      </app-monaco-editor>
+      <div id="form-group-transformation" class="form-group">
+        <div class="d-flex flex-row align-items-center">
+          <label>Transformation</label>
+          <button id="copyTransformationButton"
+            data-cy-copy-transformation-to-report-form
+            class="btn btn-info h-fit"
+            title="Copy transformation"
+            (click)="copyDefaultTransformation()">
+            Copy default transformation
+          </button>
+        </div>
+        <div class="monaco-area" [style.height]="monacoEditorInitialHeight + 'px'">
+          <app-monaco-editor
+            [options]="monacoOptions"
+            [readOnlyRequest$]="transformationReadOnlySubject"
+            [editorContentRequest$]="transformationContentRequestSubject"
+            (actualEditorContentsChange)="onTransformationEdited($event)"/>
+        </div>
+      </div>
+      <div id="reportXmlHeader">Report XML</div>
+      <div class="monaco-area" [style.height]="monacoEditorInitialHeight + 'px'">
+        <app-monaco-editor
+          data-cy-element-name="reportEditor"
+          [options]="monacoOptions"
+          [editorContentRequest$]="reportContentRequestSubject"
+          [readOnlyRequest$]="reportReadOnlySubject">
+        </app-monaco-editor>
+      </div>
     </as-split-area>
   </as-split>
 </div>

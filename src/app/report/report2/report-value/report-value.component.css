@@ -11,6 +11,11 @@ textarea {
   margin-bottom: 5px;
 }
 
-#editTransformationArea {
-  height: 100px;
+.monaco-area {
+  resize: vertical;
+  overflow: auto;
+}
+
+#reportXmlHeader {
+  margin-bottom: 8px;
 }

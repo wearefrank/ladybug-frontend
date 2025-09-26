@@ -33,7 +33,7 @@ export default [
       ...tsPlugin.configs.stylistic.rules,
       '@typescript-eslint/explicit-function-return-type': 'error',
       '@typescript-eslint/triple-slash-reference': 'warn',
-      '@typescript-eslint/member-ordering': 'error',
+      '@typescript-eslint/member-ordering': 'warn',
       '@typescript-eslint/no-unused-vars': 'warn',
       'no-unused-vars': 'warn',
       '@typescript-eslint/no-inferrable-types': 'warn',
