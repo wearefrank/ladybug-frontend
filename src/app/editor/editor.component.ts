@@ -56,7 +56,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     renderFinalNewline: false,
     scrollBeyondLastLine: false,
   };
-  requestedEditorContent?: string;
+  requestedEditorContent: string = '';
   originalCheckpointValue?: string | null;
   isPrettified = false;
   currentView: EditorView = 'raw';
@@ -67,6 +67,9 @@ export class EditorComponent implements OnInit, OnDestroy {
   contentType!: EditorView;
 
   editorFocused = false;
+
+  protected editorContentsSubject = new Subject<string>();
+  protected editorReadOnlySubject = new Subject<boolean>();
 
   private actualEditorContent?: string | null;
 
@@ -86,6 +89,8 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscribeToEditorChanges();
+    this.editorContentsSubject.next(this.requestedEditorContent);
+    this.editorReadOnlySubject.next(this.readOnlyMode);
   }
 
   ngOnDestroy(): void {
@@ -97,7 +102,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   }
 
   onSave(): void {
-    if (this.unsavedChanges && this.requestedEditorContent) {
+    if (this.unsavedChanges) {
       this.saveReportRequest.emit(true);
     }
   }

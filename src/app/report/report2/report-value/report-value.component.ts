@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { HttpService } from '../../../shared/services/http.service';
-import { catchError, firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, ReplaySubject } from 'rxjs';
 import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { Transformation } from '../../../shared/interfaces/transformation';
 
@@ -17,7 +17,10 @@ export interface PartialReport {
   name: string;
   description: string;
   path: string;
-  transformation: string;
+  // TODO: class Report defines it erroneously as a plain string.
+  // Fix this error in the type system.
+  transformation: string | null;
+  // TODO: This is not the correct type. Fix.
   variables: string;
   xml: string;
 }
@@ -28,12 +31,12 @@ export interface PartialReport {
   templateUrl: './report-value.component.html',
   styleUrl: './report-value.component.css',
 })
-export class ReportValueComponent {
+export class ReportValueComponent implements OnInit {
   @Input() height = 0;
   editedName = '';
   editedDescription = '';
   editedPath = '';
-  editedTransformation = '';
+  editedTransformation: string | null = '';
   // TODO: Use from input report when type system issue has been fixed.
   originalVariables: Variable[] = [];
   editedVariables: Variable[] = [];
@@ -48,6 +51,10 @@ export class ReportValueComponent {
     selectOnLineNumbers: true,
     scrollBeyondLastLine: false,
   };
+  protected transformationContentRequestSubject = new ReplaySubject<string>();
+  protected transformationReadOnlySubject = new ReplaySubject<boolean>();
+  protected reportContentRequestSubject = new ReplaySubject<string>();
+  protected reportReadOnlySubject = new ReplaySubject<boolean>();
   private _report?: PartialReport;
   private http = inject(HttpService);
   private errorHandler = inject(ErrorHandling);
@@ -64,6 +71,7 @@ export class ReportValueComponent {
     this.editedTransformation = this._report.transformation;
     this.originalVariables = ReportValueComponent.initVariables(report.variables);
     this.editedVariables = ReportValueComponent.calculateEditedVariables(this.originalVariables);
+    this.refreshDuplicateVariables();
   }
 
   // TODO: Fix issue with types. Report.variables is declared to be a string,
@@ -83,15 +91,31 @@ export class ReportValueComponent {
     return result;
   }
 
+  ngOnInit(): void {
+    this.transformationReadOnlySubject.next(false);
+    this.reportReadOnlySubject.next(true);
+    this.reportContentRequestSubject.next(this._report!.xml);
+    if (this.report === undefined) {
+      throw new Error('ReportValuesComponent.ngOnInit(): Report not initialized yet.');
+    }
+    this.transformationContentRequestSubject.next(this.getEditorTextOfTransformation(this._report!.transformation));
+  }
+
   onInputChange(): void {
     this.refreshDuplicateVariables();
+  }
+
+  onTransformationEdited(value: string): void {
+    console.log('ReportValueComponent.onTransformationEdited()');
+    this.editedTransformation = this.getTransformationFromEditorText(value);
+    this.onInputChange();
   }
 
   async copyDefaultTransformation(): Promise<void> {
     const transformationResponse: Transformation = await firstValueFrom(
       this.http.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),
     );
-    this.editedTransformation = transformationResponse.transformation;
+    this.changeTransformationFromOutsideEditor(transformationResponse.transformation);
   }
 
   removeVariable(index: number): void {
@@ -104,6 +128,7 @@ export class ReportValueComponent {
       const lastVariable: Variable = this.editedVariables.at(-1)!;
       if (lastVariable.name.length > 0) {
         this.editedVariables.push({ name: '', value: '' });
+        this.refreshDuplicateVariables();
       }
     }
   }
@@ -112,6 +137,12 @@ export class ReportValueComponent {
   setVariables(variables: Variable[]): void {
     this.originalVariables = variables;
     this.editedVariables = ReportValueComponent.calculateEditedVariables(this.originalVariables);
+    this.refreshDuplicateVariables();
+  }
+
+  private changeTransformationFromOutsideEditor(value: string): void {
+    console.log('ReportValueComponent.changeTransformationFromOutsideEditor()');
+    this.transformationContentRequestSubject.next(value);
   }
 
   private refreshDuplicateVariables(): void {
@@ -123,5 +154,18 @@ export class ReportValueComponent {
       }
       variableNames.add(variable.name);
     }
+  }
+
+  private getEditorTextOfTransformation(transformation: string | null): string {
+    if (transformation === '') {
+      console.log(
+        'ReportValueComponent.getEditorTextOfTransformation(): transformation should not be the empty string',
+      );
+    }
+    return transformation === null ? '' : transformation;
+  }
+
+  private getTransformationFromEditorText(text: string): string | null {
+    return text.trim().length === 0 ? null : text.trim();
   }
 }

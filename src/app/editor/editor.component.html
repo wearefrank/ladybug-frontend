@@ -5,9 +5,9 @@
         data-cy-element-name="editor"
         (onInit)="initEditor()"
         [options]="options"
-        [requestedEditorContents]="requestedEditorContent"
+        [editorContentRequest$]="editorContentsSubject"
         (actualEditorContentsChange)="onActualEditorContentsChange($event)"
-        [requestedReadOnly]="readOnlyMode"
+        [readOnlyRequest$]="editorReadOnlySubject"
         (focusedChange)="onFocusedChanged($event)">
       </app-monaco-editor>
     </div>

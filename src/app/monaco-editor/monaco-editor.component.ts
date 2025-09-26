@@ -6,13 +6,12 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  OnChanges,
   OnDestroy,
+  OnInit,
   Output,
-  SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { first, Observable, ReplaySubject } from 'rxjs';
+import { first, Observable, ReplaySubject, Subscription } from 'rxjs';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type AMDRequire = {
@@ -30,10 +29,10 @@ type AMDRequire = {
   templateUrl: './monaco-editor.component.html',
   styleUrls: ['./monaco-editor.component.scss'],
 })
-export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
-  @Input() requestedEditorContents?: string;
+export class MonacoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input() editorContentRequest$?: Observable<string>;
+  @Input() readOnlyRequest$?: Observable<boolean>;
   @Output() actualEditorContentsChange = new EventEmitter<string>();
-  @Input() requestedReadOnly = true;
   @Output() actualReadOnlyChange = new EventEmitter<boolean>();
   @Output() focusedChange = new EventEmitter<boolean>();
   @Input() options?: Partial<monaco.editor.IStandaloneEditorConstructionOptions>;
@@ -41,6 +40,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   actions?: {
     ctrlEnter?: monaco.editor.IActionDescriptor;
   };
+
   // eslint-disable-next-line @angular-eslint/no-output-on-prefix
   @Output() onInit = new EventEmitter<void>();
 
@@ -53,31 +53,23 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
   private editor?: monaco.editor.IStandaloneCodeEditor;
   private decorationsDelta: string[] = [];
+  private subscriptions: Subscription = new Subscription();
 
   constructor() {
     this.editor$ = this.editorSubject.asObservable();
+  }
+
+  ngOnInit(): void {
+    this.subscriptions.add(this.editorContentRequest$?.subscribe((value) => this.setRequestedEditorContents(value)));
+    this.subscriptions.add(this.readOnlyRequest$?.subscribe((value) => this.setReadOnly(value)));
   }
 
   ngAfterViewInit(): void {
     this.loadMonaco();
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    const requestedEditorContentsChange = changes['requestedEditorContents'];
-    if (
-      requestedEditorContentsChange &&
-      this.editor?.getValue() !== requestedEditorContentsChange.currentValue &&
-      !requestedEditorContentsChange.isFirstChange()
-    ) {
-      this.setRequestedEditorContents(changes['requestedEditorContents'].currentValue);
-    }
-    const requestedReadOnlyChange = changes['requestedReadOnly'];
-    if (requestedReadOnlyChange && !requestedReadOnlyChange.isFirstChange()) {
-      this.setReadOnly(this.requestedReadOnly);
-    }
-  }
-
   ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
     this.editor?.dispose();
   }
 
@@ -92,6 +84,9 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   }
 
   async setRequestedEditorContents(content: string): Promise<void> {
+    if (typeof content !== 'string') {
+      throw new TypeError(`MonacoEditorComponent.setRequestedEditorContents(): received a non-string`);
+    }
     return new Promise<void>((resolve) => {
       this.editor$.pipe(first()).subscribe((editor) => {
         editor.getModel()?.setValue(content);
@@ -146,8 +141,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       throw new Error('MonacoEditorComponent.options should not include readOnly. Use input requestedReadOnly instead');
     }
     this.editor = monaco.editor.create(this.editorContainer.nativeElement, {
-      value: this.requestedEditorContents,
-      readOnly: this.requestedReadOnly,
+      value: '',
+      readOnly: true,
       theme: 'vs-light',
       language: 'xml',
       automaticLayout: true,

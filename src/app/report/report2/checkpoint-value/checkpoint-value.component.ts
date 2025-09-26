@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ReplaySubject } from 'rxjs';
 import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.component';
 
 @Component({
@@ -7,15 +8,20 @@ import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.compo
   templateUrl: './checkpoint-value.component.html',
   styleUrl: './checkpoint-value.component.css',
 })
-export class CheckpointValueComponent {
+export class CheckpointValueComponent implements OnInit {
   @Input() height = 0;
 
-  protected originalMonacoEditorContents = '';
+  protected editorContentsSubject = new ReplaySubject<string>();
+  protected editorReadOnlySubject = new ReplaySubject<boolean>();
   private _originalValue: string | null = null;
 
   @Input() set originalValue(originalValue: string | null) {
     this._originalValue = originalValue;
-    this.originalMonacoEditorContents = originalValue === null ? '' : originalValue;
+    this.editorContentsSubject.next(originalValue === null ? '' : originalValue);
+  }
+
+  ngOnInit(): void {
+    this.editorReadOnlySubject.next(false);
   }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering

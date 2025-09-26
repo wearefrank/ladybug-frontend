@@ -24,7 +24,13 @@
               Copy default transformation
             </button>
           </div>
-        <textarea [(ngModel)]="editedTransformation" class="form-control transformation" (input)="onInputChange()"></textarea>
+        <div id="editTransformationArea">
+          <app-monaco-editor
+            [options]="monacoOptions"
+            [readOnlyRequest$]="transformationReadOnlySubject"
+            [editorContentRequest$]="transformationContentRequestSubject"
+            (actualEditorContentsChange)="onTransformationEdited($event)"/>
+        </div>
       </div>
       @for (variable of editedVariables; track index; let index = $index) {
         <div class="form-group row">
@@ -56,8 +62,8 @@
       <app-monaco-editor
         data-cy-element-name="reportEditor"
         [options]="monacoOptions"
-        [requestedEditorContents]="report?.xml"
-        [requestedReadOnly]="true">
+        [editorContentRequest$]="reportContentRequestSubject"
+        [readOnlyRequest$]="reportReadOnlySubject">
       </app-monaco-editor>
     </as-split-area>
   </as-split>

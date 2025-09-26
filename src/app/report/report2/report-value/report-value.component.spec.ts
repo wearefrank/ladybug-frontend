@@ -17,6 +17,7 @@ describe('ReportValue', () => {
 
     fixture = TestBed.createComponent(ReportValueComponent);
     component = fixture.componentInstance;
+    component.report = getAPartialReport();
     fixture.detectChanges();
   });
 
@@ -45,7 +46,6 @@ describe('ReportValue', () => {
   });
 
   it('When a report has duplicate variables then they are detected', () => {
-    component.report = getAPartialReport();
     component.setVariables([
       { name: 'duplicate', value: 'one' },
       { name: 'not-duplicate', value: 'two' },
@@ -57,7 +57,6 @@ describe('ReportValue', () => {
   });
 
   it('When a report has no duplicate variables then they are not detected', () => {
-    component.report = getAPartialReport();
     component.setVariables([
       { name: 'duplicate', value: 'one' },
       { name: 'not-duplicate', value: 'two' },
@@ -67,7 +66,6 @@ describe('ReportValue', () => {
   });
 
   it('When removing a variable is requested, the right variable goes away', () => {
-    component.report = getAPartialReport();
     component.setVariables([
       { name: 'first variable', value: 'one' },
       { name: 'second variable', value: 'two' },
@@ -87,7 +85,6 @@ describe('ReportValue', () => {
   });
 
   it('When the new variable edit field has gotten a name then a new empty variable row is added', () => {
-    component.report = getAPartialReport();
     component.setVariables([]);
     expect(component.editedVariables.length).toEqual(1);
     expect(component.editedVariables[0].name).toEqual('');
