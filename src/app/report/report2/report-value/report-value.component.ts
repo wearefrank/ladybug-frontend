@@ -1,8 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { AngularSplitModule } from 'angular-split';
+import { HttpService } from '../../../shared/services/http.service';
+import { catchError, firstValueFrom } from 'rxjs';
+import { ErrorHandling } from '../../../shared/classes/error-handling.service';
+import { Transformation } from '../../../shared/interfaces/transformation';
 
 export interface Variable {
   name: string;
@@ -35,7 +39,18 @@ export class ReportValueComponent {
   editedVariables: Variable[] = [];
   duplicateVariables: Set<number> = new Set<number>();
 
+  protected monacoOptions: Partial<monaco.editor.IStandaloneEditorConstructionOptions> = {
+    theme: 'vs-light',
+    language: 'xml',
+    inlineCompletionsAccessibilityVerbose: true,
+    automaticLayout: true,
+    padding: { bottom: 200 },
+    selectOnLineNumbers: true,
+    scrollBeyondLastLine: false,
+  };
   private _report?: PartialReport;
+  private http = inject(HttpService);
+  private errorHandler = inject(ErrorHandling);
 
   get report(): PartialReport | undefined {
     return this._report;
@@ -50,17 +65,6 @@ export class ReportValueComponent {
     this.originalVariables = ReportValueComponent.initVariables(report.variables);
     this.editedVariables = ReportValueComponent.calculateEditedVariables(this.originalVariables);
   }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  protected monacoOptions: Partial<monaco.editor.IStandaloneEditorConstructionOptions> = {
-    theme: 'vs-light',
-    language: 'xml',
-    inlineCompletionsAccessibilityVerbose: true,
-    automaticLayout: true,
-    padding: { bottom: 200 },
-    selectOnLineNumbers: true,
-    scrollBeyondLastLine: false,
-  };
 
   // TODO: Fix issue with types. Report.variables is declared to be a string,
   // but it is really an object.
@@ -81,6 +85,13 @@ export class ReportValueComponent {
 
   onInputChange(): void {
     this.refreshDuplicateVariables();
+  }
+
+  async copyDefaultTransformation(): Promise<void> {
+    const transformationResponse: Transformation = await firstValueFrom(
+      this.http.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),
+    );
+    this.editedTransformation = transformationResponse.transformation;
   }
 
   removeVariable(index: number): void {

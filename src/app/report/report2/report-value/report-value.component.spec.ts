@@ -1,13 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PartialReport, ReportValueComponent, Variable } from './report-value.component';
+import { HttpService } from '../../../shared/services/http.service';
+import { ErrorHandling } from '../../../shared/classes/error-handling.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ReportValue', () => {
   let component: ReportValueComponent;
   let fixture: ComponentFixture<ReportValueComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(withInterceptorsFromDi()), HttpService, ErrorHandling],
       imports: [ReportValueComponent],
     }).compileComponents();
 
@@ -41,61 +45,57 @@ describe('ReportValue', () => {
   });
 
   it('When a report has duplicate variables then they are detected', () => {
-    const instance = new ReportValueComponent();
-    instance.report = getAPartialReport();
-    instance.setVariables([
+    component.report = getAPartialReport();
+    component.setVariables([
       { name: 'duplicate', value: 'one' },
       { name: 'not-duplicate', value: 'two' },
       { name: 'duplicate', value: 'three' },
     ]);
-    instance.onInputChange();
-    expect(instance.duplicateVariables.size).toEqual(1);
-    expect(instance.duplicateVariables.has(2)).toEqual(true);
+    component.onInputChange();
+    expect(component.duplicateVariables.size).toEqual(1);
+    expect(component.duplicateVariables.has(2)).toEqual(true);
   });
 
   it('When a report has no duplicate variables then they are not detected', () => {
-    const instance = new ReportValueComponent();
-    instance.report = getAPartialReport();
-    instance.setVariables([
+    component.report = getAPartialReport();
+    component.setVariables([
       { name: 'duplicate', value: 'one' },
       { name: 'not-duplicate', value: 'two' },
     ]);
-    instance.onInputChange();
-    expect(instance.duplicateVariables.size).toEqual(0);
+    component.onInputChange();
+    expect(component.duplicateVariables.size).toEqual(0);
   });
 
   it('When removing a variable is requested, the right variable goes away', () => {
-    const instance = new ReportValueComponent();
-    instance.report = getAPartialReport();
-    instance.setVariables([
+    component.report = getAPartialReport();
+    component.setVariables([
       { name: 'first variable', value: 'one' },
       { name: 'second variable', value: 'two' },
       { name: 'third variable', value: 'two' },
     ]);
-    expect(instance.editedVariables.length).toEqual(4);
-    expect(instance.editedVariables[0].name).toEqual('first variable');
-    expect(instance.editedVariables[1].name).toEqual('second variable');
-    expect(instance.editedVariables[2].name).toEqual('third variable');
+    expect(component.editedVariables.length).toEqual(4);
+    expect(component.editedVariables[0].name).toEqual('first variable');
+    expect(component.editedVariables[1].name).toEqual('second variable');
+    expect(component.editedVariables[2].name).toEqual('third variable');
     // Allows the user to add a new variable
-    expect(instance.editedVariables[3].name).toEqual('');
-    instance.removeVariable(1);
-    expect(instance.editedVariables.length).toEqual(3);
-    expect(instance.editedVariables[0].name).toEqual('first variable');
-    expect(instance.editedVariables[1].name).toEqual('third variable');
-    expect(instance.editedVariables[2].name).toEqual('');
+    expect(component.editedVariables[3].name).toEqual('');
+    component.removeVariable(1);
+    expect(component.editedVariables.length).toEqual(3);
+    expect(component.editedVariables[0].name).toEqual('first variable');
+    expect(component.editedVariables[1].name).toEqual('third variable');
+    expect(component.editedVariables[2].name).toEqual('');
   });
 
   it('When the new variable edit field has gotten a name then a new empty variable row is added', () => {
-    const instance = new ReportValueComponent();
-    instance.report = getAPartialReport();
-    instance.setVariables([]);
-    expect(instance.editedVariables.length).toEqual(1);
-    expect(instance.editedVariables[0].name).toEqual('');
-    instance.editedVariables[0].name = 'some name';
-    instance.addEmptyVariableWhenNeeded();
-    expect(instance.editedVariables.length).toEqual(2);
-    expect(instance.editedVariables[0].name).toEqual('some name');
-    expect(instance.editedVariables[1].name).toEqual('');
+    component.report = getAPartialReport();
+    component.setVariables([]);
+    expect(component.editedVariables.length).toEqual(1);
+    expect(component.editedVariables[0].name).toEqual('');
+    component.editedVariables[0].name = 'some name';
+    component.addEmptyVariableWhenNeeded();
+    expect(component.editedVariables.length).toEqual(2);
+    expect(component.editedVariables[0].name).toEqual('some name');
+    expect(component.editedVariables[1].name).toEqual('');
   });
 });
 

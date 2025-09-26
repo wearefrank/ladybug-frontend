@@ -5,3 +5,8 @@ textarea {
 .is-invalid {
   border-color: red;
 }
+
+#copyTransformationButton {
+  margin-left: 10px;
+  margin-bottom: 5px;
+}
