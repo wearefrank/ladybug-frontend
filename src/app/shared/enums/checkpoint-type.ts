@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 export const enum CheckpointType {
   Startpoint = 1,
   Endpoint,

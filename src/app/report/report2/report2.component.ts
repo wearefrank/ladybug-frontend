@@ -1,4 +1,14 @@
-import { ChangeDetectorRef, Component, ElementRef, inject, Input, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  inject,
+  Input,
+  ViewChild,
+  OnInit,
+  AfterViewInit,
+  OnDestroy,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularSplitModule, SplitComponent } from 'angular-split';
 import { debounceTime, fromEventPattern, Subject, Subscription } from 'rxjs';
@@ -12,7 +22,7 @@ import { TabService } from '../../shared/services/tab.service';
 import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
 import { ReportValueComponent } from './report-value/report-value.component';
 import { CheckpointValueComponent } from './checkpoint-value/checkpoint-value.component';
-import { ReportUtil } from '../../shared/util/report-util';
+import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
 
 const MIN_HEIGHT = 20;
 const MARGIN_IF_NOT_NEW_TAB = 30;
@@ -23,7 +33,7 @@ const MARGIN_IF_NOT_NEW_TAB = 30;
   templateUrl: './report2.component.html',
   styleUrl: './report2.component.css',
 })
-export class Report2Component {
+export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   static readonly ROUTER_PATH: string = 'report';
   @Input() newTab = true;
   @Input({ required: true }) currentView!: View;
@@ -83,10 +93,10 @@ export class Report2Component {
   }
 
   selectReport(node: Report | Checkpoint): void {
-    if (ReportUtil.isReport(node)) {
+    if (ReportUtility.isReport(node)) {
       this.reportNode = node as Report;
       this.checkpointNode = undefined;
-    } else if (ReportUtil.isCheckPoint(node)) {
+    } else if (ReportUtility.isCheckPoint(node)) {
       this.reportNode = undefined;
       this.checkpointNode = node as Checkpoint;
     } else {
@@ -94,7 +104,7 @@ export class Report2Component {
     }
   }
 
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-empty-function
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected onMonacoEditorContentChange(_editorText: string): void {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function

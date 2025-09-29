@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
 import { Component, EventEmitter, inject, Input, OnChanges, Output } from '@angular/core';
-import { ReportUtil } from '../../../shared/util/report-util';
+import { ReportUtil as ReportUtility } from '../../../shared/util/report-util';
 import { ToastService } from '../../../shared/services/toast.service';
 import { Checkpoint } from '../../../shared/interfaces/checkpoint';
 import { Report } from '../../../shared/interfaces/report';
@@ -21,12 +20,12 @@ export class EncodingButtonComponent implements OnChanges {
   private toastService = inject(ToastService);
 
   ngOnChanges(): void {
-    this.showEncodingButton = ReportUtil.isCheckPoint(this.selectedNode) && this.selectedNode.encoding === 'Base64';
+    this.showEncodingButton = ReportUtility.isCheckPoint(this.selectedNode) && this.selectedNode.encoding === 'Base64';
   }
 
   changeEncoding(): void {
     const node: Report | Checkpoint | undefined = this.selectedNode;
-    if (!ReportUtil.isCheckPoint(node)) {
+    if (!ReportUtility.isCheckPoint(node)) {
       this.toastService.showDanger('Could not find report to change encoding');
       return;
     }

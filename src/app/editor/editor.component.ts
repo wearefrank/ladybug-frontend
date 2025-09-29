@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ChangeDetectorRef,
@@ -56,7 +55,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     renderFinalNewline: false,
     scrollBeyondLastLine: false,
   };
-  requestedEditorContent: string = '';
+  requestedEditorContent = '';
   originalCheckpointValue?: string | null;
   isPrettified = false;
   currentView: EditorView = 'raw';
@@ -117,11 +116,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.subscriptions.add(editorChangesSubscription);
     */
     const editorChangesSubscription: Subscription = this.editorChangesSubject.subscribe((value) => {
-      if (this.requestedEditorContent !== undefined && this.requestedEditorContent !== null) {
-        this.actualEditorContent = value;
-      } else {
-        this.actualEditorContent = null;
-      }
+      this.actualEditorContent =
+        this.requestedEditorContent !== undefined && this.requestedEditorContent !== null ? value : null;
     });
     this.subscriptions.add(editorChangesSubscription);
   }
@@ -179,14 +175,12 @@ export class EditorComponent implements OnInit, OnDestroy {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   onActualEditorContentsChange(event: string): void {
     console.log(`EditorComponent.onActualEditorContentsChange(): ${event.slice(0, 20)}`);
     this.editorChangesSubject.next(event);
     this.unsavedChanges = event !== this.originalCheckpointValue;
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   setNewCheckpoint(value: string | null): void {
     console.log('Got checkpoint value null');
     this.originalCheckpointValue = value;
@@ -199,7 +193,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   setContentType(): void {
     if (this.originalCheckpointValue === undefined) {
       throw new Error(
@@ -225,7 +218,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.contentType = 'raw';
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   checkIfFileIsXml(value: string): boolean {
     if (value) {
       for (let index = 0; index < value.length; index++) {
@@ -238,12 +230,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   getValue(): string {
     return this.actualEditorContent ?? '';
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   setAvailableViews(): void {
     const availableViews: EditorView[] = [...basicContentTypes];
     if (!availableViews.includes(this.contentType)) {
@@ -252,12 +242,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.availableViews = availableViews;
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   isPrettifiable(value: EditorView): boolean {
     return prettyContentTypes.includes(value as PrettyView);
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   isBasicView(value: EditorView): boolean {
     return basicContentTypes.includes(value as BasicView);
   }

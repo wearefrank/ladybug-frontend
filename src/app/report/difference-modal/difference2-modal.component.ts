@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Component, inject, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ReportDifference2 } from '../../shared/interfaces/report-difference';
 import { TitleCasePipe } from '@angular/common';

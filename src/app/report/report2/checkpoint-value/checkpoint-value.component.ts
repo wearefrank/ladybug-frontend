@@ -24,7 +24,6 @@ export class CheckpointValueComponent implements OnInit {
     this.editorReadOnlySubject.next(false);
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   protected monacoOptions: Partial<monaco.editor.IStandaloneEditorConstructionOptions> = {
     theme: 'vs-light',
     language: 'xml',

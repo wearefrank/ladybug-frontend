@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-unused-vars */
+
 import {
   ChangeDetectorRef,
   Component,
@@ -42,7 +42,7 @@ import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
 import { UpdateReportResponse } from '../../shared/interfaces/update-report-response';
 import { View } from '../../shared/interfaces/view';
-import { ReportUtil } from '../../shared/util/report-util';
+import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
 import { EncodingButtonComponent } from './encoding-button/encoding-button.component';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { TestReportsService } from '../../test/test-reports.service';
@@ -99,7 +99,7 @@ export class EditDisplayComponent implements OnChanges {
   stub?: number;
   stubStrategy?: string;
 
-  protected readonly ReportUtil = ReportUtil;
+  protected readonly ReportUtil = ReportUtility;
   protected readonly Number: NumberConstructor = Number;
   protected readonly StubStrategy = StubStrategy;
   protected calculatedHeight = 340;
@@ -128,10 +128,10 @@ export class EditDisplayComponent implements OnChanges {
     this.disableEditing();
     this.selectedNode = node;
     this.stub = node.stub;
-    if (ReportUtil.isReport(this.selectedNode)) {
+    if (ReportUtility.isReport(this.selectedNode)) {
       this.stubStrategy = this.selectedNode.stubStrategy;
       this.editor.setNewCheckpoint(this.selectedNode.xml);
-    } else if (ReportUtil.isCheckPoint(this.selectedNode)) {
+    } else if (ReportUtility.isCheckPoint(this.selectedNode)) {
       this.editor.setNewCheckpoint(this.convertMessage(this.selectedNode));
     }
     this.rerunResult = undefined;
@@ -154,10 +154,10 @@ export class EditDisplayComponent implements OnChanges {
   rerunReport(): void {
     const node: Report | Checkpoint = this.selectedNode!;
     let reportId: number | undefined;
-    if (ReportUtil.isReport(node)) {
+    if (ReportUtility.isReport(node)) {
       reportId = node.storageId;
-    } else if (ReportUtil.isCheckPoint(node)) {
-      reportId = ReportUtil.getStorageIdFromUid(node.uid);
+    } else if (ReportUtility.isCheckPoint(node)) {
+      reportId = ReportUtility.getStorageIdFromUid(node.uid);
     }
     if (reportId == undefined) {
       this.toastService.showDanger('Could not find report to rerun');
@@ -185,9 +185,9 @@ export class EditDisplayComponent implements OnChanges {
   downloadReport(exportBinary: boolean, exportXML: boolean): void {
     const node: Report | Checkpoint = this.selectedNode!;
     let queryString = 'id=';
-    if (ReportUtil.isReport(node)) {
+    if (ReportUtility.isReport(node)) {
       queryString += String(node.storageId);
-    } else if (ReportUtil.isCheckPoint(node)) {
+    } else if (ReportUtility.isCheckPoint(node)) {
       queryString += node.uid.split('#')[0];
     } else {
       queryString = '';
@@ -204,9 +204,9 @@ export class EditDisplayComponent implements OnChanges {
     console.log(`openDifferenceModal with type=${type}`);
     const node: Report | Checkpoint = this.selectedNode!;
     let reportDifferences: ReportDifference[] = [];
-    if (ReportUtil.isReport(node) && this.editFormComponent) {
+    if (ReportUtility.isReport(node) && this.editFormComponent) {
       reportDifferences = this.editFormComponent.getDifferences();
-    } else if (ReportUtil.isCheckPoint(node) && this.editor?.getValue() !== node.message) {
+    } else if (ReportUtility.isCheckPoint(node) && this.editor?.getValue() !== node.message) {
       const diff = new DiffMatchPatch().diff_main(node.message ?? '', this.editor?.getValue());
       // TODO: This does not properly handle null checkpoints.
       reportDifferences.push({
@@ -240,7 +240,7 @@ export class EditDisplayComponent implements OnChanges {
 
   editReport(): void {
     const node: Report | Checkpoint = this.selectedNode!;
-    if (ReportUtil.isReport(node)) {
+    if (ReportUtility.isReport(node)) {
       this.editingRootNode = true;
     } else {
       this.editingChildNode = true;
@@ -257,7 +257,7 @@ export class EditDisplayComponent implements OnChanges {
   }
 
   updateReportStubStrategy(strategy: string): void {
-    if (ReportUtil.isReport(this.selectedNode) && this.selectedNode.stubStrategy !== strategy) {
+    if (ReportUtility.isReport(this.selectedNode) && this.selectedNode.stubStrategy !== strategy) {
       this.openStubDifferenceModal(this.selectedNode.stubStrategy, strategy);
     }
   }
@@ -290,9 +290,9 @@ export class EditDisplayComponent implements OnChanges {
       const node: Report | Checkpoint = this.selectedNode;
       let checkpointId: string | undefined;
       let storageId: string;
-      if (ReportUtil.isReport(node)) {
+      if (ReportUtility.isReport(node)) {
         storageId = String(node.storageId);
-      } else if (ReportUtil.isCheckPoint(node)) {
+      } else if (ReportUtility.isCheckPoint(node)) {
         [storageId, checkpointId] = node.uid.split('#');
       } else {
         return;
@@ -316,9 +316,9 @@ export class EditDisplayComponent implements OnChanges {
       .subscribe({
         next: (response: UpdateReportResponse) => {
           response.report.xml = response.xml;
-          if (ReportUtil.isCheckPoint(node)) {
-            this.selectedNode = ReportUtil.getCheckpointFromReport(response.report, node.uid);
-          } else if (ReportUtil.isReport(node)) {
+          if (ReportUtility.isCheckPoint(node)) {
+            this.selectedNode = ReportUtility.getCheckpointFromReport(response.report, node.uid);
+          } else if (ReportUtility.isReport(node)) {
             this.selectedNode = response.report;
           }
           this.disableEditing();
@@ -334,7 +334,7 @@ export class EditDisplayComponent implements OnChanges {
   discardChanges(): void {
     const node: Report | Checkpoint = this.selectedNode!;
     this.disableEditing();
-    if (ReportUtil.isCheckPoint(node)) {
+    if (ReportUtility.isCheckPoint(node)) {
       this.editor.setNewCheckpoint(node.message);
     }
     this.toastService.showSuccess('Changes discarded!');
@@ -359,7 +359,7 @@ export class EditDisplayComponent implements OnChanges {
   copyReport(): void {
     const node: Report | Checkpoint = this.selectedNode!;
     let storageId: number;
-    storageId = ReportUtil.isReport(node)
+    storageId = ReportUtility.isReport(node)
       ? node.storageId
       : (node.storageId ?? Number.parseInt(node.uid.split('#')[0]));
     const data: Record<string, number[]> = {
@@ -380,7 +380,7 @@ export class EditDisplayComponent implements OnChanges {
   }
 
   toggleEditMode(value: boolean): void {
-    if (this.selectedNode && ReportUtil.isFromCrudStorage(this.selectedNode)) {
+    if (this.selectedNode && ReportUtility.isFromCrudStorage(this.selectedNode)) {
       this.changeEditMode(value);
     } else {
       this.showNotEditableWarning();
@@ -410,10 +410,10 @@ export class EditDisplayComponent implements OnChanges {
   processCustomReportAction(): void {
     const node: Report | Checkpoint = this.selectedNode!;
     let reportId: number | undefined;
-    if (ReportUtil.isReport(node)) {
+    if (ReportUtility.isReport(node)) {
       reportId = node.storageId;
-    } else if (ReportUtil.isCheckPoint(node)) {
-      reportId = ReportUtil.getStorageIdFromUid(node.uid);
+    } else if (ReportUtility.isCheckPoint(node)) {
+      reportId = ReportUtility.getStorageIdFromUid(node.uid);
     }
     if (reportId == undefined) {
       this.toastService.showDanger('Could not find report to apply custom action');

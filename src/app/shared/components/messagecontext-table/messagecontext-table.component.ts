@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { CopyTooltipDirective } from '../../directives/copy-tooltip.directive';
 import { Report } from '../../interfaces/report';
 import { Checkpoint } from '../../interfaces/checkpoint';
-import { ReportUtil } from '../../util/report-util';
+import { ReportUtil as ReportUtility } from '../../util/report-util';
 
 @Component({
   selector: 'app-messagecontext-table',
@@ -17,7 +17,7 @@ import { ReportUtil } from '../../util/report-util';
 export class MessagecontextTableComponent implements OnInit, OnChanges {
   @Input({ required: true }) report!: Report | Checkpoint;
   messageContextData: [string, string][] = [];
-  protected readonly ReportUtil = ReportUtil;
+  protected readonly ReportUtil = ReportUtility;
 
   ngOnInit(): void {
     this.updateMessageContextData();
@@ -30,7 +30,7 @@ export class MessagecontextTableComponent implements OnInit, OnChanges {
   }
 
   private updateMessageContextData(): void {
-    const messageContext = ReportUtil.isCheckPoint(this.report) ? this.report.messageContext : null;
+    const messageContext = ReportUtility.isCheckPoint(this.report) ? this.report.messageContext : null;
     this.messageContextData = messageContext ? Object.entries(messageContext) : [];
   }
 }
