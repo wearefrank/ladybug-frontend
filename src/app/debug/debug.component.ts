@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
 import { TableComponent } from './table/table.component';

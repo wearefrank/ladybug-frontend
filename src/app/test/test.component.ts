@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
@@ -296,11 +295,8 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   changeFilter(filter: string): void {
-    if (!filter || filter === this.testFileTreeComponent?.rootFolder.path) {
-      this.currentFilter = '';
-    } else {
-      this.currentFilter = this.transformPath(filter);
-    }
+    this.currentFilter =
+      !filter || filter === this.testFileTreeComponent?.rootFolder.path ? '' : this.transformPath(filter);
     this.matches();
   }
 

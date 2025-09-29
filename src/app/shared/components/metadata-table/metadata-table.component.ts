@@ -4,7 +4,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CopyTooltipDirective } from '../../directives/copy-tooltip.directive';
 import { Report } from '../../interfaces/report';
 import { Checkpoint } from '../../interfaces/checkpoint';
-import { ReportUtil } from '../../util/report-util';
+import { ReportUtil as ReportUtility } from '../../util/report-util';
 
 @Component({
   selector: 'app-metadata-table',
@@ -16,5 +16,5 @@ import { ReportUtil } from '../../util/report-util';
 export class MetadataTableComponent {
   @Input({ required: true }) report!: Report | Checkpoint;
 
-  protected readonly ReportUtil = ReportUtil;
+  protected readonly ReportUtil = ReportUtility;
 }

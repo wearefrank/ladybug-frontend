@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { inject, Injectable } from '@angular/core';
 import { HttpService } from './http.service';
 import { firstValueFrom } from 'rxjs';

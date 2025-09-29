@@ -16,9 +16,8 @@ import { first, Observable, ReplaySubject, Subscription } from 'rxjs';
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type AMDRequire = {
   require: {
-    // eslint-disable-next-line no-unused-vars
     (imports: string[], callback: () => void): void;
-    // eslint-disable-next-line no-unused-vars
+
     config(config: { paths: Record<string, string> }): void;
   };
 };

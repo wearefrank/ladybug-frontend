@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-ordering */
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { RefreshCondition } from '../shared/interfaces/refresh-condition';

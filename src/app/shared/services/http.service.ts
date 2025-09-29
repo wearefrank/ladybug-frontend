@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable } from 'rxjs';

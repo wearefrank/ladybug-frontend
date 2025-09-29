@@ -9,23 +9,23 @@ export class SettingsService {
   public readonly defaultShowMultipleFilesAtATime: boolean = true;
   private showMultipleAtATimeKey = 'showMultipleFilesAtATime';
   private showMultipleAtATimeSubject: Subject<boolean> = new ReplaySubject(1);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   public showMultipleAtATimeObservable: Observable<boolean> = this.showMultipleAtATimeSubject.asObservable();
 
   //Table spacing settings
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   public readonly defaultTableSpacing: number = 1;
   private tableSpacingKey = 'tableSpacing';
   private tableSpacingSubject: Subject<number> = new ReplaySubject(1);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   public tableSpacingObservable: Observable<number> = this.tableSpacingSubject.asObservable();
 
   //Table settings
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   public readonly defaultAmountOfRecordsInTable: number = 10;
   private amountOfRecordsInTableKey = 'amountOfRecordsInTable';
   private amountOfRecordsInTableSubject: Subject<number> = new ReplaySubject(1);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   public amountOfRecordsInTableObservable: Observable<number> = this.amountOfRecordsInTableSubject.asObservable();
 
   constructor() {

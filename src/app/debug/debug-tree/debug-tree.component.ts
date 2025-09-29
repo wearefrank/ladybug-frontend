@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-unused-vars */
+
 import { Component, EventEmitter, inject, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { catchError, firstValueFrom, Observable, Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import {
   NgSimpleFileTreeModule,
 } from 'ng-simple-file-tree';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
-import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
+import { SimpleFileTreeUtil as SimpleFileTreeUtility } from '../../shared/util/simple-file-tree-util';
 import { View } from '../../shared/interfaces/view';
 import { DebugTabService } from '../debug-tab.service';
 import { ErrorHandling } from '../../shared/classes/error-handling.service';
@@ -42,7 +42,7 @@ export class DebugTreeComponent implements OnDestroy {
     folderBehaviourOnClick: 'select',
     doubleClickToOpenFolders: false,
     autoOpenCondition: this.conditionalOpenFunction,
-    determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
+    determineIconClass: SimpleFileTreeUtility.conditionalCssClass,
   };
 
   private _currentView!: View;
@@ -103,7 +103,7 @@ export class DebugTreeComponent implements OnDestroy {
           .pipe(catchError(this.errorHandler.handleError()))
           .subscribe({
             next: (unmatched: string[]) =>
-              SimpleFileTreeUtil.hideOrShowCheckpoints(unmatched, this.tree.elements.toArray()),
+              SimpleFileTreeUtility.hideOrShowCheckpoints(unmatched, this.tree.elements.toArray()),
           });
       }
     }

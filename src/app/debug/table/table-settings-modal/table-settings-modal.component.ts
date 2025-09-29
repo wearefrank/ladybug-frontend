@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/member-ordering */
+
 import { Component, EventEmitter, inject, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
 import { FormGroup, ReactiveFormsModule, UntypedFormControl } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';

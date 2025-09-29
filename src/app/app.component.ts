@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Location, NgOptimizedImage } from '@angular/common';
 import { Title } from '@angular/platform-browser';

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FilterService } from './filter.service';
 import { catchError, Subscription } from 'rxjs';

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-unused-vars */
+
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { ToastService } from '../services/toast.service';

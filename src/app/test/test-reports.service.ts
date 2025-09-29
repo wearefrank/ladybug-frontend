@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { inject, Injectable } from '@angular/core';
 import { TestListItem } from '../shared/interfaces/test-list-item';
 import { HttpService } from '../shared/services/http.service';
@@ -12,7 +11,7 @@ export class TestReportsService {
   metadataNames: string[] = ['storageId', 'name', 'path', 'description', 'variables'];
   storageName = 'Test';
   private testReportsSubject: ReplaySubject<TestListItem[]> = new ReplaySubject<TestListItem[]>(1);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   testReports$: Observable<TestListItem[]> = this.testReportsSubject.asObservable();
   private firstApiCall = true;
 

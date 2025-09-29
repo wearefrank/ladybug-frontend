@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 import { CompareData } from './compare-data';
@@ -11,14 +10,14 @@ import { TitleCasePipe } from '@angular/common';
 import { NodeLinkStrategy, nodeLinkStrategyConst } from '../shared/enums/node-link-strategy';
 import { Report } from '../shared/interfaces/report';
 import { Checkpoint } from '../shared/interfaces/checkpoint';
-import { ReportUtil } from '../shared/util/report-util';
+import { ReportUtil as ReportUtility } from '../shared/util/report-util';
 import { StrReplacePipe as StringReplacePipe } from '../shared/pipes/str-replace.pipe';
 import { ViewDropdownComponent } from '../shared/components/view-dropdown/view-dropdown.component';
 import { View } from '../shared/interfaces/view';
 import { HttpService } from '../shared/services/http.service';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
 import { catchError } from 'rxjs';
-import { SimpleFileTreeUtil } from '../shared/util/simple-file-tree-util';
+import { SimpleFileTreeUtil as SimpleFileTreeUtility } from '../shared/util/simple-file-tree-util';
 import { DebugComponent } from '../debug/debug.component';
 import { TreeItemComponent } from 'ng-simple-file-tree';
 import { ReportAlertMessageComponent } from '../report/report-alert-message/report-alert-message.component';
@@ -46,7 +45,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
 
   public tabService = inject(TabService);
 
-  protected readonly ReportUtil = ReportUtil;
+  protected readonly ReportUtil = ReportUtility;
   protected readonly nodeLinkStrategyConst = nodeLinkStrategyConst;
   protected nodeLinkStrategy!: NodeLinkStrategy;
   protected diffOptions = {
@@ -92,10 +91,10 @@ export class CompareComponent implements AfterViewInit, OnInit {
   protected syncLeftAndRight(): void {
     this.leftNode = this.compareTreeComponent.leftTree.getSelected().originalValue;
     this.rightNode = this.compareTreeComponent.rightTree.getSelected().originalValue;
-    if (ReportUtil.isReport(this.leftNode)) {
+    if (ReportUtility.isReport(this.leftNode)) {
       this.leftReport = { ...this.leftNode };
     }
-    if (ReportUtil.isReport(this.rightNode)) {
+    if (ReportUtility.isReport(this.rightNode)) {
       this.rightReport = { ...this.rightNode };
     }
     this.showDifference();
@@ -231,7 +230,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
 
   private extractMessage(selectedNode: Report | Checkpoint): string {
     // TODO: Does not properly handle null checkpoints.
-    return ReportUtil.isReport(selectedNode)
+    return ReportUtility.isReport(selectedNode)
       ? selectedNode.xml
       : selectedNode.message === null
         ? ''
@@ -248,7 +247,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
       .getUnmatchedCheckpoints(storageName, storageId, view.name)
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
-        next: (response: string[]) => SimpleFileTreeUtil.hideOrShowCheckpoints(response, treeElements),
+        next: (response: string[]) => SimpleFileTreeUtility.hideOrShowCheckpoints(response, treeElements),
       });
   }
 }

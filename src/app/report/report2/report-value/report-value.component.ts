@@ -53,7 +53,7 @@ export class ReportValueComponent implements OnInit {
     selectOnLineNumbers: true,
     scrollBeyondLastLine: false,
   };
-  protected monacoEditorInitialHeight: number = 0;
+  protected monacoEditorInitialHeight = 0;
   protected transformationContentRequestSubject = new ReplaySubject<string>();
   protected transformationReadOnlySubject = new ReplaySubject<boolean>();
   protected reportContentRequestSubject = new ReplaySubject<string>();
