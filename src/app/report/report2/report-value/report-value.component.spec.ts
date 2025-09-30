@@ -17,6 +17,7 @@ describe('ReportValue', () => {
 
     fixture = TestBed.createComponent(ReportValueComponent);
     component = fixture.componentInstance;
+    spyOn(component.savedChanges, 'emit');
     component.report = getAPartialReport();
     fixture.detectChanges();
   });
@@ -93,6 +94,83 @@ describe('ReportValue', () => {
     expect(component.editedVariables.length).toEqual(2);
     expect(component.editedVariables[0].name).toEqual('some name');
     expect(component.editedVariables[1].name).toEqual('');
+  });
+
+  it('When name is changed then saved changes event emitted', () => {
+    component.setVariables([]);
+    component.editedName = 'Changed name';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
+    component.editedName = 'My name';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+  });
+
+  it('When description is changed then saved changes event emitted', () => {
+    component.setVariables([]);
+    component.editedDescription = 'Changed description';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
+    component.editedDescription = 'My description';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+  });
+
+  it('When path is changed then saved changes event emitted', () => {
+    component.setVariables([]);
+    component.editedPath = 'my/other/path';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
+    component.editedPath = 'my/path';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+  });
+
+  it('When transformation is changed then saved changes event emitted', () => {
+    component.setVariables([]);
+    component.editedTransformation = 'other dummy transformation';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
+    component.editedTransformation = 'dummy transformation';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+  });
+
+  it('When variable name is changed then saved changes event emitted', () => {
+    component.setVariables([{ name: 'variable', value: 'value' }]);
+    component.editedVariables[0].name = 'otherName';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
+    component.editedVariables[0].name = 'variable';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+  });
+
+  it('When variable value is changed then saved changes event emitted', () => {
+    component.setVariables([{ name: 'variable', value: 'value' }]);
+    component.editedVariables[0].value = 'otherValue';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
+    component.editedVariables[0].value = 'value';
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+  });
+
+  it('When variable is added then saved changes event is emitted', () => {
+    component.setVariables([{ name: 'variable', value: 'value' }]);
+    component.editedVariables.push({ name: 'second', value: 'secondValue' });
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
+    component.editedVariables.pop();
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+  });
+
+  it('When a new edit row for variables appears, there is no change when the variable name is blank', () => {
+    component.setVariables([{ name: 'variable', value: 'value' }]);
+    component.editedVariables.push({ name: '  ', value: 'secondValue' });
+    component.ngOnChanges();
+    expect(component.savedChanges.emit).not.toHaveBeenCalledWith(false);
   });
 });
 

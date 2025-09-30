@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnChanges, OnInit, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { AngularSplitModule } from 'angular-split';
@@ -34,7 +34,8 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
   templateUrl: './report-value.component.html',
   styleUrl: './report-value.component.css',
 })
-export class ReportValueComponent implements OnInit {
+export class ReportValueComponent implements OnInit, OnChanges {
+  savedChanges = output<boolean>();
   editedName = '';
   editedDescription = '';
   editedPath = '';
@@ -73,7 +74,6 @@ export class ReportValueComponent implements OnInit {
     if (this.monacoEditorInitialHeight < MIN_MONACO_EDITOR_HEIGHT) {
       this.monacoEditorInitialHeight = MIN_MONACO_EDITOR_HEIGHT;
     }
-    console.log(`ReportValueComponent.set_height(): ${this._height}, ${this.monacoEditorInitialHeight}`);
   }
 
   get report(): PartialReport | undefined {
@@ -116,6 +116,10 @@ export class ReportValueComponent implements OnInit {
       throw new Error('ReportValuesComponent.ngOnInit(): Report not initialized yet.');
     }
     this.transformationContentRequestSubject.next(this.getEditorTextOfTransformation(this._report!.transformation));
+  }
+
+  ngOnChanges(): void {
+    this.savedChanges.emit(this.noUnsavedChanges());
   }
 
   onInputChange(): void {
@@ -173,6 +177,26 @@ export class ReportValueComponent implements OnInit {
     }
   }
 
+  private hasNoUnsavedVariables(): boolean {
+    const realVariables: Variable[] = this.getRealEditedVariables();
+    if (realVariables.length !== this.originalVariables.length) {
+      return false;
+    }
+    for (const index in this.originalVariables) {
+      if (
+        realVariables[index].name !== this.originalVariables[index].name ||
+        realVariables[index].value !== this.originalVariables[index].value
+      ) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private getRealEditedVariables(): Variable[] {
+    return this.editedVariables.filter((v) => v.name.trim().length > 0);
+  }
+
   private getEditorTextOfTransformation(transformation: string | null): string {
     if (transformation === '') {
       console.log(
@@ -184,5 +208,15 @@ export class ReportValueComponent implements OnInit {
 
   private getTransformationFromEditorText(text: string): string | null {
     return text.trim().length === 0 ? null : text.trim();
+  }
+
+  private noUnsavedChanges(): boolean {
+    const nameUnchanged = this.editedName === this._report!.name;
+    const descriptionUnchanged = this.editedDescription === this._report!.description;
+    const pathUnchanged = this.editedPath === this._report!.path;
+    const transformationUnchanged = this.editedTransformation === this._report!.transformation;
+    return (
+      nameUnchanged && descriptionUnchanged && pathUnchanged && transformationUnchanged && this.hasNoUnsavedVariables()
+    );
   }
 }
