@@ -4,10 +4,12 @@ import { PartialReport, ReportValueComponent, Variable } from './report-value.co
 import { HttpService } from '../../../shared/services/http.service';
 import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { BehaviorSubject } from 'rxjs';
 
 describe('ReportValue', () => {
   let component: ReportValueComponent;
   let fixture: ComponentFixture<ReportValueComponent>;
+  let reportSubject: BehaviorSubject<PartialReport> | undefined;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -18,7 +20,8 @@ describe('ReportValue', () => {
     fixture = TestBed.createComponent(ReportValueComponent);
     component = fixture.componentInstance;
     spyOn(component.savedChanges, 'emit');
-    component.report = getAPartialReport();
+    reportSubject = new BehaviorSubject<PartialReport>(getAPartialReport());
+    component.report$ = reportSubject;
     fixture.detectChanges();
   });
 

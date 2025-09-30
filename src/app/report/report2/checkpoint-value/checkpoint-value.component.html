@@ -3,6 +3,7 @@
 	data-cy-element-name="checkpointEditor"
 	[options]="monacoOptions"
 	[editorContentRequest$]="editorContentsSubject"
-	[readOnlyRequest$]="editorReadOnlySubject">
+	[readOnlyRequest$]="editorReadOnlySubject"
+	(actualEditorContentsChange)="onActualEditorContentsChanged($event)">
 </app-monaco-editor>
 </div>

@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnChanges, OnInit, output } from '@angular/core';
+import { Component, inject, Input, OnChanges, OnDestroy, OnInit, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { HttpService } from '../../../shared/services/http.service';
-import { catchError, firstValueFrom, ReplaySubject } from 'rxjs';
+import { catchError, firstValueFrom, Observable, ReplaySubject, Subscription } from 'rxjs';
 import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { Transformation } from '../../../shared/interfaces/transformation';
 
@@ -34,8 +34,9 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
   templateUrl: './report-value.component.html',
   styleUrl: './report-value.component.css',
 })
-export class ReportValueComponent implements OnInit, OnChanges {
+export class ReportValueComponent implements OnInit, OnDestroy, OnChanges {
   savedChanges = output<boolean>();
+  @Input() report$!: Observable<PartialReport>;
   editedName = '';
   editedDescription = '';
   editedPath = '';
@@ -60,9 +61,10 @@ export class ReportValueComponent implements OnInit, OnChanges {
   protected reportContentRequestSubject = new ReplaySubject<string>();
   protected reportReadOnlySubject = new ReplaySubject<boolean>();
   private _height = 0;
-  private _report?: PartialReport;
+  private report?: PartialReport;
   private http = inject(HttpService);
   private errorHandler = inject(ErrorHandling);
+  private subscriptions = new Subscription();
 
   get height(): number {
     return this._height;
@@ -74,21 +76,6 @@ export class ReportValueComponent implements OnInit, OnChanges {
     if (this.monacoEditorInitialHeight < MIN_MONACO_EDITOR_HEIGHT) {
       this.monacoEditorInitialHeight = MIN_MONACO_EDITOR_HEIGHT;
     }
-  }
-
-  get report(): PartialReport | undefined {
-    return this._report;
-  }
-
-  @Input() set report(report: PartialReport) {
-    this._report = report;
-    this.editedName = this._report.name;
-    this.editedDescription = this._report.description;
-    this.editedPath = this._report.path;
-    this.editedTransformation = this._report.transformation;
-    this.originalVariables = ReportValueComponent.initVariables(report.variables);
-    this.editedVariables = ReportValueComponent.calculateEditedVariables(this.originalVariables);
-    this.refreshDuplicateVariables();
   }
 
   // TODO: Fix issue with types. Report.variables is declared to be a string,
@@ -111,11 +98,11 @@ export class ReportValueComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.transformationReadOnlySubject.next(false);
     this.reportReadOnlySubject.next(true);
-    this.reportContentRequestSubject.next(this._report!.xml);
-    if (this.report === undefined) {
-      throw new Error('ReportValuesComponent.ngOnInit(): Report not initialized yet.');
-    }
-    this.transformationContentRequestSubject.next(this.getEditorTextOfTransformation(this._report!.transformation));
+    this.subscriptions.add(this.report$!.subscribe((report) => this.newReport(report)));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   ngOnChanges(): void {
@@ -127,7 +114,6 @@ export class ReportValueComponent implements OnInit, OnChanges {
   }
 
   onTransformationEdited(value: string): void {
-    console.log('ReportValueComponent.onTransformationEdited()');
     this.editedTransformation = this.getTransformationFromEditorText(value);
     this.onInputChange();
   }
@@ -136,7 +122,7 @@ export class ReportValueComponent implements OnInit, OnChanges {
     const transformationResponse: Transformation = await firstValueFrom(
       this.http.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),
     );
-    this.changeTransformationFromOutsideEditor(transformationResponse.transformation);
+    this.transformationContentRequestSubject.next(transformationResponse.transformation);
   }
 
   removeVariable(index: number): void {
@@ -161,9 +147,17 @@ export class ReportValueComponent implements OnInit, OnChanges {
     this.refreshDuplicateVariables();
   }
 
-  private changeTransformationFromOutsideEditor(value: string): void {
-    console.log('ReportValueComponent.changeTransformationFromOutsideEditor()');
-    this.transformationContentRequestSubject.next(value);
+  private newReport(report: PartialReport): void {
+    this.report = report;
+    this.editedName = this.report.name;
+    this.editedDescription = this.report.description;
+    this.editedPath = this.report.path;
+    this.editedTransformation = this.report.transformation;
+    this.originalVariables = ReportValueComponent.initVariables(report.variables);
+    this.editedVariables = ReportValueComponent.calculateEditedVariables(this.originalVariables);
+    this.refreshDuplicateVariables();
+    this.transformationContentRequestSubject.next(this.getEditorTextOfTransformation(this.report!.transformation));
+    this.reportContentRequestSubject.next(this.report.xml);
   }
 
   private refreshDuplicateVariables(): void {
@@ -211,10 +205,13 @@ export class ReportValueComponent implements OnInit, OnChanges {
   }
 
   private noUnsavedChanges(): boolean {
-    const nameUnchanged = this.editedName === this._report!.name;
-    const descriptionUnchanged = this.editedDescription === this._report!.description;
-    const pathUnchanged = this.editedPath === this._report!.path;
-    const transformationUnchanged = this.editedTransformation === this._report!.transformation;
+    if (this.report === undefined) {
+      return true;
+    }
+    const nameUnchanged = this.editedName === this.report!.name;
+    const descriptionUnchanged = this.editedDescription === this.report!.description;
+    const pathUnchanged = this.editedPath === this.report!.path;
+    const transformationUnchanged = this.editedTransformation === this.report!.transformation;
     return (
       nameUnchanged && descriptionUnchanged && pathUnchanged && transformationUnchanged && this.hasNoUnsavedVariables()
     );
