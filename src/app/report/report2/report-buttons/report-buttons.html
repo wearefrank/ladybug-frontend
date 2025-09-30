@@ -1,0 +1,18 @@
+<div data-cy-debug-editor="buttons" class="button-row">
+  @if (allowed.closeAllowed) {
+    <button
+      data-cy-debug-editor="close"
+      title="Close"
+      class="btn btn-info"
+      (click)="close()"
+    ><i class="fa fa-times"></i></button>
+  }
+  @if (allowed.saveAllowed) {
+  <button
+    data-cy-report="save"
+    class="btn btn-info"
+    title="Save"
+    (click)="save()"
+  ><i class="fa fa-save"></i></button>
+  }
+</div>

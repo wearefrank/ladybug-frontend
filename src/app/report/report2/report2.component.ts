@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularSplitModule, SplitComponent } from 'angular-split';
-import { debounceTime, fromEventPattern, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, fromEventPattern, Subject, Subscription } from 'rxjs';
 import { DebugTreeComponent } from '../../debug/debug-tree/debug-tree.component';
 import { DebugComponent } from '../../debug/debug.component';
 import { ReportData } from '../../shared/interfaces/report-data';
@@ -20,16 +20,17 @@ import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { View } from '../../shared/interfaces/view';
 import { TabService } from '../../shared/services/tab.service';
 import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
-import { ReportValueComponent } from './report-value/report-value.component';
+import { PartialReport, ReportValueComponent } from './report-value/report-value.component';
 import { CheckpointValueComponent } from './checkpoint-value/checkpoint-value.component';
 import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
+import { ButtonCommand, ReportButtons, ReportButtonStatus } from './report-buttons/report-buttons';
 
 const MIN_HEIGHT = 20;
 const MARGIN_IF_NOT_NEW_TAB = 30;
 
 @Component({
   selector: 'app-report2',
-  imports: [AngularSplitModule, DebugTreeComponent, ReportValueComponent, CheckpointValueComponent],
+  imports: [AngularSplitModule, DebugTreeComponent, ReportValueComponent, CheckpointValueComponent, ReportButtons],
   templateUrl: './report2.component.html',
   styleUrl: './report2.component.css',
 })
@@ -42,8 +43,16 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
 
   protected treeWidth: Subject<void> = new Subject<void>();
   protected monacoEditorHeight!: number;
+  // TODO: Does this have to be stored here?
   protected reportNode?: Report;
+  // TODO: Does this have to be stored here?
   protected checkpointNode?: Checkpoint;
+  protected buttonStatusSubject = new BehaviorSubject<ReportButtonStatus>({
+    closeAllowed: true,
+    saveAllowed: false,
+  });
+  protected reportSubject = new Subject<PartialReport>();
+  protected checkpointValueSubject = new Subject<string | null>();
 
   private host = inject(ElementRef);
   private tabService = inject(TabService);
@@ -96,12 +105,25 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
     if (ReportUtility.isReport(node)) {
       this.reportNode = node as Report;
       this.checkpointNode = undefined;
+      this.reportSubject.next(node);
     } else if (ReportUtility.isCheckPoint(node)) {
       this.reportNode = undefined;
       this.checkpointNode = node as Checkpoint;
+      this.checkpointValueSubject.next(this.checkpointNode.message);
     } else {
       throw new Error('State.newNode(): Node is neither a Report nor a Checkpoint');
     }
+  }
+
+  onButton(command: ButtonCommand): void {
+    console.log(`Button pressed: ${command}`);
+  }
+
+  onSavedChanges(savedChanges: boolean): void {
+    this.buttonStatusSubject.next({
+      closeAllowed: true,
+      saveAllowed: !savedChanges,
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
