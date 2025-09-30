@@ -14,7 +14,7 @@ import {
 } from '@angular/core';
 import * as prettierPluginHtml from 'prettier/plugins/html';
 import * as prettier from 'prettier';
-import { debounceTime, Subject, Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { SettingsService } from '../shared/services/settings.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TitleCasePipe } from '@angular/common';

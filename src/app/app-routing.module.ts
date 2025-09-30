@@ -53,7 +53,7 @@ export class AppRouteReuseStrategy implements RouteReuseStrategy {
     });
   }
 
-  shouldDetach(route: ActivatedRouteSnapshot): boolean {
+  shouldDetach(_route: ActivatedRouteSnapshot): boolean {
     return true;
   }
 

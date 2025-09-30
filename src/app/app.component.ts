@@ -4,7 +4,6 @@ import { Title } from '@angular/platform-browser';
 import { CompareComponent } from './compare/compare.component';
 import { TestComponent } from './test/test.component';
 import { CompareData } from './compare/compare-data';
-import { SettingsService } from './shared/services/settings.service';
 import { TabService } from './shared/services/tab.service';
 import { AppVariablesService } from './shared/services/app.variables.service';
 import { catchError, Subscription } from 'rxjs';

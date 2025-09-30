@@ -55,8 +55,7 @@ export class TestReportsService {
   }
 
   sortByName(reports: TestListItem[]): TestListItem[] {
-    return reports.sort((a: TestListItem, b: TestListItem): number =>
-      a.name > b.name ? 1 : a.name === b.name ? 0 : -1,
-    );
+    reports.sort((a: TestListItem, b: TestListItem): number => (a.name > b.name ? 1 : a.name === b.name ? 0 : -1));
+    return reports;
   }
 }

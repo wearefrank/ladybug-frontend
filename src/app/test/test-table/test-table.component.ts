@@ -132,7 +132,7 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
     }
   }
 
-  replaceReport(report: TestListItem): void {
+  replaceReport(_report: TestListItem): void {
     this.toastService.showWarning('Sorry this is not implemented as of now');
   }
 

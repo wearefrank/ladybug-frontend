@@ -634,7 +634,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   sortUniqueValues(values: Set<string>): string[] {
     //Sort list alphabetically, if string is actually a number, sort smallest to biggest
-    return [...values].sort((a, b) => {
+    return [...values].toSorted((a, b) => {
       // eslint-disable-next-line unicorn/prefer-number-properties
       const isANumber = !isNaN(Number(a));
       // eslint-disable-next-line unicorn/prefer-number-properties

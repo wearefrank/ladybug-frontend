@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { AngularSplitModule, SplitComponent } from 'angular-split';
 import { DebugTreeComponent } from '../debug/debug-tree/debug-tree.component';
-import { debounceTime, fromEventPattern, Observable, Subject, Subscription } from 'rxjs';
+import { debounceTime, fromEventPattern, Subject, Subscription } from 'rxjs';
 import { Report } from '../shared/interfaces/report';
 import { EditDisplayComponent } from './edit-display/edit-display.component';
 import { DebugComponent } from '../debug/debug.component';

@@ -140,6 +140,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
         if (this.compareData) {
           const filteredViews = this.filterViews(views, this.compareData);
           if (filteredViews.length > 0) {
+            // eslint-disable-next-line unicorn/no-array-sort
             this.views = filteredViews.sort((a, b) => a.name.localeCompare(b.name));
             if (this.compareData.viewName) {
               const view = this.views.find((v) => v.name === this.compareData!.viewName);
@@ -210,7 +211,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
     return this.route.snapshot.paramMap.get('id') as string;
   }
 
-  private renderDiffs(leftSide: string, rightSide: string): void {
+  private renderDiffs(_leftSide: string, _rightSide: string): void {
     /*
     this.originalModel = { ...this.originalModel, code: leftSide };
     this.modifiedModel = { ...this.originalModel, code: rightSide };

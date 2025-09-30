@@ -10,7 +10,6 @@ import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { ShortenedTableHeaderPipe } from '../../shared/pipes/shortened-table-header.pipe';
-import { Checkpoint } from 'src/app/shared/interfaces/checkpoint';
 
 @Component({
   standalone: true,

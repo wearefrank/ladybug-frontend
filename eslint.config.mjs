@@ -9,7 +9,17 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default [
   {
-    ignores: ['.cache/', '.git/', '.github/', 'node_modules/', 'dist/', 'target/', 'karma.conf.js', '.angular/'],
+    ignores: [
+      '.cache/',
+      '.git/',
+      '.github/',
+      'node_modules/',
+      'dist/',
+      'target/',
+      'karma.conf.js',
+      '.angular/',
+      './cypress',
+    ],
   },
   {
     files: ['**/*.ts'],

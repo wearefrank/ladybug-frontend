@@ -7,7 +7,7 @@ import { HttpService } from '../../../shared/services/http.service';
 import { SettingsService } from '../../../shared/services/settings.service';
 import { catchError, firstValueFrom, Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
-import { UploadParams } from 'src/app/shared/interfaces/upload-params';
+import { UploadParameters } from 'src/app/shared/interfaces/upload-params';
 import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { OptionsSettings } from '../../../shared/interfaces/options-settings';
 import { VersionService } from '../../../shared/services/version.service';
@@ -155,7 +155,7 @@ export class TableSettingsModalComponent implements OnDestroy {
     const generatorEnabled: boolean = this.settingsForm.get(this.generatorEnabledKey)?.value === 'Enabled';
     const regexValue = this.settingsForm.get(this.regexFilterKey)?.value;
     const regexFilter = regexValue === '' ? this.defaultRegexValue : regexValue;
-    const data: UploadParams = {
+    const data: UploadParameters = {
       generatorEnabled: generatorEnabled,
       regexFilter: regexFilter,
     };

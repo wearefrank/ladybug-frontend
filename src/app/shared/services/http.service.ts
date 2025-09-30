@@ -7,7 +7,7 @@ import { Report } from '../interfaces/report';
 import { CompareReport } from '../interfaces/compare-reports';
 import { TestListItem } from '../interfaces/test-list-item';
 import { CloneReport } from '../interfaces/clone-report';
-import { UploadParams as UploadParameters } from '../interfaces/upload-params';
+import { UploadParameters } from '../interfaces/upload-params';
 import { UpdatePathSettings } from '../interfaces/update-path-settings';
 import { TestResult } from '../interfaces/test-result';
 import { UpdateReport } from '../interfaces/update-report';
