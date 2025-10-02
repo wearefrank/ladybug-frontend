@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnChanges, OnDestroy, OnInit, output } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { AngularSplitModule } from 'angular-split';
@@ -15,8 +15,8 @@ export interface Variable {
 
 export interface PartialReport {
   name: string;
-  description: string;
-  path: string;
+  description: string | null;
+  path: string | null;
   // TODO: class Report defines it erroneously as a plain string.
   // Fix this error in the type system.
   transformation: string | null;
@@ -34,13 +34,13 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
   templateUrl: './report-value.component.html',
   styleUrl: './report-value.component.css',
 })
-export class ReportValueComponent implements OnInit, OnDestroy, OnChanges {
+export class ReportValueComponent implements OnInit, OnDestroy {
   savedChanges = output<boolean>();
-  @Input() report$!: Observable<PartialReport>;
+  @Input({ required: true }) report$!: Observable<PartialReport>;
   editedName = '';
   editedDescription = '';
   editedPath = '';
-  editedTransformation: string | null = '';
+  editedTransformation = '';
   // TODO: Use from input report when type system issue has been fixed.
   originalVariables: Variable[] = [];
   editedVariables: Variable[] = [];
@@ -105,16 +105,13 @@ export class ReportValueComponent implements OnInit, OnDestroy, OnChanges {
     this.subscriptions.unsubscribe();
   }
 
-  ngOnChanges(): void {
+  onInputChange(): void {
+    this.refreshDuplicateVariables();
     this.savedChanges.emit(this.noUnsavedChanges());
   }
 
-  onInputChange(): void {
-    this.refreshDuplicateVariables();
-  }
-
   onTransformationEdited(value: string): void {
-    this.editedTransformation = this.getTransformationFromEditorText(value);
+    this.editedTransformation = value;
     this.onInputChange();
   }
 
@@ -150,14 +147,15 @@ export class ReportValueComponent implements OnInit, OnDestroy, OnChanges {
   private newReport(report: PartialReport): void {
     this.report = report;
     this.editedName = this.report.name;
-    this.editedDescription = this.report.description;
-    this.editedPath = this.report.path;
-    this.editedTransformation = this.report.transformation;
+    this.editedDescription = this.getEditorTextOfNullable(this.report.description);
+    this.editedPath = this.getEditorTextOfNullable(this.report.path);
+    this.editedTransformation = this.getEditorTextOfNullable(this.report.transformation);
     this.originalVariables = ReportValueComponent.initVariables(report.variables);
     this.editedVariables = ReportValueComponent.calculateEditedVariables(this.originalVariables);
     this.refreshDuplicateVariables();
-    this.transformationContentRequestSubject.next(this.getEditorTextOfTransformation(this.report!.transformation));
+    this.transformationContentRequestSubject.next(this.getEditorTextOfNullable(this.report!.transformation));
     this.reportContentRequestSubject.next(this.report.xml);
+    this.onInputChange();
   }
 
   private refreshDuplicateVariables(): void {
@@ -191,7 +189,7 @@ export class ReportValueComponent implements OnInit, OnDestroy, OnChanges {
     return this.editedVariables.filter((v) => v.name.trim().length > 0);
   }
 
-  private getEditorTextOfTransformation(transformation: string | null): string {
+  private getEditorTextOfNullable(transformation: string | null): string {
     if (transformation === '') {
       console.log(
         'ReportValueComponent.getEditorTextOfTransformation(): transformation should not be the empty string',
@@ -200,7 +198,7 @@ export class ReportValueComponent implements OnInit, OnDestroy, OnChanges {
     return transformation === null ? '' : transformation;
   }
 
-  private getTransformationFromEditorText(text: string): string | null {
+  private getRealEditedValueForNullable(text: string): string | null {
     return text.trim().length === 0 ? null : text.trim();
   }
 
@@ -209,9 +207,11 @@ export class ReportValueComponent implements OnInit, OnDestroy, OnChanges {
       return true;
     }
     const nameUnchanged = this.editedName === this.report!.name;
-    const descriptionUnchanged = this.editedDescription === this.report!.description;
-    const pathUnchanged = this.editedPath === this.report!.path;
-    const transformationUnchanged = this.editedTransformation === this.report!.transformation;
+    const descriptionUnchanged =
+      this.getRealEditedValueForNullable(this.editedDescription) === this.report!.description;
+    const pathUnchanged = this.getRealEditedValueForNullable(this.editedPath) === this.report!.path;
+    const transformationUnchanged =
+      this.getRealEditedValueForNullable(this.editedTransformation) === this.report!.transformation;
     return (
       nameUnchanged && descriptionUnchanged && pathUnchanged && transformationUnchanged && this.hasNoUnsavedVariables()
     );

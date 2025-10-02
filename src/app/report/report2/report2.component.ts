@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularSplitModule, SplitComponent } from 'angular-split';
-import { BehaviorSubject, debounceTime, fromEventPattern, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, fromEventPattern, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { DebugTreeComponent } from '../../debug/debug-tree/debug-tree.component';
 import { DebugComponent } from '../../debug/debug.component';
 import { ReportData } from '../../shared/interfaces/report-data';
@@ -51,8 +51,8 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
     closeAllowed: true,
     saveAllowed: false,
   });
-  protected reportSubject = new Subject<PartialReport>();
-  protected checkpointValueSubject = new Subject<string | null>();
+  protected reportSubject = new ReplaySubject<PartialReport>();
+  protected checkpointValueSubject = new ReplaySubject<string | null>();
 
   private host = inject(ElementRef);
   private tabService = inject(TabService);

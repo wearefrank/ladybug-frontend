@@ -4,12 +4,12 @@ import { PartialReport, ReportValueComponent, Variable } from './report-value.co
 import { HttpService } from '../../../shared/services/http.service';
 import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 describe('ReportValue', () => {
   let component: ReportValueComponent;
   let fixture: ComponentFixture<ReportValueComponent>;
-  let reportSubject: BehaviorSubject<PartialReport> | undefined;
+  let reportSubject: ReplaySubject<PartialReport> | undefined;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -20,7 +20,7 @@ describe('ReportValue', () => {
     fixture = TestBed.createComponent(ReportValueComponent);
     component = fixture.componentInstance;
     spyOn(component.savedChanges, 'emit');
-    reportSubject = new BehaviorSubject<PartialReport>(getAPartialReport());
+    reportSubject = new ReplaySubject<PartialReport>();
     component.report$ = reportSubject;
     fixture.detectChanges();
   });
@@ -50,6 +50,8 @@ describe('ReportValue', () => {
   });
 
   it('When a report has duplicate variables then they are detected', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([
       { name: 'duplicate', value: 'one' },
       { name: 'not-duplicate', value: 'two' },
@@ -61,6 +63,8 @@ describe('ReportValue', () => {
   });
 
   it('When a report has no duplicate variables then they are not detected', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([
       { name: 'duplicate', value: 'one' },
       { name: 'not-duplicate', value: 'two' },
@@ -70,6 +74,8 @@ describe('ReportValue', () => {
   });
 
   it('When removing a variable is requested, the right variable goes away', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([
       { name: 'first variable', value: 'one' },
       { name: 'second variable', value: 'two' },
@@ -89,6 +95,8 @@ describe('ReportValue', () => {
   });
 
   it('When the new variable edit field has gotten a name then a new empty variable row is added', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([]);
     expect(component.editedVariables.length).toEqual(1);
     expect(component.editedVariables[0].name).toEqual('');
@@ -100,79 +108,131 @@ describe('ReportValue', () => {
   });
 
   it('When name is changed then saved changes event emitted', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([]);
     component.editedName = 'Changed name';
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
     component.editedName = 'My name';
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
   });
 
   it('When description is changed then saved changes event emitted', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([]);
     component.editedDescription = 'Changed description';
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
     component.editedDescription = 'My description';
-    component.ngOnChanges();
+    component.onInputChange();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+  });
+
+  it('When original description is null then the user can clear it after editing', () => {
+    reportSubject!.next(getEmptyPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+    component.setVariables([]);
+    component.editedDescription = 'Changed description';
+    component.onInputChange();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
+    component.editedDescription = '';
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
   });
 
   it('When path is changed then saved changes event emitted', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([]);
     component.editedPath = 'my/other/path';
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
     component.editedPath = 'my/path';
-    component.ngOnChanges();
+    component.onInputChange();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+  });
+
+  it('When original path null then the user can clear it after editing', () => {
+    reportSubject!.next(getEmptyPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+    component.setVariables([]);
+    component.editedPath = 'my/other/path';
+    component.onInputChange();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
+    component.editedPath = '';
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
   });
 
   it('When transformation is changed then saved changes event emitted', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([]);
     component.editedTransformation = 'other dummy transformation';
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
     component.editedTransformation = 'dummy transformation';
-    component.ngOnChanges();
+    component.onInputChange();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+  });
+
+  it('When original transformation is null then the user can clear it after editing', () => {
+    reportSubject!.next(getEmptyPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+    component.setVariables([]);
+    component.editedTransformation = 'other dummy transformation';
+    component.onInputChange();
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
+    component.editedTransformation = '';
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
   });
 
   it('When variable name is changed then saved changes event emitted', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([{ name: 'variable', value: 'value' }]);
     component.editedVariables[0].name = 'otherName';
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
     component.editedVariables[0].name = 'variable';
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
   });
 
   it('When variable value is changed then saved changes event emitted', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([{ name: 'variable', value: 'value' }]);
     component.editedVariables[0].value = 'otherValue';
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
     component.editedVariables[0].value = 'value';
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
   });
 
   it('When variable is added then saved changes event is emitted', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([{ name: 'variable', value: 'value' }]);
     component.editedVariables.push({ name: 'second', value: 'secondValue' });
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(false);
     component.editedVariables.pop();
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
   });
 
   it('When a new edit row for variables appears, there is no change when the variable name is blank', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
     component.setVariables([{ name: 'variable', value: 'value' }]);
     component.editedVariables.push({ name: '  ', value: 'secondValue' });
-    component.ngOnChanges();
+    component.onInputChange();
     expect(component.savedChanges.emit).not.toHaveBeenCalledWith(false);
   });
 });
@@ -183,6 +243,17 @@ function getAPartialReport(): PartialReport {
     description: 'My description',
     path: 'my/path',
     transformation: 'dummy transformation',
+    variables: 'not applicable, have to fix type mismatch',
+    xml: 'dummy xml',
+  };
+}
+
+function getEmptyPartialReport(): PartialReport {
+  return {
+    name: 'My name',
+    description: null,
+    path: null,
+    transformation: null,
     variables: 'not applicable, have to fix type mismatch',
     xml: 'dummy xml',
   };

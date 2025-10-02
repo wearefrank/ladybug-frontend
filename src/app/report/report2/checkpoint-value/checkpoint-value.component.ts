@@ -11,7 +11,7 @@ import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.compo
 export class CheckpointValueComponent implements OnInit, OnDestroy {
   savedChanges = output<boolean>();
   @Input() height = 0;
-  @Input() originalValue$!: Observable<string | null>;
+  @Input({ required: true }) originalValue$!: Observable<string | null>;
 
   protected editorContentsSubject = new ReplaySubject<string>();
   protected editorReadOnlySubject = new ReplaySubject<boolean>();
@@ -51,5 +51,6 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   private newOriginalValue(originalValue: string | null): void {
     this.originalValue = originalValue;
     this.editorContentsSubject.next(originalValue === null ? '' : originalValue);
+    this.savedChanges.emit(true);
   }
 }
