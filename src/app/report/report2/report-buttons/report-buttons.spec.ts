@@ -16,6 +16,7 @@ describe('ReportButtons', () => {
     component = fixture.componentInstance;
     component.allowed$ = new BehaviorSubject<ReportButtonStatus>({
       closeAllowed: true,
+      makeNullAllowed: false,
       saveAllowed: false,
     });
     fixture.detectChanges();

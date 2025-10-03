@@ -25,8 +25,10 @@ import { CheckpointValueComponent } from './checkpoint-value/checkpoint-value.co
 import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
 import { ButtonCommand, ReportButtons, ReportButtonStatus } from './report-buttons/report-buttons';
 
+type ReportValueState = 'report' | 'checkpoint' | 'none';
+
 const MIN_HEIGHT = 20;
-const MARGIN_IF_NOT_NEW_TAB = 30;
+const MARGIN_IF_NOT_NEW_TAB = 50;
 
 @Component({
   selector: 'app-report2',
@@ -43,16 +45,13 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
 
   protected treeWidth: Subject<void> = new Subject<void>();
   protected monacoEditorHeight!: number;
-  // TODO: Does this have to be stored here?
-  protected reportNode?: Report;
-  // TODO: Does this have to be stored here?
-  protected checkpointNode?: Checkpoint;
-  protected buttonStatusSubject = new BehaviorSubject<ReportButtonStatus>({
-    closeAllowed: true,
-    saveAllowed: false,
-  });
+  protected reportValueState: ReportValueState = 'none';
+  protected buttonStatusSubject = new BehaviorSubject<ReportButtonStatus>(
+    Report2Component.getButtonState(true, 'none'),
+  );
   protected reportSubject = new ReplaySubject<PartialReport>();
   protected checkpointValueSubject = new ReplaySubject<string | null>();
+  protected editCheckpointToNullSubject = new ReplaySubject<void>();
 
   private host = inject(ElementRef);
   private tabService = inject(TabService);
@@ -97,19 +96,17 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
     if (this.newTab && this.newTabReportData) {
       this.tabService.closeTab(this.newTabReportData);
     }
-    this.reportNode = undefined;
-    this.checkpointNode = undefined;
+    this.changeReportValueState('none');
   }
 
   selectReport(node: Report | Checkpoint): void {
     if (ReportUtility.isReport(node)) {
-      this.reportNode = node as Report;
-      this.checkpointNode = undefined;
-      this.reportSubject.next(node);
+      this.changeReportValueState('report');
+      this.reportSubject.next(node as Report);
     } else if (ReportUtility.isCheckPoint(node)) {
-      this.reportNode = undefined;
-      this.checkpointNode = node as Checkpoint;
-      this.checkpointValueSubject.next(this.checkpointNode.message);
+      this.changeReportValueState('checkpoint');
+      const checkpointNode = node as Checkpoint;
+      this.checkpointValueSubject.next(checkpointNode.message);
     } else {
       throw new Error('State.newNode(): Node is neither a Report nor a Checkpoint');
     }
@@ -117,13 +114,17 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
 
   onButton(command: ButtonCommand): void {
     console.log(`Button pressed: ${command}`);
+    if (command === 'makeNull') {
+      if (this.reportValueState === 'checkpoint') {
+        this.editCheckpointToNullSubject.next();
+      } else {
+        throw new Error('Button makeNull should not be accessible when no checkpoint is shown');
+      }
+    }
   }
 
   onSavedChanges(savedChanges: boolean): void {
-    this.buttonStatusSubject.next({
-      closeAllowed: true,
-      saveAllowed: !savedChanges,
-    });
+    this.buttonStatusSubject.next(Report2Component.getButtonState(savedChanges, this.reportValueState));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -159,5 +160,36 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
       this.monacoEditorHeight = MIN_HEIGHT;
     }
     this.cdr.detectChanges();
+  }
+
+  private changeReportValueState(state: ReportValueState): void {
+    this.reportValueState = state;
+    this.buttonStatusSubject.next(Report2Component.getButtonState(true, this.reportValueState));
+  }
+
+  private static getButtonState(savedChanges: boolean, state: ReportValueState): ReportButtonStatus {
+    switch (state) {
+      case 'none': {
+        return {
+          closeAllowed: false,
+          makeNullAllowed: false,
+          saveAllowed: false,
+        };
+      }
+      case 'report': {
+        return {
+          closeAllowed: true,
+          makeNullAllowed: false,
+          saveAllowed: !savedChanges,
+        };
+      }
+      case 'checkpoint': {
+        return {
+          closeAllowed: true,
+          makeNullAllowed: true,
+          saveAllowed: !savedChanges,
+        };
+      }
+    }
   }
 }

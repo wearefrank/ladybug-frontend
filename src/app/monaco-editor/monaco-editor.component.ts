@@ -83,12 +83,13 @@ export class MonacoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async setRequestedEditorContents(content: string): Promise<void> {
+    console.log(`MonacoEditorComponent.setRequestedEditorContents(): ${content}`);
     if (typeof content !== 'string') {
       throw new TypeError(`MonacoEditorComponent.setRequestedEditorContents(): received a non-string`);
     }
     return new Promise<void>((resolve) => {
       this.editor$.pipe(first()).subscribe((editor) => {
-        editor.getModel()?.setValue(content);
+        editor.setValue(content);
         resolve();
       });
     });

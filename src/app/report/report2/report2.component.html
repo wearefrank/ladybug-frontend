@@ -8,17 +8,21 @@
     />
   </as-split-area>
   <as-split-area class="right-side" [size]="75">
-    @if (reportNode || checkpointNode) {
+    @if (reportValueState !== 'none') {
       <app-report-buttons
         [allowed$]="buttonStatusSubject"
         (reportCommand)="onButton($event)">
       </app-report-buttons>
     }
-    @if (reportNode) {
+    @if (reportValueState === 'report') {
       <app-report-value [height]="monacoEditorHeight" [report$]="reportSubject" (savedChanges)="onSavedChanges($event)"></app-report-value>
     }
-    @if (checkpointNode) {
-      <app-checkpoint-value [height]="monacoEditorHeight" [originalValue$]="checkpointValueSubject" (savedChanges)="onSavedChanges($event)"></app-checkpoint-value>
+    @if (reportValueState === 'checkpoint') {
+      <app-checkpoint-value
+        [height]="monacoEditorHeight"
+        [originalValue$]="checkpointValueSubject"
+        [editToNull$]="editCheckpointToNullSubject"
+        (savedChanges)="onSavedChanges($event)"></app-checkpoint-value>
     }
   </as-split-area>
 </as-split>

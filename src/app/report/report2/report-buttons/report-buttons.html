@@ -7,6 +7,14 @@
       (click)="close()"
     ><i class="fa fa-times"></i></button>
   }
+  @if (allowed.makeNullAllowed) {
+    <button
+      data-cy-debug-editor="close"
+      title="Close"
+      class="btn btn-info"
+      (click)="makeNull()"
+    >make null</button>
+  }
   @if (allowed.saveAllowed) {
   <button
     data-cy-report="save"

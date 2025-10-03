@@ -4,9 +4,10 @@ import { Observable, Subscription } from 'rxjs';
 export interface ReportButtonStatus {
   closeAllowed: boolean;
   saveAllowed: boolean;
+  makeNullAllowed: boolean;
 }
 
-export type ButtonCommand = 'close' | 'save';
+export type ButtonCommand = 'close' | 'makeNull' | 'save';
 
 @Component({
   selector: 'app-report-buttons',
@@ -19,8 +20,9 @@ export class ReportButtons implements OnInit, OnDestroy {
   @Input({ required: true }) allowed$!: Observable<ReportButtonStatus>;
 
   protected allowed: ReportButtonStatus = {
-    closeAllowed: false,
-    saveAllowed: true,
+    closeAllowed: true,
+    makeNullAllowed: false,
+    saveAllowed: false,
   };
 
   private ngZone = inject(NgZone);
@@ -36,6 +38,10 @@ export class ReportButtons implements OnInit, OnDestroy {
 
   close(): void {
     this.reportCommand.emit('close');
+  }
+
+  makeNull(): void {
+    this.reportCommand.emit('makeNull');
   }
 
   save(): void {
