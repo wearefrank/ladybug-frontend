@@ -11,7 +11,7 @@ import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.compo
 export class CheckpointValueComponent implements OnInit, OnDestroy {
   savedChanges = output<boolean>();
   @Input() height = 0;
-  @Input({ required: true }) originalValue$!: Observable<string | null>;
+  @Input({ required: true }) originalValue$!: Observable<string | null | undefined>;
   @Input({ required: true }) editToNull$!: Observable<void>;
   protected editorContentsSubject = new ReplaySubject<string>();
   protected editorReadOnlySubject = new ReplaySubject<boolean>();
@@ -25,7 +25,13 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscriptions.add(this.originalValue$.subscribe((value: string | null) => this.newOriginalValue(value)));
+    this.subscriptions.add(
+      this.originalValue$.subscribe((value: string | null | undefined) => {
+        if (value !== undefined) {
+          this.newOriginalValue(value);
+        }
+      }),
+    );
     this.subscriptions.add(this.editToNull$.subscribe(() => this.editToNull()));
     this.editorReadOnlySubject.next(false);
   }

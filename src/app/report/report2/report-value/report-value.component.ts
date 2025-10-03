@@ -36,7 +36,7 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
 })
 export class ReportValueComponent implements OnInit, OnDestroy {
   savedChanges = output<boolean>();
-  @Input({ required: true }) report$!: Observable<PartialReport>;
+  @Input({ required: true }) report$!: Observable<PartialReport | undefined>;
   editedName = '';
   editedDescription = '';
   editedPath = '';
@@ -98,7 +98,13 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.transformationReadOnlySubject.next(false);
     this.reportReadOnlySubject.next(true);
-    this.subscriptions.add(this.report$!.subscribe((report) => this.newReport(report)));
+    this.subscriptions.add(
+      this.report$!.subscribe((report) => {
+        if (report !== undefined) {
+          this.newReport(report);
+        }
+      }),
+    );
   }
 
   ngOnDestroy(): void {

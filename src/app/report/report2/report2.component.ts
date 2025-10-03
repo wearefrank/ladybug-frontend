@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularSplitModule, SplitComponent } from 'angular-split';
-import { BehaviorSubject, debounceTime, fromEventPattern, ReplaySubject, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, fromEventPattern, Subject, Subscription } from 'rxjs';
 import { DebugTreeComponent } from '../../debug/debug-tree/debug-tree.component';
 import { DebugComponent } from '../../debug/debug.component';
 import { ReportData } from '../../shared/interfaces/report-data';
@@ -49,9 +49,15 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   protected buttonStatusSubject = new BehaviorSubject<ReportButtonStatus>(
     Report2Component.getButtonState(true, 'none'),
   );
-  protected reportSubject = new ReplaySubject<PartialReport>();
-  protected checkpointValueSubject = new ReplaySubject<string | null>();
-  protected editCheckpointToNullSubject = new ReplaySubject<void>();
+  // Not ordinary subjects, because the report or checkpoint value may
+  // be posted before the receiving component is ready.
+  // Also not ReplaySubject, because we do not want old report or checkpont
+  // values to be reposted.
+  protected reportSubject = new BehaviorSubject<PartialReport | undefined>(undefined);
+  protected checkpointValueSubject = new BehaviorSubject<string | null | undefined>(undefined);
+  // Not ReplaySubject and not BehaviorSubject, because we do not want
+  // future checpoints to become null.
+  protected editCheckpointToNullSubject = new Subject<void>();
 
   private host = inject(ElementRef);
   private tabService = inject(TabService);
@@ -165,6 +171,11 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   private changeReportValueState(state: ReportValueState): void {
     this.reportValueState = state;
     this.buttonStatusSubject.next(Report2Component.getButtonState(true, this.reportValueState));
+    // Make sure no old report or old checkpoint is processed when related components are recreated.
+    /* eslint-disable-next-line unicorn/no-useless-undefined */
+    this.reportSubject.next(undefined);
+    /* eslint-disable-next-line unicorn/no-useless-undefined */
+    this.checkpointValueSubject.next(undefined);
   }
 
   private static getButtonState(savedChanges: boolean, state: ReportValueState): ReportButtonStatus {
