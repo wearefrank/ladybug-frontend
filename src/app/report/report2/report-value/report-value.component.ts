@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnDestroy, OnInit, output } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { AngularSplitModule } from 'angular-split';
@@ -7,6 +7,8 @@ import { HttpService } from '../../../shared/services/http.service';
 import { catchError, firstValueFrom, Observable, ReplaySubject, Subscription } from 'rxjs';
 import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { Transformation } from '../../../shared/interfaces/transformation';
+import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
+import { DifferencesBuilder } from 'src/app/shared/util/differences-builder';
 
 export interface Variable {
   name: string;
@@ -30,13 +32,16 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
 
 @Component({
   selector: 'app-report-value',
-  imports: [MonacoEditorComponent, CommonModule, FormsModule, AngularSplitModule],
+  imports: [MonacoEditorComponent, CommonModule, FormsModule, AngularSplitModule, Difference2ModalComponent],
   templateUrl: './report-value.component.html',
   styleUrl: './report-value.component.css',
 })
 export class ReportValueComponent implements OnInit, OnDestroy {
   savedChanges = output<boolean>();
   @Input({ required: true }) report$!: Observable<PartialReport | undefined>;
+  @Input({ required: true }) save$!: Observable<void>;
+  @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
+
   editedName = '';
   editedDescription = '';
   editedPath = '';
@@ -95,6 +100,17 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     return result;
   }
 
+  static getCommonVariableNames(originalVariableNames: string[], editedVariableNames: string[]): string[] {
+    const originalVariableNamesSet = new Set<string>(originalVariableNames);
+    const resultSet = new Set<string>();
+    for (const variableName of editedVariableNames) {
+      if (originalVariableNamesSet.has(variableName)) {
+        resultSet.add(variableName);
+      }
+    }
+    return [...resultSet].toSorted();
+  }
+
   ngOnInit(): void {
     this.transformationReadOnlySubject.next(false);
     this.reportReadOnlySubject.next(true);
@@ -105,6 +121,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
         }
       }),
     );
+    this.subscriptions.add(this.save$.subscribe(this.saveReport.bind(this)));
   }
 
   ngOnDestroy(): void {
@@ -143,6 +160,40 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     }
   }
 
+  // This one is tested with Karma tests.
+  getDifferences(): DifferencesBuilder {
+    // TODO: Fill.
+    const result = new DifferencesBuilder()
+      .nonNullableVariable(this.report!.name, this.editedName, 'Name', true)
+      .nullableVariable(
+        this.report!.description,
+        this.getRealEditedValueForNullable(this.editedDescription),
+        'Description',
+        true,
+      )
+      .nullableVariable(this.report!.path, this.getRealEditedValueForNullable(this.editedPath), 'Path', true)
+      .nullableVariable(
+        this.report!.transformation,
+        this.getRealEditedValueForNullable(this.editedTransformation),
+        'true',
+      );
+    const editedVariables = this.getRealEditedVariables();
+    const originalVariableNames: string[] = this.originalVariables.map((v) => v.name);
+    const editedVariableNames: string[] = editedVariables.map((v) => v.name);
+    result.nonNullableVariable(
+      originalVariableNames.join('\n'),
+      editedVariableNames.join('\n'),
+      'Defined variables (ordered)',
+      true,
+    );
+    for (const n of ReportValueComponent.getCommonVariableNames(originalVariableNames, editedVariableNames)) {
+      const originalValue = this.originalVariables.find((v) => v.name === n)!.value;
+      const editedValue = editedVariables.find((v) => v.name === n)!.value;
+      result.nonNullableVariable(originalValue, editedValue, `Variable ${n}`, true);
+    }
+    return result;
+  }
+
   // For testing purposes
   setVariables(variables: Variable[]): void {
     this.originalVariables = variables;
@@ -162,6 +213,11 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     this.transformationContentRequestSubject.next(this.getEditorTextOfNullable(this.report!.transformation));
     this.reportContentRequestSubject.next(this.report.xml);
     this.onInputChange();
+  }
+
+  private saveReport(): void {
+    console.log('ReportValueComponent.saveReport()');
+    this.saveModal.open(this.getDifferences().build(), 'save');
   }
 
   private refreshDuplicateVariables(): void {

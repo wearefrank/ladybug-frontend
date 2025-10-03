@@ -1,10 +1,12 @@
-import { Component, Input, OnDestroy, OnInit, output } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
 import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.component';
+import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
+import { DifferencesBuilder } from 'src/app/shared/util/differences-builder';
 
 @Component({
   selector: 'app-checkpoint-value',
-  imports: [MonacoEditorComponent],
+  imports: [MonacoEditorComponent, Difference2ModalComponent],
   templateUrl: './checkpoint-value.component.html',
   styleUrl: './checkpoint-value.component.css',
 })
@@ -13,6 +15,9 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   @Input() height = 0;
   @Input({ required: true }) originalValue$!: Observable<string | null | undefined>;
   @Input({ required: true }) editToNull$!: Observable<void>;
+  @Input({ required: true }) save$!: Observable<void>;
+  @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
+
   protected editorContentsSubject = new ReplaySubject<string>();
   protected editorReadOnlySubject = new ReplaySubject<boolean>();
   private originalValue: string | null = null;
@@ -33,6 +38,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       }),
     );
     this.subscriptions.add(this.editToNull$.subscribe(() => this.editToNull()));
+    this.subscriptions.add(this.save$.subscribe(() => this.saveCheckpoint()));
     this.editorReadOnlySubject.next(false);
   }
 
@@ -58,8 +64,20 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     this.handleSavedChanges();
   }
 
+  getDifferences(): DifferencesBuilder {
+    console.log(`CheckpointValueComponent.getDifferences(): edited ${this.getEditedRealCheckpointValue()}`);
+    return new DifferencesBuilder().nullableVariable(
+      this.originalValue,
+      this.getEditedRealCheckpointValue(),
+      'Value',
+      true,
+    );
+  }
+
   protected editToNull(): void {
     this.emptyIsNull = true;
+    // Do not trust the Monaco editor sends an event for the updated text.
+    this.actualEditorContents = '';
     // Editor contents may be the empty string, then still saved changes.
     this.handleSavedChanges();
     this.editorContentsSubject.next('');
@@ -77,10 +95,13 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
 
   private newOriginalValue(originalValue: string | null): void {
     console.log('CheckpointValueComponent.newOriginalValue(): also emits savedChanges');
-    this.savedChanges.emit(true);
     this.originalValue = originalValue;
     this.emptyIsNull = this.originalValue === null;
-    this.editorContentsSubject.next(originalValue === null ? '' : originalValue);
+    const requestedEditorContents = originalValue === null ? '' : originalValue;
+    // Do not trust the Monaco editor sends an event for the first text.
+    this.actualEditorContents = requestedEditorContents;
+    this.savedChanges.emit(true);
+    this.editorContentsSubject.next(requestedEditorContents);
   }
 
   private handleSavedChanges(): void {
@@ -91,5 +112,9 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       console.log('CheckpointValueComponent.handleSavedChanges(false)');
       this.savedChanges.emit(false);
     }
+  }
+
+  private saveCheckpoint(): void {
+    this.saveModal.open(this.getDifferences().build(), 'save');
   }
 }

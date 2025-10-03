@@ -22,6 +22,7 @@ describe('CheckpointValue', () => {
     savedChangesSpy = spyOn(component.savedChanges, 'emit');
     component.originalValue$ = originalValueSubject;
     component.editToNull$ = makeNullSubject;
+    component.save$ = new Subject<void>();
     fixture.detectChanges();
   });
 
@@ -33,64 +34,74 @@ describe('CheckpointValue', () => {
     originalValueSubject!.next('My value');
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+    expectNoUnsavedChanges();
   }));
 
   it('When checkpoint value is edited then saved changes is emitted', fakeAsync(() => {
     originalValueSubject!.next('My value');
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+    expectNoUnsavedChanges();
     component.onActualEditorContentsChanged('My other value');
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expect(savedChangesSpy!.calls.mostRecent().args[0]).toEqual(false);
+    expectUnsavedChanges();
     component.onActualEditorContentsChanged('My value');
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expect(savedChangesSpy!.calls.mostRecent().args[0]).toEqual(true);
+    expectNoUnsavedChanges();
   }));
 
   it('When null checkpoint value is edited and cleared then it becomes the empty string', fakeAsync(() => {
     originalValueSubject!.next(null);
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+    expectNoUnsavedChanges();
     component.onActualEditorContentsChanged('My other value');
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expect(savedChangesSpy!.calls.mostRecent().args[0]).toEqual(false);
+    expectUnsavedChanges();
     component.onActualEditorContentsChanged('');
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
     expect(component.getEditedRealCheckpointValue()).toEqual('');
-    expect(savedChangesSpy?.calls.mostRecent().args[0]).toEqual(false);
+    expectUnsavedChanges();
   }));
 
   it('When make null button is clicked while editor is empty then checkpoint value becomes null', fakeAsync(() => {
     originalValueSubject!.next('');
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+    expectNoUnsavedChanges();
     makeNullSubject!.next();
     flush();
     expect(component.getEditedRealCheckpointValue()).toEqual(null);
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expect(savedChangesSpy!.calls.mostRecent().args[0]).toEqual(false);
+    expectUnsavedChanges();
   }));
 
   it('When make null button is clicked while editor is not empty then checkpoint value becomes null', fakeAsync(() => {
-    console.log('The test');
+    console.log('The test 84');
     originalValueSubject!.next('Some value');
     flush();
-    console.log('Done setting Some value');
+    expect(component.getEditedRealCheckpointValue()).toEqual('Some value');
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expect(component.savedChanges.emit).toHaveBeenCalledWith(true);
+    expectNoUnsavedChanges();
     makeNullSubject!.next();
     flush();
     expect(component.getEditedRealCheckpointValue()).toEqual(null);
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expect(savedChangesSpy!.calls.mostRecent().args[0]).toEqual(false);
+    expectUnsavedChanges();
     console.log('Done');
   }));
+
+  function expectNoUnsavedChanges(): void {
+    expect(savedChangesSpy?.calls.mostRecent().args[0]).toEqual(true);
+    expect(component.getDifferences().data.length).toEqual(0);
+  }
+
+  function expectUnsavedChanges(): void {
+    expect(savedChangesSpy?.calls.mostRecent().args[0]).toEqual(false);
+    expect(component.getDifferences().data.length).not.toEqual(0);
+  }
 });

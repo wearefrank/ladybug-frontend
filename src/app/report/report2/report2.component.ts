@@ -58,7 +58,8 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   // Not ReplaySubject and not BehaviorSubject, because we do not want
   // future checpoints to become null.
   protected editCheckpointToNullSubject = new Subject<void>();
-
+  protected saveReportSubject = new Subject<void>();
+  protected saveCheckpointSubject = new Subject<void>();
   private host = inject(ElementRef);
   private tabService = inject(TabService);
   private route = inject(ActivatedRoute);
@@ -128,6 +129,13 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
         this.editCheckpointToNullSubject.next();
       } else {
         throw new Error('Button makeNull should not be accessible when no checkpoint is shown');
+      }
+    }
+    if (command === 'save') {
+      if (this.reportValueState === 'checkpoint') {
+        this.saveCheckpointSubject.next();
+      } else {
+        this.saveReportSubject.next();
       }
     }
   }

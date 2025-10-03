@@ -15,13 +15,18 @@
       </app-report-buttons>
     }
     @if (reportValueState === 'report') {
-      <app-report-value [height]="monacoEditorHeight" [report$]="reportSubject" (savedChanges)="onSavedChanges($event)"></app-report-value>
+      <app-report-value
+        [height]="monacoEditorHeight"
+        [report$]="reportSubject"
+        [save$]="saveReportSubject"
+        (savedChanges)="onSavedChanges($event)"></app-report-value>
     }
     @if (reportValueState === 'checkpoint') {
       <app-checkpoint-value
         [height]="monacoEditorHeight"
         [originalValue$]="checkpointValueSubject"
         [editToNull$]="editCheckpointToNullSubject"
+        [save$]="saveCheckpointSubject"
         (savedChanges)="onSavedChanges($event)"></app-checkpoint-value>
     }
   </as-split-area>

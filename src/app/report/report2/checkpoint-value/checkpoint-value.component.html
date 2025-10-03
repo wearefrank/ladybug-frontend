@@ -1,9 +1,7 @@
 <div [style.height]="height + 'px'">
-<app-monaco-editor
-	data-cy-element-name="checkpointEditor"
-	[options]="monacoOptions"
-	[editorContentRequest$]="editorContentsSubject"
-	[readOnlyRequest$]="editorReadOnlySubject"
-	(actualEditorContentsChange)="onActualEditorContentsChanged($event)">
-</app-monaco-editor>
+  <app-monaco-editor data-cy-element-name="checkpointEditor" [options]="monacoOptions"
+    [editorContentRequest$]="editorContentsSubject" [readOnlyRequest$]="editorReadOnlySubject"
+    (actualEditorContentsChange)="onActualEditorContentsChanged($event)">
+  </app-monaco-editor>
 </div>
+<app-difference2-modal></app-difference2-modal>
