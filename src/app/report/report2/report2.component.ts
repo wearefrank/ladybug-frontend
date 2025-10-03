@@ -120,6 +120,9 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
 
   onButton(command: ButtonCommand): void {
     console.log(`Button pressed: ${command}`);
+    if (command === 'close') {
+      this.changeReportValueState('none');
+    }
     if (command === 'makeNull') {
       if (this.reportValueState === 'checkpoint') {
         this.editCheckpointToNullSubject.next();
