@@ -1,13 +1,13 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 
 import { CheckpointValueComponent } from './checkpoint-value.component';
-import { ReplaySubject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 describe('CheckpointValue', () => {
   let component: CheckpointValueComponent;
   let fixture: ComponentFixture<CheckpointValueComponent>;
-  let originalValueSubject: ReplaySubject<string | null> | undefined;
-  let makeNullSubject: ReplaySubject<void> | undefined;
+  let originalValueSubject: Subject<string | null> | undefined;
+  let makeNullSubject: Subject<void> | undefined;
   let savedChangesSpy: jasmine.Spy | undefined;
 
   beforeEach(async () => {
@@ -17,8 +17,8 @@ describe('CheckpointValue', () => {
 
     fixture = TestBed.createComponent(CheckpointValueComponent);
     component = fixture.componentInstance;
-    originalValueSubject = new ReplaySubject<string | null>();
-    makeNullSubject = new ReplaySubject<void>();
+    originalValueSubject = new Subject<string | null>();
+    makeNullSubject = new Subject<void>();
     savedChangesSpy = spyOn(component.savedChanges, 'emit');
     component.originalValue$ = originalValueSubject;
     component.editToNull$ = makeNullSubject;
