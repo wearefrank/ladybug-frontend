@@ -13,6 +13,7 @@ export interface Checkpoint {
   noCloseReceivedForStream?: boolean;
   preTruncatedMessageLength: number;
   sourceClassName?: number;
+  // TODO: No longer sent by server, delete.
   showConverted?: boolean;
   streaming?: string;
   stub: number;

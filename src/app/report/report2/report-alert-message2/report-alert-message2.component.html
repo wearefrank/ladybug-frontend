@@ -1,53 +1,47 @@
-@if (anyAlertMessagesPresent && ReportUtil.isCheckPoint(report)) {
+@if (labels !== undefined) {
   <div class="mb-2 mx-1">
-    @if (report.noCloseReceivedForStream) {
+    @if (labels.isEdited) {
       <div class="btn btn-static px-2">
-        No close received for stream
-      </div>
-    }
-    @if (report.streaming) {
-      <div class="btn btn-static px-2">
-        {{ report.waitingForStream ? 'Waiting for message to be' : 'Message is' }} captured asynchronously from
-        a {{ report.streaming.toLowerCase() }} stream
+        Edited
       </div>
     }
 
-    @if (report.message === null) {
+    @if (labels.isMessageNull) {
       <div class="btn btn-static px-2">
         Message is null
       </div>
     }
 
-    @if (report.message === '') {
+    @if (labels.isMessageEmpty) {
       <div class="btn btn-static px-2">
         Message is empty string
       </div>
     }
 
-    @if (report.stubbed) {
+    @if (labels.stubbed) {
       <div class="btn btn-static px-2">
         Message is stubbed
       </div>
     }
 
-    @if (report.encoding && report.messageClassName) {
-      <div class="btn btn-static px-2 text-break">
-        Message of type {{ report.messageClassName }} is encoded to string using {{ report.encoding }}
-        @if (report.showConverted) {
-          <span>and displayed using Base64
-              decoded to byte array and byte array decoded to string using UTF-8 (toggle with Base64 button)</span>
-        }
-      </div>
+    @if (labels.encoding !== undefined) {
+      @if (labels.messageClassName) {
+        <div class="btn btn-static px-2 text-break">
+          Message of type {{ labels.messageClassName }} is encoded to string using {{ labels.encoding }}
+        </div>
+      } @else {
+        Message is encoded to string using {{ labels.encoding }}
+      }
     }
-    @if (report.preTruncatedMessageLength > 0) {
+    @if (labels.charactersRemoved > 0) {
       <div class="btn btn-static px-2">
-        Message is truncated ({{ report.preTruncatedMessageLength - (report.message === null ? 0 : report.message.length) }} characters removed)
+        Message is truncated ({{ labels.charactersRemoved }} characters removed)
       </div>
     }
 
-    @if (report.stubNotFound) {
+    @if (labels.stubNotFound) {
       <div class="btn btn-static px-2">
-        Could not find stub message for {{ report.stubNotFound }}
+        Could not find stub message for {{ labels.stubNotFound }}
       </div>
     }
   </div>

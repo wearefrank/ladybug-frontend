@@ -1,7 +1,17 @@
-import { Component, Input, OnChanges } from '@angular/core';
-import { ReportUtil } from '../../../shared/util/report-util';
-import { Report } from '../../../shared/interfaces/report';
-import { Checkpoint } from '../../../shared/interfaces/checkpoint';
+import { Component, Input } from '@angular/core';
+
+export interface CheckpointLabels {
+  isEdited: boolean;
+  isMessageNull: boolean;
+  isMessageEmpty: boolean;
+  stubbed: boolean;
+  encoding: string | undefined;
+  messageClassName: string | undefined;
+  // TODO: Remove here and remove from checkpoint.ts.
+  showConverted?: boolean;
+  charactersRemoved: number;
+  stubNotFound?: string;
+}
 
 @Component({
   selector: 'app-report-alert-message2',
@@ -9,26 +19,6 @@ import { Checkpoint } from '../../../shared/interfaces/checkpoint';
   templateUrl: './report-alert-message2.component.html',
   styleUrl: './report-alert-message2.component.css',
 })
-export class ReportAlertMessage2Component implements OnChanges {
-  @Input({ required: true }) report!: Report | Checkpoint;
-  protected readonly ReportUtil = ReportUtil;
-  protected anyAlertMessagesPresent = false;
-
-  ngOnChanges(): void {
-    this.checkIfAnyAlertMessagesPresent();
-  }
-
-  private checkIfAnyAlertMessagesPresent(): void {
-    if (ReportUtil.isCheckPoint(this.report)) {
-      this.anyAlertMessagesPresent = !!(
-        this.report.streaming ||
-        this.report.stubbed ||
-        !this.report.message ||
-        this.report.message === null ||
-        this.report.encoding ||
-        (this.report.preTruncatedMessageLength && this.report.preTruncatedMessageLength > 0) ||
-        this.report.stubNotFound
-      );
-    }
-  }
+export class ReportAlertMessage2Component {
+  @Input() labels: CheckpointLabels | undefined;
 }

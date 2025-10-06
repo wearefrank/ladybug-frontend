@@ -3,11 +3,19 @@ import { Observable, ReplaySubject, Subscription } from 'rxjs';
 import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.component';
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
 import { DifferencesBuilder } from 'src/app/shared/util/differences-builder';
+import {
+  CheckpointLabels,
+  ReportAlertMessage2Component,
+} from '../report-alert-message2/report-alert-message2.component';
 
 export interface PartialCheckpoint {
   message: string | null;
   stubbed: boolean;
-  encoding?: string;
+  // TODO: Server will not send undefined.
+  encoding?: string | null;
+  // TODO: Server will not send undefined.
+  messageClassName?: string | null;
+  showConverted?: boolean;
   preTruncatedMessageLength: number;
   stubNotFound?: string;
   stub: number;
@@ -15,7 +23,7 @@ export interface PartialCheckpoint {
 
 @Component({
   selector: 'app-checkpoint-value',
-  imports: [MonacoEditorComponent, Difference2ModalComponent],
+  imports: [MonacoEditorComponent, Difference2ModalComponent, ReportAlertMessage2Component],
   templateUrl: './checkpoint-value.component.html',
   styleUrl: './checkpoint-value.component.css',
 })
@@ -29,20 +37,17 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
 
   protected editorContentsSubject = new ReplaySubject<string>();
   protected editorReadOnlySubject = new ReplaySubject<boolean>();
+  protected labels: CheckpointLabels | undefined;
   private originalCheckpoint: PartialCheckpoint | undefined;
   private actualEditorContents = '';
   private emptyIsNull = true;
   private subscriptions = new Subscription();
 
-  constructor() {
-    console.log('Construct CheckpointValueComponent');
-  }
-
   ngOnInit(): void {
     this.subscriptions.add(
       this.originalCheckpoint$.subscribe((value: PartialCheckpoint | undefined) => {
         if (value !== undefined) {
-          this.neworiginalCheckpoint(value);
+          this.newOriginalCheckpoint(value);
         }
       }),
     );
@@ -52,32 +57,34 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('Destroy CheckpointValueComponent');
     this.subscriptions.unsubscribe();
   }
 
   getEditedRealCheckpointValue(): string | null {
     if (this.emptyIsNull) {
-      return this.actualEditorContents.trim().length === 0 ? null : this.actualEditorContents;
+      return this.actualEditorContents.length === 0 ? null : this.actualEditorContents;
     } else {
       return this.actualEditorContents;
     }
   }
 
   onActualEditorContentsChanged(value: string): void {
-    console.log('CheckpointValueComponent.onActualEditorContentsChanged()');
+    // We set the actualEditorContents already when we request new editor contents.
+    // When the new value is converted, we do not have to react.
+    if (this.actualEditorContents === value) {
+      return;
+    }
     this.actualEditorContents = value;
-    if (this.actualEditorContents.trim().length > 0) {
+    if (this.actualEditorContents.length > 0) {
       this.emptyIsNull = false;
     }
-    this.handleSavedChanges();
+    this.handleLabelsAndSavedChanges();
   }
 
   getDifferences(): DifferencesBuilder {
     if (this.originalCheckpoint === undefined) {
       throw new Error('CheckpointValueComponent.getDifferences(): Did not expect originalCheckpoint to be undefined');
     }
-    console.log(`CheckpointValueComponent.getDifferences(): edited ${this.getEditedRealCheckpointValue()}`);
     return new DifferencesBuilder().nullableVariable(
       this.originalCheckpoint.message,
       this.getEditedRealCheckpointValue(),
@@ -91,7 +98,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     // Do not trust the Monaco editor sends an event for the updated text.
     this.actualEditorContents = '';
     // Editor contents may be the empty string, then still saved changes.
-    this.handleSavedChanges();
+    this.handleLabelsAndSavedChanges();
     this.editorContentsSubject.next('');
   }
 
@@ -105,31 +112,60 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     scrollBeyondLastLine: false,
   };
 
-  private neworiginalCheckpoint(originalCheckpoint: PartialCheckpoint | undefined): void {
+  private newOriginalCheckpoint(originalCheckpoint: PartialCheckpoint | undefined): void {
     if (originalCheckpoint === undefined) {
       throw new Error('CheckpointValueComponent.neworiginalCheckpoint(): Did not expect to receive value undefined');
     }
-    console.log('CheckpointValueComponent.neworiginalCheckpoint(): also emits savedChanges');
     this.originalCheckpoint = originalCheckpoint;
     this.emptyIsNull = this.originalCheckpoint.message === null;
     const requestedEditorContents = originalCheckpoint.message === null ? '' : originalCheckpoint.message;
     // Do not trust the Monaco editor sends an event for the first text.
     this.actualEditorContents = requestedEditorContents;
-    this.savedChanges.emit(true);
+    this.handleLabelsAndSavedChanges();
     this.editorContentsSubject.next(requestedEditorContents);
   }
 
-  private handleSavedChanges(): void {
+  private handleLabelsAndSavedChanges(): void {
     if (this.originalCheckpoint === undefined) {
-      throw new Error('CheckpointValueComponent.handleSavedChanges(): Did not expect that there was no checkpoint');
+      throw new Error(
+        'CheckpointValueComponent.handleLabelsAndSavedChanges(): Did not expect that there was no checkpoint',
+      );
     }
-    if (this.getEditedRealCheckpointValue() === this.originalCheckpoint.message) {
-      console.log('CheckpointValueComponent.handleSavedChanges(true)');
-      this.savedChanges.emit(true);
-    } else {
-      console.log('CheckpointValueComponent.handleSavedChanges(false)');
+    const editedCheckpointValue = this.getEditedRealCheckpointValue();
+    this.labels = {
+      isEdited: editedCheckpointValue !== this.originalCheckpoint.message,
+      isMessageNull: editedCheckpointValue === null,
+      isMessageEmpty: editedCheckpointValue === '',
+      stubbed: this.originalCheckpoint.stubbed,
+      encoding: CheckpointValueComponent.getEncoding(this.originalCheckpoint.encoding),
+      messageClassName:
+        this.originalCheckpoint.messageClassName === undefined || this.originalCheckpoint.messageClassName === null
+          ? undefined
+          : this.originalCheckpoint.messageClassName,
+      charactersRemoved: CheckpointValueComponent.getCharactersRemoved(
+        this.originalCheckpoint.message,
+        this.originalCheckpoint.preTruncatedMessageLength,
+      ),
+      stubNotFound: this.originalCheckpoint.stubNotFound,
+    };
+    if (this.labels.isEdited) {
       this.savedChanges.emit(false);
+    } else {
+      this.savedChanges.emit(true);
     }
+  }
+
+  private static getEncoding(e: string | null | undefined): string | undefined {
+    return e === undefined || e === null || e.length === 0 ? undefined : e;
+  }
+
+  private static getCharactersRemoved(originalMessage: string | null, preTruncatedMessageLength: number): number {
+    // In the backend code you see that a negative number is returned for unspecified.
+    if (preTruncatedMessageLength < 0) {
+      return 0;
+    }
+    const originalLength = originalMessage === null ? 0 : originalMessage.length;
+    return preTruncatedMessageLength - originalLength;
   }
 
   private saveCheckpoint(): void {
