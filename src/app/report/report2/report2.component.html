@@ -24,7 +24,7 @@
     @if (reportValueState === 'checkpoint') {
       <app-checkpoint-value
         [height]="monacoEditorHeight"
-        [originalValue$]="checkpointValueSubject"
+        [originalCheckpoint$]="checkpointValueSubject"
         [editToNull$]="editCheckpointToNullSubject"
         [save$]="saveCheckpointSubject"
         (savedChanges)="onSavedChanges($event)"></app-checkpoint-value>

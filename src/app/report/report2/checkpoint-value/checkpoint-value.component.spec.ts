@@ -1,12 +1,12 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 
-import { CheckpointValueComponent } from './checkpoint-value.component';
+import { CheckpointValueComponent, PartialCheckpoint } from './checkpoint-value.component';
 import { Subject } from 'rxjs';
 
 describe('CheckpointValue', () => {
   let component: CheckpointValueComponent;
   let fixture: ComponentFixture<CheckpointValueComponent>;
-  let originalValueSubject: Subject<string | null> | undefined;
+  let originalValueSubject: Subject<PartialCheckpoint> | undefined;
   let makeNullSubject: Subject<void> | undefined;
   let savedChangesSpy: jasmine.Spy | undefined;
 
@@ -17,10 +17,10 @@ describe('CheckpointValue', () => {
 
     fixture = TestBed.createComponent(CheckpointValueComponent);
     component = fixture.componentInstance;
-    originalValueSubject = new Subject<string | null>();
+    originalValueSubject = new Subject<PartialCheckpoint>();
     makeNullSubject = new Subject<void>();
     savedChangesSpy = spyOn(component.savedChanges, 'emit');
-    component.originalValue$ = originalValueSubject;
+    component.originalCheckpoint$ = originalValueSubject;
     component.editToNull$ = makeNullSubject;
     component.save$ = new Subject<void>();
     fixture.detectChanges();
@@ -31,14 +31,14 @@ describe('CheckpointValue', () => {
   });
 
   it('When a new checkpoint is selected then saved changes is emitted', fakeAsync(() => {
-    originalValueSubject!.next('My value');
+    originalValueSubject!.next(getPartialCheckpoint('My value'));
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
     expectNoUnsavedChanges();
   }));
 
   it('When checkpoint value is edited then saved changes is emitted', fakeAsync(() => {
-    originalValueSubject!.next('My value');
+    originalValueSubject!.next(getPartialCheckpoint('My value'));
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
     expectNoUnsavedChanges();
@@ -53,7 +53,7 @@ describe('CheckpointValue', () => {
   }));
 
   it('When null checkpoint value is edited and cleared then it becomes the empty string', fakeAsync(() => {
-    originalValueSubject!.next(null);
+    originalValueSubject!.next(getPartialCheckpoint(null));
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
     expectNoUnsavedChanges();
@@ -69,7 +69,7 @@ describe('CheckpointValue', () => {
   }));
 
   it('When make null button is clicked while editor is empty then checkpoint value becomes null', fakeAsync(() => {
-    originalValueSubject!.next('');
+    originalValueSubject!.next(getPartialCheckpoint(''));
     flush();
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
     expectNoUnsavedChanges();
@@ -82,7 +82,7 @@ describe('CheckpointValue', () => {
 
   it('When make null button is clicked while editor is not empty then checkpoint value becomes null', fakeAsync(() => {
     console.log('The test 84');
-    originalValueSubject!.next('Some value');
+    originalValueSubject!.next(getPartialCheckpoint('Some value'));
     flush();
     expect(component.getEditedRealCheckpointValue()).toEqual('Some value');
     expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
@@ -105,3 +105,14 @@ describe('CheckpointValue', () => {
     expect(component.getDifferences().data.length).not.toEqual(0);
   }
 });
+
+function getPartialCheckpoint(message: string | null): PartialCheckpoint {
+  const result = {
+    message,
+    stubbed: false,
+    preTruncatedMessageLength: message === null ? 0 : message.length,
+    // Use report level stub strategy
+    stub: 0,
+  };
+  return { ...result };
+}

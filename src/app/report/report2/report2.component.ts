@@ -21,7 +21,7 @@ import { View } from '../../shared/interfaces/view';
 import { TabService } from '../../shared/services/tab.service';
 import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
 import { PartialReport, ReportValueComponent } from './report-value/report-value.component';
-import { CheckpointValueComponent } from './checkpoint-value/checkpoint-value.component';
+import { CheckpointValueComponent, PartialCheckpoint } from './checkpoint-value/checkpoint-value.component';
 import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
 import { ButtonCommand, ReportButtons, ReportButtonStatus } from './report-buttons/report-buttons';
 
@@ -54,7 +54,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   // Also not ReplaySubject, because we do not want old report or checkpont
   // values to be reposted.
   protected reportSubject = new BehaviorSubject<PartialReport | undefined>(undefined);
-  protected checkpointValueSubject = new BehaviorSubject<string | null | undefined>(undefined);
+  protected checkpointValueSubject = new BehaviorSubject<PartialCheckpoint | undefined>(undefined);
   // Not ReplaySubject and not BehaviorSubject, because we do not want
   // future checpoints to become null.
   protected editCheckpointToNullSubject = new Subject<void>();
@@ -113,7 +113,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
     } else if (ReportUtility.isCheckPoint(node)) {
       this.changeReportValueState('checkpoint');
       const checkpointNode = node as Checkpoint;
-      this.checkpointValueSubject.next(checkpointNode.message);
+      this.checkpointValueSubject.next(checkpointNode);
     } else {
       throw new Error('State.newNode(): Node is neither a Report nor a Checkpoint');
     }

@@ -4,6 +4,15 @@ import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.compo
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
 import { DifferencesBuilder } from 'src/app/shared/util/differences-builder';
 
+export interface PartialCheckpoint {
+  message: string | null;
+  stubbed: boolean;
+  encoding?: string;
+  preTruncatedMessageLength: number;
+  stubNotFound?: string;
+  stub: number;
+}
+
 @Component({
   selector: 'app-checkpoint-value',
   imports: [MonacoEditorComponent, Difference2ModalComponent],
@@ -13,14 +22,14 @@ import { DifferencesBuilder } from 'src/app/shared/util/differences-builder';
 export class CheckpointValueComponent implements OnInit, OnDestroy {
   savedChanges = output<boolean>();
   @Input() height = 0;
-  @Input({ required: true }) originalValue$!: Observable<string | null | undefined>;
+  @Input({ required: true }) originalCheckpoint$!: Observable<PartialCheckpoint | undefined>;
   @Input({ required: true }) editToNull$!: Observable<void>;
   @Input({ required: true }) save$!: Observable<void>;
   @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
 
   protected editorContentsSubject = new ReplaySubject<string>();
   protected editorReadOnlySubject = new ReplaySubject<boolean>();
-  private originalValue: string | null = null;
+  private originalCheckpoint: PartialCheckpoint | undefined;
   private actualEditorContents = '';
   private emptyIsNull = true;
   private subscriptions = new Subscription();
@@ -31,9 +40,9 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.originalValue$.subscribe((value: string | null | undefined) => {
+      this.originalCheckpoint$.subscribe((value: PartialCheckpoint | undefined) => {
         if (value !== undefined) {
-          this.newOriginalValue(value);
+          this.neworiginalCheckpoint(value);
         }
       }),
     );
@@ -65,9 +74,12 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   }
 
   getDifferences(): DifferencesBuilder {
+    if (this.originalCheckpoint === undefined) {
+      throw new Error('CheckpointValueComponent.getDifferences(): Did not expect originalCheckpoint to be undefined');
+    }
     console.log(`CheckpointValueComponent.getDifferences(): edited ${this.getEditedRealCheckpointValue()}`);
     return new DifferencesBuilder().nullableVariable(
-      this.originalValue,
+      this.originalCheckpoint.message,
       this.getEditedRealCheckpointValue(),
       'Value',
       true,
@@ -93,11 +105,14 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     scrollBeyondLastLine: false,
   };
 
-  private newOriginalValue(originalValue: string | null): void {
-    console.log('CheckpointValueComponent.newOriginalValue(): also emits savedChanges');
-    this.originalValue = originalValue;
-    this.emptyIsNull = this.originalValue === null;
-    const requestedEditorContents = originalValue === null ? '' : originalValue;
+  private neworiginalCheckpoint(originalCheckpoint: PartialCheckpoint | undefined): void {
+    if (originalCheckpoint === undefined) {
+      throw new Error('CheckpointValueComponent.neworiginalCheckpoint(): Did not expect to receive value undefined');
+    }
+    console.log('CheckpointValueComponent.neworiginalCheckpoint(): also emits savedChanges');
+    this.originalCheckpoint = originalCheckpoint;
+    this.emptyIsNull = this.originalCheckpoint.message === null;
+    const requestedEditorContents = originalCheckpoint.message === null ? '' : originalCheckpoint.message;
     // Do not trust the Monaco editor sends an event for the first text.
     this.actualEditorContents = requestedEditorContents;
     this.savedChanges.emit(true);
@@ -105,7 +120,10 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   }
 
   private handleSavedChanges(): void {
-    if (this.getEditedRealCheckpointValue() === this.originalValue) {
+    if (this.originalCheckpoint === undefined) {
+      throw new Error('CheckpointValueComponent.handleSavedChanges(): Did not expect that there was no checkpoint');
+    }
+    if (this.getEditedRealCheckpointValue() === this.originalCheckpoint.message) {
       console.log('CheckpointValueComponent.handleSavedChanges(true)');
       this.savedChanges.emit(true);
     } else {
