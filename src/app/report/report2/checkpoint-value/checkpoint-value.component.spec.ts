@@ -2,13 +2,14 @@ import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testi
 
 import { CheckpointValueComponent, PartialCheckpoint } from './checkpoint-value.component';
 import { Subject } from 'rxjs';
+import { PartialReport } from '../report2.component';
 
 describe('CheckpointValue', () => {
   let component: CheckpointValueComponent;
   let fixture: ComponentFixture<CheckpointValueComponent>;
   let originalValueSubject: Subject<PartialCheckpoint> | undefined;
   let makeNullSubject: Subject<void> | undefined;
-  let savedChangesSpy: jasmine.Spy | undefined;
+  let nodeValueStateSpy: jasmine.Spy | undefined;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -19,7 +20,7 @@ describe('CheckpointValue', () => {
     component = fixture.componentInstance;
     originalValueSubject = new Subject<PartialCheckpoint>();
     makeNullSubject = new Subject<void>();
-    savedChangesSpy = spyOn(component.savedChanges, 'emit');
+    nodeValueStateSpy = spyOn(component.nodeValueState, 'emit');
     component.originalCheckpoint$ = originalValueSubject;
     component.editToNull$ = makeNullSubject;
     component.save$ = new Subject<void>();
@@ -33,51 +34,51 @@ describe('CheckpointValue', () => {
   it('When a new checkpoint is selected then saved changes is emitted', fakeAsync(() => {
     originalValueSubject!.next(getPartialCheckpoint('My value'));
     flush();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
   }));
 
   it('When checkpoint value is edited then saved changes is emitted', fakeAsync(() => {
     originalValueSubject!.next(getPartialCheckpoint('My value'));
     flush();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.onActualEditorContentsChanged('My other value');
     flush();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectIsEdited();
     component.onActualEditorContentsChanged('My value');
     flush();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   }));
 
   it('When null checkpoint value is edited and cleared then it becomes the empty string', fakeAsync(() => {
     originalValueSubject!.next(getPartialCheckpoint(null));
     flush();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.onActualEditorContentsChanged('My other value');
     flush();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectIsEdited();
     component.onActualEditorContentsChanged('');
     flush();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
     expect(component.getEditedRealCheckpointValue()).toEqual('');
-    expectUnsavedChanges();
+    expectIsEdited();
   }));
 
   it('When make null button is clicked while editor is empty then checkpoint value becomes null', fakeAsync(() => {
     originalValueSubject!.next(getPartialCheckpoint(''));
     flush();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     makeNullSubject!.next();
     flush();
     expect(component.getEditedRealCheckpointValue()).toEqual(null);
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectIsEdited();
   }));
 
   it('When make null button is clicked while editor is not empty then checkpoint value becomes null', fakeAsync(() => {
@@ -85,34 +86,47 @@ describe('CheckpointValue', () => {
     originalValueSubject!.next(getPartialCheckpoint('Some value'));
     flush();
     expect(component.getEditedRealCheckpointValue()).toEqual('Some value');
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     makeNullSubject!.next();
     flush();
     expect(component.getEditedRealCheckpointValue()).toEqual(null);
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectIsEdited();
     console.log('Done');
   }));
 
-  function expectNoUnsavedChanges(): void {
-    expect(savedChangesSpy?.calls.mostRecent().args[0]).toEqual(true);
+  function expectNotEdited(): void {
+    expect(component.labels?.isEdited).toEqual(false);
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(false);
     expect(component.getDifferences().data.length).toEqual(0);
   }
 
-  function expectUnsavedChanges(): void {
-    expect(savedChangesSpy?.calls.mostRecent().args[0]).toEqual(false);
+  function expectIsEdited(): void {
+    expect(component.labels?.isEdited).toEqual(true);
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(true);
     expect(component.getDifferences().data.length).not.toEqual(0);
   }
 });
 
 function getPartialCheckpoint(message: string | null): PartialCheckpoint {
+  const parentSeed = {
+    name: 'My name',
+    description: null,
+    path: null,
+    transformation: null,
+    variables: 'not applicable, have to fix type mismatch',
+    xml: 'dummy xml',
+    crudStorage: true,
+  };
+  const parent: PartialReport = { ...parentSeed };
   const result = {
     message,
     stubbed: false,
     preTruncatedMessageLength: message === null ? 0 : message.length,
     // Use report level stub strategy
     stub: 0,
+    parentReport: parent,
   };
   return { ...result };
 }

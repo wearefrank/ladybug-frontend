@@ -20,7 +20,7 @@ import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { View } from '../../shared/interfaces/view';
 import { TabService } from '../../shared/services/tab.service';
 import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
-import { PartialReport, ReportValueComponent } from './report-value/report-value.component';
+import { ReportValueComponent } from './report-value/report-value.component';
 import { CheckpointValueComponent, PartialCheckpoint } from './checkpoint-value/checkpoint-value.component';
 import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
 import { ButtonCommand, ReportButtons, ReportButtonStatus } from './report-buttons/report-buttons';
@@ -29,6 +29,24 @@ type ReportValueState = 'report' | 'checkpoint' | 'none';
 
 const MIN_HEIGHT = 20;
 const MARGIN_IF_NOT_NEW_TAB = 50;
+
+export interface PartialReport {
+  name: string;
+  description: string | null;
+  path: string | null;
+  // TODO: class Report defines it erroneously as a plain string.
+  // Fix this error in the type system.
+  transformation: string | null;
+  // TODO: This is not the correct type. Fix.
+  variables: string;
+  xml: string;
+  crudStorage: boolean;
+}
+
+export interface NodeValueState {
+  isEdited: boolean;
+  isReadOnly: boolean;
+}
 
 @Component({
   selector: 'app-report2',
@@ -47,7 +65,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   protected monacoEditorHeight!: number;
   protected reportValueState: ReportValueState = 'none';
   protected buttonStatusSubject = new BehaviorSubject<ReportButtonStatus>(
-    Report2Component.getButtonState(true, 'none'),
+    Report2Component.getButtonState(Report2Component.getDefaultNodeValueState(), 'none'),
   );
   // Not ordinary subjects, because the report or checkpoint value may
   // be posted before the receiving component is ready.
@@ -140,8 +158,8 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onSavedChanges(savedChanges: boolean): void {
-    this.buttonStatusSubject.next(Report2Component.getButtonState(savedChanges, this.reportValueState));
+  onNodeValueState(nodeValueState: NodeValueState): void {
+    this.buttonStatusSubject.next(Report2Component.getButtonState(nodeValueState, this.reportValueState));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -181,7 +199,9 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
 
   private changeReportValueState(state: ReportValueState): void {
     this.reportValueState = state;
-    this.buttonStatusSubject.next(Report2Component.getButtonState(true, this.reportValueState));
+    this.buttonStatusSubject.next(
+      Report2Component.getButtonState(Report2Component.getDefaultNodeValueState(), this.reportValueState),
+    );
     // Make sure no old report or old checkpoint is processed when related components are recreated.
     /* eslint-disable-next-line unicorn/no-useless-undefined */
     this.reportSubject.next(undefined);
@@ -189,10 +209,12 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
     this.checkpointValueSubject.next(undefined);
   }
 
-  private static getButtonState(savedChanges: boolean, state: ReportValueState): ReportButtonStatus {
+  private static getButtonState(nodeValueState: NodeValueState, state: ReportValueState): ReportButtonStatus {
+    const saveAllowed = nodeValueState.isEdited && !nodeValueState.isReadOnly;
     switch (state) {
       case 'none': {
         return {
+          isReportReadOnly: true,
           closeAllowed: false,
           makeNullAllowed: false,
           saveAllowed: false,
@@ -200,18 +222,24 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
       }
       case 'report': {
         return {
+          isReportReadOnly: nodeValueState.isReadOnly,
           closeAllowed: true,
           makeNullAllowed: false,
-          saveAllowed: !savedChanges,
+          saveAllowed: saveAllowed,
         };
       }
       case 'checkpoint': {
         return {
+          isReportReadOnly: nodeValueState.isReadOnly,
           closeAllowed: true,
           makeNullAllowed: true,
-          saveAllowed: !savedChanges,
+          saveAllowed: saveAllowed,
         };
       }
     }
+  }
+
+  private static getDefaultNodeValueState(): NodeValueState {
+    return { isReadOnly: true, isEdited: false };
   }
 }

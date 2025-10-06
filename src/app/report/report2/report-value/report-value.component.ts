@@ -9,22 +9,11 @@ import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { Transformation } from '../../../shared/interfaces/transformation';
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
 import { DifferencesBuilder } from 'src/app/shared/util/differences-builder';
+import { NodeValueState, PartialReport } from '../report2.component';
 
 export interface Variable {
   name: string;
   value: string;
-}
-
-export interface PartialReport {
-  name: string;
-  description: string | null;
-  path: string | null;
-  // TODO: class Report defines it erroneously as a plain string.
-  // Fix this error in the type system.
-  transformation: string | null;
-  // TODO: This is not the correct type. Fix.
-  variables: string;
-  xml: string;
 }
 
 const HEIGHT_OF_FIXED_SIZE_ELEMENTS = 550;
@@ -37,7 +26,7 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
   styleUrl: './report-value.component.css',
 })
 export class ReportValueComponent implements OnInit, OnDestroy {
-  savedChanges = output<boolean>();
+  nodeValueState = output<NodeValueState>();
   @Input({ required: true }) report$!: Observable<PartialReport | undefined>;
   @Input({ required: true }) save$!: Observable<void>;
   @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
@@ -130,7 +119,8 @@ export class ReportValueComponent implements OnInit, OnDestroy {
 
   onInputChange(): void {
     this.refreshDuplicateVariables();
-    this.savedChanges.emit(this.noUnsavedChanges());
+    const isReadOnly = this.report ? !this.report.crudStorage : true;
+    this.nodeValueState.emit({ isReadOnly, isEdited: this.isEdited() });
   }
 
   onTransformationEdited(value: string): void {
@@ -264,9 +254,9 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     return text.trim().length === 0 ? null : text.trim();
   }
 
-  private noUnsavedChanges(): boolean {
+  private isEdited(): boolean {
     if (this.report === undefined) {
-      return true;
+      return false;
     }
     const nameUnchanged = this.editedName === this.report!.name;
     const descriptionUnchanged =
@@ -274,8 +264,12 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     const pathUnchanged = this.getRealEditedValueForNullable(this.editedPath) === this.report!.path;
     const transformationUnchanged =
       this.getRealEditedValueForNullable(this.editedTransformation) === this.report!.transformation;
-    return (
-      nameUnchanged && descriptionUnchanged && pathUnchanged && transformationUnchanged && this.hasNoUnsavedVariables()
+    return !(
+      nameUnchanged &&
+      descriptionUnchanged &&
+      pathUnchanged &&
+      transformationUnchanged &&
+      this.hasNoUnsavedVariables()
     );
   }
 }

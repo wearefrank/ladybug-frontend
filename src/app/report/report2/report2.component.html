@@ -19,7 +19,7 @@
         [height]="monacoEditorHeight"
         [report$]="reportSubject"
         [save$]="saveReportSubject"
-        (savedChanges)="onSavedChanges($event)"></app-report-value>
+        (nodeValueState)="onNodeValueState($event)"></app-report-value>
     }
     @if (reportValueState === 'checkpoint') {
       <app-checkpoint-value
@@ -27,7 +27,7 @@
         [originalCheckpoint$]="checkpointValueSubject"
         [editToNull$]="editCheckpointToNullSubject"
         [save$]="saveCheckpointSubject"
-        (savedChanges)="onSavedChanges($event)"></app-checkpoint-value>
+        (nodeValueState)="onNodeValueState($event)"></app-checkpoint-value>
     }
   </as-split-area>
 </as-split>

@@ -1,4 +1,6 @@
 <div data-cy-debug-editor="buttons" class="button-row">
+  <section class="buttons button-section"></section>
+  <p class="button-section-title">Checkpoint</p>
   @if (allowed.closeAllowed) {
     <button
       data-cy-debug-editor="close"
@@ -15,6 +17,8 @@
       (click)="makeNull()"
     >make null</button>
   }
+  <section class="buttons button-section"></section>
+  <p class="button-section-title">Report{{ getReadOnly() }}</p>
   @if (allowed.saveAllowed) {
   <button
     data-cy-report="save"

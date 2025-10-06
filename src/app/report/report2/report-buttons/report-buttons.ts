@@ -2,6 +2,7 @@ import { Component, inject, Input, NgZone, OnDestroy, OnInit, output } from '@an
 import { Observable, Subscription } from 'rxjs';
 
 export interface ReportButtonStatus {
+  isReportReadOnly: boolean;
   closeAllowed: boolean;
   saveAllowed: boolean;
   makeNullAllowed: boolean;
@@ -20,6 +21,7 @@ export class ReportButtons implements OnInit, OnDestroy {
   @Input({ required: true }) allowed$!: Observable<ReportButtonStatus>;
 
   protected allowed: ReportButtonStatus = {
+    isReportReadOnly: true,
     closeAllowed: true,
     makeNullAllowed: false,
     saveAllowed: false,
@@ -46,6 +48,10 @@ export class ReportButtons implements OnInit, OnDestroy {
 
   save(): void {
     this.reportCommand.emit('save');
+  }
+
+  protected getReadOnly(): string {
+    return this.allowed.isReportReadOnly ? ' (read only)' : '';
   }
 
   private updateAllowed(allowed: ReportButtonStatus): void {

@@ -1,16 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PartialReport, ReportValueComponent, Variable } from './report-value.component';
+import { ReportValueComponent, Variable } from './report-value.component';
 import { HttpService } from '../../../shared/services/http.service';
 import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { Subject } from 'rxjs';
+import { PartialReport } from '../report2.component';
 
 describe('ReportValue', () => {
   let component: ReportValueComponent;
   let fixture: ComponentFixture<ReportValueComponent>;
   let reportSubject: Subject<PartialReport> | undefined;
-  let savedChangesSpy: jasmine.Spy | undefined;
+  let nodeValueStateSpy: jasmine.Spy | undefined;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -20,7 +21,7 @@ describe('ReportValue', () => {
 
     fixture = TestBed.createComponent(ReportValueComponent);
     component = fixture.componentInstance;
-    savedChangesSpy = spyOn(component.savedChanges, 'emit');
+    nodeValueStateSpy = spyOn(component.nodeValueState, 'emit');
     reportSubject = new Subject<PartialReport>();
     component.report$ = reportSubject;
     component.save$ = new Subject<void>();
@@ -70,7 +71,7 @@ describe('ReportValue', () => {
 
   it('When a report has duplicate variables then they are detected', () => {
     reportSubject!.next(getAPartialReport());
-    expectNoUnsavedChanges();
+    expectNotEdited();
     component.setVariables([
       { name: 'duplicate', value: 'one' },
       { name: 'not-duplicate', value: 'two' },
@@ -83,7 +84,7 @@ describe('ReportValue', () => {
 
   it('When a report has no duplicate variables then they are not detected', () => {
     reportSubject!.next(getAPartialReport());
-    expectNoUnsavedChanges();
+    expectNotEdited();
     component.setVariables([
       { name: 'duplicate', value: 'one' },
       { name: 'not-duplicate', value: 'two' },
@@ -94,7 +95,7 @@ describe('ReportValue', () => {
 
   it('When removing a variable is requested, the right variable goes away', () => {
     reportSubject!.next(getAPartialReport());
-    expectNoUnsavedChanges();
+    expectNotEdited();
     component.setVariables([
       { name: 'first variable', value: 'one' },
       { name: 'second variable', value: 'two' },
@@ -115,7 +116,7 @@ describe('ReportValue', () => {
 
   it('When the new variable edit field has gotten a name then a new empty variable row is added', () => {
     reportSubject!.next(getAPartialReport());
-    expectNoUnsavedChanges();
+    expectNotEdited();
     component.setVariables([]);
     expect(component.editedVariables.length).toEqual(1);
     expect(component.editedVariables[0].name).toEqual('');
@@ -128,171 +129,170 @@ describe('ReportValue', () => {
 
   it('When name is changed then saved changes event emitted', () => {
     reportSubject!.next(getAPartialReport());
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.setVariables([]);
     component.editedName = 'Changed name';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
     component.editedName = 'My name';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   });
 
   it('When description is changed then saved changes event emitted', () => {
     reportSubject!.next(getAPartialReport());
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.setVariables([]);
     component.editedDescription = 'Changed description';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
-    expect(savedChangesSpy?.calls.mostRecent().args[0]).toEqual(false);
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
     component.editedDescription = 'My description';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   });
 
   it('When original description is null then the user can clear it after editing', () => {
     reportSubject!.next(getEmptyPartialReport());
-    expectNoUnsavedChanges();
+    expectNotEdited();
     component.setVariables([]);
     component.editedDescription = 'Changed description';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
     component.editedDescription = '';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   });
 
   it('When path is changed then saved changes event emitted', () => {
     reportSubject!.next(getAPartialReport());
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.setVariables([]);
     component.editedPath = 'my/other/path';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
     component.editedPath = 'my/path';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   });
 
   it('When original path null then the user can clear it after editing', () => {
     reportSubject!.next(getEmptyPartialReport());
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.setVariables([]);
     component.editedPath = 'my/other/path';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
     component.editedPath = '';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   });
 
   it('When transformation is changed then saved changes event emitted', () => {
     reportSubject!.next(getAPartialReport());
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.setVariables([]);
     component.editedTransformation = 'other dummy transformation';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
     component.editedTransformation = 'dummy transformation';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   });
 
   it('When original transformation is null then the user can clear it after editing', () => {
     reportSubject!.next(getEmptyPartialReport());
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.setVariables([]);
     component.editedTransformation = 'other dummy transformation';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
     component.editedTransformation = '';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   });
 
   it('When variable name is changed then saved changes event emitted', () => {
     reportSubject!.next(getAPartialReport());
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.setVariables([{ name: 'variable', value: 'value' }]);
     component.editedVariables[0].name = 'otherName';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
     component.editedVariables[0].name = 'variable';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   });
 
   it('When variable value is changed then saved changes event emitted', () => {
     reportSubject!.next(getAPartialReport());
     component.setVariables([{ name: 'variable', value: 'value' }]);
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.editedVariables[0].value = 'otherValue';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
     component.editedVariables[0].value = 'value';
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   });
 
   it('When variable is added then saved changes event is emitted', () => {
     reportSubject!.next(getAPartialReport());
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.setVariables([{ name: 'variable', value: 'value' }]);
     component.editedVariables.push({ name: 'second', value: 'secondValue' });
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(2);
-    expectUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
     component.editedVariables.pop();
     component.onInputChange();
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(3);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   });
 
   it('When a new edit row for variables appears, there is no change when the variable name is blank', () => {
     reportSubject!.next(getAPartialReport());
-    expect(component.savedChanges.emit).toHaveBeenCalledTimes(1);
-    expectNoUnsavedChanges();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
     component.setVariables([{ name: 'variable', value: 'value' }]);
     component.editedVariables.push({ name: '  ', value: 'secondValue' });
     component.onInputChange();
-    expectNoUnsavedChanges();
+    expectNotEdited();
   });
 
   it('When a variable is renamed then the differences compare the variable names', () => {
     reportSubject!.next(getAPartialReport());
     component.setVariables([{ name: 'variableName', value: 'value' }]);
-    expectNoUnsavedChanges();
+    expectNotEdited();
     component.editedVariables[0].name = 'otherVariableName';
     component.onInputChange();
-    expectUnsavedChanges();
+    expectEdited();
     const differences = component.getDifferences().data;
     expect(differences.length).toEqual(1);
     expect(differences[0].originalValue).toEqual('variableName');
@@ -305,46 +305,50 @@ describe('ReportValue', () => {
       { name: 'first', value: 'value 1' },
       { name: 'second', value: 'value 2' },
     ]);
-    expectNoUnsavedChanges();
+    expectNotEdited();
     component.editedVariables[0].value = 'changed 1';
     component.editedVariables[1].value = 'changed 2';
     component.onInputChange();
-    expectUnsavedChanges();
+    expectEdited();
     const differences = component.getDifferences().data;
     expect(differences.length).toEqual(2);
     expect(differences[0].name).toEqual('Variable first');
     expect(differences[1].name).toEqual('Variable second');
   });
 
-  function expectNoUnsavedChanges(): void {
-    expect(savedChangesSpy?.calls.mostRecent().args[0]).toEqual(true);
+  function expectNotEdited(): void {
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(false);
     expect(component.getDifferences().data.length).toEqual(0);
   }
 
-  function expectUnsavedChanges(): void {
-    expect(savedChangesSpy?.calls.mostRecent().args[0]).toEqual(false);
+  function expectEdited(): void {
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(true);
     expect(component.getDifferences().data.length).not.toEqual(0);
   }
 });
 
 function getAPartialReport(): PartialReport {
-  return {
+  const result = {
     name: 'My name',
     description: 'My description',
     path: 'my/path',
     transformation: 'dummy transformation',
     variables: 'not applicable, have to fix type mismatch',
     xml: 'dummy xml',
+    crudStorage: true,
   };
+  return { ...result };
 }
 
 function getEmptyPartialReport(): PartialReport {
-  return {
+  const result = {
     name: 'My name',
     description: null,
     path: null,
     transformation: null,
     variables: 'not applicable, have to fix type mismatch',
     xml: 'dummy xml',
+    crudStorage: true,
   };
+  return { ...result };
 }

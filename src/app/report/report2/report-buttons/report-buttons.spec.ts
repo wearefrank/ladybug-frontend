@@ -15,6 +15,7 @@ describe('ReportButtons', () => {
     fixture = TestBed.createComponent(ReportButtons);
     component = fixture.componentInstance;
     component.allowed$ = new BehaviorSubject<ReportButtonStatus>({
+      isReportReadOnly: true,
       closeAllowed: true,
       makeNullAllowed: false,
       saveAllowed: false,

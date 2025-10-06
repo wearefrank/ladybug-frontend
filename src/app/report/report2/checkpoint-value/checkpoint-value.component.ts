@@ -7,6 +7,7 @@ import {
   CheckpointLabels,
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
+import { NodeValueState, PartialReport } from '../report2.component';
 
 export interface PartialCheckpoint {
   message: string | null;
@@ -19,6 +20,7 @@ export interface PartialCheckpoint {
   preTruncatedMessageLength: number;
   stubNotFound?: string;
   stub: number;
+  parentReport: PartialReport;
 }
 
 @Component({
@@ -28,16 +30,16 @@ export interface PartialCheckpoint {
   styleUrl: './checkpoint-value.component.css',
 })
 export class CheckpointValueComponent implements OnInit, OnDestroy {
-  savedChanges = output<boolean>();
+  nodeValueState = output<NodeValueState>();
   @Input() height = 0;
   @Input({ required: true }) originalCheckpoint$!: Observable<PartialCheckpoint | undefined>;
   @Input({ required: true }) editToNull$!: Observable<void>;
   @Input({ required: true }) save$!: Observable<void>;
   @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
+  labels: CheckpointLabels | undefined;
 
   protected editorContentsSubject = new ReplaySubject<string>();
   protected editorReadOnlySubject = new ReplaySubject<boolean>();
-  protected labels: CheckpointLabels | undefined;
   private originalCheckpoint: PartialCheckpoint | undefined;
   private actualEditorContents = '';
   private emptyIsNull = true;
@@ -78,7 +80,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     if (this.actualEditorContents.length > 0) {
       this.emptyIsNull = false;
     }
-    this.handleLabelsAndSavedChanges();
+    this.handleLabelsAndNodeValueState();
   }
 
   getDifferences(): DifferencesBuilder {
@@ -98,7 +100,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     // Do not trust the Monaco editor sends an event for the updated text.
     this.actualEditorContents = '';
     // Editor contents may be the empty string, then still saved changes.
-    this.handleLabelsAndSavedChanges();
+    this.handleLabelsAndNodeValueState();
     this.editorContentsSubject.next('');
   }
 
@@ -121,11 +123,11 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     const requestedEditorContents = originalCheckpoint.message === null ? '' : originalCheckpoint.message;
     // Do not trust the Monaco editor sends an event for the first text.
     this.actualEditorContents = requestedEditorContents;
-    this.handleLabelsAndSavedChanges();
+    this.handleLabelsAndNodeValueState();
     this.editorContentsSubject.next(requestedEditorContents);
   }
 
-  private handleLabelsAndSavedChanges(): void {
+  private handleLabelsAndNodeValueState(): void {
     if (this.originalCheckpoint === undefined) {
       throw new Error(
         'CheckpointValueComponent.handleLabelsAndSavedChanges(): Did not expect that there was no checkpoint',
@@ -148,11 +150,8 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       ),
       stubNotFound: this.originalCheckpoint.stubNotFound,
     };
-    if (this.labels.isEdited) {
-      this.savedChanges.emit(false);
-    } else {
-      this.savedChanges.emit(true);
-    }
+    const isReadOnly = this.originalCheckpoint ? !this.originalCheckpoint.parentReport.crudStorage : true;
+    this.nodeValueState.emit({ isReadOnly, isEdited: this.labels.isEdited });
   }
 
   private static getEncoding(e: string | null | undefined): string | undefined {
