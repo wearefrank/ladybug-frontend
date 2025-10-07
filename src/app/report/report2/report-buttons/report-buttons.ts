@@ -6,9 +6,10 @@ export interface ReportButtonStatus {
   closeAllowed: boolean;
   saveAllowed: boolean;
   makeNullAllowed: boolean;
+  copyReportAllowed: boolean;
 }
 
-export type ButtonCommand = 'close' | 'makeNull' | 'save';
+export type ButtonCommand = 'close' | 'makeNull' | 'save' | 'copyReport';
 
 @Component({
   selector: 'app-report-buttons',
@@ -25,6 +26,7 @@ export class ReportButtons implements OnInit, OnDestroy {
     closeAllowed: true,
     makeNullAllowed: false,
     saveAllowed: false,
+    copyReportAllowed: false,
   };
 
   private ngZone = inject(NgZone);
@@ -48,6 +50,10 @@ export class ReportButtons implements OnInit, OnDestroy {
 
   save(): void {
     this.reportCommand.emit('save');
+  }
+
+  copyReport(): void {
+    this.reportCommand.emit('copyReport');
   }
 
   protected getReadOnly(): string {

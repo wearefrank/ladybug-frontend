@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularSplitModule, SplitComponent } from 'angular-split';
-import { BehaviorSubject, debounceTime, fromEventPattern, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, catchError, debounceTime, fromEventPattern, Observable, Subject, Subscription } from 'rxjs';
 import { DebugTreeComponent } from '../../debug/debug-tree/debug-tree.component';
 import { DebugComponent } from '../../debug/debug.component';
 import { ReportData } from '../../shared/interfaces/report-data';
@@ -24,6 +24,11 @@ import { ReportValueComponent } from './report-value/report-value.component';
 import { CheckpointValueComponent, PartialCheckpoint } from './checkpoint-value/checkpoint-value.component';
 import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
 import { ButtonCommand, ReportButtons, ReportButtonStatus } from './report-buttons/report-buttons';
+import { ErrorHandling } from '../../shared/classes/error-handling.service';
+import { HttpService } from '../../shared/services/http.service';
+import { ToastService } from '../../shared/services/toast.service';
+import { TestReportsService } from 'src/app/test/test-reports.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 type ReportValueState = 'report' | 'checkpoint' | 'none';
 
@@ -41,11 +46,14 @@ export interface PartialReport {
   variables: string;
   xml: string;
   crudStorage: boolean;
+  // undefined is allowed to support testing
+  storageId?: number;
 }
 
 export interface NodeValueState {
   isEdited: boolean;
   isReadOnly: boolean;
+  storageId?: number;
 }
 
 @Component({
@@ -78,11 +86,16 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   protected editCheckpointToNullSubject = new Subject<void>();
   protected saveReportSubject = new Subject<void>();
   protected saveCheckpointSubject = new Subject<void>();
+  private storageId?: number;
   private host = inject(ElementRef);
   private tabService = inject(TabService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private httpService = inject(HttpService);
+  private errorHandler = inject(ErrorHandling);
+  private toastService = inject(ToastService);
+  private testReportsService = inject(TestReportsService);
   private subscriptions: Subscription = new Subscription();
   private newTabReportData?: ReportData;
 
@@ -155,9 +168,13 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
         this.saveReportSubject.next();
       }
     }
+    if (command === 'copyReport') {
+      this.copyReport();
+    }
   }
 
   onNodeValueState(nodeValueState: NodeValueState): void {
+    this.storageId = nodeValueState.storageId;
     this.buttonStatusSubject.next(Report2Component.getButtonState(nodeValueState, this.reportValueState));
     // Suppress errors ExpressionChangedAfterItHasBeenCheckedError about button existence changes.
     this.cdr.detectChanges();
@@ -168,6 +185,36 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected initEditor(): void {}
+
+  private copyReport(): void {
+    if (this.storageId === undefined) {
+      throw new Error('Cannot copy report because Report2Component does not have the storageId');
+    }
+    const data: Record<string, number[]> = {
+      [this.currentView.storageName]: [this.storageId],
+    };
+    this.httpService
+      .copyReport(data, 'Test')
+      .pipe(catchError(this.handleCopyError()))
+      .subscribe({
+        next: () => {
+          this.testReportsService.getReports();
+          this.toastService.showSuccess('Copied report to testtab', {
+            buttonText: 'Go to test tab',
+            callback: () => this.router.navigate(['/test']),
+          });
+        },
+      }); // TODO: storage is hardcoded, fix issue #196 for this
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private handleCopyError(): (error: HttpErrorResponse) => Observable<any> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (error: HttpErrorResponse): Observable<any> => {
+      this.errorHandler.handleError()(error);
+      throw new Error('Copying report failed');
+    };
+  }
 
   private getIdFromPath(): string {
     return this.route.snapshot.paramMap.get('id') as string;
@@ -221,6 +268,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
           closeAllowed: false,
           makeNullAllowed: false,
           saveAllowed: false,
+          copyReportAllowed: false,
         };
       }
       case 'report': {
@@ -229,6 +277,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
           closeAllowed: true,
           makeNullAllowed: false,
           saveAllowed: saveAllowed,
+          copyReportAllowed: true,
         };
       }
       case 'checkpoint': {
@@ -237,6 +286,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
           closeAllowed: true,
           makeNullAllowed: true,
           saveAllowed: saveAllowed,
+          copyReportAllowed: true,
         };
       }
     }

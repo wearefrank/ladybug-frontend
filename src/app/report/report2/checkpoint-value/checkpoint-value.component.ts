@@ -151,7 +151,11 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       stubNotFound: this.originalCheckpoint.stubNotFound,
     };
     const isReadOnly = this.originalCheckpoint ? !this.originalCheckpoint.parentReport.crudStorage : true;
-    this.nodeValueState.emit({ isReadOnly, isEdited: this.labels.isEdited });
+    this.nodeValueState.emit({
+      isReadOnly,
+      isEdited: this.labels.isEdited,
+      storageId: this.originalCheckpoint?.parentReport.storageId,
+    });
   }
 
   private static getEncoding(e: string | null | undefined): string | undefined {

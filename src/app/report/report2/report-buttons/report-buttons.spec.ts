@@ -19,6 +19,7 @@ describe('ReportButtons', () => {
       closeAllowed: true,
       makeNullAllowed: false,
       saveAllowed: false,
+      copyReportAllowed: true,
     });
     fixture.detectChanges();
   });
