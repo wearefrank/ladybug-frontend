@@ -339,11 +339,13 @@ describe('ReportValue', () => {
   });
 
   function expectNotEdited(): void {
+    expect(component.labels.isEdited).toEqual(false);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(false);
     expect(component.getDifferences().data.length).toEqual(0);
   }
 
   function expectEdited(): void {
+    expect(component.labels.isEdited).toEqual(true);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(true);
     expect(component.getDifferences().data.length).not.toEqual(0);
   }

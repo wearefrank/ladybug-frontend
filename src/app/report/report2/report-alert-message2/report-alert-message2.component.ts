@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-export interface CheckpointLabels {
+export interface NodeValueLabels {
   isEdited: boolean;
   isMessageNull: boolean;
   isMessageEmpty: boolean;
@@ -20,5 +20,5 @@ export interface CheckpointLabels {
   styleUrl: './report-alert-message2.component.css',
 })
 export class ReportAlertMessage2Component {
-  @Input() labels: CheckpointLabels | undefined;
+  @Input() labels: NodeValueLabels | undefined;
 }

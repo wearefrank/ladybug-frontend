@@ -10,6 +10,10 @@ import { Transformation } from '../../../shared/interfaces/transformation';
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
 import { DifferencesBuilder } from 'src/app/shared/util/differences-builder';
 import { NodeValueState, PartialReport } from '../report2.component';
+import {
+  NodeValueLabels,
+  ReportAlertMessage2Component,
+} from '../report-alert-message2/report-alert-message2.component';
 
 export interface Variable {
   name: string;
@@ -21,7 +25,14 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
 
 @Component({
   selector: 'app-report-value',
-  imports: [MonacoEditorComponent, CommonModule, FormsModule, AngularSplitModule, Difference2ModalComponent],
+  imports: [
+    MonacoEditorComponent,
+    CommonModule,
+    FormsModule,
+    AngularSplitModule,
+    Difference2ModalComponent,
+    ReportAlertMessage2Component,
+  ],
   templateUrl: './report-value.component.html',
   styleUrl: './report-value.component.css',
 })
@@ -39,6 +50,17 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   originalVariables: Variable[] = [];
   editedVariables: Variable[] = [];
   duplicateVariables: Set<number> = new Set<number>();
+
+  labels: NodeValueLabels = {
+    isEdited: false,
+    // These are all dummies
+    isMessageNull: false,
+    isMessageEmpty: false,
+    stubbed: false,
+    charactersRemoved: 0,
+    encoding: undefined,
+    messageClassName: undefined,
+  };
 
   protected monacoOptions: Partial<monaco.editor.IStandaloneEditorConstructionOptions> = {
     theme: 'vs-light',
@@ -120,7 +142,9 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   onInputChange(): void {
     this.refreshDuplicateVariables();
     const isReadOnly = this.report ? !this.report.crudStorage : true;
-    this.nodeValueState.emit({ isReadOnly, isEdited: this.isEdited() });
+    const isEdited = this.isEdited();
+    this.labels.isEdited = isEdited;
+    this.nodeValueState.emit({ isReadOnly, isEdited });
   }
 
   onTransformationEdited(value: string): void {

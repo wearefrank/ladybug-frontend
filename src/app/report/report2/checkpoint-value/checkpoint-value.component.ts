@@ -4,7 +4,7 @@ import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.compo
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
 import { DifferencesBuilder } from 'src/app/shared/util/differences-builder';
 import {
-  CheckpointLabels,
+  NodeValueLabels,
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
 import { NodeValueState, PartialReport } from '../report2.component';
@@ -36,7 +36,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   @Input({ required: true }) editToNull$!: Observable<void>;
   @Input({ required: true }) save$!: Observable<void>;
   @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
-  labels: CheckpointLabels | undefined;
+  labels: NodeValueLabels | undefined;
 
   protected editorContentsSubject = new ReplaySubject<string>();
   protected editorReadOnlySubject = new ReplaySubject<boolean>();
