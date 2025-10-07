@@ -82,7 +82,6 @@ describe('CheckpointValue', () => {
   }));
 
   it('When make null button is clicked while editor is not empty then checkpoint value becomes null', fakeAsync(() => {
-    console.log('The test 84');
     originalValueSubject!.next(getPartialCheckpoint('Some value'));
     flush();
     expect(component.getEditedRealCheckpointValue()).toEqual('Some value');
@@ -94,6 +93,28 @@ describe('CheckpointValue', () => {
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
     console.log('Done');
+  }));
+
+  it('When the checkpoint-s report is in a CRUD storage then the emitted events indicate not read-only', fakeAsync(() => {
+    let checkpoint = getPartialCheckpoint('Some value');
+    checkpoint.parentReport.crudStorage = true;
+    originalValueSubject!.next(checkpoint);
+    flush();
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
+    component.onActualEditorContentsChanged('My other value');
+    flush();
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
+  }));
+
+  it('When the checkpoint-s report is not in a CRUD storage then the emitted events indicate read-only', fakeAsync(() => {
+    let checkpoint = getPartialCheckpoint('Some value');
+    checkpoint.parentReport.crudStorage = false;
+    originalValueSubject!.next(checkpoint);
+    flush();
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
+    component.onActualEditorContentsChanged('My other value');
+    flush();
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
   }));
 
   function expectNotEdited(): void {

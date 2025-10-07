@@ -316,6 +316,28 @@ describe('ReportValue', () => {
     expect(differences[1].name).toEqual('Variable second');
   });
 
+  it('When the report is in a CRUD storage then emitted events indicate not read-only', () => {
+    let report = getAPartialReport();
+    report.crudStorage = true;
+    reportSubject!.next(report);
+    component.setVariables([]);
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
+    component.editedName = 'Changed name';
+    component.onInputChange();
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
+  });
+
+  it('When the report is not in a CRUD storage then emitted events indicate read-only', () => {
+    let report = getAPartialReport();
+    report.crudStorage = false;
+    reportSubject!.next(report);
+    component.setVariables([]);
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
+    component.editedName = 'Changed name';
+    component.onInputChange();
+    expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
+  });
+
   function expectNotEdited(): void {
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(false);
     expect(component.getDifferences().data.length).toEqual(0);
