@@ -138,7 +138,6 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onButton(command: ButtonCommand): void {
-    console.log(`Button pressed: ${command}`);
     if (command === 'close') {
       this.changeReportValueState('none');
     }
@@ -160,6 +159,8 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
 
   onNodeValueState(nodeValueState: NodeValueState): void {
     this.buttonStatusSubject.next(Report2Component.getButtonState(nodeValueState, this.reportValueState));
+    // Suppress errors ExpressionChangedAfterItHasBeenCheckedError about button existence changes.
+    this.cdr.detectChanges();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -199,9 +200,11 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
 
   private changeReportValueState(state: ReportValueState): void {
     this.reportValueState = state;
-    this.buttonStatusSubject.next(
-      Report2Component.getButtonState(Report2Component.getDefaultNodeValueState(), this.reportValueState),
-    );
+
+    // Do not write to buttonStatusSubject - is done when ReportValue or CheckpointValue
+    // emits an event. These components do that when they receive an original
+    // report or checkpoint.
+
     // Make sure no old report or old checkpoint is processed when related components are recreated.
     /* eslint-disable-next-line unicorn/no-useless-undefined */
     this.reportSubject.next(undefined);
