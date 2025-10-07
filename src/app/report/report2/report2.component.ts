@@ -87,6 +87,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   protected saveReportSubject = new Subject<void>();
   protected saveCheckpointSubject = new Subject<void>();
   private storageId?: number;
+  private originalNodeValueState?: NodeValueState;
   private host = inject(ElementRef);
   private tabService = inject(TabService);
   private route = inject(ActivatedRoute);
@@ -176,6 +177,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   onNodeValueState(nodeValueState: NodeValueState): void {
     this.storageId = nodeValueState.storageId;
     this.buttonStatusSubject.next(Report2Component.getButtonState(nodeValueState, this.reportValueState));
+    this.showToastForCopyToTestTabIfApplicable(nodeValueState);
     // Suppress errors ExpressionChangedAfterItHasBeenCheckedError about button existence changes.
     this.cdr.detectChanges();
   }
@@ -214,6 +216,20 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
       this.errorHandler.handleError()(error);
       throw new Error('Copying report failed');
     };
+  }
+
+  private showToastForCopyToTestTabIfApplicable(newNodeValueState: NodeValueState): void {
+    const isEditingStarted: boolean =
+      this.originalNodeValueState !== undefined && !this.originalNodeValueState.isEdited && newNodeValueState.isEdited;
+    this.originalNodeValueState = newNodeValueState;
+    if (isEditingStarted && newNodeValueState.isReadOnly) {
+      this.toastService.showWarning('This storage is readonly, copy to the test tab to edit this report.', {
+        buttonText: 'Copy to testtab',
+        callback: () => {
+          this.copyReport();
+        },
+      });
+    }
   }
 
   private getIdFromPath(): string {
