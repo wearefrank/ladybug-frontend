@@ -24,7 +24,6 @@ describe('ReportValue', () => {
     nodeValueStateSpy = spyOn(component.nodeValueState, 'emit');
     reportSubject = new Subject<PartialReport>();
     component.report$ = reportSubject;
-    component.save$ = new Subject<void>();
     fixture.detectChanges();
   });
 

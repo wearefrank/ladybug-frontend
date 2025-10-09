@@ -23,7 +23,7 @@ import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
 import { ReportValueComponent } from './report-value/report-value.component';
 import { CheckpointValueComponent, PartialCheckpoint } from './checkpoint-value/checkpoint-value.component';
 import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
-import { ButtonCommand, ReportButtons, ReportButtonStatus } from './report-buttons/report-buttons';
+import { ButtonCommand, ReportButtons } from './report-buttons/report-buttons';
 import { ErrorHandling } from '../../shared/classes/error-handling.service';
 import { HttpService } from '../../shared/services/http.service';
 import { ToastService } from '../../shared/services/toast.service';
@@ -72,20 +72,12 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   protected treeWidth: Subject<void> = new Subject<void>();
   protected monacoEditorHeight!: number;
   protected reportValueState: ReportValueState = 'none';
-  protected buttonStatusSubject = new BehaviorSubject<ReportButtonStatus>(
-    Report2Component.getButtonState(Report2Component.getDefaultNodeValueState(), 'none'),
-  );
   // Not ordinary subjects, because the report or checkpoint value may
   // be posted before the receiving component is ready.
   // Also not ReplaySubject, because we do not want old report or checkpont
   // values to be reposted.
   protected reportSubject = new BehaviorSubject<PartialReport | undefined>(undefined);
   protected checkpointValueSubject = new BehaviorSubject<PartialCheckpoint | undefined>(undefined);
-  // Not ReplaySubject and not BehaviorSubject, because we do not want
-  // future checpoints to become null.
-  protected editCheckpointToNullSubject = new Subject<void>();
-  protected saveReportSubject = new Subject<void>();
-  protected saveCheckpointSubject = new Subject<void>();
   private storageId?: number;
   private originalNodeValueState?: NodeValueState;
   private host = inject(ElementRef);
@@ -154,36 +146,19 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   onButton(command: ButtonCommand): void {
     if (command === 'close') {
       this.changeReportValueState('none');
-    }
-    if (command === 'makeNull') {
-      if (this.reportValueState === 'checkpoint') {
-        this.editCheckpointToNullSubject.next();
-      } else {
-        throw new Error('Button makeNull should not be accessible when no checkpoint is shown');
-      }
-    }
-    if (command === 'save') {
-      if (this.reportValueState === 'checkpoint') {
-        this.saveCheckpointSubject.next();
-      } else {
-        this.saveReportSubject.next();
-      }
-    }
-    if (command === 'copyReport') {
+    } else if (command === 'copyReport') {
       this.copyReport();
+    } else {
+      throw new Error(`Command should have been handled by child component: ${command}`);
     }
   }
 
   onNodeValueState(nodeValueState: NodeValueState): void {
     this.storageId = nodeValueState.storageId;
-    this.buttonStatusSubject.next(Report2Component.getButtonState(nodeValueState, this.reportValueState));
     this.showToastForCopyToTestTabIfApplicable(nodeValueState);
     // Suppress errors ExpressionChangedAfterItHasBeenCheckedError about button existence changes.
     this.cdr.detectChanges();
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected onMonacoEditorContentChange(_editorText: string): void {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected initEditor(): void {}
@@ -263,52 +238,10 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
 
   private changeReportValueState(state: ReportValueState): void {
     this.reportValueState = state;
-
-    // Do not write to buttonStatusSubject - is done when ReportValue or CheckpointValue
-    // emits an event. These components do that when they receive an original
-    // report or checkpoint.
-
     // Make sure no old report or old checkpoint is processed when related components are recreated.
     /* eslint-disable-next-line unicorn/no-useless-undefined */
     this.reportSubject.next(undefined);
     /* eslint-disable-next-line unicorn/no-useless-undefined */
     this.checkpointValueSubject.next(undefined);
-  }
-
-  private static getButtonState(nodeValueState: NodeValueState, state: ReportValueState): ReportButtonStatus {
-    const saveAllowed = nodeValueState.isEdited && !nodeValueState.isReadOnly;
-    switch (state) {
-      case 'none': {
-        return {
-          isReportReadOnly: true,
-          closeAllowed: false,
-          makeNullAllowed: false,
-          saveAllowed: false,
-          copyReportAllowed: false,
-        };
-      }
-      case 'report': {
-        return {
-          isReportReadOnly: nodeValueState.isReadOnly,
-          closeAllowed: true,
-          makeNullAllowed: false,
-          saveAllowed: saveAllowed,
-          copyReportAllowed: true,
-        };
-      }
-      case 'checkpoint': {
-        return {
-          isReportReadOnly: nodeValueState.isReadOnly,
-          closeAllowed: true,
-          makeNullAllowed: true,
-          saveAllowed: saveAllowed,
-          copyReportAllowed: true,
-        };
-      }
-    }
-  }
-
-  private static getDefaultNodeValueState(): NodeValueState {
-    return { isReadOnly: true, isEdited: false };
   }
 }

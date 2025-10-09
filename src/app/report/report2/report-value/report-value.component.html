@@ -1,4 +1,8 @@
 <div [style.height]="height + 'px'">
+  <app-report-buttons
+    [allowed$]="buttonStatusSubject"
+    (reportCommand)="onButton($event)">
+  </app-report-buttons>
   <app-report-alert-message2 [labels]="labels"></app-report-alert-message2>
   <as-split direction="vertical">
     <as-split-area class="split-size" [size]="100">

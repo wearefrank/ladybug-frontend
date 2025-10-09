@@ -8,7 +8,6 @@ describe('CheckpointValue', () => {
   let component: CheckpointValueComponent;
   let fixture: ComponentFixture<CheckpointValueComponent>;
   let originalValueSubject: Subject<PartialCheckpoint> | undefined;
-  let makeNullSubject: Subject<void> | undefined;
   let nodeValueStateSpy: jasmine.Spy | undefined;
 
   beforeEach(async () => {
@@ -19,11 +18,8 @@ describe('CheckpointValue', () => {
     fixture = TestBed.createComponent(CheckpointValueComponent);
     component = fixture.componentInstance;
     originalValueSubject = new Subject<PartialCheckpoint>();
-    makeNullSubject = new Subject<void>();
     nodeValueStateSpy = spyOn(component.nodeValueState, 'emit');
     component.originalCheckpoint$ = originalValueSubject;
-    component.editToNull$ = makeNullSubject;
-    component.save$ = new Subject<void>();
     fixture.detectChanges();
   });
 
@@ -74,7 +70,7 @@ describe('CheckpointValue', () => {
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
     expectNotEdited();
-    makeNullSubject!.next();
+    component.onButton('makeNull');
     flush();
     expect(component.getEditedRealCheckpointValue()).toEqual(null);
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
@@ -87,7 +83,7 @@ describe('CheckpointValue', () => {
     expect(component.getEditedRealCheckpointValue()).toEqual('Some value');
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
     expectNotEdited();
-    makeNullSubject!.next();
+    component.onButton('makeNull');
     flush();
     expect(component.getEditedRealCheckpointValue()).toEqual(null);
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);

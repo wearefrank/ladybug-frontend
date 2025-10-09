@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { HttpService } from '../../../shared/services/http.service';
-import { catchError, firstValueFrom, Observable, ReplaySubject, Subscription } from 'rxjs';
+import { BehaviorSubject, catchError, firstValueFrom, Observable, ReplaySubject, Subscription } from 'rxjs';
 import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { Transformation } from '../../../shared/interfaces/transformation';
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
@@ -14,6 +14,7 @@ import {
   NodeValueLabels,
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
+import { ButtonCommand, ReportButtons, ReportButtonStatus } from '../report-buttons/report-buttons';
 
 export interface Variable {
   name: string;
@@ -32,14 +33,15 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
     AngularSplitModule,
     Difference2ModalComponent,
     ReportAlertMessage2Component,
+    ReportButtons,
   ],
   templateUrl: './report-value.component.html',
   styleUrl: './report-value.component.css',
 })
 export class ReportValueComponent implements OnInit, OnDestroy {
   nodeValueState = output<NodeValueState>();
+  button = output<ButtonCommand>();
   @Input({ required: true }) report$!: Observable<PartialReport | undefined>;
-  @Input({ required: true }) save$!: Observable<void>;
   @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
 
   editedName = '';
@@ -61,6 +63,10 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     encoding: undefined,
     messageClassName: undefined,
   };
+
+  protected buttonStatusSubject = new BehaviorSubject<ReportButtonStatus>(
+    ReportValueComponent.getButtonState(ReportValueComponent.getDefaultNodeValueState()),
+  );
 
   protected monacoOptions: Partial<monaco.editor.IStandaloneEditorConstructionOptions> = {
     theme: 'vs-light',
@@ -94,34 +100,6 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     }
   }
 
-  // TODO: Fix issue with types. Report.variables is declared to be a string,
-  // but it is really an object.
-  static initVariables(variables: string | null): Variable[] {
-    if (!variables) return [];
-    return Object.entries(variables).map(([name, value]) => ({ name, value }));
-  }
-
-  static calculateEditedVariables(originalVariables: Variable[]): Variable[] {
-    const result: Variable[] = [];
-    for (const original of originalVariables) {
-      result.push({ name: original.name, value: original.value });
-    }
-    // Empty row to allow user to add new variable.
-    result.push({ name: '', value: '' });
-    return result;
-  }
-
-  static getCommonVariableNames(originalVariableNames: string[], editedVariableNames: string[]): string[] {
-    const originalVariableNamesSet = new Set<string>(originalVariableNames);
-    const resultSet = new Set<string>();
-    for (const variableName of editedVariableNames) {
-      if (originalVariableNamesSet.has(variableName)) {
-        resultSet.add(variableName);
-      }
-    }
-    return [...resultSet].toSorted();
-  }
-
   ngOnInit(): void {
     this.transformationReadOnlySubject.next(false);
     this.reportReadOnlySubject.next(true);
@@ -132,7 +110,6 @@ export class ReportValueComponent implements OnInit, OnDestroy {
         }
       }),
     );
-    this.subscriptions.add(this.save$.subscribe(this.saveReport.bind(this)));
   }
 
   ngOnDestroy(): void {
@@ -144,7 +121,9 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     const isReadOnly = this.report ? !this.report.crudStorage : true;
     const isEdited = this.isEdited();
     this.labels.isEdited = isEdited;
-    this.nodeValueState.emit({ isReadOnly, isEdited, storageId: this.report?.storageId });
+    const state: NodeValueState = { isReadOnly, isEdited, storageId: this.report?.storageId };
+    this.buttonStatusSubject.next(ReportValueComponent.getButtonState(state));
+    this.nodeValueState.emit(state);
   }
 
   onTransformationEdited(value: string): void {
@@ -157,6 +136,21 @@ export class ReportValueComponent implements OnInit, OnDestroy {
       this.http.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),
     );
     this.transformationContentRequestSubject.next(transformationResponse.transformation);
+  }
+
+  onButton(command: ButtonCommand): void {
+    if (command === 'close') {
+      this.button.emit('close');
+    }
+    if (command === 'makeNull') {
+      throw new Error('Button makeNull should not be accessible when no checkpoint is shown');
+    }
+    if (command === 'save') {
+      this.saveModal.open(this.getDifferences().build(), 'save');
+    }
+    if (command === 'copyReport') {
+      this.button.emit('copyReport');
+    }
   }
 
   removeVariable(index: number): void {
@@ -229,11 +223,6 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     this.onInputChange();
   }
 
-  private saveReport(): void {
-    console.log('ReportValueComponent.saveReport()');
-    this.saveModal.open(this.getDifferences().build(), 'save');
-  }
-
   private refreshDuplicateVariables(): void {
     this.duplicateVariables = new Set<number>();
     const variableNames = new Set<string>();
@@ -295,5 +284,48 @@ export class ReportValueComponent implements OnInit, OnDestroy {
       transformationUnchanged &&
       this.hasNoUnsavedVariables()
     );
+  }
+
+  private static getDefaultNodeValueState(): NodeValueState {
+    return { isReadOnly: true, isEdited: false };
+  }
+
+  private static getButtonState(nodeValueState: NodeValueState): ReportButtonStatus {
+    const saveAllowed = nodeValueState.isEdited && !nodeValueState.isReadOnly;
+    return {
+      isReportReadOnly: nodeValueState.isReadOnly,
+      closeAllowed: true,
+      makeNullAllowed: false,
+      saveAllowed: saveAllowed,
+      copyReportAllowed: true,
+    };
+  }
+
+  // TODO: Fix issue with types. Report.variables is declared to be a string,
+  // but it is really an object.
+  static initVariables(variables: string | null): Variable[] {
+    if (!variables) return [];
+    return Object.entries(variables).map(([name, value]) => ({ name, value }));
+  }
+
+  static calculateEditedVariables(originalVariables: Variable[]): Variable[] {
+    const result: Variable[] = [];
+    for (const original of originalVariables) {
+      result.push({ name: original.name, value: original.value });
+    }
+    // Empty row to allow user to add new variable.
+    result.push({ name: '', value: '' });
+    return result;
+  }
+
+  static getCommonVariableNames(originalVariableNames: string[], editedVariableNames: string[]): string[] {
+    const originalVariableNamesSet = new Set<string>(originalVariableNames);
+    const resultSet = new Set<string>();
+    for (const variableName of editedVariableNames) {
+      if (originalVariableNamesSet.has(variableName)) {
+        resultSet.add(variableName);
+      }
+    }
+    return [...resultSet].toSorted();
   }
 }

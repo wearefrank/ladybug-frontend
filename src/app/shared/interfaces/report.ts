@@ -7,6 +7,7 @@ export interface Report extends BaseReport {
   crudStorage: boolean;
   endTime: number;
   estimatedMemoryUsage: number;
+  // TODO: Add "path"?
   fullPath: string;
   inputCheckpoint: Checkpoint;
   numberOfCheckpoints: number;
@@ -14,6 +15,7 @@ export interface Report extends BaseReport {
   originalReport: Report;
   reportFilterMatching: boolean;
   startTime: number;
+  // TODO: Remove, is not provided by the backend.
   stub: number;
   stubStrategy: string;
   transformation: string;
