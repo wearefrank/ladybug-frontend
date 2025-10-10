@@ -90,6 +90,21 @@ describe('CheckpointValue', () => {
     expectIsEdited();
   }));
 
+  it('When checkpoint level stub strategy is edited then saved changes is emitted', fakeAsync(() => {
+    originalValueSubject!.next(getPartialCheckpoint('My value'));
+    flush();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
+    component.onCheckpointStubStrategyChange(1);
+    flush();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectIsEdited();
+    component.onCheckpointStubStrategyChange(0);
+    flush();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
+  }));
+
   it('When report level stub strategy is edited then saved changes is emitted', fakeAsync(() => {
     originalValueSubject!.next(getPartialCheckpoint('My value'));
     flush();

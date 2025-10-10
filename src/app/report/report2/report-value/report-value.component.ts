@@ -318,8 +318,8 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     return {
       isReport: true,
       isCheckpoint: false,
-      isReportReadOnly: nodeValueState.isReadOnly,
       saveAllowed: saveAllowed,
+      isReadOnly: nodeValueState.isReadOnly,
     };
   }
 

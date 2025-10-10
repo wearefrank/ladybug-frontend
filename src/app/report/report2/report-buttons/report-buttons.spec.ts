@@ -18,8 +18,8 @@ describe('ReportButtons', () => {
     component.allowed$ = new BehaviorSubject<ReportButtonStatus>({
       isReport: false,
       isCheckpoint: false,
-      isReportReadOnly: true,
       saveAllowed: false,
+      isReadOnly: true,
     });
     component.originalReportStubStrategy$ = originalReportStubStrategySubject;
     fixture.detectChanges();

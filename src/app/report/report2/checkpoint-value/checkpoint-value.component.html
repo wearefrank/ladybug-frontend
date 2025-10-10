@@ -1,8 +1,10 @@
 <div [style.height]="height + 'px'">
   <app-report-buttons
     [allowed$]="buttonStatusSubject"
+    [originalCheckpointStubStrategy$]="originalCheckpointStubStrategySubject"
     [originalReportStubStrategy$]="originalReportStubStrategySubject"
     (reportCommand)="onButton($event)"
+    (checkpointStubStrategyChange)="onCheckpointStubStrategyChange($event)"
     (reportStubStrategyChange)="onReportStubStrategyChange($event)">
   </app-report-buttons>
   <app-report-alert-message2 [labels]="labels"></app-report-alert-message2>

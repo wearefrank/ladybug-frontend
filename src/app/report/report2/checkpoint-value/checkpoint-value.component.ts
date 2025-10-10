@@ -9,6 +9,7 @@ import {
 } from '../report-alert-message2/report-alert-message2.component';
 import { NodeValueState, PartialReport } from '../report2.component';
 import { ButtonCommand, ReportButtons, ReportButtonStatus } from '../report-buttons/report-buttons';
+import { StubStrategy } from 'src/app/shared/enums/stub-strategy';
 
 export interface PartialCheckpoint {
   message: string | null;
@@ -44,9 +45,11 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   protected buttonStatusSubject = new BehaviorSubject<ReportButtonStatus>(
     CheckpointValueComponent.getButtonState(CheckpointValueComponent.getDefaultNodeValueState()),
   );
+  protected originalCheckpointStubStrategySubject = new BehaviorSubject<number | undefined>(undefined);
   protected originalReportStubStrategySubject = new BehaviorSubject<string | undefined>(undefined);
   private originalCheckpoint: PartialCheckpoint | undefined;
   private actualEditorContents = '';
+  private actualCheckpointStubStrategy?: number;
   private actualReportStubStrategy?: string;
   private emptyIsNull = true;
   private subscriptions = new Subscription();
@@ -79,6 +82,11 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     this.handleLabelsAndNodeValueState();
   }
 
+  onCheckpointStubStrategyChange(strategy: number): void {
+    this.actualCheckpointStubStrategy = strategy;
+    this.handleLabelsAndNodeValueState();
+  }
+
   onReportStubStrategyChange(strategy: string): void {
     this.actualReportStubStrategy = strategy;
     this.handleLabelsAndNodeValueState();
@@ -103,6 +111,11 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     if (this.originalCheckpoint === undefined) {
       throw new Error('CheckpointValueComponent.getDifferences(): Did not expect originalCheckpoint to be undefined');
     }
+    if (this.actualCheckpointStubStrategy === undefined) {
+      throw new Error(
+        'CheckpointValueComponent.getDifferences(): Expected that actualCheckpointStubStrategy !== undefined because a checkpoint was read',
+      );
+    }
     if (this.actualReportStubStrategy === undefined) {
       throw new Error(
         'CheckpointValueComponent.getDifferences(): Did not expect actualReportStubStrategy to be undefined',
@@ -114,6 +127,11 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
         this.originalCheckpoint.parentReport.stubStrategy,
         this.actualReportStubStrategy,
         'Report level stub strategy',
+      )
+      .nonNullableVariable(
+        StubStrategy.checkpoints[this.originalCheckpoint.stub],
+        StubStrategy.checkpoints[this.actualCheckpointStubStrategy],
+        "This checkpoint's stub strategy",
       );
   }
 
@@ -144,9 +162,11 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     const requestedEditorContents = originalCheckpoint.message === null ? '' : originalCheckpoint.message;
     // Do not trust the Monaco editor sends an event for the first text.
     this.actualEditorContents = requestedEditorContents;
+    this.actualCheckpointStubStrategy = originalCheckpoint.stub;
     this.actualReportStubStrategy = originalCheckpoint.parentReport.stubStrategy;
     this.handleLabelsAndNodeValueState();
     this.editorContentsSubject.next(requestedEditorContents);
+    this.originalCheckpointStubStrategySubject.next(originalCheckpoint.stub);
     this.originalReportStubStrategySubject.next(originalCheckpoint.parentReport.stubStrategy);
   }
 
@@ -165,6 +185,11 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
         'CheckpointValueComponent.handleLabelsAndNodeValueState(): Did not expect that there was no checkpoint',
       );
     }
+    if (this.actualCheckpointStubStrategy === undefined) {
+      throw new Error(
+        'CheckpointValueComponent.handleLabelsAndNodeValueState(): Expected that actualCheckpointStubStrategy !== undefined because a checkpoint was read',
+      );
+    }
     if (this.actualReportStubStrategy === undefined) {
       throw new Error(
         'CheckpointValueComponent.handleLabelsAndNodeValueState(): Expected that actualReportStubStrategy !== undefined because a checkpoint was read',
@@ -172,9 +197,10 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     }
     const editedCheckpointValue = this.getEditedRealCheckpointValue();
     const isCheckpointEdited = editedCheckpointValue !== this.originalCheckpoint.message;
+    const isCheckpointStubStrategyEdited = this.actualCheckpointStubStrategy !== this.originalCheckpoint.stub;
     const isReportStubStrategyEdited =
       this.actualReportStubStrategy !== this.originalCheckpoint.parentReport.stubStrategy;
-    const isEdited = isCheckpointEdited || isReportStubStrategyEdited;
+    const isEdited = isCheckpointEdited || isCheckpointStubStrategyEdited || isReportStubStrategyEdited;
     this.labels = {
       isEdited,
       isMessageNull: editedCheckpointValue === null,
@@ -194,7 +220,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     const isReadOnly = this.originalCheckpoint ? !this.originalCheckpoint.parentReport.crudStorage : true;
     this.nodeValueState.emit({
       isReadOnly,
-      isEdited: this.labels.isEdited,
+      isEdited,
       storageId: this.originalCheckpoint?.parentReport.storageId,
     });
   }
@@ -221,8 +247,8 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     return {
       isReport: false,
       isCheckpoint: true,
-      isReportReadOnly: nodeValueState.isReadOnly,
       saveAllowed: saveAllowed,
+      isReadOnly: nodeValueState.isReadOnly,
     };
   }
 

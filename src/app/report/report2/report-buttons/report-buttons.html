@@ -11,11 +11,19 @@
       ><i class="fa fa-save"></i></button>
       }
       <button
-        data-cy-debug-editor="close"
-        title="Close"
+        data-cy-debug-editor="makeNull"
+        title="Make checkpoint value null"
         class="btn btn-info"
         (click)="makeNull()"
       >make null</button>
+      <div class="w-fit mx-1 my-0">
+        <select #checkpointStubStrategy class="form-control" [(ngModel)]="checkpointStubStrategy"
+                (ngModelChange)="onCheckpointStubStrategyChange($event)">
+          @for (strategy of StubStrategy.checkpoints; track strategy; let index = $index) {
+            <option [ngValue]="index - 1" [selected]="currentCheckpointStubStrategy === index - 1">{{ strategy }}</option>
+          }
+        </select>
+      </div>
     </section>
     <span class="button-divider">&#124;</span>
   }
@@ -37,7 +45,6 @@
     ><i class="fa fa-copy"></i></button>
     <div class="w-fit mx-1 my-0">
       <select #reportStubStrategy class="form-control"
-        [disabled]="!allowed.isReportReadOnly"
         [(ngModel)]="currentReportStubStrategy"
         (ngModelChange)="onReportStubStrategyChange($event)">
         @for (strategy of StubStrategy.report; track strategy) {
