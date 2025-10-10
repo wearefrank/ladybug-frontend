@@ -16,12 +16,10 @@ describe('ReportButtons', () => {
     fixture = TestBed.createComponent(ReportButtons);
     component = fixture.componentInstance;
     component.allowed$ = new BehaviorSubject<ReportButtonStatus>({
+      isReport: false,
+      isCheckpoint: false,
       isReportReadOnly: true,
-      closeAllowed: true,
-      makeNullAllowed: false,
       saveAllowed: false,
-      copyReportAllowed: true,
-      reportStubStrategyEditable: false,
     });
     component.originalReportStubStrategy$ = originalReportStubStrategySubject;
     fixture.detectChanges();

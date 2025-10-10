@@ -1,27 +1,27 @@
 <div data-cy-debug-editor="buttons" class="buttons">
-  <section class="buttons button-section">
-    <p class="button-section-title">Checkpoint</p>
-    @if (allowed.closeAllowed) {
+  @if (allowed.isCheckpoint) {
+    <section class="buttons button-section">
+      <p class="button-section-title">Checkpoint</p>
+      @if (allowed.saveAllowed) {
       <button
-        data-cy-debug-editor="close"
-        title="Close"
+        data-cy-report="save"
         class="btn btn-info"
-        (click)="close()"
-      ><i class="fa fa-times"></i></button>
-    }
-    @if (allowed.makeNullAllowed) {
+        title="Save"
+        (click)="save()"
+      ><i class="fa fa-save"></i></button>
+      }
       <button
         data-cy-debug-editor="close"
         title="Close"
         class="btn btn-info"
         (click)="makeNull()"
       >make null</button>
-    }
-  </section>
-  <span class="button-divider">&#124;</span>
+    </section>
+    <span class="button-divider">&#124;</span>
+  }
   <section class="buttons button-section">
     <p class="button-section-title">Report{{ getReadOnly() }}</p>
-    @if (allowed.saveAllowed) {
+    @if (allowed.isReport && allowed.saveAllowed) {
     <button
       data-cy-report="save"
       class="btn btn-info"
@@ -29,17 +29,15 @@
       (click)="save()"
     ><i class="fa fa-save"></i></button>
     }
-    @if (allowed.copyReportAllowed) {
-      <button
-        data-cy-debug-editor="copy"
-        class="btn btn-info"
-        title="Copy report to test tab"
-        (click)="copyReport()"
-      ><i class="fa fa-copy"></i></button>
-    }
+    <button
+      data-cy-debug-editor="copy"
+      class="btn btn-info"
+      title="Copy report to test tab"
+      (click)="copyReport()"
+    ><i class="fa fa-copy"></i></button>
     <div class="w-fit mx-1 my-0">
       <select #reportStubStrategy class="form-control"
-        [disabled]="!allowed.reportStubStrategyEditable"
+        [disabled]="!allowed.isReportReadOnly"
         [(ngModel)]="currentReportStubStrategy"
         (ngModelChange)="onReportStubStrategyChange($event)">
         @for (strategy of StubStrategy.report; track strategy) {

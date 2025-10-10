@@ -4,12 +4,10 @@ import { StubStrategy } from '../../../shared/enums/stub-strategy';
 import { FormsModule } from '@angular/forms';
 
 export interface ReportButtonStatus {
+  isReport: boolean;
+  isCheckpoint: boolean;
   isReportReadOnly: boolean;
-  closeAllowed: boolean;
   saveAllowed: boolean;
-  makeNullAllowed: boolean;
-  copyReportAllowed: boolean;
-  reportStubStrategyEditable: boolean;
 }
 
 export type ButtonCommand = 'close' | 'makeNull' | 'save' | 'copyReport';
@@ -27,12 +25,10 @@ export class ReportButtons implements OnInit, OnDestroy {
   @Input({ required: true }) originalReportStubStrategy$!: Observable<string | undefined>;
 
   protected allowed: ReportButtonStatus = {
+    isReport: false,
+    isCheckpoint: false,
     isReportReadOnly: true,
-    closeAllowed: true,
-    makeNullAllowed: false,
     saveAllowed: false,
-    copyReportAllowed: false,
-    reportStubStrategyEditable: false,
   };
 
   protected readonly StubStrategy = StubStrategy;

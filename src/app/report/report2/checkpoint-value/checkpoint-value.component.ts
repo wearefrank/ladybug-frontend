@@ -219,12 +219,10 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   private static getButtonState(nodeValueState: NodeValueState): ReportButtonStatus {
     const saveAllowed = nodeValueState.isEdited && !nodeValueState.isReadOnly;
     return {
+      isReport: false,
+      isCheckpoint: true,
       isReportReadOnly: nodeValueState.isReadOnly,
-      closeAllowed: true,
-      makeNullAllowed: true,
       saveAllowed: saveAllowed,
-      copyReportAllowed: true,
-      reportStubStrategyEditable: saveAllowed,
     };
   }
 

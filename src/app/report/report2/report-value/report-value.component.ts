@@ -316,12 +316,10 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   private static getButtonState(nodeValueState: NodeValueState): ReportButtonStatus {
     const saveAllowed = nodeValueState.isEdited && !nodeValueState.isReadOnly;
     return {
+      isReport: true,
+      isCheckpoint: false,
       isReportReadOnly: nodeValueState.isReadOnly,
-      closeAllowed: true,
-      makeNullAllowed: false,
       saveAllowed: saveAllowed,
-      copyReportAllowed: true,
-      reportStubStrategyEditable: saveAllowed,
     };
   }
 
