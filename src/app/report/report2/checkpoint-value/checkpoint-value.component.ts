@@ -44,8 +44,10 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   protected buttonStatusSubject = new BehaviorSubject<ReportButtonStatus>(
     CheckpointValueComponent.getButtonState(CheckpointValueComponent.getDefaultNodeValueState()),
   );
+  protected originalReportStubStrategySubject = new BehaviorSubject<string | undefined>(undefined);
   private originalCheckpoint: PartialCheckpoint | undefined;
   private actualEditorContents = '';
+  private actualReportStubStrategy?: string;
   private emptyIsNull = true;
   private subscriptions = new Subscription();
 
@@ -77,6 +79,11 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     this.handleLabelsAndNodeValueState();
   }
 
+  onReportStubStrategyChange(strategy: string): void {
+    this.actualReportStubStrategy = strategy;
+    this.handleLabelsAndNodeValueState();
+  }
+
   onButton(command: ButtonCommand): void {
     if (command === 'close') {
       this.button.emit('close');
@@ -96,12 +103,18 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     if (this.originalCheckpoint === undefined) {
       throw new Error('CheckpointValueComponent.getDifferences(): Did not expect originalCheckpoint to be undefined');
     }
-    return new DifferencesBuilder().nullableVariable(
-      this.originalCheckpoint.message,
-      this.getEditedRealCheckpointValue(),
-      'Value',
-      true,
-    );
+    if (this.actualReportStubStrategy === undefined) {
+      throw new Error(
+        'CheckpointValueComponent.getDifferences(): Did not expect actualReportStubStrategy to be undefined',
+      );
+    }
+    return new DifferencesBuilder()
+      .nullableVariable(this.originalCheckpoint.message, this.getEditedRealCheckpointValue(), 'Value', true)
+      .nonNullableVariable(
+        this.originalCheckpoint.parentReport.stubStrategy,
+        this.actualReportStubStrategy,
+        'Report level stub strategy',
+      );
   }
 
   getEditedRealCheckpointValue(): string | null {
@@ -131,8 +144,10 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     const requestedEditorContents = originalCheckpoint.message === null ? '' : originalCheckpoint.message;
     // Do not trust the Monaco editor sends an event for the first text.
     this.actualEditorContents = requestedEditorContents;
+    this.actualReportStubStrategy = originalCheckpoint.parentReport.stubStrategy;
     this.handleLabelsAndNodeValueState();
     this.editorContentsSubject.next(requestedEditorContents);
+    this.originalReportStubStrategySubject.next(originalCheckpoint.parentReport.stubStrategy);
   }
 
   private editToNull(): void {
@@ -147,12 +162,21 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   private handleLabelsAndNodeValueState(): void {
     if (this.originalCheckpoint === undefined) {
       throw new Error(
-        'CheckpointValueComponent.handleLabelsAndSavedChanges(): Did not expect that there was no checkpoint',
+        'CheckpointValueComponent.handleLabelsAndNodeValueState(): Did not expect that there was no checkpoint',
+      );
+    }
+    if (this.actualReportStubStrategy === undefined) {
+      throw new Error(
+        'CheckpointValueComponent.handleLabelsAndNodeValueState(): Expected that actualReportStubStrategy !== undefined because a checkpoint was read',
       );
     }
     const editedCheckpointValue = this.getEditedRealCheckpointValue();
+    const isCheckpointEdited = editedCheckpointValue !== this.originalCheckpoint.message;
+    const isReportStubStrategyEdited =
+      this.actualReportStubStrategy !== this.originalCheckpoint.parentReport.stubStrategy;
+    const isEdited = isCheckpointEdited || isReportStubStrategyEdited;
     this.labels = {
-      isEdited: editedCheckpointValue !== this.originalCheckpoint.message,
+      isEdited,
       isMessageNull: editedCheckpointValue === null,
       isMessageEmpty: editedCheckpointValue === '',
       stubbed: this.originalCheckpoint.stubbed,
@@ -200,6 +224,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       makeNullAllowed: true,
       saveAllowed: saveAllowed,
       copyReportAllowed: true,
+      reportStubStrategyEditable: saveAllowed,
     };
   }
 

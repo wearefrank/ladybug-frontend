@@ -88,7 +88,21 @@ describe('CheckpointValue', () => {
     expect(component.getEditedRealCheckpointValue()).toEqual(null);
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
-    console.log('Done');
+  }));
+
+  it('When report level stub strategy is edited then saved changes is emitted', fakeAsync(() => {
+    originalValueSubject!.next(getPartialCheckpoint('My value'));
+    flush();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
+    component.onReportStubStrategyChange('Other stub strategy');
+    flush();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectIsEdited();
+    component.onReportStubStrategyChange('Some stub strategy');
+    flush();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
   }));
 
   it('When the checkpoint-s report is in a CRUD storage then the emitted events indicate not read-only', fakeAsync(() => {
@@ -135,6 +149,8 @@ function getPartialCheckpoint(message: string | null): PartialCheckpoint {
     variables: 'not applicable, have to fix type mismatch',
     xml: 'dummy xml',
     crudStorage: true,
+    // Does not have to be a stub strategy known by the FF!.
+    stubStrategy: 'Some stub strategy',
   };
   const parent: PartialReport = { ...parentSeed };
   const result = {

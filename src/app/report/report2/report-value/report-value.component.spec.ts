@@ -230,6 +230,21 @@ describe('ReportValue', () => {
     expectNotEdited();
   });
 
+  it('When report level stub strategy is changed then saved changes event emitted', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    expectNotEdited();
+    component.setVariables([]);
+    component.editedReportStubStrategy = 'Other stub strategy';
+    component.onInputChange();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
+    component.editedReportStubStrategy = 'Some stub strategy';
+    component.onInputChange();
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
+    expectNotEdited();
+  });
+
   it('When variable name is changed then saved changes event emitted', () => {
     reportSubject!.next(getAPartialReport());
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
@@ -359,6 +374,8 @@ function getAPartialReport(): PartialReport {
     variables: 'not applicable, have to fix type mismatch',
     xml: 'dummy xml',
     crudStorage: true,
+    // Does not have to be a stub strategy known by the FF!.
+    stubStrategy: 'Some stub strategy',
   };
   return { ...result };
 }
@@ -372,6 +389,8 @@ function getEmptyPartialReport(): PartialReport {
     variables: 'not applicable, have to fix type mismatch',
     xml: 'dummy xml',
     crudStorage: true,
+    // Does not have to be a stub strategy known by the FF!.
+    stubStrategy: 'Some stub strategy',
   };
   return { ...result };
 }

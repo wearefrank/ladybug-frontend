@@ -52,6 +52,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   originalVariables: Variable[] = [];
   editedVariables: Variable[] = [];
   duplicateVariables: Set<number> = new Set<number>();
+  editedReportStubStrategy?: string;
 
   labels: NodeValueLabels = {
     isEdited: false,
@@ -82,6 +83,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   protected transformationReadOnlySubject = new ReplaySubject<boolean>();
   protected reportContentRequestSubject = new ReplaySubject<string>();
   protected reportReadOnlySubject = new ReplaySubject<boolean>();
+  protected originalReportStubStrategySubject = new BehaviorSubject<string | undefined>(undefined);
   private _height = 0;
   private report?: PartialReport;
   private http = inject(HttpService);
@@ -132,6 +134,8 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   }
 
   async copyDefaultTransformation(): Promise<void> {
+    // TODO: Rethrow error when obtaining transformation fails.
+    // TODO: Check that this is the default transformation, not the factory default.
     const transformationResponse: Transformation = await firstValueFrom(
       this.http.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),
     );
@@ -153,6 +157,11 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     }
   }
 
+  onReportStubStrategyChange(strategy: string): void {
+    this.editedReportStubStrategy = strategy;
+    this.onInputChange();
+  }
+
   removeVariable(index: number): void {
     this.editedVariables.splice(index, 1);
     this.refreshDuplicateVariables();
@@ -170,7 +179,11 @@ export class ReportValueComponent implements OnInit, OnDestroy {
 
   // This one is tested with Karma tests.
   getDifferences(): DifferencesBuilder {
-    // TODO: Fill.
+    if (this.editedReportStubStrategy === undefined) {
+      throw new Error(
+        'ReportValueComponent.getDifferences(): Unexpectedly have editedReportStubStrategy === undefined because a report was read',
+      );
+    }
     const result = new DifferencesBuilder()
       .nonNullableVariable(this.report!.name, this.editedName, 'Name', true)
       .nullableVariable(
@@ -184,7 +197,8 @@ export class ReportValueComponent implements OnInit, OnDestroy {
         this.report!.transformation,
         this.getRealEditedValueForNullable(this.editedTransformation),
         'true',
-      );
+      )
+      .nonNullableVariable(this.report!.stubStrategy, this.editedReportStubStrategy, 'Report level stub strategy');
     const editedVariables = this.getRealEditedVariables();
     const originalVariableNames: string[] = this.originalVariables.map((v) => v.name);
     const editedVariableNames: string[] = editedVariables.map((v) => v.name);
@@ -220,6 +234,8 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     this.refreshDuplicateVariables();
     this.transformationContentRequestSubject.next(this.getEditorTextOfNullable(this.report!.transformation));
     this.reportContentRequestSubject.next(this.report.xml);
+    this.originalReportStubStrategySubject.next(report.stubStrategy);
+    this.editedReportStubStrategy = report.stubStrategy;
     this.onInputChange();
   }
 
@@ -271,18 +287,25 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     if (this.report === undefined) {
       return false;
     }
+    if (this.editedReportStubStrategy === undefined) {
+      throw new Error(
+        'ReportValueComponent.isEdited(): Unexpectedly have editedReportStubStrategy === undefined because a report was read',
+      );
+    }
     const nameUnchanged = this.editedName === this.report!.name;
     const descriptionUnchanged =
       this.getRealEditedValueForNullable(this.editedDescription) === this.report!.description;
     const pathUnchanged = this.getRealEditedValueForNullable(this.editedPath) === this.report!.path;
     const transformationUnchanged =
       this.getRealEditedValueForNullable(this.editedTransformation) === this.report!.transformation;
+    const reportStubStrategyUnchanged = this.editedReportStubStrategy === this.report.stubStrategy;
     return !(
       nameUnchanged &&
       descriptionUnchanged &&
       pathUnchanged &&
       transformationUnchanged &&
-      this.hasNoUnsavedVariables()
+      this.hasNoUnsavedVariables() &&
+      reportStubStrategyUnchanged
     );
   }
 
@@ -298,6 +321,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
       makeNullAllowed: false,
       saveAllowed: saveAllowed,
       copyReportAllowed: true,
+      reportStubStrategyEditable: saveAllowed,
     };
   }
 

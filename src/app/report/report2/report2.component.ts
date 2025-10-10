@@ -48,6 +48,7 @@ export interface PartialReport {
   crudStorage: boolean;
   // undefined is allowed to support testing
   storageId?: number;
+  stubStrategy: string;
 }
 
 export interface NodeValueState {

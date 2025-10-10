@@ -1,7 +1,9 @@
 <div [style.height]="height + 'px'">
   <app-report-buttons
     [allowed$]="buttonStatusSubject"
-    (reportCommand)="onButton($event)">
+    [originalReportStubStrategy$]="originalReportStubStrategySubject"
+    (reportCommand)="onButton($event)"
+    (reportStubStrategyChange)="onReportStubStrategyChange($event)">
   </app-report-buttons>
   <app-report-alert-message2 [labels]="labels"></app-report-alert-message2>
   <app-monaco-editor data-cy-element-name="checkpointEditor" [options]="monacoOptions"

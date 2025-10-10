@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReportButtons, ReportButtonStatus } from './report-buttons';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 describe('ReportButtons', () => {
   let component: ReportButtons;
   let fixture: ComponentFixture<ReportButtons>;
+  let originalReportStubStrategySubject = new Subject<string>();
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -20,7 +21,9 @@ describe('ReportButtons', () => {
       makeNullAllowed: false,
       saveAllowed: false,
       copyReportAllowed: true,
+      reportStubStrategyEditable: false,
     });
+    component.originalReportStubStrategy$ = originalReportStubStrategySubject;
     fixture.detectChanges();
   });
 

@@ -37,5 +37,15 @@
         (click)="copyReport()"
       ><i class="fa fa-copy"></i></button>
     }
+    <div class="w-fit mx-1 my-0">
+      <select #reportStubStrategy class="form-control"
+        [disabled]="!allowed.reportStubStrategyEditable"
+        [(ngModel)]="currentReportStubStrategy"
+        (ngModelChange)="onReportStubStrategyChange($event)">
+        @for (strategy of StubStrategy.report; track strategy) {
+          <option [ngValue]="strategy" [selected]="currentReportStubStrategy === strategy">{{ strategy }}</option>
+        }
+      </select>
+    </div>
   </section>
 </div>
