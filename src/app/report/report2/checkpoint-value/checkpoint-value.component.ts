@@ -1,8 +1,8 @@
 import { Component, Input, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.component';
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
-import { DifferencesBuilder } from 'src/app/shared/util/differences-builder';
+import { DifferencesBuilder } from '../../../shared/util/differences-builder';
 import {
   NodeValueLabels,
   ReportAlertMessage2Component,
@@ -39,9 +39,8 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
   labels: NodeValueLabels | undefined;
 
-  // TODO: No ReplaySubject!
-  protected editorContentsSubject = new ReplaySubject<string>();
-  protected editorReadOnlySubject = new ReplaySubject<boolean>();
+  protected editorContentsSubject = new BehaviorSubject<string | undefined>(undefined);
+  protected editorReadOnlySubject = new BehaviorSubject<boolean>(true);
   protected buttonStateSubject = new BehaviorSubject<ReportButtonsState>(
     CheckpointValueComponent.getButtonState(CheckpointValueComponent.getDefaultNodeValueState()),
   );

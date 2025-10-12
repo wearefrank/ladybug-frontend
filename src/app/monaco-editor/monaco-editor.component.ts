@@ -29,7 +29,7 @@ type AMDRequire = {
   styleUrls: ['./monaco-editor.component.scss'],
 })
 export class MonacoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() editorContentRequest$?: Observable<string>;
+  @Input({ required: true }) editorContentRequest$!: Observable<string | undefined>;
   @Input() readOnlyRequest$?: Observable<boolean>;
   @Output() actualEditorContentsChange = new EventEmitter<string>();
   @Output() actualReadOnlyChange = new EventEmitter<boolean>();
@@ -59,7 +59,14 @@ export class MonacoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscriptions.add(this.editorContentRequest$?.subscribe((value) => this.setRequestedEditorContents(value)));
+    this.subscriptions.add(
+      this.editorContentRequest$.subscribe((value) => {
+        if (value !== undefined) {
+          this.setRequestedEditorContents(value);
+        }
+      }),
+    );
+
     this.subscriptions.add(this.readOnlyRequest$?.subscribe((value) => this.setReadOnly(value)));
   }
 

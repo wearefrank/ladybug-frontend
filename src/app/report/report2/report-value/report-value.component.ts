@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { HttpService } from '../../../shared/services/http.service';
-import { BehaviorSubject, catchError, firstValueFrom, Observable, ReplaySubject, Subscription } from 'rxjs';
+import { BehaviorSubject, catchError, firstValueFrom, Observable, Subscription } from 'rxjs';
 import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { Transformation } from '../../../shared/interfaces/transformation';
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
-import { DifferencesBuilder } from 'src/app/shared/util/differences-builder';
+import { DifferencesBuilder } from '../../../shared/util/differences-builder';
 import { NodeValueState, PartialReport } from '../report2.component';
 import {
   NodeValueLabels,
@@ -79,10 +79,10 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     scrollBeyondLastLine: false,
   };
   protected monacoEditorInitialHeight = 0;
-  protected transformationContentRequestSubject = new ReplaySubject<string>();
-  protected transformationReadOnlySubject = new ReplaySubject<boolean>();
-  protected reportContentRequestSubject = new ReplaySubject<string>();
-  protected reportReadOnlySubject = new ReplaySubject<boolean>();
+  protected transformationContentRequestSubject = new BehaviorSubject<string | undefined>(undefined);
+  protected transformationReadOnlySubject = new BehaviorSubject<boolean>(true);
+  protected reportContentRequestSubject = new BehaviorSubject<string | undefined>(undefined);
+  protected reportReadOnlySubject = new BehaviorSubject<boolean>(true);
   protected originalReportStubStrategySubject = new BehaviorSubject<string | undefined>(undefined);
   private _height = 0;
   private report?: PartialReport;
