@@ -34,7 +34,7 @@ export class ReportButtons implements OnInit, OnDestroy {
   };
 
   protected readonly StubStrategy = StubStrategy;
-  protected currentCheckpointStubStrategy?: number;
+  protected currentCheckpointStubStrategyStr?: string;
   protected currentReportStubStrategy?: string;
   private ngZone = inject(NgZone);
   private subscriptions = new Subscription();
@@ -44,7 +44,10 @@ export class ReportButtons implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.originalCheckpointStubStrategy$?.subscribe((checkpointStubStrategy) => {
         if (checkpointStubStrategy !== undefined) {
-          this.currentCheckpointStubStrategy = checkpointStubStrategy;
+          // Martijn did not get the dropdown to work when it was filled with number values that
+          // had to be shown as strings. The dropdown only deals with string representations.
+          this.currentCheckpointStubStrategyStr =
+            StubStrategy.checkpoints[StubStrategy.checkpointStubToIndex(checkpointStubStrategy)];
         }
       }),
     );
@@ -77,8 +80,12 @@ export class ReportButtons implements OnInit, OnDestroy {
     this.reportCommand.emit('copyReport');
   }
 
-  onCheckpointStubStrategyChange(stubStrategy: number): void {
-    this.checkpointStubStrategyChange.emit(stubStrategy);
+  onCheckpointStubStrategyChange(stubStrategyStr: string): void {
+    const index: number = StubStrategy.checkpoints.findIndex((s) => s === stubStrategyStr);
+    if (index < 0) {
+      throw new Error(`ReportButtons.onCheckpointStubStrategyChange(): Unknown valu ${stubStrategyStr}`);
+    }
+    this.checkpointStubStrategyChange.emit(StubStrategy.checkpointIndex2Stub(index));
   }
 
   onReportStubStrategyChange(reportStubStrategy: string): void {

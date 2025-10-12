@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.component';
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';

@@ -17,10 +17,10 @@
         (click)="makeNull()"
       >make null</button>
       <div class="w-fit mx-1 my-0">
-        <select #checkpointStubStrategy id="checkpointStubStrategy" class="form-control" [(ngModel)]="checkpointStubStrategy"
+        <select #checkpointStubStrategy id="checkpointStubStrategy" class="form-control" [(ngModel)]="currentCheckpointStubStrategyStr"
                 (ngModelChange)="onCheckpointStubStrategyChange($event)">
-          @for (strategy of StubStrategy.checkpoints; track strategy; let index = $index) {
-            <option [ngValue]="StubStrategy.checkpointIndex2Stub(index)" [selected]="currentCheckpointStubStrategy === StubStrategy.checkpointIndex2Stub(index)">{{ strategy }}</option>
+          @for (stubOptionStr of StubStrategy.checkpoints; track stubOptionStr) {
+            <option [ngValue]="stubOptionStr" [selected]="currentCheckpointStubStrategyStr === stubOptionStr">{{ stubOptionStr }}</option>
           }
         </select>
       </div>
