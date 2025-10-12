@@ -126,7 +126,7 @@ describe('ReportValue', () => {
     expect(component.editedVariables[1].name).toEqual('');
   });
 
-  it('When name is changed then saved changes event emitted', () => {
+  it('When name is changed then consistently show this change', () => {
     reportSubject!.next(getAPartialReport());
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
     expectNotEdited();
@@ -141,7 +141,7 @@ describe('ReportValue', () => {
     expectNotEdited();
   });
 
-  it('When description is changed then saved changes event emitted', () => {
+  it('When description is changed then consistently show this change', () => {
     reportSubject!.next(getAPartialReport());
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
     expectNotEdited();
@@ -170,7 +170,7 @@ describe('ReportValue', () => {
     expectNotEdited();
   });
 
-  it('When path is changed then saved changes event emitted', () => {
+  it('When path is changed then consistently show this change', () => {
     reportSubject!.next(getAPartialReport());
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
     expectNotEdited();
@@ -200,7 +200,7 @@ describe('ReportValue', () => {
     expectNotEdited();
   });
 
-  it('When transformation is changed then saved changes event emitted', () => {
+  it('When transformation is changed then consistently show this change', () => {
     reportSubject!.next(getAPartialReport());
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
     expectNotEdited();
@@ -230,7 +230,7 @@ describe('ReportValue', () => {
     expectNotEdited();
   });
 
-  it('When report level stub strategy is changed then saved changes event emitted', () => {
+  it('When report level stub strategy is changed then consistently show this change', () => {
     reportSubject!.next(getAPartialReport());
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
     expectNotEdited();
@@ -245,7 +245,7 @@ describe('ReportValue', () => {
     expectNotEdited();
   });
 
-  it('When variable name is changed then saved changes event emitted', () => {
+  it('When variable name is changed then consistently show this change', () => {
     reportSubject!.next(getAPartialReport());
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
     expectNotEdited();
@@ -260,7 +260,7 @@ describe('ReportValue', () => {
     expectNotEdited();
   });
 
-  it('When variable value is changed then saved changes event emitted', () => {
+  it('When variable value is changed then consistently show this change', () => {
     reportSubject!.next(getAPartialReport());
     component.setVariables([{ name: 'variable', value: 'value' }]);
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
@@ -275,7 +275,7 @@ describe('ReportValue', () => {
     expectNotEdited();
   });
 
-  it('When variable is added then saved changes event is emitted', () => {
+  it('When variable is added then consistently show this change', () => {
     reportSubject!.next(getAPartialReport());
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
     expectNotEdited();
@@ -313,7 +313,7 @@ describe('ReportValue', () => {
     expect(differences[0].editedValue).toEqual('otherVariableName');
   });
 
-  it('When the values of variables changed, a difference is created for each', () => {
+  it('When the values of variables are changed, a difference is created for each', () => {
     reportSubject!.next(getAPartialReport());
     component.setVariables([
       { name: 'first', value: 'value 1' },
