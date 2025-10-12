@@ -27,14 +27,14 @@ describe('CheckpointValue', () => {
     expect(component).toBeTruthy();
   });
 
-  it('When a new checkpoint is selected then saved changes is emitted', fakeAsync(() => {
+  it('When a new checkpoint is selected then consistently show not edited', fakeAsync(() => {
     originalValueSubject!.next(getPartialCheckpoint('My value'));
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
     expectNotEdited();
   }));
 
-  it('When checkpoint value is edited then saved changes is emitted', fakeAsync(() => {
+  it('When checkpoint value is edited then consistently show this change', fakeAsync(() => {
     originalValueSubject!.next(getPartialCheckpoint('My value'));
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
@@ -90,7 +90,7 @@ describe('CheckpointValue', () => {
     expectIsEdited();
   }));
 
-  it('When checkpoint level stub strategy is edited then saved changes is emitted', fakeAsync(() => {
+  it('When checkpoint level stub strategy is edited then consistently show this change', fakeAsync(() => {
     originalValueSubject!.next(getPartialCheckpoint('My value'));
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
@@ -105,7 +105,7 @@ describe('CheckpointValue', () => {
     expectNotEdited();
   }));
 
-  it('When report level stub strategy is edited then saved changes is emitted', fakeAsync(() => {
+  it('When report level stub strategy is edited then consistently show this change', fakeAsync(() => {
     originalValueSubject!.next(getPartialCheckpoint('My value'));
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
