@@ -1,6 +1,6 @@
 <div [style.height]="height + 'px'">
   <app-report-buttons
-    [allowed$]="buttonStatusSubject"
+    [state$]="buttonStateSubject"
     (reportCommand)="onButton($event)"
     [originalReportStubStrategy$]="originalReportStubStrategySubject"
     (reportStubStrategyChange)="onReportStubStrategyChange($event)">

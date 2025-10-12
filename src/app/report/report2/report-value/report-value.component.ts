@@ -14,7 +14,7 @@ import {
   NodeValueLabels,
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
-import { ButtonCommand, ReportButtons, ReportButtonStatus } from '../report-buttons/report-buttons';
+import { ButtonCommand, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
 
 export interface Variable {
   name: string;
@@ -65,7 +65,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     messageClassName: undefined,
   };
 
-  protected buttonStatusSubject = new BehaviorSubject<ReportButtonStatus>(
+  protected buttonStateSubject = new BehaviorSubject<ReportButtonsState>(
     ReportValueComponent.getButtonState(ReportValueComponent.getDefaultNodeValueState()),
   );
 
@@ -124,7 +124,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     const isEdited = this.isEdited();
     this.labels.isEdited = isEdited;
     const state: NodeValueState = { isReadOnly, isEdited, storageId: this.report?.storageId };
-    this.buttonStatusSubject.next(ReportValueComponent.getButtonState(state));
+    this.buttonStateSubject.next(ReportValueComponent.getButtonState(state));
     this.nodeValueState.emit(state);
   }
 
@@ -313,7 +313,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     return { isReadOnly: true, isEdited: false };
   }
 
-  private static getButtonState(nodeValueState: NodeValueState): ReportButtonStatus {
+  private static getButtonState(nodeValueState: NodeValueState): ReportButtonsState {
     const saveAllowed = nodeValueState.isEdited && !nodeValueState.isReadOnly;
     return {
       isReport: true,

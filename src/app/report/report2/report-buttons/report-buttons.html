@@ -1,8 +1,8 @@
 <div data-cy-debug-editor="buttons" class="buttons">
-  @if (allowed.isCheckpoint) {
+  @if (state.isCheckpoint) {
     <section class="buttons button-section">
       <p class="button-section-title">Checkpoint</p>
-      @if (allowed.saveAllowed) {
+      @if (state.saveAllowed) {
       <button
         data-cy-report="save"
         class="btn btn-info"
@@ -29,7 +29,7 @@
   }
   <section class="buttons button-section">
     <p class="button-section-title">Report{{ getReadOnly() }}</p>
-    @if (allowed.isReport && allowed.saveAllowed) {
+    @if (state.isReport && state.saveAllowed) {
     <button
       data-cy-report="save"
       class="btn btn-info"

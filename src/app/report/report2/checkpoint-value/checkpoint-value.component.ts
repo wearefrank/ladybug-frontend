@@ -8,7 +8,7 @@ import {
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
 import { NodeValueState, PartialReport } from '../report2.component';
-import { ButtonCommand, ReportButtons, ReportButtonStatus } from '../report-buttons/report-buttons';
+import { ButtonCommand, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
 import { StubStrategy } from 'src/app/shared/enums/stub-strategy';
 
 export interface PartialCheckpoint {
@@ -42,7 +42,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   // TODO: No ReplaySubject!
   protected editorContentsSubject = new ReplaySubject<string>();
   protected editorReadOnlySubject = new ReplaySubject<boolean>();
-  protected buttonStatusSubject = new BehaviorSubject<ReportButtonStatus>(
+  protected buttonStateSubject = new BehaviorSubject<ReportButtonsState>(
     CheckpointValueComponent.getButtonState(CheckpointValueComponent.getDefaultNodeValueState()),
   );
   protected originalCheckpointStubStrategySubject = new BehaviorSubject<number | undefined>(undefined);
@@ -242,7 +242,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     this.saveModal.open(this.getDifferences().build(), 'save');
   }
 
-  private static getButtonState(nodeValueState: NodeValueState): ReportButtonStatus {
+  private static getButtonState(nodeValueState: NodeValueState): ReportButtonsState {
     const saveAllowed = nodeValueState.isEdited && !nodeValueState.isReadOnly;
     return {
       isReport: false,

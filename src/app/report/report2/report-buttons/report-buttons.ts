@@ -3,7 +3,7 @@ import { Observable, Subscription } from 'rxjs';
 import { StubStrategy } from '../../../shared/enums/stub-strategy';
 import { FormsModule } from '@angular/forms';
 
-export interface ReportButtonStatus {
+export interface ReportButtonsState {
   isReport: boolean;
   isCheckpoint: boolean;
   saveAllowed: boolean;
@@ -22,11 +22,11 @@ export class ReportButtons implements OnInit, OnDestroy {
   reportCommand = output<ButtonCommand>();
   checkpointStubStrategyChange = output<number>();
   reportStubStrategyChange = output<string>();
-  @Input({ required: true }) allowed$!: Observable<ReportButtonStatus>;
+  @Input({ required: true }) state$!: Observable<ReportButtonsState>;
   @Input() originalCheckpointStubStrategy$?: Observable<number | undefined>;
   @Input({ required: true }) originalReportStubStrategy$!: Observable<string | undefined>;
 
-  protected allowed: ReportButtonStatus = {
+  protected state: ReportButtonsState = {
     isReport: false,
     isCheckpoint: false,
     saveAllowed: false,
@@ -40,7 +40,7 @@ export class ReportButtons implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
 
   ngOnInit(): void {
-    this.subscriptions.add(this.allowed$.subscribe(this.updateAllowed.bind(this)));
+    this.subscriptions.add(this.state$.subscribe(this.updateState.bind(this)));
     this.subscriptions.add(
       this.originalCheckpointStubStrategy$?.subscribe((checkpointStubStrategy) => {
         if (checkpointStubStrategy !== undefined) {
@@ -86,12 +86,12 @@ export class ReportButtons implements OnInit, OnDestroy {
   }
 
   protected getReadOnly(): string {
-    return this.allowed.isReadOnly ? ' (read only)' : '';
+    return this.state.isReadOnly ? ' (read only)' : '';
   }
 
-  private updateAllowed(allowed: ReportButtonStatus): void {
+  private updateState(state: ReportButtonsState): void {
     this.ngZone.run(() => {
-      this.allowed = allowed;
+      this.state = state;
     });
   }
 }

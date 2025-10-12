@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReportButtons, ReportButtonStatus } from './report-buttons';
+import { ReportButtons, ReportButtonsState } from './report-buttons';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 describe('ReportButtons', () => {
@@ -15,7 +15,7 @@ describe('ReportButtons', () => {
 
     fixture = TestBed.createComponent(ReportButtons);
     component = fixture.componentInstance;
-    component.allowed$ = new BehaviorSubject<ReportButtonStatus>({
+    component.state$ = new BehaviorSubject<ReportButtonsState>({
       isReport: false,
       isCheckpoint: false,
       saveAllowed: false,
