@@ -3,6 +3,7 @@ import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testi
 import { CheckpointValueComponent, PartialCheckpoint } from './checkpoint-value.component';
 import { Subject } from 'rxjs';
 import { PartialReport } from '../report2.component';
+import { StubStrategy } from '../../../shared/enums/stub-strategy';
 
 describe('CheckpointValue', () => {
   let component: CheckpointValueComponent;
@@ -95,11 +96,11 @@ describe('CheckpointValue', () => {
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
     expectNotEdited();
-    component.onCheckpointStubStrategyChange(1);
+    component.onCheckpointStubStrategyChange(StubStrategy.checkpointIndex2Stub(1));
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
-    component.onCheckpointStubStrategyChange(0);
+    component.onCheckpointStubStrategyChange(StubStrategy.checkpointIndex2Stub(0));
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
     expectNotEdited();
@@ -173,7 +174,7 @@ function getPartialCheckpoint(message: string | null): PartialCheckpoint {
     stubbed: false,
     preTruncatedMessageLength: message === null ? 0 : message.length,
     // Use report level stub strategy
-    stub: 0,
+    stub: StubStrategy.checkpointIndex2Stub(0),
     parentReport: parent,
   };
   return { ...result };
