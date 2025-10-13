@@ -80,10 +80,11 @@ export class ReportButtons implements OnInit, OnDestroy {
     this.reportCommand.emit('copyReport');
   }
 
-  onCheckpointStubStrategyChange(stubStrategyStr: string): void {
-    const index: number = StubStrategy.checkpoints.findIndex((s) => s === stubStrategyStr);
-    if (index < 0) {
-      throw new Error(`ReportButtons.onCheckpointStubStrategyChange(): Unknown valu ${stubStrategyStr}`);
+  onCheckpointStubStrategyChange(stubStrategyString: string): void {
+    const options: string[] = [...StubStrategy.checkpoints];
+    const index: number = options.indexOf(stubStrategyString);
+    if (index === -1) {
+      throw new Error(`ReportButtons.onCheckpointStubStrategyChange(): Unknown valu ${stubStrategyString}`);
     }
     this.checkpointStubStrategyChange.emit(StubStrategy.checkpointIndex2Stub(index));
   }
