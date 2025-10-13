@@ -128,8 +128,8 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
         'Report level stub strategy',
       )
       .nonNullableVariable(
-        StubStrategy.checkpoints[this.originalCheckpoint.stub],
-        StubStrategy.checkpoints[this.actualCheckpointStubStrategy],
+        StubStrategy.checkpoints[StubStrategy.checkpointStubToIndex(this.originalCheckpoint.stub)],
+        StubStrategy.checkpoints[StubStrategy.checkpointStubToIndex(this.actualCheckpointStubStrategy)],
         "This checkpoint's stub strategy",
       );
   }
@@ -216,11 +216,17 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       ),
       stubNotFound: this.originalCheckpoint.stubNotFound,
     };
-    const isReadOnly = this.originalCheckpoint ? !this.originalCheckpoint.parentReport.crudStorage : true;
+    const isReadOnly = this.originalCheckpoint === undefined ? true : !this.originalCheckpoint.parentReport.crudStorage;
     this.nodeValueState.emit({
       isReadOnly,
       isEdited,
       storageId: this.originalCheckpoint?.parentReport.storageId,
+    });
+    this.buttonStateSubject.next({
+      isReport: false,
+      isCheckpoint: true,
+      saveAllowed: !isReadOnly && isEdited,
+      isReadOnly: isReadOnly,
     });
   }
 
