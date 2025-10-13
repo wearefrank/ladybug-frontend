@@ -12,13 +12,17 @@
       <app-report-value
         [height]="monacoEditorHeight"
         [report$]="reportSubject"
-        (nodeValueState)="onNodeValueState($event)"></app-report-value>
+        [rerunResult$]="rerunResultSubject"
+        (nodeValueState)="onNodeValueState($event)"
+        (button)="onButton($event)"></app-report-value>
     }
     @if (reportValueState === 'checkpoint') {
       <app-checkpoint-value
         [height]="monacoEditorHeight"
         [originalCheckpoint$]="checkpointValueSubject"
-        (nodeValueState)="onNodeValueState($event)"></app-checkpoint-value>
+        [rerunResult$]="rerunResultSubject"
+        (nodeValueState)="onNodeValueState($event)"
+        (button)="onButton($event)"></app-checkpoint-value>
     }
   </as-split-area>
 </as-split>

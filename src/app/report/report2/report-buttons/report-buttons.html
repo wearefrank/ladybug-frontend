@@ -52,5 +52,17 @@
         }
       </select>
     </div>
+      <button
+        data-cy-report="rerun"
+        class="btn btn-info"
+        [title]="'Rerun original report'"
+        [disabled]="state.isEdited"
+        (click)="rerun()"
+      >Rerun
+      </button>
+
   </section>
+  @if (rerunResult) {
+    <div class="rerun-result" [style.color]="rerunResult.equal ? 'green' : 'red'">{{ rerunResult.info }}</div>
+  }
 </div>

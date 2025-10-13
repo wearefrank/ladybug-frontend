@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReportButtons, ReportButtonsState } from './report-buttons';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { TestResult } from 'src/app/shared/interfaces/test-result';
 
 describe('ReportButtons', () => {
   let component: ReportButtons;
@@ -18,10 +19,12 @@ describe('ReportButtons', () => {
     component.state$ = new BehaviorSubject<ReportButtonsState>({
       isReport: false,
       isCheckpoint: false,
+      isEdited: false,
       saveAllowed: false,
       isReadOnly: true,
     });
     component.originalReportStubStrategy$ = originalReportStubStrategySubject;
+    component.rerunResult$ = new Subject<TestResult | undefined>() as Observable<TestResult | undefined>;
     fixture.detectChanges();
   });
 

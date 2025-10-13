@@ -23,12 +23,14 @@ import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
 import { ReportValueComponent } from './report-value/report-value.component';
 import { CheckpointValueComponent, PartialCheckpoint } from './checkpoint-value/checkpoint-value.component';
 import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
-import { ButtonCommand, ReportButtons } from './report-buttons/report-buttons';
+import { ButtonCommand } from './report-buttons/report-buttons';
 import { ErrorHandling } from '../../shared/classes/error-handling.service';
 import { HttpService } from '../../shared/services/http.service';
 import { ToastService } from '../../shared/services/toast.service';
-import { TestReportsService } from 'src/app/test/test-reports.service';
+import { TestReportsService } from '../../test/test-reports.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TestResult } from '../../shared/interfaces/test-result';
+import { DebugTabService } from '../../debug/debug-tab.service';
 
 type ReportValueState = 'report' | 'checkpoint' | 'none';
 
@@ -59,7 +61,7 @@ export interface NodeValueState {
 
 @Component({
   selector: 'app-report2',
-  imports: [AngularSplitModule, DebugTreeComponent, ReportValueComponent, CheckpointValueComponent, ReportButtons],
+  imports: [AngularSplitModule, DebugTreeComponent, ReportValueComponent, CheckpointValueComponent],
   templateUrl: './report2.component.html',
   styleUrl: './report2.component.css',
 })
@@ -79,6 +81,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   // values to be reposted.
   protected reportSubject = new BehaviorSubject<PartialReport | undefined>(undefined);
   protected checkpointValueSubject = new BehaviorSubject<PartialCheckpoint | undefined>(undefined);
+  protected rerunResultSubject = new BehaviorSubject<TestResult | undefined>(undefined);
   private storageId?: number;
   private originalNodeValueState?: NodeValueState;
   private host = inject(ElementRef);
@@ -90,6 +93,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   private errorHandler = inject(ErrorHandling);
   private toastService = inject(ToastService);
   private testReportsService = inject(TestReportsService);
+  private debugTab = inject(DebugTabService);
   private subscriptions: Subscription = new Subscription();
   private newTabReportData?: ReportData;
 
@@ -132,6 +136,8 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectReport(node: Report | Checkpoint): void {
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    this.rerunResultSubject.next(undefined);
     if (ReportUtility.isReport(node)) {
       this.changeReportValueState('report');
       this.reportSubject.next(node as Report);
@@ -145,12 +151,22 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onButton(command: ButtonCommand): void {
-    if (command === 'close') {
-      this.changeReportValueState('none');
-    } else if (command === 'copyReport') {
-      this.copyReport();
-    } else {
-      throw new Error(`Command should have been handled by child component: ${command}`);
+    switch (command) {
+      case 'close': {
+        this.changeReportValueState('none');
+        break;
+      }
+      case 'copyReport': {
+        this.copyReport();
+        break;
+      }
+      case 'rerun': {
+        this.rerunReport();
+        break;
+      }
+      default: {
+        throw new Error(`Command should have been handled by child component: ${command}`);
+      }
     }
   }
 
@@ -173,7 +189,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
     };
     this.httpService
       .copyReport(data, 'Test')
-      .pipe(catchError(this.handleCopyError()))
+      .pipe(catchError(this.handleErrorWithRethrowMessage('Copying report failed')))
       .subscribe({
         next: () => {
           this.testReportsService.getReports();
@@ -185,12 +201,28 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
       }); // TODO: storage is hardcoded, fix issue #196 for this
   }
 
+  private rerunReport(): void {
+    if (this.storageId === undefined) {
+      throw new Error('Cannot rerun report because Report2Component does not have the storageId');
+    }
+    this.httpService
+      .runReport(this.currentView.storageName, this.storageId)
+      .pipe(catchError(this.handleErrorWithRethrowMessage('Rerunning report failed')))
+      .subscribe({
+        next: (response: TestResult): void => {
+          this.toastService.showSuccess('Report rerun successful');
+          this.rerunResultSubject.next(response);
+          this.debugTab.refreshTable({ displayToast: false });
+        },
+      });
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private handleCopyError(): (error: HttpErrorResponse) => Observable<any> {
+  private handleErrorWithRethrowMessage(message: string): (error: HttpErrorResponse) => Observable<any> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (error: HttpErrorResponse): Observable<any> => {
       this.errorHandler.handleError()(error);
-      throw new Error('Copying report failed');
+      throw new Error(message);
     };
   }
 

@@ -4,9 +4,10 @@ import { ReportValueComponent, Variable } from './report-value.component';
 import { HttpService } from '../../../shared/services/http.service';
 import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { PartialReport } from '../report2.component';
 import { ReportButtonsState } from '../report-buttons/report-buttons';
+import { TestResult } from '../../../shared/interfaces/test-result';
 
 describe('ReportValue', () => {
   let component: ReportValueComponent;
@@ -27,6 +28,7 @@ describe('ReportValue', () => {
     nodeValueStateSpy = spyOn(component.nodeValueState, 'emit');
     reportSubject = new Subject<PartialReport>();
     component.report$ = reportSubject;
+    component.rerunResult$ = new Subject<TestResult | undefined>() as Observable<TestResult | undefined>;
     buttonStateSubscription = component.buttonStateSubject.subscribe(
       (newButtonState) => (buttonState = newButtonState),
     );
@@ -370,6 +372,7 @@ describe('ReportValue', () => {
     expect(component.labels.isEdited).toEqual(false);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(false);
     expect(component.getDifferences().data.length).toEqual(0);
+    expect(buttonState?.isEdited).toEqual(false);
     expect(buttonState?.saveAllowed).toEqual(false);
   }
 
@@ -377,6 +380,7 @@ describe('ReportValue', () => {
     expect(component.labels.isEdited).toEqual(true);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(true);
     expect(component.getDifferences().data.length).not.toEqual(0);
+    expect(buttonState?.isEdited).toEqual(true);
     expect(buttonState?.saveAllowed).toEqual(true);
   }
 });

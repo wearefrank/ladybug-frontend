@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { MonacoEditorComponent } from 'src/app/monaco-editor/monaco-editor.component';
+import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
 import { DifferencesBuilder } from '../../../shared/util/differences-builder';
 import {
@@ -9,7 +9,8 @@ import {
 } from '../report-alert-message2/report-alert-message2.component';
 import { NodeValueState, PartialReport } from '../report2.component';
 import { ButtonCommand, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
-import { StubStrategy } from 'src/app/shared/enums/stub-strategy';
+import { StubStrategy } from '../../../shared/enums/stub-strategy';
+import { TestResult } from '../../../shared/interfaces/test-result';
 
 export interface PartialCheckpoint {
   message: string | null;
@@ -36,11 +37,10 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   button = output<ButtonCommand>();
   @Input() height = 0;
   @Input({ required: true }) originalCheckpoint$!: Observable<PartialCheckpoint | undefined>;
+  @Input({ required: true }) rerunResult$!: Observable<TestResult | undefined>;
   @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
   labels: NodeValueLabels | undefined;
-  buttonStateSubject = new BehaviorSubject<ReportButtonsState>(
-    CheckpointValueComponent.getButtonState(CheckpointValueComponent.getDefaultNodeValueState()),
-  );
+  buttonStateSubject = new BehaviorSubject<ReportButtonsState>(CheckpointValueComponent.getDefaultButtonState());
 
   protected editorContentsSubject = new BehaviorSubject<string | undefined>(undefined);
   protected editorReadOnlySubject = new BehaviorSubject<boolean>(true);
@@ -103,6 +103,9 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     }
     if (command === 'copyReport') {
       this.button.emit('copyReport');
+    }
+    if (command === 'rerun') {
+      this.button.emit('rerun');
     }
   }
 
@@ -226,6 +229,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     this.buttonStateSubject.next({
       isReport: false,
       isCheckpoint: true,
+      isEdited,
       saveAllowed,
       isReadOnly: isReadOnly,
     });
@@ -248,17 +252,13 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     this.saveModal.open(this.getDifferences().build(), 'save');
   }
 
-  private static getButtonState(nodeValueState: NodeValueState): ReportButtonsState {
-    const saveAllowed = nodeValueState.isEdited && !nodeValueState.isReadOnly;
+  private static getDefaultButtonState(): ReportButtonsState {
     return {
       isReport: false,
       isCheckpoint: true,
-      saveAllowed: saveAllowed,
-      isReadOnly: nodeValueState.isReadOnly,
+      isEdited: false,
+      saveAllowed: false,
+      isReadOnly: true,
     };
-  }
-
-  private static getDefaultNodeValueState(): NodeValueState {
-    return { isReadOnly: true, isEdited: false };
   }
 }

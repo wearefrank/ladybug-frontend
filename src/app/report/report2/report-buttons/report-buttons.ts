@@ -2,15 +2,17 @@ import { Component, inject, Input, NgZone, OnDestroy, OnInit, output } from '@an
 import { Observable, Subscription } from 'rxjs';
 import { StubStrategy } from '../../../shared/enums/stub-strategy';
 import { FormsModule } from '@angular/forms';
+import { TestResult } from '../../../shared/interfaces/test-result';
 
 export interface ReportButtonsState {
   isReport: boolean;
   isCheckpoint: boolean;
+  isEdited: boolean;
   saveAllowed: boolean;
   isReadOnly: boolean;
 }
 
-export type ButtonCommand = 'close' | 'makeNull' | 'save' | 'copyReport';
+export type ButtonCommand = 'close' | 'makeNull' | 'save' | 'copyReport' | 'rerun';
 
 @Component({
   selector: 'app-report-buttons',
@@ -25,10 +27,12 @@ export class ReportButtons implements OnInit, OnDestroy {
   @Input({ required: true }) state$!: Observable<ReportButtonsState>;
   @Input() originalCheckpointStubStrategy$?: Observable<number | undefined>;
   @Input({ required: true }) originalReportStubStrategy$!: Observable<string | undefined>;
+  @Input({ required: true }) rerunResult$!: Observable<TestResult | undefined>;
 
   protected state: ReportButtonsState = {
     isReport: false,
     isCheckpoint: false,
+    isEdited: false,
     saveAllowed: false,
     isReadOnly: true,
   };
@@ -36,6 +40,7 @@ export class ReportButtons implements OnInit, OnDestroy {
   protected readonly StubStrategy = StubStrategy;
   protected currentCheckpointStubStrategyStr?: string;
   protected currentReportStubStrategy?: string;
+  protected rerunResult?: TestResult;
   private ngZone = inject(NgZone);
   private subscriptions = new Subscription();
 
@@ -58,6 +63,11 @@ export class ReportButtons implements OnInit, OnDestroy {
         }
       }),
     );
+    this.subscriptions.add(
+      this.rerunResult$.subscribe((rerunResult) => {
+        this.ngZone.run(() => (this.rerunResult = rerunResult));
+      }),
+    );
   }
 
   ngOnDestroy(): void {
@@ -78,6 +88,10 @@ export class ReportButtons implements OnInit, OnDestroy {
 
   copyReport(): void {
     this.reportCommand.emit('copyReport');
+  }
+
+  rerun(): void {
+    this.reportCommand.emit('rerun');
   }
 
   onCheckpointStubStrategyChange(stubStrategyString: string): void {

@@ -3,6 +3,7 @@
     [state$]="buttonStateSubject"
     (reportCommand)="onButton($event)"
     [originalReportStubStrategy$]="originalReportStubStrategySubject"
+    [rerunResult$]="rerunResult$"
     (reportStubStrategyChange)="onReportStubStrategyChange($event)">
   </app-report-buttons>
   <app-report-alert-message2 [labels]="labels"></app-report-alert-message2>

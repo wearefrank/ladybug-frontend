@@ -15,6 +15,7 @@ import {
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
 import { ButtonCommand, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
+import { TestResult } from '../../../shared/interfaces/test-result';
 
 export interface Variable {
   name: string;
@@ -42,6 +43,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   nodeValueState = output<NodeValueState>();
   button = output<ButtonCommand>();
   @Input({ required: true }) report$!: Observable<PartialReport | undefined>;
+  @Input({ required: true }) rerunResult$!: Observable<TestResult | undefined>;
   @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
 
   editedName = '';
@@ -154,6 +156,9 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     }
     if (command === 'copyReport') {
       this.button.emit('copyReport');
+    }
+    if (command === 'rerun') {
+      this.button.emit('rerun');
     }
   }
 
@@ -318,6 +323,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     return {
       isReport: true,
       isCheckpoint: false,
+      isEdited: nodeValueState.isEdited,
       saveAllowed: saveAllowed,
       isReadOnly: nodeValueState.isReadOnly,
     };

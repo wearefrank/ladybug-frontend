@@ -30,3 +30,13 @@ button {
   font-size: 0.6rem;
   text-align: center;
 }
+
+.rerun-result {
+  margin: 0 0 1rem 0.25rem;
+  font-size: 10pt;
+  width: fit-content;
+}
+
+:disabled {
+  cursor: not-allowed;
+}
