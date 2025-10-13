@@ -164,6 +164,10 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
         this.rerunReport();
         break;
       }
+      case 'customReportAction': {
+        this.processCustomReportAction();
+        break;
+      }
       default: {
         throw new Error(`Command should have been handled by child component: ${command}`);
       }
@@ -215,6 +219,29 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
           this.debugTab.refreshTable({ displayToast: false });
         },
       });
+  }
+
+  private processCustomReportAction(): void {
+    if (this.storageId === undefined) {
+      this.toastService.showDanger('Could not find report to apply custom action');
+    } else {
+      this.httpService
+        .processCustomReportAction(this.currentView.storageName, [this.storageId])
+        .pipe(catchError(this.handleErrorWithRethrowMessage('Could not start custom report action')))
+        .subscribe({
+          next: (data: Record<string, string>) => {
+            if (data.success) {
+              this.toastService.showSuccess(data.success);
+            }
+            if (data.error) {
+              this.toastService.showDanger(data.error);
+            }
+          },
+          error: () => {
+            this.toastService.showDanger('Failed to process custom report action');
+          },
+        });
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

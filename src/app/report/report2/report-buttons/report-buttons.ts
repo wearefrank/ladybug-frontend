@@ -3,6 +3,7 @@ import { Observable, Subscription } from 'rxjs';
 import { StubStrategy } from '../../../shared/enums/stub-strategy';
 import { FormsModule } from '@angular/forms';
 import { TestResult } from '../../../shared/interfaces/test-result';
+import { AppVariablesService } from '../../../shared/services/app.variables.service';
 
 export interface ReportButtonsState {
   isReport: boolean;
@@ -12,7 +13,7 @@ export interface ReportButtonsState {
   isReadOnly: boolean;
 }
 
-export type ButtonCommand = 'close' | 'makeNull' | 'save' | 'copyReport' | 'rerun';
+export type ButtonCommand = 'close' | 'makeNull' | 'save' | 'copyReport' | 'rerun' | 'customReportAction';
 
 @Component({
   selector: 'app-report-buttons',
@@ -41,6 +42,7 @@ export class ReportButtons implements OnInit, OnDestroy {
   protected currentCheckpointStubStrategyStr?: string;
   protected currentReportStubStrategy?: string;
   protected rerunResult?: TestResult;
+  protected appVariablesService = inject(AppVariablesService);
   private ngZone = inject(NgZone);
   private subscriptions = new Subscription();
 
@@ -92,6 +94,10 @@ export class ReportButtons implements OnInit, OnDestroy {
 
   rerun(): void {
     this.reportCommand.emit('rerun');
+  }
+
+  processCustomReportAction(): void {
+    this.reportCommand.emit('customReportAction');
   }
 
   onCheckpointStubStrategyChange(stubStrategyString: string): void {

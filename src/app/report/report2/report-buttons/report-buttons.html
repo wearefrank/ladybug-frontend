@@ -52,15 +52,20 @@
         }
       </select>
     </div>
-      <button
-        data-cy-report="rerun"
-        class="btn btn-info"
-        [title]="'Rerun original report'"
-        [disabled]="state.isEdited"
-        (click)="rerun()"
-      >Rerun
-      </button>
-
+    <button
+      data-cy-report="rerun"
+      class="btn btn-info"
+      [title]="'Rerun original report'"
+      [disabled]="state.isEdited"
+      (click)="rerun()"
+    >Rerun
+    </button>
+    @if (appVariablesService.getVariable('customReportActionButtonText') !== null) {
+      <button data-cy-test="customReportAction" class="btn btn-info" [title]="appVariablesService.getVariable('customReportActionButtonText')"
+          (click)="processCustomReportAction()">
+        {{ appVariablesService.getVariable("customReportActionButtonText") }}
+    </button>
+    }
   </section>
   @if (rerunResult) {
     <div class="rerun-result" [style.color]="rerunResult.equal ? 'green' : 'red'">{{ rerunResult.info }}</div>

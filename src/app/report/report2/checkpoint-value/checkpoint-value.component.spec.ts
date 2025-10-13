@@ -6,6 +6,8 @@ import { PartialReport } from '../report2.component';
 import { StubStrategy } from '../../../shared/enums/stub-strategy';
 import { ReportButtonsState } from '../report-buttons/report-buttons';
 import { TestResult } from '../../../shared/interfaces/test-result';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('CheckpointValue', () => {
   let component: CheckpointValueComponent;
@@ -17,6 +19,7 @@ describe('CheckpointValue', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
       imports: [CheckpointValueComponent],
     }).compileComponents();
 

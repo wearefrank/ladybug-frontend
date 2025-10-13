@@ -160,6 +160,9 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     if (command === 'rerun') {
       this.button.emit('rerun');
     }
+    if (command === 'customReportAction') {
+      this.button.emit('customReportAction');
+    }
   }
 
   onReportStubStrategyChange(strategy: string): void {

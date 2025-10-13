@@ -3,6 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReportButtons, ReportButtonsState } from './report-buttons';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { TestResult } from 'src/app/shared/interfaces/test-result';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { AppVariablesService } from 'src/app/shared/services/app.variables.service';
 
 describe('ReportButtons', () => {
   let component: ReportButtons;
@@ -11,6 +14,7 @@ describe('ReportButtons', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [AppVariablesService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
       imports: [ReportButtons],
     }).compileComponents();
 

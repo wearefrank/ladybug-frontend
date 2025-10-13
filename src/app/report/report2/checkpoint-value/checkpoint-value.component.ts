@@ -107,6 +107,9 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     if (command === 'rerun') {
       this.button.emit('rerun');
     }
+    if (command === 'customReportAction') {
+      this.button.emit('customReportAction');
+    }
   }
 
   getDifferences(): DifferencesBuilder {
