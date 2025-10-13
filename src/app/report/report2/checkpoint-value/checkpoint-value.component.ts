@@ -38,12 +38,12 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   @Input({ required: true }) originalCheckpoint$!: Observable<PartialCheckpoint | undefined>;
   @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
   labels: NodeValueLabels | undefined;
+  buttonStateSubject = new BehaviorSubject<ReportButtonsState>(
+    CheckpointValueComponent.getButtonState(CheckpointValueComponent.getDefaultNodeValueState()),
+  );
 
   protected editorContentsSubject = new BehaviorSubject<string | undefined>(undefined);
   protected editorReadOnlySubject = new BehaviorSubject<boolean>(true);
-  protected buttonStateSubject = new BehaviorSubject<ReportButtonsState>(
-    CheckpointValueComponent.getButtonState(CheckpointValueComponent.getDefaultNodeValueState()),
-  );
   protected originalCheckpointStubStrategySubject = new BehaviorSubject<number | undefined>(undefined);
   protected originalReportStubStrategySubject = new BehaviorSubject<string | undefined>(undefined);
   private originalCheckpoint: PartialCheckpoint | undefined;
@@ -222,10 +222,11 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       isEdited,
       storageId: this.originalCheckpoint?.parentReport.storageId,
     });
+    const saveAllowed = !isReadOnly && isEdited;
     this.buttonStateSubject.next({
       isReport: false,
       isCheckpoint: true,
-      saveAllowed: !isReadOnly && isEdited,
+      saveAllowed,
       isReadOnly: isReadOnly,
     });
   }

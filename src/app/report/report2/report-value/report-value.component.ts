@@ -65,7 +65,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     messageClassName: undefined,
   };
 
-  protected buttonStateSubject = new BehaviorSubject<ReportButtonsState>(
+  buttonStateSubject = new BehaviorSubject<ReportButtonsState>(
     ReportValueComponent.getButtonState(ReportValueComponent.getDefaultNodeValueState()),
   );
 

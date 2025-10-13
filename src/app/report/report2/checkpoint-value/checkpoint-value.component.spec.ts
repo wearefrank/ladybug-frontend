@@ -1,15 +1,18 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 
 import { CheckpointValueComponent, PartialCheckpoint } from './checkpoint-value.component';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { PartialReport } from '../report2.component';
 import { StubStrategy } from '../../../shared/enums/stub-strategy';
+import { ReportButtonsState } from '../report-buttons/report-buttons';
 
 describe('CheckpointValue', () => {
   let component: CheckpointValueComponent;
   let fixture: ComponentFixture<CheckpointValueComponent>;
   let originalValueSubject: Subject<PartialCheckpoint> | undefined;
   let nodeValueStateSpy: jasmine.Spy | undefined;
+  let buttonState: ReportButtonsState | undefined;
+  let buttonStateSubscription: Subscription | undefined;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -21,7 +24,14 @@ describe('CheckpointValue', () => {
     originalValueSubject = new Subject<PartialCheckpoint>();
     nodeValueStateSpy = spyOn(component.nodeValueState, 'emit');
     component.originalCheckpoint$ = originalValueSubject;
+    buttonStateSubscription = component.buttonStateSubject.subscribe((newButtonState) => {
+      buttonState = newButtonState;
+    });
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    buttonStateSubscription?.unsubscribe();
   });
 
   it('should create', () => {
@@ -127,9 +137,11 @@ describe('CheckpointValue', () => {
     originalValueSubject!.next(checkpoint);
     flush();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
+    expect(buttonState?.isReadOnly).toEqual(false);
     component.onActualEditorContentsChanged('My other value');
     flush();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
+    expect(buttonState?.isReadOnly).toEqual(false);
   }));
 
   it('When the checkpoint-s report is not in a CRUD storage then the emitted events indicate read-only', fakeAsync(() => {
@@ -138,21 +150,25 @@ describe('CheckpointValue', () => {
     originalValueSubject!.next(checkpoint);
     flush();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
+    expect(buttonState?.isReadOnly).toEqual(true);
     component.onActualEditorContentsChanged('My other value');
     flush();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
+    expect(buttonState?.isReadOnly).toEqual(true);
   }));
 
   function expectNotEdited(): void {
     expect(component.labels?.isEdited).toEqual(false);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(false);
     expect(component.getDifferences().data.length).toEqual(0);
+    expect(buttonState?.saveAllowed).toEqual(false);
   }
 
   function expectIsEdited(): void {
     expect(component.labels?.isEdited).toEqual(true);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(true);
     expect(component.getDifferences().data.length).not.toEqual(0);
+    expect(buttonState?.saveAllowed).toEqual(true);
   }
 });
 

@@ -4,14 +4,17 @@ import { ReportValueComponent, Variable } from './report-value.component';
 import { HttpService } from '../../../shared/services/http.service';
 import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { PartialReport } from '../report2.component';
+import { ReportButtonsState } from '../report-buttons/report-buttons';
 
 describe('ReportValue', () => {
   let component: ReportValueComponent;
   let fixture: ComponentFixture<ReportValueComponent>;
   let reportSubject: Subject<PartialReport> | undefined;
   let nodeValueStateSpy: jasmine.Spy | undefined;
+  let buttonState: ReportButtonsState | undefined;
+  let buttonStateSubscription: Subscription | undefined;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -24,7 +27,14 @@ describe('ReportValue', () => {
     nodeValueStateSpy = spyOn(component.nodeValueState, 'emit');
     reportSubject = new Subject<PartialReport>();
     component.report$ = reportSubject;
+    buttonStateSubscription = component.buttonStateSubject.subscribe(
+      (newButtonState) => (buttonState = newButtonState),
+    );
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    buttonStateSubscription?.unsubscribe();
   });
 
   it('should create', () => {
@@ -336,9 +346,11 @@ describe('ReportValue', () => {
     reportSubject!.next(report);
     component.setVariables([]);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
+    expect(buttonState?.isReadOnly).toEqual(false);
     component.editedName = 'Changed name';
     component.onInputChange();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
+    expect(buttonState?.isReadOnly).toEqual(false);
   });
 
   it('When the report is not in a CRUD storage then emitted events indicate read-only', () => {
@@ -347,21 +359,25 @@ describe('ReportValue', () => {
     reportSubject!.next(report);
     component.setVariables([]);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
+    expect(buttonState?.isReadOnly).toEqual(true);
     component.editedName = 'Changed name';
     component.onInputChange();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
+    expect(buttonState?.isReadOnly).toEqual(true);
   });
 
   function expectNotEdited(): void {
     expect(component.labels.isEdited).toEqual(false);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(false);
     expect(component.getDifferences().data.length).toEqual(0);
+    expect(buttonState?.saveAllowed).toEqual(false);
   }
 
   function expectEdited(): void {
     expect(component.labels.isEdited).toEqual(true);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(true);
     expect(component.getDifferences().data.length).not.toEqual(0);
+    expect(buttonState?.saveAllowed).toEqual(true);
   }
 });
 
