@@ -137,7 +137,6 @@ export class ReportValueComponent implements OnInit, OnDestroy {
 
   async copyDefaultTransformation(): Promise<void> {
     // TODO: Rethrow error when obtaining transformation fails.
-    // TODO: Check that this is the default transformation, not the factory default.
     const transformationResponse: Transformation = await firstValueFrom(
       this.http.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),
     );
