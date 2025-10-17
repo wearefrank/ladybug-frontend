@@ -14,4 +14,4 @@
     (actualEditorContentsChange)="onActualEditorContentsChanged($event)">
   </app-monaco-editor>
 </div>
-<app-difference2-modal></app-difference2-modal>
+<app-difference2-modal (saveChangesEvent)="requestSave()"></app-difference2-modal>

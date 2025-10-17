@@ -9,13 +9,14 @@ import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { Transformation } from '../../../shared/interfaces/transformation';
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
 import { DifferencesBuilder } from '../../../shared/util/differences-builder';
-import { NodeValueState, PartialReport } from '../report2.component';
+import { NodeValueState, PartialReport, UpdateNode } from '../report2.component';
 import {
   NodeValueLabels,
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
 import { ButtonCommand, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
 import { TestResult } from '../../../shared/interfaces/test-result';
+import { UpdateReport } from '../../../shared/interfaces/update-report';
 
 export interface Variable {
   name: string;
@@ -42,7 +43,9 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
 export class ReportValueComponent implements OnInit, OnDestroy {
   nodeValueState = output<NodeValueState>();
   button = output<ButtonCommand>();
+  save = output<UpdateNode>();
   @Input({ required: true }) report$!: Observable<PartialReport | undefined>;
+  @Input({ required: true }) saveDone$!: Observable<void>;
   @Input({ required: true }) rerunResult$!: Observable<TestResult | undefined>;
   @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
 
@@ -114,6 +117,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
         }
       }),
     );
+    this.subscriptions.add(this.saveDone$.subscribe(() => this.saveModal.closeModal()));
   }
 
   ngOnDestroy(): void {
@@ -144,23 +148,30 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   }
 
   onButton(command: ButtonCommand): void {
-    if (command === 'close') {
-      this.button.emit('close');
-    }
-    if (command === 'makeNull') {
-      throw new Error('Button makeNull should not be accessible when no checkpoint is shown');
-    }
-    if (command === 'save') {
-      this.saveModal.open(this.getDifferences().build(), 'save');
-    }
-    if (command === 'copyReport') {
-      this.button.emit('copyReport');
-    }
-    if (command === 'rerun') {
-      this.button.emit('rerun');
-    }
-    if (command === 'customReportAction') {
-      this.button.emit('customReportAction');
+    switch (command) {
+      case 'close': {
+        this.button.emit('close');
+        break;
+      }
+      case 'makeNull': {
+        throw new Error('Button makeNull should not be accessible when no checkpoint is shown');
+      }
+      case 'save': {
+        this.saveModal.open(this.getDifferences().build());
+        break;
+      }
+      case 'copyReport': {
+        this.button.emit('copyReport');
+        break;
+      }
+      case 'rerun': {
+        this.button.emit('rerun');
+        break;
+      }
+      case 'customReportAction': {
+        this.button.emit('customReportAction');
+        break;
+      }
     }
   }
 
@@ -221,6 +232,38 @@ export class ReportValueComponent implements OnInit, OnDestroy {
       result.nonNullableVariable(originalValue, editedValue, `Variable ${n}`, true);
     }
     return result;
+  }
+
+  // TODO: Include in Karma tests.
+  requestSave(): void {
+    if (!this.isEdited()) {
+      throw new Error('ReportValueComponent.save() should not be called when the report node has not been edited');
+    }
+    const updateReport: UpdateReport = {};
+    if (this.editedName !== this.report!.name) {
+      updateReport.name = this.editedName;
+    }
+    const description: string | null = this.getRealEditedValueForNullable(this.editedDescription);
+    if (description !== this.report!.description) {
+      updateReport.description = description;
+    }
+    const path: string | null = this.getRealEditedValueForNullable(this.editedPath);
+    if (path !== this.report!.path) {
+      updateReport.path = path;
+    }
+    const transformation = this.getRealEditedValueForNullable(this.editedTransformation);
+    if (transformation !== this.report!.transformation) {
+      updateReport.transformation = transformation;
+    }
+    if (!this.hasNoUnsavedVariables()) {
+      updateReport.variables = this.getVariablesUpdate();
+    }
+    if (this.editedReportStubStrategy !== this.report!.stubStrategy) {
+      updateReport.stubStrategy = this.editedReportStubStrategy;
+    }
+    this.save.emit({
+      updateReport,
+    });
   }
 
   // For testing purposes
@@ -357,5 +400,13 @@ export class ReportValueComponent implements OnInit, OnDestroy {
       }
     }
     return [...resultSet].toSorted();
+  }
+
+  private getVariablesUpdate(): string {
+    const variables: Record<string, string> = {};
+    for (const v of this.getRealEditedVariables()) {
+      variables[v.name] = v.value;
+    }
+    return JSON.stringify(variables);
   }
 }

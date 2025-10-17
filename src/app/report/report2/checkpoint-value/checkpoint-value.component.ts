@@ -7,12 +7,15 @@ import {
   NodeValueLabels,
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
-import { NodeValueState, PartialReport } from '../report2.component';
+import { NodeValueState, PartialReport, UpdateNode } from '../report2.component';
 import { ButtonCommand, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
 import { StubStrategy } from '../../../shared/enums/stub-strategy';
 import { TestResult } from '../../../shared/interfaces/test-result';
 
 export interface PartialCheckpoint {
+  index: number;
+  // Undefined is allowed to support testing.
+  uid?: string;
   message: string | null;
   stubbed: boolean;
   // TODO: Server will not send undefined.
@@ -35,8 +38,10 @@ export interface PartialCheckpoint {
 export class CheckpointValueComponent implements OnInit, OnDestroy {
   nodeValueState = output<NodeValueState>();
   button = output<ButtonCommand>();
+  save = output<UpdateNode>();
   @Input() height = 0;
   @Input({ required: true }) originalCheckpoint$!: Observable<PartialCheckpoint | undefined>;
+  @Input({ required: true }) saveDone$!: Observable<void>;
   @Input({ required: true }) rerunResult$!: Observable<TestResult | undefined>;
   @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
   labels: NodeValueLabels | undefined;
@@ -61,6 +66,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
         }
       }),
     );
+    this.subscriptions.add(this.saveDone$.subscribe(() => this.saveModal.closeModal()));
     this.editorReadOnlySubject.next(false);
   }
 
@@ -92,23 +98,31 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   }
 
   onButton(command: ButtonCommand): void {
-    if (command === 'close') {
-      this.button.emit('close');
-    }
-    if (command === 'makeNull') {
-      this.editToNull();
-    }
-    if (command === 'save') {
-      this.saveCheckpoint();
-    }
-    if (command === 'copyReport') {
-      this.button.emit('copyReport');
-    }
-    if (command === 'rerun') {
-      this.button.emit('rerun');
-    }
-    if (command === 'customReportAction') {
-      this.button.emit('customReportAction');
+    switch (command) {
+      case 'close': {
+        this.button.emit('close');
+        break;
+      }
+      case 'makeNull': {
+        this.editToNull();
+        break;
+      }
+      case 'save': {
+        this.saveCheckpoint();
+        break;
+      }
+      case 'copyReport': {
+        this.button.emit('copyReport');
+        break;
+      }
+      case 'rerun': {
+        this.button.emit('rerun');
+        break;
+      }
+      case 'customReportAction': {
+        this.button.emit('customReportAction');
+        break;
+      }
     }
   }
 
@@ -145,6 +159,62 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       return this.actualEditorContents.length === 0 ? null : this.actualEditorContents;
     } else {
       return this.actualEditorContents;
+    }
+  }
+
+  requestSave(): void {
+    if (!this.isEdited()) {
+      throw new Error(
+        'CheckpointValueComponent.save() should not be reachable when the checkpoint has not been edited',
+      );
+    }
+    let messageUpdate: string | null | undefined;
+    let checkpointStubStrategyUpdate: number | undefined;
+    let reportStubStrategyUpdate: string | undefined;
+    const message: string | null = this.getEditedRealCheckpointValue();
+    if (message !== this.originalCheckpoint!.message) {
+      messageUpdate = message;
+    }
+    if (this.actualCheckpointStubStrategy !== this.originalCheckpoint!.stub) {
+      checkpointStubStrategyUpdate = this.actualCheckpointStubStrategy;
+    }
+    if (this.actualReportStubStrategy !== this.originalCheckpoint!.parentReport.stubStrategy) {
+      reportStubStrategyUpdate = this.actualReportStubStrategy;
+    }
+    const checkpointId = `${this.originalCheckpoint!.index}`;
+    const haveCheckpointUpdate: boolean = messageUpdate !== undefined || checkpointStubStrategyUpdate !== undefined;
+    const haveReportUpdate: boolean = reportStubStrategyUpdate !== undefined;
+    if (haveCheckpointUpdate) {
+      if (haveReportUpdate) {
+        this.save.emit({
+          checkpointUidToRestore: this.originalCheckpoint!.uid,
+          updateCheckpoint: {
+            checkpointId,
+            checkpointMessage: messageUpdate,
+            stub: checkpointStubStrategyUpdate,
+          },
+          updateReport: {
+            stubStrategy: reportStubStrategyUpdate,
+          },
+        });
+      } else {
+        this.save.emit({
+          checkpointUidToRestore: this.originalCheckpoint!.uid,
+          updateCheckpoint: {
+            checkpointId,
+            checkpointMessage: messageUpdate,
+            stub: checkpointStubStrategyUpdate,
+          },
+        });
+      }
+    } else {
+      // No Checkpoint update, so a report update only
+      this.save.emit({
+        checkpointUidToRestore: this.originalCheckpoint!.uid,
+        updateReport: {
+          stubStrategy: reportStubStrategyUpdate,
+        },
+      });
     }
   }
 
@@ -200,12 +270,8 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
         'CheckpointValueComponent.handleLabelsAndNodeValueState(): Expected that actualReportStubStrategy !== undefined because a checkpoint was read',
       );
     }
+    const isEdited = this.isEdited();
     const editedCheckpointValue = this.getEditedRealCheckpointValue();
-    const isCheckpointEdited = editedCheckpointValue !== this.originalCheckpoint.message;
-    const isCheckpointStubStrategyEdited = this.actualCheckpointStubStrategy !== this.originalCheckpoint.stub;
-    const isReportStubStrategyEdited =
-      this.actualReportStubStrategy !== this.originalCheckpoint.parentReport.stubStrategy;
-    const isEdited = isCheckpointEdited || isCheckpointStubStrategyEdited || isReportStubStrategyEdited;
     this.labels = {
       isEdited,
       isMessageNull: editedCheckpointValue === null,
@@ -238,6 +304,15 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     });
   }
 
+  private isEdited(): boolean {
+    const editedCheckpointValue = this.getEditedRealCheckpointValue();
+    const isCheckpointEdited = editedCheckpointValue !== this.originalCheckpoint!.message;
+    const isCheckpointStubStrategyEdited = this.actualCheckpointStubStrategy !== this.originalCheckpoint!.stub;
+    const isReportStubStrategyEdited =
+      this.actualReportStubStrategy !== this.originalCheckpoint!.parentReport.stubStrategy;
+    return isCheckpointEdited || isCheckpointStubStrategyEdited || isReportStubStrategyEdited;
+  }
+
   private static getEncoding(e: string | null | undefined): string | undefined {
     return e === undefined || e === null || e.length === 0 ? undefined : e;
   }
@@ -252,7 +327,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   }
 
   private saveCheckpoint(): void {
-    this.saveModal.open(this.getDifferences().build(), 'save');
+    this.saveModal.open(this.getDifferences().build());
   }
 
   private static getDefaultButtonState(): ReportButtonsState {

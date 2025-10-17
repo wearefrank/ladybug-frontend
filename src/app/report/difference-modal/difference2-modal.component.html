@@ -1,6 +1,6 @@
 <ng-template #modal>
   <div class="modal-header">
-    <h3 class="modal-title">Are you sure you want to {{ saveOrDiscardType }} changes?</h3>
+    <h3 class="modal-title">Are you sure you want to save changes?</h3>
     <button type="button" class="close" (click)="activeModal?.close()">
       <span>&times;</span>
     </button>
@@ -9,7 +9,7 @@
     @for (part of reportDifferences; track part.name) {
       @if (part.originalValue || part.difference.length > 0) {
         <div class="pb-3" data-cy-save-changes-modal>
-          <div class="text-center">{{ part.name | titlecase }}</div>
+          <div class="text-center">{{ part.name }}</div>
           <hr class="text-dark w-50">
           <div class="row">
             <div class="col">
@@ -37,14 +37,18 @@
       }
     }
   </div>
-  <div class="modal-footer">
-    <div class="col-md-12 text-center">
-      <button data-cy-difference-modal="confirm" type="button" class="btn btn-info mr-2" (click)="onClickConfirm()"
-      >{{ saveOrDiscardType|titlecase }}
-      </button>
-      <button type="button" class="btn btn-info ml-2" (click)="closeModal()">No</button>
+  @if (isConfirmClicked) {
+    Working...
+  } @else {
+    <div class="modal-footer">
+      <div class="col-md-12 text-center">
+        <button data-cy-difference-modal="confirm" type="button" class="btn btn-info mr-2" (click)="onClickConfirm()"
+        >Save
+        </button>
+        <button type="button" class="btn btn-info ml-2" (click)="closeModal()">No</button>
+      </div>
     </div>
-  </div>
+  }
 </ng-template>
 
 

@@ -1,8 +1,8 @@
 export interface UpdateReport {
   name?: string;
-  path?: string;
-  description?: string;
-  transformation?: string;
+  path?: string | null;
+  description?: string | null;
+  transformation?: string | null;
   variables?: string;
   stubStrategy?: string;
 }

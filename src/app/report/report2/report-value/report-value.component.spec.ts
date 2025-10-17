@@ -13,6 +13,7 @@ describe('ReportValue', () => {
   let component: ReportValueComponent;
   let fixture: ComponentFixture<ReportValueComponent>;
   let reportSubject: Subject<PartialReport> | undefined;
+  let saveDoneSubject: Subject<void> | undefined;
   let nodeValueStateSpy: jasmine.Spy | undefined;
   let buttonState: ReportButtonsState | undefined;
   let buttonStateSubscription: Subscription | undefined;
@@ -27,7 +28,9 @@ describe('ReportValue', () => {
     component = fixture.componentInstance;
     nodeValueStateSpy = spyOn(component.nodeValueState, 'emit');
     reportSubject = new Subject<PartialReport>();
+    saveDoneSubject = new Subject<void>();
     component.report$ = reportSubject;
+    component.saveDone$ = saveDoneSubject;
     component.rerunResult$ = new Subject<TestResult | undefined>() as Observable<TestResult | undefined>;
     buttonStateSubscription = component.buttonStateSubject.subscribe(
       (newButtonState) => (buttonState = newButtonState),

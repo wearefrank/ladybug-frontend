@@ -8,6 +8,7 @@ import {
   OnInit,
   AfterViewInit,
   OnDestroy,
+  NgZone,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularSplitModule, SplitComponent } from 'angular-split';
@@ -31,6 +32,8 @@ import { TestReportsService } from '../../test/test-reports.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestResult } from '../../shared/interfaces/test-result';
 import { DebugTabService } from '../../debug/debug-tab.service';
+import { UpdateReport } from '../../shared/interfaces/update-report';
+import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
 
 type ReportValueState = 'report' | 'checkpoint' | 'none';
 
@@ -59,6 +62,12 @@ export interface NodeValueState {
   storageId?: number;
 }
 
+export interface UpdateNode {
+  checkpointUidToRestore?: string;
+  updateReport?: UpdateReport;
+  updateCheckpoint?: UpdateCheckpoint;
+}
+
 @Component({
   selector: 'app-report2',
   imports: [AngularSplitModule, DebugTreeComponent, ReportValueComponent, CheckpointValueComponent],
@@ -81,6 +90,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   // values to be reposted.
   protected reportSubject = new BehaviorSubject<PartialReport | undefined>(undefined);
   protected checkpointValueSubject = new BehaviorSubject<PartialCheckpoint | undefined>(undefined);
+  protected saveDoneSubject = new Subject<void>();
   protected rerunResultSubject = new BehaviorSubject<TestResult | undefined>(undefined);
   private storageId?: number;
   private originalNodeValueState?: NodeValueState;
@@ -94,6 +104,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   private toastService = inject(ToastService);
   private testReportsService = inject(TestReportsService);
   private debugTab = inject(DebugTabService);
+  private ngZone = inject(NgZone);
   private subscriptions: Subscription = new Subscription();
   private newTabReportData?: ReportData;
 
@@ -184,6 +195,55 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected initEditor(): void {}
 
+  protected save(update: UpdateNode): void {
+    const requests: Promise<void>[] = [];
+    if (update.updateCheckpoint !== undefined) {
+      requests.push(
+        this.handleUpdateNodeRequest(
+          update.updateCheckpoint,
+          'Successfully saved changes of checkpoint',
+          'Failed to update checkpoint node',
+        ),
+      );
+    }
+    if (update.updateReport !== undefined) {
+      this.handleUpdateNodeRequest(
+        update.updateReport,
+        'Successfully saved changes of the whole report',
+        'Failed to update report node',
+      );
+    }
+    Promise.all(requests)
+      .then(() => {
+        this.ngZone.run(() => {
+          this.saveDoneSubject.next();
+        });
+        // Two updates may have been done and we do not know which was processed last.
+        // We want the report from the server that resulted from both updates.
+        this.getReportFromServer().then((updatedReport) => {
+          this.ngZone.run(() => {
+            if (this.newTab) {
+              this.addReportToTree(updatedReport);
+              this.selectUpdatedReportOrCheckpoint(updatedReport, update.checkpointUidToRestore);
+            } else {
+              this.debugTab.refreshAll({
+                reportIds: [this.storageId!],
+                displayToast: false,
+              });
+            }
+          });
+        });
+      })
+      .catch(() => {
+        console.log(
+          'Report2Component.save(): Promises of HTTP update requests to update report were expected to resolve, even with errors',
+        );
+        this.toastService.showDanger(
+          'Programming error detected. Please view console log (F12), contact the maintainers of Ladybug and refresh your browser',
+        );
+      });
+  }
+
   private copyReport(): void {
     if (this.storageId === undefined) {
       throw new Error('Cannot copy report because Report2Component does not have the storageId');
@@ -264,6 +324,68 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
           this.copyReport();
         },
       });
+    }
+  }
+
+  private handleUpdateNodeRequest(
+    request: UpdateReport | UpdateCheckpoint,
+    successText: string,
+    failText: string,
+  ): Promise<void> {
+    return new Promise((resolve) => {
+      this.httpService
+        .updateReport(`${this.storageId!}`, request, this.currentView.storageName)
+        .pipe(catchError(this.handleErrorWithRethrowMessage(failText)))
+        .subscribe({
+          next: () => {
+            this.toastService.showSuccess(successText);
+            console.log(`Raised success toast with text: ${successText}`);
+            resolve();
+          },
+          error: () => resolve(),
+        });
+    });
+  }
+
+  private getReportFromServer(): Promise<Report> {
+    return new Promise((resolve, reject) => {
+      if (this.storageId === undefined) {
+        console.log('Report2Component.getReportFromServer(): Expected that there was a storageId');
+        this.toastService.showDanger(
+          'Programming error detected, please view console log (F12) and refresh your browser',
+        );
+        reject();
+      }
+      this.httpService
+        .getReport(this.storageId!, this.currentView.storageName)
+        .pipe(catchError(this.handleErrorWithRethrowMessage('Failed to fetch report from the server')))
+        .subscribe({
+          next: (report: Report): void => resolve(report),
+          error: () => {
+            this.toastService.showDanger(
+              'Failed to get updated report from the server, please see browser console (F12) and refresh your browser',
+            );
+            reject();
+          },
+        });
+    });
+  }
+
+  private selectUpdatedReportOrCheckpoint(updatedReport: Report, checkpointUid: string | undefined): void {
+    if (checkpointUid === undefined) {
+      this.selectReport(updatedReport);
+    } else {
+      const checkpoint: Checkpoint | undefined = ReportUtility.getCheckpointFromReport(updatedReport, checkpointUid);
+      if (checkpoint === undefined) {
+        console.log(
+          `Report2Component.save(): Failed to retrieve selected checkpoint from updated report: ${checkpointUid}`,
+        );
+        this.toastService.showDanger(
+          `Failed to retrieve selected checkpoint from updated report: ${checkpointUid}. Please contact the maintainers of Ladybug and refresh your browser`,
+        );
+      } else {
+        this.selectReport(checkpoint);
+      }
     }
   }
 

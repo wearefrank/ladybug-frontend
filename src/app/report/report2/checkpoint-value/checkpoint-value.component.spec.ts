@@ -13,6 +13,7 @@ describe('CheckpointValue', () => {
   let component: CheckpointValueComponent;
   let fixture: ComponentFixture<CheckpointValueComponent>;
   let originalValueSubject: Subject<PartialCheckpoint> | undefined;
+  let saveDoneSubject: Subject<void> | undefined;
   let nodeValueStateSpy: jasmine.Spy | undefined;
   let buttonState: ReportButtonsState | undefined;
   let buttonStateSubscription: Subscription | undefined;
@@ -26,8 +27,10 @@ describe('CheckpointValue', () => {
     fixture = TestBed.createComponent(CheckpointValueComponent);
     component = fixture.componentInstance;
     originalValueSubject = new Subject<PartialCheckpoint>();
+    saveDoneSubject = new Subject<void>();
     nodeValueStateSpy = spyOn(component.nodeValueState, 'emit');
     component.originalCheckpoint$ = originalValueSubject;
+    component.saveDone$ = saveDoneSubject;
     component.rerunResult$ = new Subject<TestResult | undefined>() as Observable<TestResult | undefined>;
     buttonStateSubscription = component.buttonStateSubject.subscribe((newButtonState) => {
       buttonState = newButtonState;
@@ -193,6 +196,7 @@ function getPartialCheckpoint(message: string | null): PartialCheckpoint {
   };
   const parent: PartialReport = { ...parentSeed };
   const result = {
+    index: 0,
     message,
     stubbed: false,
     preTruncatedMessageLength: message === null ? 0 : message.length,
