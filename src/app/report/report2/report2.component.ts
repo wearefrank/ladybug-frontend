@@ -24,7 +24,7 @@ import { NodeEventHandler } from 'rxjs/internal/observable/fromEvent';
 import { ReportValueComponent } from './report-value/report-value.component';
 import { CheckpointValueComponent, PartialCheckpoint } from './checkpoint-value/checkpoint-value.component';
 import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
-import { ButtonCommand } from './report-buttons/report-buttons';
+import { ButtonCommand, DownloadOptions } from './report-buttons/report-buttons';
 import { ErrorHandling } from '../../shared/classes/error-handling.service';
 import { HttpService } from '../../shared/services/http.service';
 import { ToastService } from '../../shared/services/toast.service';
@@ -34,6 +34,7 @@ import { TestResult } from '../../shared/interfaces/test-result';
 import { DebugTabService } from '../../debug/debug-tab.service';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
+import { HelperService } from '../../shared/services/helper.service';
 
 type ReportValueState = 'report' | 'checkpoint' | 'none';
 
@@ -103,6 +104,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   private errorHandler = inject(ErrorHandling);
   private toastService = inject(ToastService);
   private testReportsService = inject(TestReportsService);
+  private helperService = inject(HelperService);
   private debugTab = inject(DebugTabService);
   private ngZone = inject(NgZone);
   private subscriptions: Subscription = new Subscription();
@@ -242,6 +244,22 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
           'Programming error detected. Please view console log (F12), contact the maintainers of Ladybug and refresh your browser',
         );
       });
+  }
+
+  protected onDownload(downloadOptions: DownloadOptions): void {
+    if (this.storageId === undefined) {
+      throw new Error('Report2Component.onDownload(): Expected that storageId was filled');
+    }
+    const queryString = `id=${this.storageId}`;
+    this.helperService.download(
+      `${queryString}&`,
+      this.currentView.storageName,
+      downloadOptions.downloadReport,
+      downloadOptions.downloadXmlSummary,
+    );
+    // TODO: Update the helper service to return a promise.
+    // Do not show success toast if an error occurred.
+    this.toastService.showSuccess('Report Downloaded!');
   }
 
   private copyReport(): void {

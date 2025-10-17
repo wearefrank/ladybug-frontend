@@ -16,7 +16,8 @@
         [rerunResult$]="rerunResultSubject"
         (nodeValueState)="onNodeValueState($event)"
         (button)="onButton($event)"
-        (save)="save($event)"></app-report-value>
+        (save)="save($event)"
+        (downloadRequest)="onDownload($event)"></app-report-value>
     }
     @if (reportValueState === 'checkpoint') {
       <app-checkpoint-value
@@ -26,7 +27,8 @@
         [rerunResult$]="rerunResultSubject"
         (nodeValueState)="onNodeValueState($event)"
         (button)="onButton($event)"
-        (save)="save($event)"></app-checkpoint-value>
+        (save)="save($event)"
+        (downloadRequest)="onDownload($event)"></app-checkpoint-value>
     }
   </as-split-area>
 </as-split>

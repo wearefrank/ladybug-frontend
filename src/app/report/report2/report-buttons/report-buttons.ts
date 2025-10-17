@@ -4,6 +4,13 @@ import { StubStrategy } from '../../../shared/enums/stub-strategy';
 import { FormsModule } from '@angular/forms';
 import { TestResult } from '../../../shared/interfaces/test-result';
 import { AppVariablesService } from '../../../shared/services/app.variables.service';
+import {
+  NgbDropdown,
+  NgbDropdownButtonItem,
+  NgbDropdownItem,
+  NgbDropdownMenu,
+  NgbDropdownToggle,
+} from '@ng-bootstrap/ng-bootstrap';
 
 export interface ReportButtonsState {
   isReport: boolean;
@@ -15,9 +22,14 @@ export interface ReportButtonsState {
 
 export type ButtonCommand = 'close' | 'makeNull' | 'save' | 'copyReport' | 'rerun' | 'customReportAction';
 
+export interface DownloadOptions {
+  downloadReport: boolean;
+  downloadXmlSummary: boolean;
+}
+
 @Component({
   selector: 'app-report-buttons',
-  imports: [FormsModule],
+  imports: [FormsModule, NgbDropdown, NgbDropdownButtonItem, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle],
   templateUrl: './report-buttons.html',
   styleUrl: './report-buttons.css',
 })
@@ -25,6 +37,7 @@ export class ReportButtons implements OnInit, OnDestroy {
   reportCommand = output<ButtonCommand>();
   checkpointStubStrategyChange = output<number>();
   reportStubStrategyChange = output<string>();
+  downloadRequest = output<DownloadOptions>();
   @Input({ required: true }) state$!: Observable<ReportButtonsState>;
   @Input() originalCheckpointStubStrategy$?: Observable<number | undefined>;
   @Input({ required: true }) originalReportStubStrategy$!: Observable<string | undefined>;
@@ -80,27 +93,27 @@ export class ReportButtons implements OnInit, OnDestroy {
     this.reportCommand.emit('close');
   }
 
-  makeNull(): void {
+  protected makeNull(): void {
     this.reportCommand.emit('makeNull');
   }
 
-  save(): void {
+  protected save(): void {
     this.reportCommand.emit('save');
   }
 
-  copyReport(): void {
+  protected copyReport(): void {
     this.reportCommand.emit('copyReport');
   }
 
-  rerun(): void {
+  protected rerun(): void {
     this.reportCommand.emit('rerun');
   }
 
-  processCustomReportAction(): void {
+  protected processCustomReportAction(): void {
     this.reportCommand.emit('customReportAction');
   }
 
-  onCheckpointStubStrategyChange(stubStrategyString: string): void {
+  protected onCheckpointStubStrategyChange(stubStrategyString: string): void {
     const options: string[] = [...StubStrategy.checkpoints];
     const index: number = options.indexOf(stubStrategyString);
     if (index === -1) {
@@ -109,8 +122,12 @@ export class ReportButtons implements OnInit, OnDestroy {
     this.checkpointStubStrategyChange.emit(StubStrategy.checkpointIndex2Stub(index));
   }
 
-  onReportStubStrategyChange(reportStubStrategy: string): void {
+  protected onReportStubStrategyChange(reportStubStrategy: string): void {
     this.reportStubStrategyChange.emit(reportStubStrategy);
+  }
+
+  protected onDownload(downloadOptions: DownloadOptions): void {
+    this.downloadRequest.emit(downloadOptions);
   }
 
   protected getReadOnly(): string {

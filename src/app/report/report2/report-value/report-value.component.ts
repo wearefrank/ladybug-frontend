@@ -14,7 +14,7 @@ import {
   NodeValueLabels,
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
-import { ButtonCommand, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
+import { ButtonCommand, DownloadOptions, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
 import { TestResult } from '../../../shared/interfaces/test-result';
 import { UpdateReport } from '../../../shared/interfaces/update-report';
 
@@ -44,6 +44,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   nodeValueState = output<NodeValueState>();
   button = output<ButtonCommand>();
   save = output<UpdateNode>();
+  downloadRequest = output<DownloadOptions>();
   @Input({ required: true }) report$!: Observable<PartialReport | undefined>;
   @Input({ required: true }) saveDone$!: Observable<void>;
   @Input({ required: true }) rerunResult$!: Observable<TestResult | undefined>;
@@ -271,6 +272,10 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     this.originalVariables = variables;
     this.editedVariables = ReportValueComponent.calculateEditedVariables(this.originalVariables);
     this.refreshDuplicateVariables();
+  }
+
+  protected onDownload(downloadOptions: DownloadOptions): void {
+    this.downloadRequest.emit(downloadOptions);
   }
 
   private newReport(report: PartialReport): void {

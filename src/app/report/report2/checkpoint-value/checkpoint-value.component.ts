@@ -8,7 +8,7 @@ import {
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
 import { NodeValueState, PartialReport, UpdateNode } from '../report2.component';
-import { ButtonCommand, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
+import { ButtonCommand, DownloadOptions, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
 import { StubStrategy } from '../../../shared/enums/stub-strategy';
 import { TestResult } from '../../../shared/interfaces/test-result';
 
@@ -39,6 +39,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   nodeValueState = output<NodeValueState>();
   button = output<ButtonCommand>();
   save = output<UpdateNode>();
+  downloadRequest = output<DownloadOptions>();
   @Input() height = 0;
   @Input({ required: true }) originalCheckpoint$!: Observable<PartialCheckpoint | undefined>;
   @Input({ required: true }) saveDone$!: Observable<void>;
@@ -216,6 +217,10 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
         },
       });
     }
+  }
+
+  protected onDownload(downloadOptions: DownloadOptions): void {
+    this.downloadRequest.emit(downloadOptions);
   }
 
   protected monacoOptions: Partial<monaco.editor.IStandaloneEditorConstructionOptions> = {

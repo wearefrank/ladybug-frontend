@@ -43,6 +43,15 @@
       title="Copy report to test tab"
       (click)="copyReport()"
     ><i class="fa fa-copy"></i></button>
+    <div ngbDropdown title="Download">
+      <button ngbDropdownToggle class="btn btn-info"><i class="fa fa-download px-2"></i><span
+        class="caret"></span></button>
+      <div ngbDropdownMenu>
+        <button ngbDropdownItem (click)="onDownload({ downloadReport: true, downloadXmlSummary: true})">Report & XML summary</button>
+        <button ngbDropdownItem (click)="onDownload({ downloadReport: false, downloadXmlSummary: true})">XML summary only</button>
+        <button ngbDropdownItem (click)="onDownload({ downloadReport: true, downloadXmlSummary: false})">Report only</button>
+      </div>
+    </div>
     <div class="w-fit mx-1 my-0">
       <select #reportStubStrategy class="form-control"
         [(ngModel)]="currentReportStubStrategy"

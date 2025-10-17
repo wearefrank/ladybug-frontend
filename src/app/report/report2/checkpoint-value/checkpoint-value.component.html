@@ -6,7 +6,8 @@
     [rerunResult$]="rerunResult$"
     (reportCommand)="onButton($event)"
     (checkpointStubStrategyChange)="onCheckpointStubStrategyChange($event)"
-    (reportStubStrategyChange)="onReportStubStrategyChange($event)">
+    (reportStubStrategyChange)="onReportStubStrategyChange($event)"
+    (downloadRequest)="onDownload($event)">
   </app-report-buttons>
   <app-report-alert-message2 [labels]="labels"></app-report-alert-message2>
   <app-monaco-editor data-cy-element-name="checkpointEditor" [options]="monacoOptions"
