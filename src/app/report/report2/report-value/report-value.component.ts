@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { AngularSplitModule } from 'angular-split';
 import { HttpService } from '../../../shared/services/http.service';
-import { BehaviorSubject, catchError, firstValueFrom, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, catchError, firstValueFrom, Observable, Subject, Subscription } from 'rxjs';
 import { ErrorHandling } from '../../../shared/classes/error-handling.service';
 import { Transformation } from '../../../shared/interfaces/transformation';
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
@@ -90,6 +90,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   protected reportContentRequestSubject = new BehaviorSubject<string | undefined>(undefined);
   protected reportReadOnlySubject = new BehaviorSubject<boolean>(true);
   protected originalReportStubStrategySubject = new BehaviorSubject<string | undefined>(undefined);
+  protected buttonComponentResetSubject = new Subject<void>();
   private _height = 0;
   private report?: PartialReport;
   private http = inject(HttpService);
@@ -287,10 +288,11 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     this.originalVariables = ReportValueComponent.initVariables(report.variables);
     this.editedVariables = ReportValueComponent.calculateEditedVariables(this.originalVariables);
     this.refreshDuplicateVariables();
+    this.editedReportStubStrategy = report.stubStrategy;
     this.transformationContentRequestSubject.next(this.getEditorTextOfNullable(this.report!.transformation));
     this.reportContentRequestSubject.next(this.report.xml);
     this.originalReportStubStrategySubject.next(report.stubStrategy);
-    this.editedReportStubStrategy = report.stubStrategy;
+    this.buttonComponentResetSubject.next();
     this.onInputChange();
   }
 

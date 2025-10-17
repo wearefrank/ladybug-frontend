@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
 import { DifferencesBuilder } from '../../../shared/util/differences-builder';
@@ -52,6 +52,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   protected editorReadOnlySubject = new BehaviorSubject<boolean>(true);
   protected originalCheckpointStubStrategySubject = new BehaviorSubject<number | undefined>(undefined);
   protected originalReportStubStrategySubject = new BehaviorSubject<string | undefined>(undefined);
+  protected buttonComponentResetSubject = new Subject<void>();
   private originalCheckpoint: PartialCheckpoint | undefined;
   private actualEditorContents = '';
   private actualCheckpointStubStrategy?: number;
@@ -248,6 +249,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     this.editorContentsSubject.next(requestedEditorContents);
     this.originalCheckpointStubStrategySubject.next(originalCheckpoint.stub);
     this.originalReportStubStrategySubject.next(originalCheckpoint.parentReport.stubStrategy);
+    this.buttonComponentResetSubject.next();
   }
 
   private editToNull(): void {

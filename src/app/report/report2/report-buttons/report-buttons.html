@@ -24,6 +24,20 @@
           }
         </select>
       </div>
+      <button
+        data-cy-open-metadata-table
+        class="btn btn-info h-fit"
+        title="Open metadata table"
+        (click)="toggleMetadataTable()">
+        {{ metadataTableVisible|booleanToString:'Hide' :'Show' }} metadata
+      </button>
+      <button
+        data-cy-open-messagecontext-table
+        class="btn btn-info h-fit"
+        title="Open message context table"
+        (click)="toggleMessageContextTable()">
+        {{ messageContextTableVisible|booleanToString:'Hide' :'Show' }} messagecontext
+      </button>
     </section>
     <span class="button-divider">&#124;</span>
   }
@@ -69,6 +83,15 @@
       (click)="rerun()"
     >Rerun
     </button>
+    @if (state.isReport) {
+      <button
+        data-cy-open-metadata-table
+        class="btn btn-info h-fit"
+        title="Open metadata table"
+        (click)="toggleMetadataTable()">
+        {{ metadataTableVisible|booleanToString:'Hide' :'Show' }} metadata
+      </button>
+    }
     @if (appVariablesService.getVariable('customReportActionButtonText') !== null) {
       <button data-cy-test="customReportAction" class="btn btn-info" [title]="appVariablesService.getVariable('customReportActionButtonText')"
           (click)="processCustomReportAction()">

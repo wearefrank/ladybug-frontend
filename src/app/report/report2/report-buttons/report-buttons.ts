@@ -11,6 +11,7 @@ import {
   NgbDropdownMenu,
   NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
+import { BooleanToStringPipe } from '../../../shared/pipes/boolean-to-string.pipe';
 
 export interface ReportButtonsState {
   isReport: boolean;
@@ -29,7 +30,15 @@ export interface DownloadOptions {
 
 @Component({
   selector: 'app-report-buttons',
-  imports: [FormsModule, NgbDropdown, NgbDropdownButtonItem, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle],
+  imports: [
+    FormsModule,
+    NgbDropdown,
+    NgbDropdownButtonItem,
+    NgbDropdownItem,
+    NgbDropdownMenu,
+    NgbDropdownToggle,
+    BooleanToStringPipe,
+  ],
   templateUrl: './report-buttons.html',
   styleUrl: './report-buttons.css',
 })
@@ -41,6 +50,7 @@ export class ReportButtons implements OnInit, OnDestroy {
   @Input({ required: true }) state$!: Observable<ReportButtonsState>;
   @Input() originalCheckpointStubStrategy$?: Observable<number | undefined>;
   @Input({ required: true }) originalReportStubStrategy$!: Observable<string | undefined>;
+  @Input({ required: true }) reset$!: Observable<void>;
   @Input({ required: true }) rerunResult$!: Observable<TestResult | undefined>;
 
   protected state: ReportButtonsState = {
@@ -55,27 +65,44 @@ export class ReportButtons implements OnInit, OnDestroy {
   protected currentCheckpointStubStrategyStr?: string;
   protected currentReportStubStrategy?: string;
   protected rerunResult?: TestResult;
+  protected metadataTableVisible = false;
+  protected messageContextTableVisible = false;
   protected appVariablesService = inject(AppVariablesService);
   private ngZone = inject(NgZone);
   private subscriptions = new Subscription();
 
   ngOnInit(): void {
-    this.subscriptions.add(this.state$.subscribe(this.updateState.bind(this)));
+    this.subscriptions.add(
+      this.state$.subscribe((state) => {
+        this.ngZone.run(() => {
+          this.state = state;
+        });
+      }),
+    );
     this.subscriptions.add(
       this.originalCheckpointStubStrategy$?.subscribe((checkpointStubStrategy) => {
-        if (checkpointStubStrategy !== undefined) {
-          // Martijn did not get the dropdown to work when it was filled with number values that
-          // had to be shown as strings. The dropdown only deals with string representations.
-          this.currentCheckpointStubStrategyStr =
-            StubStrategy.checkpoints[StubStrategy.checkpointStubToIndex(checkpointStubStrategy)];
-        }
+        this.ngZone.run(() => {
+          if (checkpointStubStrategy !== undefined) {
+            // Martijn did not get the dropdown to work when it was filled with number values that
+            // had to be shown as strings. The dropdown only deals with string representations.
+            this.currentCheckpointStubStrategyStr =
+              StubStrategy.checkpoints[StubStrategy.checkpointStubToIndex(checkpointStubStrategy)];
+          }
+        });
       }),
     );
     this.subscriptions.add(
       this.originalReportStubStrategy$.subscribe((reportStubStrategy) => {
-        if (reportStubStrategy !== undefined) {
-          this.currentReportStubStrategy = reportStubStrategy;
-        }
+        this.ngZone.run(() => {
+          if (reportStubStrategy !== undefined) {
+            this.currentReportStubStrategy = reportStubStrategy;
+          }
+        });
+      }),
+    );
+    this.subscriptions.add(
+      this.reset$.subscribe(() => {
+        this.ngZone.run(() => this.reset());
       }),
     );
     this.subscriptions.add(
@@ -134,9 +161,16 @@ export class ReportButtons implements OnInit, OnDestroy {
     return this.state.isReadOnly ? ' (read only)' : '';
   }
 
-  private updateState(state: ReportButtonsState): void {
-    this.ngZone.run(() => {
-      this.state = state;
-    });
+  protected toggleMetadataTable(): void {
+    this.metadataTableVisible = !this.metadataTableVisible;
+  }
+
+  protected toggleMessageContextTable(): void {
+    this.messageContextTableVisible = !this.messageContextTableVisible;
+  }
+
+  private reset(): void {
+    this.metadataTableVisible = false;
+    this.messageContextTableVisible = false;
   }
 }

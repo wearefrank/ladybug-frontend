@@ -2,6 +2,7 @@
   <app-report-buttons
     [state$]="buttonStateSubject"
     [originalReportStubStrategy$]="originalReportStubStrategySubject"
+    [reset$]="buttonComponentResetSubject"
     [rerunResult$]="rerunResult$"
     (reportCommand)="onButton($event)"
     (reportStubStrategyChange)="onReportStubStrategyChange($event)"
