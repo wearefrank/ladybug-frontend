@@ -259,9 +259,11 @@ export class ReportValueComponent implements OnInit, OnDestroy {
       throw new Error('ReportValueComponent.save() should not be called when the report node has not been edited');
     }
     const updateReport: UpdateReport = {};
+    /*
     if (this.editedName !== this.report!.name) {
       updateReport.name = this.editedName;
-    }
+    }*/
+    updateReport.name = this.editedName;
     const description: string | null = this.getRealEditedValueForNullable(this.editedDescription);
     if (description !== this.report!.description) {
       updateReport.description = description;
