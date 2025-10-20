@@ -52,7 +52,7 @@ export default [
           ignoreRestSiblings: true,
         },
       ],
-
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
       // Angular: https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md
       ...angularPlugin.configs.recommended.rules,
       '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'app', style: 'camelCase' }],

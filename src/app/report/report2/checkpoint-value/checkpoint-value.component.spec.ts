@@ -193,6 +193,9 @@ function getPartialCheckpoint(message: string | null): PartialCheckpoint {
     crudStorage: true,
     // Does not have to be a stub strategy known by the FF!.
     stubStrategy: 'Some stub strategy',
+    correlationId: '1',
+    estimatedMemoryUsage: 5,
+    storageName: 'My storage',
   };
   const parent: PartialReport = { ...parentSeed };
   const result = {

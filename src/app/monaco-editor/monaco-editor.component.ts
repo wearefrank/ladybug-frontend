@@ -193,6 +193,7 @@ export class MonacoEditorComponent implements OnInit, AfterViewInit, OnDestroy {
   private initializeMouseEvents(): void {
     this.editor?.onMouseDown((event) => {
       const element = event.target.element;
+      // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
       switch (element?.className) {
         case 'line-numbers': {
           this.handleLineNumberClick(+(element.textContent || 0));

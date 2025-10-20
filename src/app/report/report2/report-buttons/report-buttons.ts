@@ -21,7 +21,17 @@ export interface ReportButtonsState {
   isReadOnly: boolean;
 }
 
-export type ButtonCommand = 'close' | 'makeNull' | 'save' | 'copyReport' | 'rerun' | 'customReportAction';
+export type ButtonCommand =
+  | 'close'
+  | 'makeNull'
+  | 'save'
+  | 'copyReport'
+  | 'rerun'
+  | 'customReportAction'
+  | 'hideMetadata'
+  | 'showMetadata'
+  | 'hideMessageContext'
+  | 'showMessageContext';
 
 export interface DownloadOptions {
   downloadReport: boolean;
@@ -163,6 +173,11 @@ export class ReportButtons implements OnInit, OnDestroy {
 
   protected toggleMetadataTable(): void {
     this.metadataTableVisible = !this.metadataTableVisible;
+    if (this.metadataTableVisible) {
+      this.reportCommand.emit('showMetadata');
+    } else {
+      this.reportCommand.emit('hideMetadata');
+    }
   }
 
   protected toggleMessageContextTable(): void {

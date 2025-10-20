@@ -11,6 +11,14 @@
     (downloadRequest)="onDownload($event)">
   </app-report-buttons>
   <app-report-alert-message2 [labels]="labels"></app-report-alert-message2>
+  <!--
+  @if (metadataTableVisible) {
+    <app-metadata-table [report]="selectedNode"/>
+  }
+  @if (messageContextTableVisible) {
+    <app-messagecontext-table [report]="selectedNode"/>
+  }
+  -->
   <app-monaco-editor data-cy-element-name="checkpointEditor" [options]="monacoOptions"
     [editorContentRequest$]="editorContentsSubject" [readOnlyRequest$]="editorReadOnlySubject"
     (actualEditorContentsChange)="onActualEditorContentsChanged($event)">

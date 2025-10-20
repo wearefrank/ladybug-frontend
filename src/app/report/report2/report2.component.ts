@@ -55,6 +55,9 @@ export interface PartialReport {
   // undefined is allowed to support testing
   storageId?: number;
   stubStrategy: string;
+  correlationId: string;
+  estimatedMemoryUsage: number;
+  storageName: string;
 }
 
 export interface NodeValueState {
@@ -169,6 +172,16 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
         this.changeReportValueState('none');
         break;
       }
+      case 'makeNull': {
+        throw new Error(
+          'Report2Component.onButton() with command makeNull cannot happen - should be handled by CheckpointValue',
+        );
+      }
+      case 'save': {
+        throw new Error(
+          'Report2Component.onButton() with command save cannot happen - should be handled by CheckpointValue or ReportValue',
+        );
+      }
       case 'copyReport': {
         this.copyReport();
         break;
@@ -181,8 +194,17 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
         this.processCustomReportAction();
         break;
       }
-      default: {
-        throw new Error(`Command should have been handled by child component: ${command}`);
+      case 'showMetadata': {
+        throw new Error('Not yet implemented');
+      }
+      case 'hideMetadata': {
+        throw new Error('Not yet implemented');
+      }
+      case 'hideMessageContext': {
+        throw new Error('Not yet implemented');
+      }
+      case 'showMessageContext': {
+        throw new Error('Not yet implemented');
       }
     }
   }

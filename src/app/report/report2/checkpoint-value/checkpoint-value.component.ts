@@ -125,6 +125,18 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
         this.button.emit('customReportAction');
         break;
       }
+      case 'showMetadata': {
+        throw new Error('Not yet implemented');
+      }
+      case 'hideMetadata': {
+        throw new Error('Not yet implemented');
+      }
+      case 'hideMessageContext': {
+        throw new Error('Not yet implemented');
+      }
+      case 'showMessageContext': {
+        throw new Error('Not yet implemented');
+      }
     }
   }
 

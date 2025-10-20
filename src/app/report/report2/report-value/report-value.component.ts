@@ -17,6 +17,7 @@ import {
 import { ButtonCommand, DownloadOptions, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
 import { TestResult } from '../../../shared/interfaces/test-result';
 import { UpdateReport } from '../../../shared/interfaces/update-report';
+import { ReportMetadataTable } from '../report-metadata-table/report-metadata-table';
 
 export interface Variable {
   name: string;
@@ -36,6 +37,7 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
     Difference2ModalComponent,
     ReportAlertMessage2Component,
     ReportButtons,
+    ReportMetadataTable,
   ],
   templateUrl: './report-value.component.html',
   styleUrl: './report-value.component.css',
@@ -85,6 +87,8 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     scrollBeyondLastLine: false,
   };
   protected monacoEditorInitialHeight = 0;
+  protected report?: PartialReport;
+  protected metadataTableVisible = false;
   protected transformationContentRequestSubject = new BehaviorSubject<string | undefined>(undefined);
   protected transformationReadOnlySubject = new BehaviorSubject<boolean>(true);
   protected reportContentRequestSubject = new BehaviorSubject<string | undefined>(undefined);
@@ -92,7 +96,6 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   protected originalReportStubStrategySubject = new BehaviorSubject<string | undefined>(undefined);
   protected buttonComponentResetSubject = new Subject<void>();
   private _height = 0;
-  private report?: PartialReport;
   private http = inject(HttpService);
   private errorHandler = inject(ErrorHandling);
   private subscriptions = new Subscription();
@@ -173,6 +176,20 @@ export class ReportValueComponent implements OnInit, OnDestroy {
       case 'customReportAction': {
         this.button.emit('customReportAction');
         break;
+      }
+      case 'showMetadata': {
+        this.metadataTableVisible = true;
+        break;
+      }
+      case 'hideMetadata': {
+        this.metadataTableVisible = false;
+        break;
+      }
+      case 'hideMessageContext': {
+        throw new Error('Not yet implemented');
+      }
+      case 'showMessageContext': {
+        throw new Error('Not yet implemented');
       }
     }
   }

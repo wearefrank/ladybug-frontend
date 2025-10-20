@@ -91,6 +91,7 @@ export class CompareTreeComponent {
   }
 
   selectItem(otherSide: NgSimpleFileTree, treeItem: FileTreeItem): void {
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (this.nodeLinkStrategy) {
       case 'PATH': {
         otherSide.selectItem(treeItem.path);

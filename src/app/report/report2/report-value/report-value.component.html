@@ -9,6 +9,9 @@
     (downloadRequest)="onDownload($event)">
   </app-report-buttons>
   <app-report-alert-message2 [labels]="labels"></app-report-alert-message2>
+  @if (metadataTableVisible && report !== undefined) {
+    <app-report-metadata-table2 [report]="report"></app-report-metadata-table2>
+  }
   <as-split direction="vertical">
     <as-split-area class="split-size" [size]="100">
       <div class="form-group">

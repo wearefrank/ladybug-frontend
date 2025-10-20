@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { TestResult } from 'src/app/shared/interfaces/test-result';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { AppVariablesService } from 'src/app/shared/services/app.variables.service';
+import { AppVariablesService } from '../../../shared/services/app.variables.service';
 
 describe('ReportButtons', () => {
   let component: ReportButtons;
@@ -29,6 +29,7 @@ describe('ReportButtons', () => {
     });
     component.originalReportStubStrategy$ = originalReportStubStrategySubject;
     component.rerunResult$ = new Subject<TestResult | undefined>() as Observable<TestResult | undefined>;
+    component.reset$ = new Subject<void>();
     fixture.detectChanges();
   });
 
