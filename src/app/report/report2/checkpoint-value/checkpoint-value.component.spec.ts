@@ -206,6 +206,10 @@ function getPartialCheckpoint(message: string | null): PartialCheckpoint {
     // Use report level stub strategy
     stub: StubStrategy.checkpointIndex2Stub(0),
     parentReport: parent,
+    name: 'Some name',
+    threadName: 'Some thread name',
+    typeAsString: 'string',
+    level: 1,
   };
   return { ...result };
 }

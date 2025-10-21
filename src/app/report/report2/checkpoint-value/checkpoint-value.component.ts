@@ -11,6 +11,7 @@ import { NodeValueState, PartialReport, UpdateNode } from '../report2.component'
 import { ButtonCommand, DownloadOptions, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
 import { StubStrategy } from '../../../shared/enums/stub-strategy';
 import { TestResult } from '../../../shared/interfaces/test-result';
+import { CheckpointMetadataTable } from '../checkpoint-metadata-table/checkpoint-metadata-table';
 
 export interface PartialCheckpoint {
   index: number;
@@ -27,11 +28,22 @@ export interface PartialCheckpoint {
   stubNotFound?: string;
   stub: number;
   parentReport: PartialReport;
+  name: string;
+  threadName: string;
+  typeAsString: string;
+  level: number;
+  sourceClassName?: number;
 }
 
 @Component({
   selector: 'app-checkpoint-value',
-  imports: [MonacoEditorComponent, Difference2ModalComponent, ReportAlertMessage2Component, ReportButtons],
+  imports: [
+    MonacoEditorComponent,
+    Difference2ModalComponent,
+    ReportAlertMessage2Component,
+    ReportButtons,
+    CheckpointMetadataTable,
+  ],
   templateUrl: './checkpoint-value.component.html',
   styleUrl: './checkpoint-value.component.css',
 })
@@ -48,12 +60,13 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   labels: NodeValueLabels | undefined;
   buttonStateSubject = new BehaviorSubject<ReportButtonsState>(CheckpointValueComponent.getDefaultButtonState());
 
+  protected originalCheckpoint: PartialCheckpoint | undefined;
+  protected metadataTableVisible = false;
   protected editorContentsSubject = new BehaviorSubject<string | undefined>(undefined);
   protected editorReadOnlySubject = new BehaviorSubject<boolean>(true);
   protected originalCheckpointStubStrategySubject = new BehaviorSubject<number | undefined>(undefined);
   protected originalReportStubStrategySubject = new BehaviorSubject<string | undefined>(undefined);
   protected buttonComponentResetSubject = new Subject<void>();
-  private originalCheckpoint: PartialCheckpoint | undefined;
   private actualEditorContents = '';
   private actualCheckpointStubStrategy?: number;
   private actualReportStubStrategy?: string;
@@ -126,10 +139,12 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
         break;
       }
       case 'showMetadata': {
-        throw new Error('Not yet implemented');
+        this.metadataTableVisible = true;
+        break;
       }
       case 'hideMetadata': {
-        throw new Error('Not yet implemented');
+        this.metadataTableVisible = false;
+        break;
       }
       case 'hideMessageContext': {
         throw new Error('Not yet implemented');
