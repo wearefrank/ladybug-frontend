@@ -12,6 +12,8 @@ import { ButtonCommand, DownloadOptions, ReportButtons, ReportButtonsState } fro
 import { StubStrategy } from '../../../shared/enums/stub-strategy';
 import { TestResult } from '../../../shared/interfaces/test-result';
 import { CheckpointMetadataTable } from '../checkpoint-metadata-table/checkpoint-metadata-table';
+import { MessagecontextTableComponent } from '../../../shared/components/messagecontext-table/messagecontext-table.component';
+import { Checkpoint } from '../../../shared/interfaces/checkpoint';
 
 export interface PartialCheckpoint {
   index: number;
@@ -43,6 +45,7 @@ export interface PartialCheckpoint {
     ReportAlertMessage2Component,
     ReportButtons,
     CheckpointMetadataTable,
+    MessagecontextTableComponent,
   ],
   templateUrl: './checkpoint-value.component.html',
   styleUrl: './checkpoint-value.component.css',
@@ -62,6 +65,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
 
   protected originalCheckpoint: PartialCheckpoint | undefined;
   protected metadataTableVisible = false;
+  protected messageContextTableVisible = false;
   protected editorContentsSubject = new BehaviorSubject<string | undefined>(undefined);
   protected editorReadOnlySubject = new BehaviorSubject<boolean>(true);
   protected originalCheckpointStubStrategySubject = new BehaviorSubject<number | undefined>(undefined);
@@ -147,10 +151,12 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
         break;
       }
       case 'hideMessageContext': {
-        throw new Error('Not yet implemented');
+        this.messageContextTableVisible = false;
+        break;
       }
       case 'showMessageContext': {
-        throw new Error('Not yet implemented');
+        this.messageContextTableVisible = true;
+        break;
       }
     }
   }
@@ -251,6 +257,12 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     this.downloadRequest.emit(downloadOptions);
   }
 
+  // TODO: Fix TypeScript issues that make PartialCheckpoint incompatible with Checkpoint
+  // and then get away with this invalid cast.
+  protected asCheckpoint(p: PartialCheckpoint): Checkpoint {
+    return p as Checkpoint;
+  }
+
   protected monacoOptions: Partial<monaco.editor.IStandaloneEditorConstructionOptions> = {
     theme: 'vs-light',
     language: 'xml',
@@ -266,6 +278,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       throw new Error('CheckpointValueComponent.neworiginalCheckpoint(): Did not expect to receive value undefined');
     }
     this.metadataTableVisible = false;
+    this.messageContextTableVisible = false;
     this.originalCheckpoint = originalCheckpoint;
     this.emptyIsNull = this.originalCheckpoint.message === null;
     const requestedEditorContents = originalCheckpoint.message === null ? '' : originalCheckpoint.message;

@@ -182,6 +182,11 @@ export class ReportButtons implements OnInit, OnDestroy {
 
   protected toggleMessageContextTable(): void {
     this.messageContextTableVisible = !this.messageContextTableVisible;
+    if (this.messageContextTableVisible) {
+      this.reportCommand.emit('showMessageContext');
+    } else {
+      this.reportCommand.emit('hideMessageContext');
+    }
   }
 
   private reset(): void {

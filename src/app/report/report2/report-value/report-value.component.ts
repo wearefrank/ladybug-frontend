@@ -186,10 +186,10 @@ export class ReportValueComponent implements OnInit, OnDestroy {
         break;
       }
       case 'hideMessageContext': {
-        throw new Error('Not yet implemented');
+        throw new Error('Message context does not exist for report nodes');
       }
       case 'showMessageContext': {
-        throw new Error('Not yet implemented');
+        throw new Error('Message context does not exist for report nodes');
       }
     }
   }

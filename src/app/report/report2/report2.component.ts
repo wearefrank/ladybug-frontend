@@ -195,16 +195,16 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
         break;
       }
       case 'showMetadata': {
-        throw new Error('Not yet implemented');
+        throw new Error('Command showMetadata should have been handles by ReportValue or CheckpointValue');
       }
       case 'hideMetadata': {
-        throw new Error('Not yet implemented');
+        throw new Error('Command hideMetadata should have been handles by ReportValue or CheckpointValue');
       }
       case 'hideMessageContext': {
-        throw new Error('Not yet implemented');
+        throw new Error('Command hideMessageContext should have been handles by CheckpointValue');
       }
       case 'showMessageContext': {
-        throw new Error('Not yet implemented');
+        throw new Error('Command showMessageContext should have been handles by CheckpointValue');
       }
     }
   }
