@@ -305,6 +305,17 @@ describe('ReportValue', () => {
     expectNotEdited();
   });
 
+  it('When a variable is removed then consistently show this change', () => {
+    reportSubject!.next(getAPartialReport());
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);
+    component.setVariables([{ name: 'var1', value: 'val1' }]);
+    expectNotEdited();
+    // removeVariable calls onInputChange() so this does not have to be emulated here.
+    component.removeVariable(0);
+    expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
+    expectEdited();
+  });
+
   it('When a new edit row for variables appears, there is no change when the variable name is blank', () => {
     reportSubject!.next(getAPartialReport());
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(1);

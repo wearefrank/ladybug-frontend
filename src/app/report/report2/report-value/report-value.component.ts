@@ -201,7 +201,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
 
   removeVariable(index: number): void {
     this.editedVariables.splice(index, 1);
-    this.refreshDuplicateVariables();
+    this.onInputChange();
   }
 
   addEmptyVariableWhenNeeded(): void {
