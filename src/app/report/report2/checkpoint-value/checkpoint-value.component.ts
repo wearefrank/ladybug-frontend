@@ -265,6 +265,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     if (originalCheckpoint === undefined) {
       throw new Error('CheckpointValueComponent.neworiginalCheckpoint(): Did not expect to receive value undefined');
     }
+    this.metadataTableVisible = false;
     this.originalCheckpoint = originalCheckpoint;
     this.emptyIsNull = this.originalCheckpoint.message === null;
     const requestedEditorContents = originalCheckpoint.message === null ? '' : originalCheckpoint.message;

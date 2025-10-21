@@ -297,6 +297,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   }
 
   private newReport(report: PartialReport): void {
+    this.metadataTableVisible = false;
     this.report = report;
     this.editedName = this.report.name;
     this.editedDescription = this.getEditorTextOfNullable(this.report.description);
