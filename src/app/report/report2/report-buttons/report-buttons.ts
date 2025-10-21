@@ -22,7 +22,6 @@ export interface ReportButtonsState {
 }
 
 export type ButtonCommand =
-  | 'close'
   | 'makeNull'
   | 'save'
   | 'copyReport'
@@ -124,10 +123,6 @@ export class ReportButtons implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-  }
-
-  close(): void {
-    this.reportCommand.emit('close');
   }
 
   protected makeNull(): void {

@@ -168,10 +168,6 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
 
   onButton(command: ButtonCommand): void {
     switch (command) {
-      case 'close': {
-        this.changeReportValueState('none');
-        break;
-      }
       case 'makeNull': {
         throw new Error(
           'Report2Component.onButton() with command makeNull cannot happen - should be handled by CheckpointValue',
