@@ -9,7 +9,7 @@ describe('About opened reports', () => {
 
   afterEach(() => cy.resetApp());
 
-  it('Close one', () => {
+  it('When we visit different nodes in the tree view then the value pane follows', () => {
     cy.enableShowMultipleInDebugTree();
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();
@@ -19,7 +19,6 @@ describe('About opened reports', () => {
     cy.get('[data-cy-debug-tree="root"] app-tree-item > div > div:contains(Simple report)')
       .first()
       .selectIfNotSelected();
-    cy.get('[data-cy-debug-editor="close"]').click();
     cy.get('[data-cy-debug-tree="root"] > app-tree-item .item-name')
       .should('contain.text', 'Another simple report')
       .eq(0)
