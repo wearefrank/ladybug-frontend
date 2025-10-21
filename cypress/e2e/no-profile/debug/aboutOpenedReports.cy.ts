@@ -9,7 +9,7 @@ describe('About opened reports', () => {
 
   afterEach(() => cy.resetApp());
 
-  it('When we visit different nodes in the tree view then the value pane follows', () => {
+  it('When we open multiple reports simultaneously from the table then they appear all in the tree', () => {
     cy.enableShowMultipleInDebugTree();
     cy.get('[data-cy-debug="selectAll"]').click();
     cy.get('[data-cy-debug="openSelected"]').click();
@@ -27,7 +27,7 @@ describe('About opened reports', () => {
     cy.get('[data-cy-debug-tree="root"] app-tree-item').should('not.exist');
   });
 
-  it('Close all', () => {
+  it('When we open reports sequentially with multiple allowed in the debug tree then they appear next to each other', () => {
     cy.enableShowMultipleInDebugTree();
     cy.getDebugTableRows().find('td:contains(Simple report)').first().click();
     cy.checkFileTreeLength(1);
@@ -45,7 +45,7 @@ describe('About opened reports', () => {
     cy.get('[data-cy-debug-tree="root"] app-tree-item').should('not.exist');
   });
 
-  it('Correct nesting in debug tree for report with infopoint', () => {
+  it('When we collapse a parent checkpoint then the child becomes invisible', () => {
     cy.createReportWithInfopoint();
     cy.initializeApp();
     cy.getDebugTableRows().find('td:contains("Hide a checkpoint in blackbox view")').first().click();
