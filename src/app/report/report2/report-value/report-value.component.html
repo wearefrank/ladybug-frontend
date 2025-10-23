@@ -64,6 +64,7 @@
         </div>
         <div class="monaco-area" [style.height]="monacoEditorInitialHeight + 'px'">
           <app-monaco-editor
+            data-cy-element-name="reportTransformationEditor"
             [options]="monacoOptions"
             [readOnlyRequest$]="transformationReadOnlySubject"
             [editorContentRequest$]="transformationContentRequestSubject"
@@ -73,7 +74,7 @@
       <div id="reportXmlHeader">Report XML</div>
       <div class="monaco-area" [style.height]="monacoEditorInitialHeight + 'px'">
         <app-monaco-editor
-          data-cy-element-name="reportEditor"
+          data-cy-element-name="reportXmlEditor"
           [options]="monacoOptions"
           [editorContentRequest$]="reportContentRequestSubject"
           [readOnlyRequest$]="reportReadOnlySubject">
