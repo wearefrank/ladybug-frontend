@@ -34,7 +34,7 @@
                 (click)="openDeleteModal(false)"><i class="fa fa-trash"></i></button>
         <button data-cy-test="copySelected" class="btn btn-info" title="Copy selected reports" (click)="copySelected()">
           <i class="fa fa-copy"></i></button>
-        <button data-cy-test="downloadBinary" class="btn btn-info" title="Download binary" (click)="downloadSelected()">
+        <button data-cy-test="downloadBinary" class="btn btn-info" title="Download report" (click)="downloadSelected()">
           <i class="fa fa-download"></i></button>
         @if (childrenLoaded && testTableComponent?.amountOfSelectedReports === 2) {
           <button data-cy-test="compare" class="btn btn-info" title="Compare two selected reports"
