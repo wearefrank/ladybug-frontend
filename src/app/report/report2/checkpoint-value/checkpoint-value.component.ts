@@ -17,8 +17,7 @@ import { Checkpoint } from '../../../shared/interfaces/checkpoint';
 
 export interface PartialCheckpoint {
   index: number;
-  // Undefined is allowed to support testing.
-  uid?: string;
+  uid: string;
   message: string | null;
   stubbed: boolean;
   // TODO: Server will not send undefined.

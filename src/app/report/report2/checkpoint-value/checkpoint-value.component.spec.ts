@@ -17,6 +17,7 @@ describe('CheckpointValue', () => {
   let nodeValueStateSpy: jasmine.Spy | undefined;
   let buttonState: ReportButtonsState | undefined;
   let buttonStateSubscription: Subscription | undefined;
+  let saveSpy: jasmine.Spy | undefined;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -35,6 +36,7 @@ describe('CheckpointValue', () => {
     buttonStateSubscription = component.buttonStateSubject.subscribe((newButtonState) => {
       buttonState = newButtonState;
     });
+    saveSpy = spyOn(component.save, 'emit');
     fixture.detectChanges();
   });
 
@@ -62,6 +64,10 @@ describe('CheckpointValue', () => {
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointMessage).toEqual('My other value');
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
     component.onActualEditorContentsChanged('My value');
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -77,11 +83,19 @@ describe('CheckpointValue', () => {
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointMessage).toEqual('My other value');
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
     component.onActualEditorContentsChanged('');
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
     expect(component.getEditedRealCheckpointValue()).toEqual('');
     expectIsEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointMessage).toEqual('');
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
   }));
 
   it('When make null button is clicked while editor is empty then checkpoint value becomes null', fakeAsync(() => {
@@ -94,6 +108,10 @@ describe('CheckpointValue', () => {
     expect(component.getEditedRealCheckpointValue()).toEqual(null);
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointMessage).toEqual(null);
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
   }));
 
   it('When make null button is clicked while editor is not empty then checkpoint value becomes null', fakeAsync(() => {
@@ -107,6 +125,10 @@ describe('CheckpointValue', () => {
     expect(component.getEditedRealCheckpointValue()).toEqual(null);
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointMessage).toEqual(null);
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
   }));
 
   it('When checkpoint level stub strategy is edited then consistently show this change', fakeAsync(() => {
@@ -118,6 +140,13 @@ describe('CheckpointValue', () => {
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
+    component.requestSave();
+    // Checkpoint stub strategy has to be updated by dedicated HTTP request.
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointStubStrategy.stub).toEqual(
+      StubStrategy.checkpointIndex2Stub(1),
+    );
+    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointStubStrategy?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
     component.onCheckpointStubStrategyChange(StubStrategy.checkpointIndex2Stub(0));
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -133,6 +162,8 @@ describe('CheckpointValue', () => {
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.stubStrategy).toEqual('Other stub strategy');
     component.onReportStubStrategyChange('Some stub strategy');
     flush();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -210,6 +241,7 @@ function getPartialCheckpoint(message: string | null): PartialCheckpoint {
     threadName: 'Some thread name',
     typeAsString: 'string',
     level: 1,
+    uid: '0#0',
   };
   return { ...result };
 }

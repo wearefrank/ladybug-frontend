@@ -43,6 +43,7 @@ function getPartialCheckpoint(): PartialCheckpoint {
   const parent: PartialReport = { ...parentSeed };
   const result = {
     index: 0,
+    uid: '0#0',
     message: 'Some message',
     stubbed: false,
     preTruncatedMessageLength: 5,
