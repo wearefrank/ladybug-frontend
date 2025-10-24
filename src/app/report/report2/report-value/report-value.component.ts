@@ -230,7 +230,8 @@ export class ReportValueComponent implements OnInit, OnDestroy {
       .nullableVariable(
         this.report!.transformation,
         this.getRealEditedValueForNullable(this.editedTransformation),
-        'true',
+        'Transformation',
+        true,
       )
       .nonNullableVariable(this.report!.stubStrategy, this.editedReportStubStrategy, 'Report level stub strategy');
     const editedVariables = this.getRealEditedVariables();
