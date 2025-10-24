@@ -14,6 +14,7 @@ import { TestResult } from '../../../shared/interfaces/test-result';
 import { CheckpointMetadataTable } from '../checkpoint-metadata-table/checkpoint-metadata-table';
 import { MessagecontextTableComponent } from '../../../shared/components/messagecontext-table/messagecontext-table.component';
 import { Checkpoint } from '../../../shared/interfaces/checkpoint';
+import { prettify } from '../report2.component';
 
 export interface PartialCheckpoint {
   index: number;
@@ -119,6 +120,12 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     switch (command) {
       case 'makeNull': {
         this.editToNull();
+        break;
+      }
+      case 'prettify': {
+        const result = prettify(this.actualEditorContents);
+        const editorContents: string = result === null ? '' : result;
+        this.editorContentsSubject.next(editorContents);
         break;
       }
       case 'save': {

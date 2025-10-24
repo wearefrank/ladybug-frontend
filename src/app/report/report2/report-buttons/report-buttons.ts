@@ -23,6 +23,7 @@ export interface ReportButtonsState {
 
 export type ButtonCommand =
   | 'makeNull'
+  | 'prettify'
   | 'save'
   | 'copyReport'
   | 'rerun'
@@ -127,6 +128,10 @@ export class ReportButtons implements OnInit, OnDestroy {
 
   protected makeNull(): void {
     this.reportCommand.emit('makeNull');
+  }
+
+  protected prettify(): void {
+    this.reportCommand.emit('prettify');
   }
 
   protected save(): void {

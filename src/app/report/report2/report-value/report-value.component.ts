@@ -159,6 +159,9 @@ export class ReportValueComponent implements OnInit, OnDestroy {
       case 'makeNull': {
         throw new Error('Button makeNull should not be accessible when no checkpoint is shown');
       }
+      case 'prettify': {
+        throw new Error('Button prettify should not be accessible when no checkpoint is shown');
+      }
       case 'save': {
         this.saveModal.open(this.getDifferences().build());
         break;

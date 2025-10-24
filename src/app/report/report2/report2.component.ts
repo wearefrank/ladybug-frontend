@@ -80,6 +80,8 @@ interface UpdateRequest {
   failure: string;
 }
 
+const INDENT_TWO_SPACES = '  ';
+
 @Component({
   selector: 'app-report2',
   imports: [AngularSplitModule, DebugTreeComponent, ReportValueComponent, CheckpointValueComponent],
@@ -180,6 +182,11 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
       case 'makeNull': {
         throw new Error(
           'Report2Component.onButton() with command makeNull cannot happen - should be handled by CheckpointValue',
+        );
+      }
+      case 'prettify': {
+        throw new Error(
+          'Report2Component.onButton() with command prettify cannot happen - should be handled by CheckpointValue',
         );
       }
       case 'save': {
@@ -510,4 +517,59 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
     /* eslint-disable-next-line unicorn/no-useless-undefined */
     this.checkpointValueSubject.next(undefined);
   }
+}
+
+export function prettify(text: string | null): string | null {
+  if (text === null) {
+    return text;
+  }
+  try {
+    if (JSON.parse(text!)) {
+      return JSON.stringify(JSON.parse(text!), null, INDENT_TWO_SPACES);
+    }
+  } catch {
+    // Not JSON, continue.
+  }
+  if (checkIfIsXml(text!)) {
+    return prettifyXml(text);
+  }
+  return text;
+}
+
+function checkIfIsXml(text: string): boolean {
+  if (text) {
+    for (let index = 0; index < text.length; index++) {
+      if (text.charAt(index) === ' ' || text.charAt(index) === '\t') {
+        continue;
+      }
+      return text.charAt(index) === '<';
+    }
+  }
+  return false;
+}
+
+function prettifyXml(sourceXml: string): string {
+  var xmlDoc = new DOMParser().parseFromString(sourceXml, 'application/xml');
+  var xsltDoc = new DOMParser().parseFromString(
+    [
+      // describes how we want to modify the XML - indent everything
+      '<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform">',
+      '  <xsl:strip-space elements="*"/>',
+      '  <xsl:template match="para[content-style][not(text())]">', // change to just text() to strip space in text nodes
+      '    <xsl:value-of select="normalize-space(.)"/>',
+      '  </xsl:template>',
+      '  <xsl:template match="node()|@*">',
+      '    <xsl:copy><xsl:apply-templates select="node()|@*"/></xsl:copy>',
+      '  </xsl:template>',
+      '  <xsl:output indent="yes"/>',
+      '</xsl:stylesheet>',
+    ].join('\n'),
+    'application/xml',
+  );
+
+  var xsltProcessor = new XSLTProcessor();
+  xsltProcessor.importStylesheet(xsltDoc);
+  var resultDoc = xsltProcessor.transformToDocument(xmlDoc);
+  var resultXml = new XMLSerializer().serializeToString(resultDoc);
+  return resultXml;
 }
