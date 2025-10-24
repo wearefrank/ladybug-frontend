@@ -35,6 +35,7 @@ import { DebugTabService } from '../../debug/debug-tab.service';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../../shared/interfaces/update-checkpoint';
 import { HelperService } from '../../shared/services/helper.service';
+import { TestRefreshService } from '../../test/test-refresh.service';
 
 type ReportValueState = 'report' | 'checkpoint' | 'none';
 
@@ -116,6 +117,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   private testReportsService = inject(TestReportsService);
   private helperService = inject(HelperService);
   private debugTab = inject(DebugTabService);
+  private testRefreshService = inject(TestRefreshService);
   private ngZone = inject(NgZone);
   private subscriptions: Subscription = new Subscription();
   private newTabReportData?: ReportData;
@@ -404,13 +406,14 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
 
   private updateUIAfterSave(checkpointUidToRestore: string | undefined): void {
     this.saveDoneSubject.next();
-    // Two updates may have been done and we do not know which was processed last.
-    // We want the report from the server that resulted from both updates.
+    // Up to three updates may have been done and we do not make assumptions here which was last.
+    // We want the report from the server that resulted from all updates.
     this.getReportFromServer().then((updatedReport) => {
       this.ngZone.run(() => {
         if (this.newTab) {
           this.addReportToTree(updatedReport);
           this.selectUpdatedReportOrCheckpoint(updatedReport, checkpointUidToRestore);
+          this.testRefreshService.refreshAll();
         } else {
           this.debugTab.refreshAll({
             reportIds: [this.storageId!],
