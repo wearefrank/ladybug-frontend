@@ -277,9 +277,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     if (this.editedReportStubStrategy !== this.report!.stubStrategy) {
       updateReport.stubStrategy = this.editedReportStubStrategy;
     }
-    this.save.emit({
-      updateReport,
-    });
+    this.save.emit({ updateReport });
   }
 
   // For testing purposes

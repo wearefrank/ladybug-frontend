@@ -17,6 +17,7 @@ describe('ReportValue', () => {
   let nodeValueStateSpy: jasmine.Spy | undefined;
   let buttonState: ReportButtonsState | undefined;
   let buttonStateSubscription: Subscription | undefined;
+  let saveSpy: jasmine.Spy | undefined;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
@@ -35,6 +36,7 @@ describe('ReportValue', () => {
     buttonStateSubscription = component.buttonStateSubject.subscribe(
       (newButtonState) => (buttonState = newButtonState),
     );
+    saveSpy = spyOn(component.save, 'emit');
     fixture.detectChanges();
   });
 
@@ -150,6 +152,8 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.name).toEqual('Changed name');
     component.editedName = 'My name';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -165,6 +169,8 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.description).toEqual('Changed description');
     component.editedDescription = 'My description';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -179,6 +185,8 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.description).toEqual('Changed description');
     component.editedDescription = '';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -194,6 +202,8 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.path).toEqual('my/other/path');
     component.editedPath = 'my/path';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -209,6 +219,8 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.path).toEqual('my/other/path');
     component.editedPath = '';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -224,6 +236,8 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.transformation).toEqual('other dummy transformation');
     component.editedTransformation = 'dummy transformation';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -239,6 +253,8 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.transformation).toEqual('other dummy transformation');
     component.editedTransformation = '';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -254,6 +270,8 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.stubStrategy).toEqual('Other stub strategy');
     component.editedReportStubStrategy = 'Some stub strategy';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -269,6 +287,8 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables).toEqual('{"otherName":"value"}');
     component.editedVariables[0].name = 'variable';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -284,6 +304,8 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables).toEqual('{"variable":"otherValue"}');
     component.editedVariables[0].value = 'value';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -299,6 +321,10 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables).toEqual(
+      '{"variable":"value","second":"secondValue"}',
+    );
     component.editedVariables.pop();
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -314,6 +340,8 @@ describe('ReportValue', () => {
     component.removeVariable(0);
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables).toEqual('{}');
   });
 
   it('When a new edit row for variables appears, there is no change when the variable name is blank', () => {
