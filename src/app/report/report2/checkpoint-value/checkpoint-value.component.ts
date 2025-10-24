@@ -239,6 +239,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     padding: { bottom: 200 },
     selectOnLineNumbers: true,
     scrollBeyondLastLine: false,
+    wordWrap: 'on',
   };
 
   private newOriginalCheckpoint(originalCheckpoint: PartialCheckpoint | undefined): void {

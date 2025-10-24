@@ -85,6 +85,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     padding: { bottom: 200 },
     selectOnLineNumbers: true,
     scrollBeyondLastLine: false,
+    wordWrap: 'on',
   };
   protected monacoEditorInitialHeight = 0;
   protected report?: PartialReport;
