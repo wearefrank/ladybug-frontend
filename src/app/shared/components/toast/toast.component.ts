@@ -65,4 +65,11 @@ export class ToastComponent implements OnInit, OnDestroy {
       setTimeout(() => this.close(toast), 500);
     }
   }
+
+  protected getToastClass(toastType: string): string {
+    if (toastType.startsWith('long-')) {
+      return `bg-${toastType.slice('long-'.length)}`;
+    }
+    return `bg-${toastType}`;
+  }
 }

@@ -36,6 +36,14 @@ export class ToastService {
     } as Toast);
   }
 
+  public showSuccessLong(body: string, toastCallback?: ToastCallback): void {
+    this.toastSubject.next({
+      type: 'long-success',
+      message: body,
+      toastCallback: toastCallback,
+    } as Toast);
+  }
+
   public showInfo(body: string, toastCallback?: ToastCallback): void {
     this.toastSubject.next({
       type: 'info',

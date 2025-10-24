@@ -199,54 +199,27 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
         'CheckpointValueComponent.save() should not be reachable when the checkpoint has not been edited',
       );
     }
-    let messageUpdate: string | null | undefined;
-    let checkpointStubStrategyUpdate: number | undefined;
-    let reportStubStrategyUpdate: string | undefined;
     const message: string | null = this.getEditedRealCheckpointValue();
+    const checkpointId = `${this.originalCheckpoint!.index}`;
+    let event: UpdateNode = {};
     if (message !== this.originalCheckpoint!.message) {
-      messageUpdate = message;
+      event.checkpointUidToRestore = this.originalCheckpoint!.uid;
+      event.updateCheckpointMessage = {
+        checkpointId,
+        checkpointMessage: message,
+      };
     }
     if (this.actualCheckpointStubStrategy !== this.originalCheckpoint!.stub) {
-      checkpointStubStrategyUpdate = this.actualCheckpointStubStrategy;
+      event.checkpointUidToRestore = this.originalCheckpoint!.uid;
+      event.updateCheckpointStubStrategy = {
+        checkpointId,
+        stub: this.actualCheckpointStubStrategy,
+      };
     }
     if (this.actualReportStubStrategy !== this.originalCheckpoint!.parentReport.stubStrategy) {
-      reportStubStrategyUpdate = this.actualReportStubStrategy;
+      event.updateReport = { stubStrategy: this.actualReportStubStrategy };
     }
-    const checkpointId = `${this.originalCheckpoint!.index}`;
-    const haveCheckpointUpdate: boolean = messageUpdate !== undefined || checkpointStubStrategyUpdate !== undefined;
-    const haveReportUpdate: boolean = reportStubStrategyUpdate !== undefined;
-    if (haveCheckpointUpdate) {
-      if (haveReportUpdate) {
-        this.save.emit({
-          checkpointUidToRestore: this.originalCheckpoint!.uid,
-          updateCheckpoint: {
-            checkpointId,
-            checkpointMessage: messageUpdate,
-            stub: checkpointStubStrategyUpdate,
-          },
-          updateReport: {
-            stubStrategy: reportStubStrategyUpdate,
-          },
-        });
-      } else {
-        this.save.emit({
-          checkpointUidToRestore: this.originalCheckpoint!.uid,
-          updateCheckpoint: {
-            checkpointId,
-            checkpointMessage: messageUpdate,
-            stub: checkpointStubStrategyUpdate,
-          },
-        });
-      }
-    } else {
-      // No Checkpoint update, so a report update only
-      this.save.emit({
-        checkpointUidToRestore: this.originalCheckpoint!.uid,
-        updateReport: {
-          stubStrategy: reportStubStrategyUpdate,
-        },
-      });
-    }
+    this.save.emit(event);
   }
 
   protected onDownload(downloadOptions: DownloadOptions): void {

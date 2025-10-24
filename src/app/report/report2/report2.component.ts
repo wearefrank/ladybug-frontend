@@ -69,7 +69,14 @@ export interface NodeValueState {
 export interface UpdateNode {
   checkpointUidToRestore?: string;
   updateReport?: UpdateReport;
-  updateCheckpoint?: UpdateCheckpoint;
+  updateCheckpointMessage?: UpdateCheckpoint;
+  updateCheckpointStubStrategy?: UpdateCheckpoint;
+}
+
+interface UpdateRequest {
+  body: UpdateCheckpoint | UpdateReport;
+  success: string;
+  failure: string;
 }
 
 @Component({
@@ -216,52 +223,32 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
   protected initEditor(): void {}
 
   protected save(update: UpdateNode): void {
-    const requests: Promise<void>[] = [];
-    if (update.updateCheckpoint !== undefined) {
-      requests.push(
-        this.handleUpdateNodeRequest(
-          update.updateCheckpoint,
-          'Successfully saved changes of checkpoint',
-          'Failed to update checkpoint node',
-        ),
-      );
+    const requests: UpdateRequest[] = [];
+    if (update.updateCheckpointMessage !== undefined) {
+      requests.push({
+        body: update.updateCheckpointMessage,
+        success: 'Successfully saved checkpoint message',
+        failure: 'Failed to change checkpoint message',
+      });
+    }
+    if (update.updateCheckpointStubStrategy !== undefined) {
+      requests.push({
+        body: update.updateCheckpointStubStrategy,
+        success: 'Successfully saved checkpoint stub strategy',
+        failure: 'Failed to change checkpoint stub strategy',
+      });
     }
     if (update.updateReport !== undefined) {
-      this.handleUpdateNodeRequest(
-        update.updateReport,
-        'Successfully saved changes of the whole report',
-        'Failed to update report node',
-      );
-    }
-    Promise.all(requests)
-      .then(() => {
-        this.ngZone.run(() => {
-          this.saveDoneSubject.next();
-        });
-        // Two updates may have been done and we do not know which was processed last.
-        // We want the report from the server that resulted from both updates.
-        this.getReportFromServer().then((updatedReport) => {
-          this.ngZone.run(() => {
-            if (this.newTab) {
-              this.addReportToTree(updatedReport);
-              this.selectUpdatedReportOrCheckpoint(updatedReport, update.checkpointUidToRestore);
-            } else {
-              this.debugTab.refreshAll({
-                reportIds: [this.storageId!],
-                displayToast: false,
-              });
-            }
-          });
-        });
-      })
-      .catch(() => {
-        console.log(
-          'Report2Component.save(): Promises of HTTP update requests to update report were expected to resolve, even with errors',
-        );
-        this.toastService.showDanger(
-          'Programming error detected. Please view console log (F12), contact the maintainers of Ladybug and refresh your browser',
-        );
+      requests.push({
+        body: update.updateReport,
+        success: 'Successfully saved changes of the whole report',
+        failure: 'Failed to update report node',
       });
+    }
+    const promises: Promise<void>[] = [];
+    this.sendUpdateRequests(requests, promises, (promises) =>
+      this.waitForUpdateRequestsAndFinishSave(promises, update.checkpointUidToRestore),
+    );
   }
 
   protected onDownload(downloadOptions: DownloadOptions): void {
@@ -374,12 +361,63 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
         .pipe(catchError(this.handleErrorWithRethrowMessage(failText)))
         .subscribe({
           next: () => {
-            this.toastService.showSuccess(successText);
+            this.toastService.showSuccessLong(successText);
             console.log(`Raised success toast with text: ${successText}`);
             resolve();
           },
           error: () => resolve(),
         });
+    });
+  }
+
+  private sendUpdateRequests(
+    requests: UpdateRequest[],
+    promises: Promise<void>[],
+    handler: (promises: Promise<void>[]) => void,
+  ): void {
+    if (requests.length === 0) {
+      handler(promises);
+    } else {
+      const next: UpdateRequest = requests.shift()!;
+      promises.push(this.handleUpdateNodeRequest(next.body, next.success, next.failure));
+      setTimeout(() => this.sendUpdateRequests(requests, promises, handler), 1000);
+    }
+  }
+
+  private waitForUpdateRequestsAndFinishSave(
+    promises: Promise<void>[],
+    checkpointUidToRestore: string | undefined,
+  ): void {
+    Promise.all(promises)
+      // We have a waiting time between updating a report on the server and requesting
+      // the updated report.
+      .then(() => setTimeout(() => this.updateUIAfterSave(checkpointUidToRestore), 1000))
+      .catch(() => {
+        console.log(
+          'Report2Component.save(): Promises of HTTP update requests to update report were expected to resolve, even with errors',
+        );
+        this.toastService.showDanger(
+          'Programming error detected. Please view console log (F12), contact the maintainers of Ladybug and refresh your browser',
+        );
+      });
+  }
+
+  private updateUIAfterSave(checkpointUidToRestore: string | undefined): void {
+    this.saveDoneSubject.next();
+    // Two updates may have been done and we do not know which was processed last.
+    // We want the report from the server that resulted from both updates.
+    this.getReportFromServer().then((updatedReport) => {
+      this.ngZone.run(() => {
+        if (this.newTab) {
+          this.addReportToTree(updatedReport);
+          this.selectUpdatedReportOrCheckpoint(updatedReport, checkpointUidToRestore);
+        } else {
+          this.debugTab.refreshAll({
+            reportIds: [this.storageId!],
+            displayToast: false,
+          });
+        }
+      });
     });
   }
 
@@ -407,7 +445,13 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private selectUpdatedReportOrCheckpoint(updatedReport: Report, checkpointUid: string | undefined): void {
+    // TODO: The tree component has a bug that prevents us from programmatically selecting
+    // a checkpoint. Therefore we assume that the report was selected in the
+    // tree view and we select the corresponding value.
+    this.selectReport(updatedReport);
+    /*
     if (checkpointUid === undefined) {
       this.selectReport(updatedReport);
     } else {
@@ -423,6 +467,7 @@ export class Report2Component implements OnInit, AfterViewInit, OnDestroy {
         this.selectReport(checkpoint);
       }
     }
+    */
   }
 
   private getIdFromPath(): string {

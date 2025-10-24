@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
+import { Component, inject, Input, NgZone, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
 import { AngularSplitModule } from 'angular-split';
@@ -99,6 +99,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   private http = inject(HttpService);
   private errorHandler = inject(ErrorHandling);
   private subscriptions = new Subscription();
+  private ngZone = inject(NgZone);
 
   get height(): number {
     return this._height;
@@ -293,21 +294,27 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   }
 
   private newReport(report: PartialReport): void {
-    this.metadataTableVisible = false;
-    this.report = report;
-    this.editedName = this.report.name;
-    this.editedDescription = this.getEditorTextOfNullable(this.report.description);
-    this.editedPath = this.getEditorTextOfNullable(this.report.path);
-    this.editedTransformation = this.getEditorTextOfNullable(this.report.transformation);
-    this.originalVariables = ReportValueComponent.initVariables(report.variables);
-    this.editedVariables = ReportValueComponent.calculateEditedVariables(this.originalVariables);
-    this.refreshDuplicateVariables();
-    this.editedReportStubStrategy = report.stubStrategy;
-    this.transformationContentRequestSubject.next(this.getEditorTextOfNullable(this.report!.transformation));
-    this.reportContentRequestSubject.next(this.report.xml);
-    this.originalReportStubStrategySubject.next(report.stubStrategy);
-    this.buttonComponentResetSubject.next();
-    this.onInputChange();
+    // When a report is edited, the update report is received from a
+    // subscription. Reacting on a subscription is not automatically
+    // in the Angular zone, so we have to run in the Angular zone
+    // explicitly.
+    this.ngZone.run(() => {
+      this.metadataTableVisible = false;
+      this.report = report;
+      this.editedName = this.report.name;
+      this.editedDescription = this.getEditorTextOfNullable(this.report.description);
+      this.editedPath = this.getEditorTextOfNullable(this.report.path);
+      this.editedTransformation = this.getEditorTextOfNullable(this.report.transformation);
+      this.originalVariables = ReportValueComponent.initVariables(report.variables);
+      this.editedVariables = ReportValueComponent.calculateEditedVariables(this.originalVariables);
+      this.refreshDuplicateVariables();
+      this.editedReportStubStrategy = report.stubStrategy;
+      this.transformationContentRequestSubject.next(this.getEditorTextOfNullable(this.report!.transformation));
+      this.reportContentRequestSubject.next(this.report.xml);
+      this.originalReportStubStrategySubject.next(report.stubStrategy);
+      this.buttonComponentResetSubject.next();
+      this.onInputChange();
+    });
   }
 
   private refreshDuplicateVariables(): void {

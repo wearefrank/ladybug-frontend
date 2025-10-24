@@ -3,9 +3,9 @@
     <div class="my-2" [attr.data-cy-toast]="toast.type">
       <ngb-toast class="fade animate-show animate-hide position-relative"
                  [ngClass]="{'user-selected-none': toast.detailed}"
-                 [class]="'bg-' + toast.type"
+                 [class]="getToastClass(toast.type)"
                  [autohide]="toast.type !== 'danger'"
-                 [delay]="toast.type === 'info' || toast.type ==='success' ? 3000 : toast.type ==='warning' ? 8000 : 0"
+                 [delay]="toast.type === 'info' || toast.type ==='success' ? 3000 : toast.type ==='warning' || toast.type === 'long-success' ? 8000 : 0"
                  (click)="toast.detailed ? showDetailedErrorMessages(toast) : null"
                  (hidden)="close(toast)">
         <i class="fa fa-close close-icon" (click)="close(toast)"></i>
