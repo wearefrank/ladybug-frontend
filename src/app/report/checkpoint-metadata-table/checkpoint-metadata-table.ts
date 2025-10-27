@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CopyTooltipDirective } from '../../../shared/directives/copy-tooltip.directive';
+import { CopyTooltipDirective } from '../../shared/directives/copy-tooltip.directive';
 import { PartialCheckpoint } from '../checkpoint-value/checkpoint-value.component';
 
 @Component({

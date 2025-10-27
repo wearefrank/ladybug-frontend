@@ -12,12 +12,12 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { Tab } from './shared/interfaces/tab';
 import { ReportData } from './shared/interfaces/report-data';
 import { ToastComponent } from './shared/components/toast/toast.component';
-import { ReportComponent } from './report/report.component';
 import { CloseTab } from './shared/interfaces/close-tab';
 import { HttpService } from './shared/services/http.service';
 import { StubStrategy } from './shared/enums/stub-strategy';
 import { ErrorHandling } from './shared/classes/error-handling.service';
 import { VersionService } from './shared/services/version.service';
+import { ReportComponent } from './report/report.component';
 
 @Component({
   selector: 'app-root',

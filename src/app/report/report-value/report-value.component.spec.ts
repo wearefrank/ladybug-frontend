@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReportValueComponent, Variable } from './report-value.component';
-import { HttpService } from '../../../shared/services/http.service';
-import { ErrorHandling } from '../../../shared/classes/error-handling.service';
+import { HttpService } from '../../shared/services/http.service';
+import { ErrorHandling } from '../../shared/classes/error-handling.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { PartialReport } from '../report2.component';
+import { PartialReport } from '../report.component';
 import { ReportButtonsState } from '../report-buttons/report-buttons';
-import { TestResult } from '../../../shared/interfaces/test-result';
+import { TestResult } from '../../shared/interfaces/test-result';
 
 describe('ReportValue', () => {
   let component: ReportValueComponent;

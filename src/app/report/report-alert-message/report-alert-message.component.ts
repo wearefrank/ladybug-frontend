@@ -3,6 +3,8 @@ import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
 import { Report } from '../../shared/interfaces/report';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 
+// TODO: Duplicate of ReportAlertMessage2Component. In CompareComponent use ReportAlertMessage2Component and
+// then remove ReportAlertMessageComponent
 @Component({
   selector: 'app-report-alert-message',
   standalone: true,

@@ -1,22 +1,22 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input, NgZone, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
+import { MonacoEditorComponent } from '../../monaco-editor/monaco-editor.component';
 import { AngularSplitModule } from 'angular-split';
-import { HttpService } from '../../../shared/services/http.service';
+import { HttpService } from '../../shared/services/http.service';
 import { BehaviorSubject, catchError, firstValueFrom, Observable, Subject, Subscription } from 'rxjs';
-import { ErrorHandling } from '../../../shared/classes/error-handling.service';
-import { Transformation } from '../../../shared/interfaces/transformation';
-import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
-import { DifferencesBuilder } from '../../../shared/util/differences-builder';
-import { NodeValueState, PartialReport, UpdateNode } from '../report2.component';
+import { ErrorHandling } from '../../shared/classes/error-handling.service';
+import { Transformation } from '../../shared/interfaces/transformation';
+import { DifferenceModalComponent } from '../difference-modal/difference-modal.component';
+import { DifferencesBuilder } from '../../shared/util/differences-builder';
+import { NodeValueState, PartialReport, UpdateNode } from '../report.component';
 import {
   NodeValueLabels,
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
 import { ButtonCommand, DownloadOptions, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
-import { TestResult } from '../../../shared/interfaces/test-result';
-import { UpdateReport } from '../../../shared/interfaces/update-report';
+import { TestResult } from '../../shared/interfaces/test-result';
+import { UpdateReport } from '../../shared/interfaces/update-report';
 import { ReportMetadataTable } from '../report-metadata-table/report-metadata-table';
 
 export interface Variable {
@@ -34,7 +34,7 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
     CommonModule,
     FormsModule,
     AngularSplitModule,
-    Difference2ModalComponent,
+    DifferenceModalComponent,
     ReportAlertMessage2Component,
     ReportButtons,
     ReportMetadataTable,
@@ -50,7 +50,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   @Input({ required: true }) report$!: Observable<PartialReport | undefined>;
   @Input({ required: true }) saveDone$!: Observable<void>;
   @Input({ required: true }) rerunResult$!: Observable<TestResult | undefined>;
-  @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
+  @ViewChild(DifferenceModalComponent) saveModal!: DifferenceModalComponent;
 
   editedName = '';
   editedDescription = '';

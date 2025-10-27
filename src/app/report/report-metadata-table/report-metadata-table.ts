@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CopyTooltipDirective } from 'src/app/shared/directives/copy-tooltip.directive';
-import { PartialReport } from '../report2.component';
+import { PartialReport } from '../report.component';
 
 @Component({
   selector: 'app-report-metadata-table2',

@@ -1,9 +1,9 @@
 import { Component, inject, Input, NgZone, OnDestroy, OnInit, output } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { StubStrategy } from '../../../shared/enums/stub-strategy';
+import { StubStrategy } from '../../shared/enums/stub-strategy';
 import { FormsModule } from '@angular/forms';
-import { TestResult } from '../../../shared/interfaces/test-result';
-import { AppVariablesService } from '../../../shared/services/app.variables.service';
+import { TestResult } from '../../shared/interfaces/test-result';
+import { AppVariablesService } from '../../shared/services/app.variables.service';
 import {
   NgbDropdown,
   NgbDropdownButtonItem,
@@ -11,7 +11,7 @@ import {
   NgbDropdownMenu,
   NgbDropdownToggle,
 } from '@ng-bootstrap/ng-bootstrap';
-import { BooleanToStringPipe } from '../../../shared/pipes/boolean-to-string.pipe';
+import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
 
 export interface ReportButtonsState {
   isReport: boolean;

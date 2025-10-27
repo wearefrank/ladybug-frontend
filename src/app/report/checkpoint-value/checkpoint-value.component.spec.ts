@@ -2,10 +2,10 @@ import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testi
 
 import { CheckpointValueComponent, PartialCheckpoint } from './checkpoint-value.component';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { PartialReport } from '../report2.component';
-import { StubStrategy } from '../../../shared/enums/stub-strategy';
+import { PartialReport } from '../report.component';
+import { StubStrategy } from '../../shared/enums/stub-strategy';
 import { ReportButtonsState } from '../report-buttons/report-buttons';
-import { TestResult } from '../../../shared/interfaces/test-result';
+import { TestResult } from '../../shared/interfaces/test-result';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 

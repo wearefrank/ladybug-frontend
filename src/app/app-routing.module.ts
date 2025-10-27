@@ -4,7 +4,7 @@ import { DebugComponent } from './debug/debug.component';
 import { TestComponent } from './test/test.component';
 import { CompareComponent } from './compare/compare.component';
 import { TabService } from './shared/services/tab.service';
-import { Report2Component } from './report/report2/report2.component';
+import { ReportComponent } from './report/report.component';
 
 export const routes: Routes = [
   {
@@ -17,8 +17,8 @@ export const routes: Routes = [
     path: TestComponent.ROUTER_PATH,
   },
   {
-    component: Report2Component,
-    path: `${Report2Component.ROUTER_PATH}/:id`,
+    component: ReportComponent,
+    path: `${ReportComponent.ROUTER_PATH}/:id`,
   },
   {
     component: CompareComponent,

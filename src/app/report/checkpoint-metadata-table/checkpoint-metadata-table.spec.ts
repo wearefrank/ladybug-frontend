@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CheckpointMetadataTable } from './checkpoint-metadata-table';
-import { PartialReport } from '../report2.component';
+import { PartialReport } from '../report.component';
 import { PartialCheckpoint } from '../checkpoint-value/checkpoint-value.component';
-import { StubStrategy } from '../../../shared/enums/stub-strategy';
+import { StubStrategy } from '../../shared/enums/stub-strategy';
 
 describe('CheckpointMetadataTable', () => {
   let component: CheckpointMetadataTable;

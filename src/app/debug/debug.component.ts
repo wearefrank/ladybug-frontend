@@ -6,18 +6,18 @@ import { HttpService } from '../shared/services/http.service';
 import { View } from '../shared/interfaces/view';
 import { catchError } from 'rxjs';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
-import { Report2Component } from '../report/report2/report2.component';
+import { ReportComponent } from '../report/report.component';
 
 @Component({
   selector: 'app-debug',
   templateUrl: './debug.component.html',
   styleUrls: ['./debug.component.css'],
   standalone: true,
-  imports: [TableComponent, Report2Component],
+  imports: [TableComponent, ReportComponent],
 })
 export class DebugComponent implements OnInit {
   static readonly ROUTER_PATH: string = 'debug';
-  @ViewChild('reportComponent') customReportComponent!: Report2Component;
+  @ViewChild('reportComponent') customReportComponent!: ReportComponent;
   currentView?: View;
   views?: View[];
 

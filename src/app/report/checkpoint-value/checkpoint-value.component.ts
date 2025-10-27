@@ -1,20 +1,20 @@
 import { Component, Input, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { MonacoEditorComponent } from '../../../monaco-editor/monaco-editor.component';
-import { Difference2ModalComponent } from '../../difference-modal/difference2-modal.component';
-import { DifferencesBuilder } from '../../../shared/util/differences-builder';
+import { MonacoEditorComponent } from '../../monaco-editor/monaco-editor.component';
+import { DifferenceModalComponent } from '../difference-modal/difference-modal.component';
+import { DifferencesBuilder } from '../../shared/util/differences-builder';
 import {
   NodeValueLabels,
   ReportAlertMessage2Component,
 } from '../report-alert-message2/report-alert-message2.component';
-import { NodeValueState, PartialReport, UpdateNode } from '../report2.component';
+import { NodeValueState, PartialReport, UpdateNode } from '../report.component';
 import { ButtonCommand, DownloadOptions, ReportButtons, ReportButtonsState } from '../report-buttons/report-buttons';
-import { StubStrategy } from '../../../shared/enums/stub-strategy';
-import { TestResult } from '../../../shared/interfaces/test-result';
+import { StubStrategy } from '../../shared/enums/stub-strategy';
+import { TestResult } from '../../shared/interfaces/test-result';
 import { CheckpointMetadataTable } from '../checkpoint-metadata-table/checkpoint-metadata-table';
-import { MessagecontextTableComponent } from '../../../shared/components/messagecontext-table/messagecontext-table.component';
-import { Checkpoint } from '../../../shared/interfaces/checkpoint';
-import { prettify } from '../report2.component';
+import { MessagecontextTableComponent } from '../../shared/components/messagecontext-table/messagecontext-table.component';
+import { Checkpoint } from '../../shared/interfaces/checkpoint';
+import { prettify } from '../report.component';
 
 export interface PartialCheckpoint {
   index: number;
@@ -41,7 +41,7 @@ export interface PartialCheckpoint {
   selector: 'app-checkpoint-value',
   imports: [
     MonacoEditorComponent,
-    Difference2ModalComponent,
+    DifferenceModalComponent,
     ReportAlertMessage2Component,
     ReportButtons,
     CheckpointMetadataTable,
@@ -59,7 +59,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
   @Input({ required: true }) originalCheckpoint$!: Observable<PartialCheckpoint | undefined>;
   @Input({ required: true }) saveDone$!: Observable<void>;
   @Input({ required: true }) rerunResult$!: Observable<TestResult | undefined>;
-  @ViewChild(Difference2ModalComponent) saveModal!: Difference2ModalComponent;
+  @ViewChild(DifferenceModalComponent) saveModal!: DifferenceModalComponent;
   labels: NodeValueLabels | undefined;
   buttonStateSubject = new BehaviorSubject<ReportButtonsState>(CheckpointValueComponent.getDefaultButtonState());
 

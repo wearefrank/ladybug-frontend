@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReportMetadataTable } from './report-metadata-table';
-import { PartialReport } from '../report2.component';
+import { PartialReport } from '../report.component';
 
 describe('ReportMetadataTable', () => {
   let component: ReportMetadataTable;
