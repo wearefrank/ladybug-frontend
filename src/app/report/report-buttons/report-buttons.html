@@ -16,6 +16,12 @@
         class="btn btn-info"
         (click)="makeNull()"
       >make null</button>
+      <button
+        data-cy-report="prettify"
+        class="btn btn-info"
+        title="prettify"
+        (click)="prettify()"
+      >prettify</button>
       <div class="w-fit mx-1 my-0">
         <select #checkpointStubStrategy id="checkpointStubStrategy" class="form-control" [(ngModel)]="currentCheckpointStubStrategyStr"
                 (ngModelChange)="onCheckpointStubStrategyChange($event)">
@@ -24,12 +30,6 @@
           }
         </select>
       </div>
-      <button
-        data-cy-report="prettify"
-        class="btn btn-info"
-        title="prettify"
-        (click)="prettify()"
-      >prettify</button>
       <button
         data-cy-open-metadata-table
         class="btn btn-info h-fit"
