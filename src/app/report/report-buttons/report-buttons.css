@@ -31,10 +31,12 @@ button {
   text-align: center;
 }
 
+/* Border color and padding were copied from elsewhere using F12 and inspect */
 .rerun-result {
-  margin: 0 0 1rem 0.25rem;
+  padding: .375rem .75rem;
   font-size: 10pt;
   width: fit-content;
+  border: 1pt solid #ced4da;
 }
 
 :disabled {
