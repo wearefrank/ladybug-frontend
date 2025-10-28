@@ -1,5 +1,12 @@
 @if (labels !== undefined) {
   <div class="mb-2 mx-1">
+    @if (labels.isReadOnly) {
+      <div class="btn btn-static px-2" title="You can edit but not save this form">
+        Read only
+      </div>
+    }
+  </div>
+  <div class="mb-2 mx-1">
     @if (labels.isEdited) {
       <div class="btn btn-static px-2">
         Edited

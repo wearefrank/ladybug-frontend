@@ -176,11 +176,11 @@ describe('CheckpointValue', () => {
     originalValueSubject!.next(checkpoint);
     flush();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
-    expect(buttonState?.isReadOnly).toEqual(false);
+    expect(component.labels?.isReadOnly).toEqual(false);
     component.onActualEditorContentsChanged('My other value');
     flush();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
-    expect(buttonState?.isReadOnly).toEqual(false);
+    expect(component.labels?.isReadOnly).toEqual(false);
   }));
 
   it('When the checkpoint-s report is not in a CRUD storage then the emitted events indicate read-only', fakeAsync(() => {
@@ -189,11 +189,11 @@ describe('CheckpointValue', () => {
     originalValueSubject!.next(checkpoint);
     flush();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
-    expect(buttonState?.isReadOnly).toEqual(true);
+    expect(component.labels?.isReadOnly).toEqual(true);
     component.onActualEditorContentsChanged('My other value');
     flush();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
-    expect(buttonState?.isReadOnly).toEqual(true);
+    expect(component.labels?.isReadOnly).toEqual(true);
   }));
 
   function expectNotEdited(): void {

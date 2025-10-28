@@ -136,6 +136,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     const isReadOnly = this.report ? !this.report.crudStorage : true;
     const isEdited = this.isEdited();
     this.labels.isEdited = isEdited;
+    this.labels.isReadOnly = isReadOnly;
     const state: NodeValueState = { isReadOnly, isEdited, storageId: this.report?.storageId };
     this.buttonStateSubject.next(ReportValueComponent.getButtonState(state));
     this.nodeValueState.emit(state);
@@ -401,7 +402,6 @@ export class ReportValueComponent implements OnInit, OnDestroy {
       isCheckpoint: false,
       isEdited: nodeValueState.isEdited,
       saveAllowed: saveAllowed,
-      isReadOnly: nodeValueState.isReadOnly,
     };
   }
 

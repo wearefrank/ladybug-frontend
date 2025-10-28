@@ -18,7 +18,6 @@ export interface ReportButtonsState {
   isCheckpoint: boolean;
   isEdited: boolean;
   saveAllowed: boolean;
-  isReadOnly: boolean;
 }
 
 export type ButtonCommand =
@@ -68,7 +67,6 @@ export class ReportButtons implements OnInit, OnDestroy {
     isCheckpoint: false,
     isEdited: false,
     saveAllowed: false,
-    isReadOnly: true,
   };
 
   protected readonly StubStrategy = StubStrategy;
@@ -165,10 +163,6 @@ export class ReportButtons implements OnInit, OnDestroy {
 
   protected onDownload(downloadOptions: DownloadOptions): void {
     this.downloadRequest.emit(downloadOptions);
-  }
-
-  protected getReadOnly(): string {
-    return this.state.isReadOnly ? ' (read only)' : '';
   }
 
   protected toggleMetadataTable(): void {

@@ -390,11 +390,11 @@ describe('ReportValue', () => {
     reportSubject!.next(report);
     component.setVariables([]);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
-    expect(buttonState?.isReadOnly).toEqual(false);
+    expect(component.labels?.isReadOnly).toEqual(false);
     component.editedName = 'Changed name';
     component.onInputChange();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(false);
-    expect(buttonState?.isReadOnly).toEqual(false);
+    expect(component.labels?.isReadOnly).toEqual(false);
   });
 
   it('When the report is not in a CRUD storage then emitted events indicate read-only', () => {
@@ -403,11 +403,11 @@ describe('ReportValue', () => {
     reportSubject!.next(report);
     component.setVariables([]);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
-    expect(buttonState?.isReadOnly).toEqual(true);
+    expect(component.labels?.isReadOnly).toEqual(true);
     component.editedName = 'Changed name';
     component.onInputChange();
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isReadOnly).toEqual(true);
-    expect(buttonState?.isReadOnly).toEqual(true);
+    expect(component.labels?.isReadOnly).toEqual(true);
   });
 
   function expectNotEdited(): void {

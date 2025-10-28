@@ -25,7 +25,6 @@ describe('ReportButtons', () => {
       isCheckpoint: false,
       isEdited: false,
       saveAllowed: false,
-      isReadOnly: true,
     });
     component.originalReportStubStrategy$ = originalReportStubStrategySubject;
     component.rerunResult$ = new Subject<TestResult | undefined>() as Observable<TestResult | undefined>;

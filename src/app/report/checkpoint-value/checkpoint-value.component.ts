@@ -296,7 +296,9 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     }
     const isEdited = this.isEdited();
     const editedCheckpointValue = this.getEditedRealCheckpointValue();
+    const isReadOnly = this.originalCheckpoint === undefined ? true : !this.originalCheckpoint.parentReport.crudStorage;
     this.labels = {
+      isReadOnly,
       isEdited,
       isMessageNull: editedCheckpointValue === null,
       isMessageEmpty: editedCheckpointValue === '',
@@ -312,7 +314,6 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       ),
       stubNotFound: this.originalCheckpoint.stubNotFound,
     };
-    const isReadOnly = this.originalCheckpoint === undefined ? true : !this.originalCheckpoint.parentReport.crudStorage;
     this.nodeValueState.emit({
       isReadOnly,
       isEdited,
@@ -324,7 +325,6 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       isCheckpoint: true,
       isEdited,
       saveAllowed,
-      isReadOnly: isReadOnly,
     });
   }
 
@@ -360,7 +360,6 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
       isCheckpoint: true,
       isEdited: false,
       saveAllowed: false,
-      isReadOnly: true,
     };
   }
 }

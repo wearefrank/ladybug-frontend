@@ -11,6 +11,7 @@ export interface NodeValueLabels {
   showConverted?: boolean;
   charactersRemoved: number;
   stubNotFound?: string;
+  isReadOnly?: boolean;
 }
 
 @Component({
