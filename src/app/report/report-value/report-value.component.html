@@ -15,46 +15,48 @@
   <as-split direction="vertical">
     <as-split-area class="split-size" [size]="100">
       <div class="form-group">
-        <label>Name</label>
+        <label class="mb-2 mx-1">Name</label>
         <input 
-          [(ngModel)]="editedName" data-cy-element-name="name" class="form-control" placeholder="Name" (input)="onInputChange()">
+          [(ngModel)]="editedName" data-cy-element-name="name" class="form-control mb-2 mx-1" placeholder="Name" (input)="onInputChange()">
       </div>
       <div class="form-group">
-        <label>Description</label>
-        <input [(ngModel)]="editedDescription" class="form-control" placeholder="Description" (input)="onInputChange()">
+        <label class="mb-2 mx-1">Description</label>
+        <input [(ngModel)]="editedDescription" class="form-control mb-2 mx-1" placeholder="Description" (input)="onInputChange()">
       </div>
       <div class="form-group">
-        <label>Path</label>
-        <input [(ngModel)]="editedPath" class="form-control" placeholder="/path/to/report/" (input)="onInputChange()">
+        <label class="mb-2 mx-1">Path</label>
+        <input [(ngModel)]="editedPath" class="form-control mb-2 mx-1" placeholder="/path/to/report/" (input)="onInputChange()">
       </div>
-      @for (variable of editedVariables; track index; let index = $index) {
-        <div class="form-group row">
-          <label class="col-sm-1 control-label label-height-30">
-            @if (index === 0) {
-              <span>Variables:</span>
+      <table class="mb-2 mx-1">
+        <tr>
+          <td class="variablesLabel">Variables:</td>
+          <td>
+            @for (variable of editedVariables; track index; let index = $index) {
+              <div class="form-group row">
+                <div class="col-sm-5">
+                  <input
+                    [(ngModel)]="variable.name"
+                    [ngClass]="{'is-invalid': duplicateVariables.has(index)}"
+                    class="form-control" placeholder="Name"
+                    (input)="onInputChange()"
+                    (blur)="addEmptyVariableWhenNeeded()">
+                </div>
+                <div class="col-sm-5">
+                  <input [(ngModel)]="variable.value" [ngClass]="{'is-invalid': duplicateVariables.has(index)}" class="form-control" placeholder="Value" (input)="onInputChange()">
+                </div>
+                @if (index < editedVariables.length - 1) {
+                  <div class="col-sm-2">
+                    <button type="button" class="btn btn-danger"><i class="fa fa-trash" (click)="removeVariable(index)"></i></button>
+                  </div>
+                }
+              </div>
             }
-          </label>
-          <div class="col-sm-5">
-            <input
-              [(ngModel)]="variable.name"
-              [ngClass]="{'is-invalid': duplicateVariables.has(index)}"
-              class="form-control" placeholder="Name"
-              (input)="onInputChange()"
-              (blur)="addEmptyVariableWhenNeeded()">
-          </div>
-          <div class="col-sm-5">
-            <input [(ngModel)]="variable.value" [ngClass]="{'is-invalid': duplicateVariables.has(index)}" class="form-control" placeholder="Value" (input)="onInputChange()">
-          </div>
-          @if (index < editedVariables.length - 1) {
-            <div class="col-sm-1">
-              <button type="button" class="btn btn-danger"><i class="fa fa-trash" (click)="removeVariable(index)"></i></button>
-            </div>
-          }
-        </div>
-      }
+          </td>
+        </tr>
+      </table>
       <div id="form-group-transformation" class="form-group">
         <div class="d-flex flex-row align-items-center">
-          <label>Transformation</label>
+          <label class="mb-2 mx-1">Transformation</label>
           <button id="copyTransformationButton"
             data-cy-copy-transformation-to-report-form
             class="btn btn-info h-fit"
@@ -63,7 +65,7 @@
             Overwrite with default
           </button>
         </div>
-        <div class="monaco-area" [style.height]="monacoEditorInitialHeight + 'px'">
+        <div class="monaco-area mb-2 mx-1" [style.height]="monacoEditorInitialHeight + 'px'">
           <app-monaco-editor
             data-cy-element-name="reportTransformationEditor"
             [options]="monacoOptions"

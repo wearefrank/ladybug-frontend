@@ -1,3 +1,7 @@
+.variablesLabel {
+  vertical-align: top;
+}
+
 textarea {
   height: 100px;
 }
