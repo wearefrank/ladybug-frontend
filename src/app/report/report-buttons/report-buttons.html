@@ -11,17 +11,17 @@
       ><i class="fa fa-save"></i></button>
       }
       <button
-        data-cy-debug-editor="makeNull"
-        title="Make checkpoint value null"
-        class="btn btn-info"
-        (click)="makeNull()"
-      >make null</button>
-      <button
         data-cy-report="prettify"
         class="btn btn-info"
         title="prettify"
         (click)="prettify()"
-      >prettify</button>
+      >Prettify</button>
+      <button
+        data-cy-debug-editor="makeNull"
+        title="Make checkpoint value null"
+        class="btn btn-info"
+        (click)="makeNull()"
+      >Make null</button>
       <div class="w-fit mx-1 my-0">
         <select #checkpointStubStrategy id="checkpointStubStrategy" class="form-control" [(ngModel)]="currentCheckpointStubStrategyStr"
                 (ngModelChange)="onCheckpointStubStrategyChange($event)">

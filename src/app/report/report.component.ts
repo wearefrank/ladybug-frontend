@@ -289,7 +289,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: () => {
           this.testReportsService.getReports();
-          this.toastService.showSuccess('Copied report to testtab', {
+          this.toastService.showSuccess('Copied report to test tab', {
             buttonText: 'Go to test tab',
             callback: () => this.router.navigate(['/test']),
           });
