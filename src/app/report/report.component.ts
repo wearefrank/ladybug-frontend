@@ -107,7 +107,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
   protected saveDoneSubject = new Subject<void>();
   protected rerunResultSubject = new BehaviorSubject<TestResult | undefined>(undefined);
   private storageId?: number;
-  private originalNodeValueState?: NodeValueState;
+  private nodeValueState?: NodeValueState;
   private host = inject(ElementRef);
   private tabService = inject(TabService);
   private route = inject(ActivatedRoute);
@@ -224,6 +224,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
   onNodeValueState(nodeValueState: NodeValueState): void {
     this.storageId = nodeValueState.storageId;
     this.showToastForCopyToTestTabIfApplicable(nodeValueState);
+    this.nodeValueState = nodeValueState;
     // Suppress errors ExpressionChangedAfterItHasBeenCheckedError about button existence changes.
     this.cdr.detectChanges();
   }
@@ -301,6 +302,17 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.storageId === undefined) {
       throw new Error('Cannot rerun report because ReportComponent does not have the storageId');
     }
+    if (this.nodeValueState !== undefined && this.nodeValueState.isEdited === true) {
+      this.toastService.showWarning(
+        'This storage is readonly so reran original report. Copy to test tab to save changes and rerun updated report.',
+        {
+          buttonText: 'Copy to testtab',
+          callback: () => {
+            this.copyReport();
+          },
+        },
+      );
+    }
     this.httpService
       .runReport(this.currentView.storageName, this.storageId)
       .pipe(catchError(this.handleErrorWithRethrowMessage('Rerunning report failed')))
@@ -347,15 +359,17 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private showToastForCopyToTestTabIfApplicable(newNodeValueState: NodeValueState): void {
     const isEditingStarted: boolean =
-      this.originalNodeValueState !== undefined && !this.originalNodeValueState.isEdited && newNodeValueState.isEdited;
-    this.originalNodeValueState = newNodeValueState;
+      this.nodeValueState !== undefined && !this.nodeValueState.isEdited && newNodeValueState.isEdited;
     if (isEditingStarted && newNodeValueState.isReadOnly) {
-      this.toastService.showWarning('This storage is readonly, copy to the test tab to edit this report.', {
-        buttonText: 'Copy to testtab',
-        callback: () => {
-          this.copyReport();
+      this.toastService.showWarning(
+        'This storage is readonly. Copy to test tab to save changes and rerun updated report.',
+        {
+          buttonText: 'Copy to testtab',
+          callback: () => {
+            this.copyReport();
+          },
         },
-      });
+      );
     }
   }
 
