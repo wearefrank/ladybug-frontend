@@ -303,15 +303,19 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
       throw new Error('Cannot rerun report because ReportComponent does not have the storageId');
     }
     if (this.nodeValueState !== undefined && this.nodeValueState.isEdited === true) {
-      this.toastService.showWarning(
-        'This storage is readonly so reran original report. Copy to test tab to save changes and rerun updated report.',
-        {
-          buttonText: 'Copy to testtab',
-          callback: () => {
-            this.copyReport();
+      if (this.nodeValueState.isReadOnly) {
+        this.toastService.showWarning(
+          'This storage is readonly so reran original report. Copy to test tab to save changes and rerun updated report.',
+          {
+            buttonText: 'Copy to testtab',
+            callback: () => {
+              this.copyReport();
+            },
           },
-        },
-      );
+        );
+      } else {
+        this.toastService.showWarning('Changes were not saved so reran original report.');
+      }
     }
     this.httpService
       .runReport(this.currentView.storageName, this.storageId)
