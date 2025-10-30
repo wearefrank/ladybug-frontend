@@ -323,7 +323,6 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     this.buttonStateSubject.next({
       isReport: false,
       isCheckpoint: true,
-      isEdited,
       saveAllowed,
     });
   }
@@ -358,7 +357,6 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     return {
       isReport: false,
       isCheckpoint: true,
-      isEdited: false,
       saveAllowed: false,
     };
   }

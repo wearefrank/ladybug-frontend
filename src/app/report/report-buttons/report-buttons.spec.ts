@@ -23,7 +23,6 @@ describe('ReportButtons', () => {
     component.state$ = new BehaviorSubject<ReportButtonsState>({
       isReport: false,
       isCheckpoint: false,
-      isEdited: false,
       saveAllowed: false,
     });
     component.originalReportStubStrategy$ = originalReportStubStrategySubject;

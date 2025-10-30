@@ -400,7 +400,6 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     return {
       isReport: true,
       isCheckpoint: false,
-      isEdited: nodeValueState.isEdited,
       saveAllowed: saveAllowed,
     };
   }

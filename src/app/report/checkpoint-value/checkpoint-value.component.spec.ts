@@ -200,7 +200,6 @@ describe('CheckpointValue', () => {
     expect(component.labels?.isEdited).toEqual(false);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(false);
     expect(component.getDifferences().data.length).toEqual(0);
-    expect(buttonState?.isEdited).toEqual(false);
     expect(buttonState?.saveAllowed).toEqual(false);
   }
 
@@ -208,7 +207,6 @@ describe('CheckpointValue', () => {
     expect(component.labels?.isEdited).toEqual(true);
     expect(nodeValueStateSpy?.calls.mostRecent().args[0].isEdited).toEqual(true);
     expect(component.getDifferences().data.length).not.toEqual(0);
-    expect(buttonState?.isEdited).toEqual(true);
     expect(buttonState?.saveAllowed).toEqual(true);
   }
 });

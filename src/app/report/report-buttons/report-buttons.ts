@@ -16,7 +16,6 @@ import { BooleanToStringPipe } from '../../shared/pipes/boolean-to-string.pipe';
 export interface ReportButtonsState {
   isReport: boolean;
   isCheckpoint: boolean;
-  isEdited: boolean;
   saveAllowed: boolean;
 }
 
@@ -65,7 +64,6 @@ export class ReportButtons implements OnInit, OnDestroy {
   protected state: ReportButtonsState = {
     isReport: false,
     isCheckpoint: false,
-    isEdited: false,
     saveAllowed: false,
   };
 
