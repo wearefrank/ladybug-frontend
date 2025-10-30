@@ -18,6 +18,7 @@ import { ButtonCommand, DownloadOptions, ReportButtons, ReportButtonsState } fro
 import { TestResult } from '../../shared/interfaces/test-result';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { ReportMetadataTable } from '../report-metadata-table/report-metadata-table';
+import { OverwriteTransformationComponent } from '../overwrite-transformation-modal/overwrite-transformation-modal.component';
 
 export interface Variable {
   name: string;
@@ -38,6 +39,7 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
     ReportAlertMessage2Component,
     ReportButtons,
     ReportMetadataTable,
+    OverwriteTransformationComponent,
   ],
   templateUrl: './report-value.component.html',
   styleUrl: './report-value.component.css',
@@ -51,6 +53,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   @Input({ required: true }) saveDone$!: Observable<void>;
   @Input({ required: true }) rerunResult$!: Observable<TestResult | undefined>;
   @ViewChild(DifferenceModalComponent) saveModal!: DifferenceModalComponent;
+  @ViewChild(OverwriteTransformationComponent) overwriteTransformationModal!: OverwriteTransformationComponent;
 
   editedName = '';
   editedDescription = '';
@@ -147,7 +150,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     this.onInputChange();
   }
 
-  async copyDefaultTransformation(): Promise<void> {
+  async overwriteTransformationWithDefault(): Promise<void> {
     // TODO: Rethrow error when obtaining transformation fails.
     const transformationResponse: Transformation = await firstValueFrom(
       this.http.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),

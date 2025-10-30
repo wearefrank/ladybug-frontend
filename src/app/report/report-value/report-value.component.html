@@ -59,7 +59,7 @@
         data-cy-copy-transformation-to-report-form
         class="btn btn-info h-fit"
         title="Overwrite with default"
-        (click)="copyDefaultTransformation()">
+        (click)="overwriteTransformationModal.open()">
         Overwrite with default
       </button>
     </div>
@@ -83,3 +83,4 @@
   </div>
 </div>
 <app-difference-modal (saveChangesEvent)="requestSave()"></app-difference-modal>
+<app-overwrite-transformation-modal (confirm)="overwriteTransformationWithDefault()"></app-overwrite-transformation-modal>
