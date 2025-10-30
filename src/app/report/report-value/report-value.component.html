@@ -12,78 +12,74 @@
   @if (metadataTableVisible && report !== undefined) {
     <app-report-metadata-table2 [report]="report"></app-report-metadata-table2>
   }
-  <as-split direction="vertical">
-    <as-split-area class="split-size" [size]="100">
-      <div class="form-group">
-        <label class="mb-2 mx-1">Name</label>
-        <input 
-          [(ngModel)]="editedName" data-cy-element-name="name" class="form-control mb-2 mx-1" placeholder="Name" (input)="onInputChange()">
-      </div>
-      <div class="form-group">
-        <label class="mb-2 mx-1">Description</label>
-        <input [(ngModel)]="editedDescription" class="form-control mb-2 mx-1" placeholder="Description" (input)="onInputChange()">
-      </div>
-      <div class="form-group">
-        <label class="mb-2 mx-1">Path</label>
-        <input [(ngModel)]="editedPath" class="form-control mb-2 mx-1" placeholder="/path/to/report/" (input)="onInputChange()">
-      </div>
-      <table class="mb-2 mx-1">
-        <tr>
-          <td class="variablesLabel">Variables:</td>
-          <td>
-            @for (variable of editedVariables; track index; let index = $index) {
-              <div class="form-group row">
-                <div class="col-sm-5">
-                  <input
-                    [(ngModel)]="variable.name"
-                    [ngClass]="{'is-invalid': duplicateVariables.has(index)}"
-                    class="form-control" placeholder="Name"
-                    (input)="onInputChange()"
-                    (blur)="addEmptyVariableWhenNeeded()">
-                </div>
-                <div class="col-sm-5">
-                  <input [(ngModel)]="variable.value" [ngClass]="{'is-invalid': duplicateVariables.has(index)}" class="form-control" placeholder="Value" (input)="onInputChange()">
-                </div>
-                @if (index < editedVariables.length - 1) {
-                  <div class="col-sm-2">
-                    <button type="button" class="btn btn-danger"><i class="fa fa-trash" (click)="removeVariable(index)"></i></button>
-                  </div>
-                }
+  <div class="form-group">
+    <label class="mb-2 mx-1">Name</label>
+    <input 
+      [(ngModel)]="editedName" data-cy-element-name="name" class="form-control mb-2 mx-1" placeholder="Name" (input)="onInputChange()">
+  </div>
+  <div class="form-group">
+    <label class="mb-2 mx-1">Description</label>
+    <input [(ngModel)]="editedDescription" class="form-control mb-2 mx-1" placeholder="Description" (input)="onInputChange()">
+  </div>
+  <div class="form-group">
+    <label class="mb-2 mx-1">Path</label>
+    <input [(ngModel)]="editedPath" class="form-control mb-2 mx-1" placeholder="/path/to/report/" (input)="onInputChange()">
+  </div>
+  <table class="mb-2 mx-1">
+    <tr>
+      <td class="variablesLabel">Variables:</td>
+      <td>
+        @for (variable of editedVariables; track index; let index = $index) {
+          <div class="form-group row">
+            <div class="col-sm-5">
+              <input
+                [(ngModel)]="variable.name"
+                [ngClass]="{'is-invalid': duplicateVariables.has(index)}"
+                class="form-control" placeholder="Name"
+                (input)="onInputChange()"
+                (blur)="addEmptyVariableWhenNeeded()">
+            </div>
+            <div class="col-sm-5">
+              <input [(ngModel)]="variable.value" [ngClass]="{'is-invalid': duplicateVariables.has(index)}" class="form-control" placeholder="Value" (input)="onInputChange()">
+            </div>
+            @if (index < editedVariables.length - 1) {
+              <div class="col-sm-2">
+                <button type="button" class="btn btn-danger"><i class="fa fa-trash" (click)="removeVariable(index)"></i></button>
               </div>
             }
-          </td>
-        </tr>
-      </table>
-      <div id="form-group-transformation" class="form-group">
-        <div class="d-flex flex-row align-items-center">
-          <label class="mb-2 mx-1">Transformation</label>
-          <button id="copyTransformationButton"
-            data-cy-copy-transformation-to-report-form
-            class="btn btn-info h-fit"
-            title="Overwrite with default"
-            (click)="copyDefaultTransformation()">
-            Overwrite with default
-          </button>
-        </div>
-        <div class="monaco-area mb-2 mx-1" [style.height]="monacoEditorInitialHeight + 'px'">
-          <app-monaco-editor
-            data-cy-element-name="reportTransformationEditor"
-            [options]="monacoOptions"
-            [readOnlyRequest$]="transformationReadOnlySubject"
-            [editorContentRequest$]="transformationContentRequestSubject"
-            (actualEditorContentsChange)="onTransformationEdited($event)"/>
-        </div>
-      </div>
-      <div id="reportXmlHeader">Report XML</div>
-      <div class="monaco-area" [style.height]="monacoEditorInitialHeight + 'px'">
-        <app-monaco-editor
-          data-cy-element-name="reportXmlEditor"
-          [options]="monacoOptions"
-          [editorContentRequest$]="reportContentRequestSubject"
-          [readOnlyRequest$]="reportReadOnlySubject">
-        </app-monaco-editor>
-      </div>
-    </as-split-area>
-  </as-split>
+          </div>
+        }
+      </td>
+    </tr>
+  </table>
+  <div id="form-group-transformation" class="form-group">
+    <div class="d-flex flex-row align-items-center">
+      <label class="mb-2 mx-1">Transformation</label>
+      <button id="copyTransformationButton"
+        data-cy-copy-transformation-to-report-form
+        class="btn btn-info h-fit"
+        title="Overwrite with default"
+        (click)="copyDefaultTransformation()">
+        Overwrite with default
+      </button>
+    </div>
+    <div class="monaco-area mb-2 mx-1" [style.height]="monacoEditorInitialHeight + 'px'">
+      <app-monaco-editor
+        data-cy-element-name="reportTransformationEditor"
+        [options]="monacoOptions"
+        [readOnlyRequest$]="transformationReadOnlySubject"
+        [editorContentRequest$]="transformationContentRequestSubject"
+        (actualEditorContentsChange)="onTransformationEdited($event)"/>
+    </div>
+  </div>
+  <div id="reportXmlHeader">Report XML</div>
+  <div class="monaco-area" [style.height]="monacoEditorInitialHeight + 'px'">
+    <app-monaco-editor
+      data-cy-element-name="reportXmlEditor"
+      [options]="monacoOptions"
+      [editorContentRequest$]="reportContentRequestSubject"
+      [readOnlyRequest$]="reportReadOnlySubject">
+    </app-monaco-editor>
+  </div>
 </div>
 <app-difference-modal (saveChangesEvent)="requestSave()"></app-difference-modal>
