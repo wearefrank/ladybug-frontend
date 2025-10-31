@@ -22,14 +22,6 @@
         class="btn btn-info"
         (click)="makeNull()"
       >Make null</button>
-      <div class="w-fit mx-1 my-0">
-        <select #checkpointStubStrategy id="checkpointStubStrategy" class="form-control" [(ngModel)]="currentCheckpointStubStrategyStr"
-                (ngModelChange)="onCheckpointStubStrategyChange($event)">
-          @for (stubOptionStr of StubStrategy.checkpoints; track stubOptionStr) {
-            <option [ngValue]="stubOptionStr" [selected]="currentCheckpointStubStrategyStr === stubOptionStr">{{ stubOptionStr }}</option>
-          }
-        </select>
-      </div>
       <button
         data-cy-open-metadata-table
         class="btn btn-info h-fit"
@@ -44,6 +36,14 @@
         (click)="toggleMessageContextTable()">
         {{ messageContextTableVisible|booleanToString:'Hide' :'Show' }} messagecontext
       </button>
+      <div class="w-fit mx-1 my-0">
+        <select #checkpointStubStrategy id="checkpointStubStrategy" class="form-control" [(ngModel)]="currentCheckpointStubStrategyStr"
+                (ngModelChange)="onCheckpointStubStrategyChange($event)">
+          @for (stubOptionStr of StubStrategy.checkpoints; track stubOptionStr) {
+            <option [ngValue]="stubOptionStr" [selected]="currentCheckpointStubStrategyStr === stubOptionStr">{{ stubOptionStr }}</option>
+          }
+        </select>
+      </div>
     </section>
     <span class="button-divider">&#124;</span>
   }
@@ -72,15 +72,6 @@
         <button ngbDropdownItem (click)="onDownload({ downloadReport: true, downloadXmlSummary: false})">Report only</button>
       </div>
     </div>
-    <div class="w-fit mx-1 my-0">
-      <select #reportStubStrategy class="form-control"
-        [(ngModel)]="currentReportStubStrategy"
-        (ngModelChange)="onReportStubStrategyChange($event)">
-        @for (strategy of StubStrategy.report; track strategy) {
-          <option [ngValue]="strategy" [selected]="currentReportStubStrategy === strategy">{{ strategy }}</option>
-        }
-      </select>
-    </div>
     <button
       data-cy-report="rerun"
       class="btn btn-info"
@@ -103,6 +94,15 @@
         {{ appVariablesService.getVariable("customReportActionButtonText") }}
     </button>
     }
+    <div class="w-fit mx-1 my-0">
+      <select #reportStubStrategy class="form-control"
+        [(ngModel)]="currentReportStubStrategy"
+        (ngModelChange)="onReportStubStrategyChange($event)">
+        @for (strategy of StubStrategy.report; track strategy) {
+          <option [ngValue]="strategy" [selected]="currentReportStubStrategy === strategy">{{ strategy }}</option>
+        }
+      </select>
+    </div>
   </section>
   @if (rerunResult) {
     <div class="rerun-result" [style.color]="rerunResult.equal ? 'green' : 'red'">{{ rerunResult.info }}</div>
