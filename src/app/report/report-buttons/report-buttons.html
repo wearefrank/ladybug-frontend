@@ -89,7 +89,7 @@
       </button>
     }
     @if (appVariablesService.getVariable('customReportActionButtonText') !== null) {
-      <button data-cy-test="customReportAction" class="btn btn-info" [title]="appVariablesService.getVariable('customReportActionButtonText')"
+      <button data-cy-report-buttons="customReportAction" class="btn btn-info" [title]="appVariablesService.getVariable('customReportActionButtonText')"
           (click)="processCustomReportAction()">
         {{ appVariablesService.getVariable("customReportActionButtonText") }}
     </button>
