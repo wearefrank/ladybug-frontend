@@ -1,7 +1,6 @@
 describe('Metadata', () => {
   before(() => cy.resetApp());
 
-
   afterEach(() => {
     cy.clearDebugStore();
   });

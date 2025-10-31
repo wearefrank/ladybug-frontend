@@ -50,6 +50,8 @@ declare global {
 
       createJsonReport(): Chainable;
 
+      createReportWithMessageContext(): Chainable;
+
       clearDebugStore(): Chainable;
 
       clearReportsInProgress(): Chainable;
@@ -69,6 +71,8 @@ declare global {
       ): Chainable;
 
       clickRootNodeInFileTree(): Chainable;
+
+      clickEndCheckpointOfThreeNodeReport(): Chainable;
 
       clickRowInTable(index: number): Chainable;
 
@@ -240,6 +244,15 @@ Cypress.Commands.add(
   },
 );
 
+Cypress.Commands.add('createReportWithMessageContext' as keyof Chainable, (): void => {
+  // No cy.visit because then the API call can happen multiple times.
+  cy.request(
+    `${Cypress.env('backendServer')}/index.jsp?createReport=Report%20with%20message%20context`,
+  ).then((resp: Cypress.Response<ApiResponse>) => {
+    expect(resp.status).equal(200);
+  });
+});
+
 Cypress.Commands.add('clearDebugStore' as keyof Chainable, (): void => {
   cy.request(
     `${Cypress.env('backendServer')}/index.jsp?clearDebugStorage=true`,
@@ -324,6 +337,18 @@ Cypress.Commands.add(
 
 Cypress.Commands.add('clickRootNodeInFileTree' as keyof Chainable, (): void => {
   cy.get('[data-cy-debug-tree="root"] > app-tree-item')
+    .eq(0)
+    .find('.sft-item')
+    .eq(0)
+    .click();
+});
+
+Cypress.Commands.add('clickEndCheckpointOfThreeNodeReport' as keyof Chainable, (): void => {
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item')
+    .eq(0)
+    .find('app-tree-item')
+    .eq(0)
+    .find('app-tree-item')
     .eq(0)
     .find('.sft-item')
     .eq(0)
