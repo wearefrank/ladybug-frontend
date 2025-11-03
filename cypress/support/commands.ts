@@ -91,6 +91,8 @@ declare global {
       selectRowInTestTable(index: number): Chainable;
 
       copyReportsToTestTab(names: string[]): Chainable;
+
+      editCheckpointValue(value: string): Chainable;
     }
   }
 }
@@ -414,6 +416,10 @@ Cypress.Commands.add('copyReportsToTestTab' as keyof Chainable, (names: string[]
     cy.get('[data-cy-debug-editor="copy"]').click();
   }
 })
+
+Cypress.Commands.add('editCheckpointValue' as keyof Chainable, (value: string): Chainable => {
+  cy.get('[data-cy-element-name="checkpointEditor"]').type(value);
+});
 
 function awaitLoadingSpinner(): void {
   cy.get('[data-cy-loading-spinner]', { timeout: 10000 }).should('not.exist');

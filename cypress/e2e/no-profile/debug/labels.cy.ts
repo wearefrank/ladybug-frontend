@@ -23,6 +23,21 @@ describe('Test labels', () => {
     cy.checkFileTreeLength(1);
     testTreeView('Message is an empty string');
   });
+
+  it('When checkpoint is modified then label Edited is shown', () => {
+    cy.createReport();
+    cy.initializeApp();
+    cy.get('[data-cy-debug="selectAll"]').click();
+    cy.get('[data-cy-debug="openSelected"]').click();
+    cy.get('[data-cy-element-name="checkpointEditor"]').invoke('text').should('contain', 'Hello');
+    cy.get(':contains(Edited)').should('not.exist');
+    cy.editCheckpointValue('{selectAll}Other value');
+    cy.get('[data-cy-element-name="checkpointEditor"]').invoke('text').should('contain', 'Other');
+    cy.get(':contains(Edited)').should('be.visible');
+    cy.editCheckpointValue('{selectAll}Hello World!');
+    cy.get('[data-cy-element-name="checkpointEditor"]').invoke('text').should('contain', 'Hello');
+    cy.get(':contains(Edited)').should('not.exist');
+  });
 });
 
 function testTreeView(reportName: string): void {
