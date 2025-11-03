@@ -51,7 +51,68 @@ describe('Test labels', () => {
     cy.get(':contains(Edited)').should('be.visible');
     cy.get('[data-cy-element-name="name"]').type('{selectAll}Simple report');
     cy.get(':contains(Edited)').should('not.exist');
-  })
+  });
+
+  it('When checkpoint node is in read-only storage then read-only label', () => {
+    cy.createReport();
+    cy.initializeApp();
+    cy.get('[data-cy-debug="selectAll"]').click();
+    cy.get('[data-cy-debug="openSelected"]').click();
+    cy.get('[data-cy-element-name="checkpointEditor"]').invoke('text').should('contain', 'Hello');
+    cy.get(':contains(Read only)').should('be.visible');
+  });
+
+  it('When report node is in read-only storage then read-only label', () => {
+    cy.createReport();
+    cy.initializeApp();
+    cy.get('[data-cy-debug="selectAll"]').click();
+    cy.get('[data-cy-debug="openSelected"]').click();
+    cy.clickRootNodeInFileTree();
+    cy.get(':contains(Read only)').should('be.visible');
+  });
+
+  describe('With test tab', () => {
+    afterEach(() => {
+      cy.navigateToTestTabAndAwaitLoadingSpinner();
+      cy.get('[data-cy-test="deleteAll"]').click();
+      // Prepare for parent after each
+      cy.navigateToDebugTabAndAwaitLoadingSpinner();
+      cy.get('[data-cy-debug="selectAll"]').click();
+      cy.get('[data-cy-debug="openSelected"]').click();
+    });
+
+    it('When checkpoint node is in editable storage then no read-only label', () => {
+      cy.createReport();
+      cy.initializeApp();
+      cy.get('[data-cy-debug="selectAll"]').click();
+      cy.get('[data-cy-debug="openSelected"]').click();
+      cy.copyReportsToTestTab(['Simple report']);
+      cy.navigateToTestTabAndAwaitLoadingSpinner();
+      cy.get('[data-cy-test="openReport"]').click();
+      cy.editCheckpointValue('{selectAll}Other value');
+      cy.get('[data-cy-element-name="checkpointEditor"]').invoke('text').should('contain', 'Other');
+      cy.get(':contains(Edited)').should('be.visible');
+      // This is the key, testing that read only label does not exist.
+      // But we check this when the value is properly shown.
+      cy.get(':contains(Read only)').should('not.exist');
+    });
+
+    it('When report node is in editable storage then no read-only label', () => {
+      cy.createReport();
+      cy.initializeApp();
+      cy.get('[data-cy-debug="selectAll"]').click();
+      cy.get('[data-cy-debug="openSelected"]').click();
+      cy.copyReportsToTestTab(['Simple report']);
+      cy.navigateToTestTabAndAwaitLoadingSpinner();
+      cy.get('[data-cy-test="openReport"]').click();
+      cy.clickRootNodeInFileTree();
+      cy.get('[data-cy-element-name="name"]').type('{selectAll}My name');
+      cy.get(':contains(Edited)').should('be.visible');
+      // This is the key, testing that read only label does not exist.
+      // But we check this when the value is properly shown.
+      cy.get(':contains(Read only)').should('not.exist');
+    });
+  });
 });
 
 function testTreeView(reportName: string): void {
