@@ -38,6 +38,20 @@ describe('Test labels', () => {
     cy.get('[data-cy-element-name="checkpointEditor"]').invoke('text').should('contain', 'Hello');
     cy.get(':contains(Edited)').should('not.exist');
   });
+
+  it('When report node is modified then label Edited is shown', () => {
+    cy.createReport();
+    cy.initializeApp();
+    cy.get('[data-cy-debug="selectAll"]').click();
+    cy.get('[data-cy-debug="openSelected"]').click();
+    cy.clickRootNodeInFileTree();
+    cy.get('[data-cy-element-name="name"]').invoke('val').should('equal', 'Simple report');
+    cy.get(':contains(Edited)').should('not.exist');
+    cy.get('[data-cy-element-name="name"]').type('{selectAll}My name');
+    cy.get(':contains(Edited)').should('be.visible');
+    cy.get('[data-cy-element-name="name"]').type('{selectAll}Simple report');
+    cy.get(':contains(Edited)').should('not.exist');
+  })
 });
 
 function testTreeView(reportName: string): void {
