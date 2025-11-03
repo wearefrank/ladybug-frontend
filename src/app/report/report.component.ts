@@ -307,7 +307,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
         this.toastService.showWarning(
           'This storage is readonly so reran original report. Copy to test tab to save changes and rerun updated report.',
           {
-            buttonText: 'Copy to testtab',
+            buttonText: 'Copy to test tab',
             callback: () => {
               this.copyReport();
             },
@@ -368,7 +368,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
       this.toastService.showWarning(
         'This storage is readonly. Copy to test tab to save changes and rerun updated report.',
         {
-          buttonText: 'Copy to testtab',
+          buttonText: 'Copy to test tab',
           callback: () => {
             this.copyReport();
           },

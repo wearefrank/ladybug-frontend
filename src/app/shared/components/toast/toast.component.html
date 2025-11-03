@@ -26,7 +26,7 @@
           }
           <div class="ml-2 mr-4">{{ toast.message }}</div>
           @if (toast.toastCallback) {
-            <button class="btn btn-info" (click)="executeCallback(toast)">{{ toast.toastCallback.buttonText }}</button>
+            <button data-cy-toast="callback" class="btn btn-info" (click)="executeCallback(toast)">{{ toast.toastCallback.buttonText }}</button>
           }
         </div>
         @if (toast.detailed) {

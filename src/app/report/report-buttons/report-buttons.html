@@ -105,6 +105,6 @@
     </div>
   </section>
   @if (rerunResult) {
-    <div class="rerun-result" [style.color]="rerunResult.equal ? 'green' : 'red'">{{ rerunResult.info }}</div>
+    <div data-cy-report-buttons="rerunResult" class="rerun-result" [style.color]="rerunResult.equal ? 'green' : 'red'">{{ rerunResult.info }}</div>
   }
 </div>
