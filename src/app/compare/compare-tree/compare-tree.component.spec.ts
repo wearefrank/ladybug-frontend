@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CompareTreeComponent } from './compare-tree.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
+import { NgSimpleFileTree } from 'ng-simple-file-tree';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('CompareTreeComponent', () => {
@@ -11,7 +11,7 @@ describe('CompareTreeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NgSimpleFileTreeModule, CompareTreeComponent],
+      imports: [NgSimpleFileTree, CompareTreeComponent],
       providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     }).compileComponents();
   });

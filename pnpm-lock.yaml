@@ -75,8 +75,8 @@ importers:
         specifier: 0.48.0
         version: 0.48.0
       ng-simple-file-tree:
-        specifier: 0.1.29
-        version: 0.1.29(@angular/common@20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(bootstrap-icons@1.13.1)
+        specifier: 0.1.30
+        version: 0.1.30(@angular/common@20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(bootstrap-icons@1.13.1)
       path:
         specifier: ^0.12.7
         version: 0.12.7
@@ -4415,11 +4415,11 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  ng-simple-file-tree@0.1.29:
-    resolution: {integrity: sha512-r4qXFffgDcebyr+czS5FN7DHZzByTc2AU93tcNpA2j9U6cxSR1hyc2yB1QmzC+JsqW151V8ToyvrJU6g+nlZuA==}
+  ng-simple-file-tree@0.1.30:
+    resolution: {integrity: sha512-14kMb87CByB4NV4+Q2Knbknj6+Xz713KQCkreIMOOusg9yoWVhwiQxxtraVDH36vYaVfr7hv+VBSX4fbK3MlCg==}
     peerDependencies:
-      '@angular/common': ^17.2.3
-      '@angular/core': ^17.3.2
+      '@angular/common': ^20.3.9
+      '@angular/core': ^20.3.9
       bootstrap-icons: ^1.11.3
 
   node-addon-api@6.1.0:
@@ -10379,7 +10379,7 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  ng-simple-file-tree@0.1.29(@angular/common@20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(bootstrap-icons@1.13.1):
+  ng-simple-file-tree@0.1.30(@angular/common@20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(bootstrap-icons@1.13.1):
     dependencies:
       '@angular/common': 20.2.3(@angular/core@20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/core': 20.2.3(@angular/compiler@20.2.3)(rxjs@7.8.2)(zone.js@0.15.1)

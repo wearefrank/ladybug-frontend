@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TestFolderTreeComponent } from './test-folder-tree.component';
-import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
+import { NgSimpleFileTree } from 'ng-simple-file-tree';
 
 describe('TestFileTreeComponent', () => {
   let component: TestFolderTreeComponent;
@@ -9,7 +9,7 @@ describe('TestFileTreeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TestFolderTreeComponent, NgSimpleFileTreeModule],
+      imports: [TestFolderTreeComponent, NgSimpleFileTree],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestFolderTreeComponent);

@@ -2,7 +2,6 @@ import { enableProdMode, importProvidersFrom } from '@angular/core';
 
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
-import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AngularSplitModule } from 'angular-split';
@@ -38,7 +37,6 @@ function main(): void {
         AngularSplitModule,
         MatAutocompleteModule,
         ClipboardModule,
-        NgSimpleFileTreeModule,
       ),
       provideAnimations(),
       provideHttpClient(withInterceptorsFromDi()),
