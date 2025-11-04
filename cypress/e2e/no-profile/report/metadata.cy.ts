@@ -12,6 +12,7 @@ describe('Metadata', () => {
     cy.assertDebugTableLength(1).click();
     cy.checkFileTreeLength(1);
     cy.clickRootNodeInFileTree();
+    cy.wait(200);
     cy.get('[data-cy-metadata-table="table"]').should('not.exist');
     cy.get(':contains(Show metadata)').should('be.visible');
     cy.get('[data-cy-open-metadata-table]').click();
