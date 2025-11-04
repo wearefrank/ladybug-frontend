@@ -12,7 +12,6 @@ import {
   FileTreeItem,
   FileTreeOptions,
   NgSimpleFileTree,
-  NgSimpleFileTreeModule,
   OptionalParameters,
 } from 'ng-simple-file-tree';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
@@ -25,7 +24,7 @@ export type TreeSide = (typeof treeSideConst)[number];
   templateUrl: './compare-tree.component.html',
   styleUrls: ['./compare-tree.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, NgSimpleFileTreeModule],
+  imports: [ReactiveFormsModule, FormsModule, NgSimpleFileTree],
 })
 export class CompareTreeComponent {
   @Output() compareEvent: EventEmitter<void> = new EventEmitter<void>();

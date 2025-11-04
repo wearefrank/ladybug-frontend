@@ -5,13 +5,7 @@ import { Report } from '../../shared/interfaces/report';
 import { catchError, firstValueFrom, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
-import {
-  CreateTreeItem,
-  FileTreeItem,
-  FileTreeOptions,
-  NgSimpleFileTree,
-  NgSimpleFileTreeModule,
-} from 'ng-simple-file-tree';
+import { CreateTreeItem, FileTreeItem, FileTreeOptions, NgSimpleFileTree } from 'ng-simple-file-tree';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
 import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
 import { View } from '../../shared/interfaces/view';
@@ -24,7 +18,7 @@ import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
   templateUrl: './debug-tree.component.html',
   styleUrls: ['./debug-tree.component.css'],
   standalone: true,
-  imports: [NgSimpleFileTreeModule],
+  imports: [NgSimpleFileTree],
 })
 export class DebugTreeComponent implements OnDestroy {
   @ViewChild('tree') tree!: NgSimpleFileTree;

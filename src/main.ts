@@ -2,7 +2,6 @@ import { enableProdMode, importProvidersFrom } from '@angular/core';
 
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
-import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
@@ -40,7 +39,6 @@ function main(): void {
         MonacoEditorModule.forRoot(),
         MatAutocompleteModule,
         ClipboardModule,
-        NgSimpleFileTreeModule,
       ),
       provideAnimations(),
       provideHttpClient(withInterceptorsFromDi()),
