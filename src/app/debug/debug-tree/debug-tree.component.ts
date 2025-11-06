@@ -133,6 +133,7 @@ export class DebugTreeComponent implements OnDestroy {
     const newReport: CreateTreeItem = new ReportHierarchyTransformer().transform(report);
     const rootNodePath: string = this.tree.addItem(newReport);
     this.selectFirstCheckpoint(rootNodePath);
+    this.logNodePaths();
     if (this._currentView) {
       this.hideOrShowCheckpointsBasedOnView(this._currentView);
     }
@@ -206,6 +207,10 @@ export class DebugTreeComponent implements OnDestroy {
     return this.tree.createItemToFileItem(transformedReport);
   }
 
+  selectNodeByPath(path: string): void {
+    this.tree.selectItem(path);
+  }
+
   private selectFirstCheckpoint(rootNodePath: string): void {
     const last = this.tree.items.length - 1;
     const lastAdded = this.tree.items[last];
@@ -214,6 +219,23 @@ export class DebugTreeComponent implements OnDestroy {
       this.tree.selectItem(firstCheckpoint.path);
     } else {
       this.tree.selectItem(rootNodePath);
+    }
+  }
+
+  private logNodePaths(): void {
+    console.log('Paths of nodes');
+    for (const item of this.tree.items) {
+      this.logNodePathsOfItem(item, '');
+    }
+  }
+
+  private logNodePathsOfItem(item: FileTreeItem, indent: string): void {
+    console.log(`> ${indent}${item.path}`);
+    if (item.hasChildren()) {
+      const childrenIntent = `  ${indent}`;
+      for (const child of item.children!) {
+        this.logNodePathsOfItem(child, childrenIntent);
+      }
     }
   }
 }

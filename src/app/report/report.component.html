@@ -8,6 +8,8 @@
     />
   </as-split-area>
   <as-split-area class="right-side" [size]="75">
+    <input [(ngModel)]="nodePath">
+    <button (click)="selectNodeProgrammatically()">Select programmatically</button>
     @if (reportValueState === 'report') {
       <app-report-value
         [height]="monacoEditorHeight"

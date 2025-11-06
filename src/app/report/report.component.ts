@@ -36,6 +36,7 @@ import { UpdateReport } from '../shared/interfaces/update-report';
 import { UpdateCheckpoint } from '../shared/interfaces/update-checkpoint';
 import { HelperService } from '../shared/services/helper.service';
 import { TestRefreshService } from '../test/test-refresh.service';
+import { FormsModule } from '@angular/forms';
 
 type ReportValueState = 'report' | 'checkpoint' | 'none';
 
@@ -84,7 +85,7 @@ const INDENT_TWO_SPACES = '  ';
 
 @Component({
   selector: 'app-report',
-  imports: [AngularSplitModule, DebugTreeComponent, ReportValueComponent, CheckpointValueComponent],
+  imports: [AngularSplitModule, DebugTreeComponent, ReportValueComponent, CheckpointValueComponent, FormsModule],
   templateUrl: './report.component.html',
   styleUrl: './report.component.css',
 })
@@ -95,6 +96,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(SplitComponent) splitter!: SplitComponent;
   @ViewChild(DebugTreeComponent) debugTreeComponent!: DebugTreeComponent;
 
+  protected nodePath = '';
   protected treeWidth: Subject<void> = new Subject<void>();
   protected monacoEditorHeight!: number;
   protected reportValueState: ReportValueState = 'none';
@@ -149,6 +151,10 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  selectNodeProgrammatically(): void {
+    this.debugTreeComponent.selectNodeByPath(this.nodePath);
   }
 
   addReportToTree(report: Report): void {
