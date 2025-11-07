@@ -479,23 +479,6 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
     // a checkpoint. Therefore we assume that the report was selected in the
     // tree view and we select the corresponding value.
     this.selectReport(updatedReport);
-    /*
-    if (checkpointUid === undefined) {
-      this.selectReport(updatedReport);
-    } else {
-      const checkpoint: Checkpoint | undefined = ReportUtility.getCheckpointFromReport(updatedReport, checkpointUid);
-      if (checkpoint === undefined) {
-        console.log(
-          `ReportComponent.save(): Failed to retrieve selected checkpoint from updated report: ${checkpointUid}`,
-        );
-        this.toastService.showDanger(
-          `Failed to retrieve selected checkpoint from updated report: ${checkpointUid}. Please contact the maintainers of Ladybug and refresh your browser`,
-        );
-      } else {
-        this.selectReport(checkpoint);
-      }
-    }
-    */
   }
 
   private getIdFromPath(): string {

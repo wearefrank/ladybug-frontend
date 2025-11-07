@@ -58,8 +58,6 @@ export class CompareComponent implements AfterViewInit, OnInit {
     scrollBeyondLastLine: false,
     renderOverviewRuler: false,
   };
-  // protected originalModel: DiffEditorModel = { code: '', language: 'xml' };
-  // protected modifiedModel: DiffEditorModel = { code: '', language: 'xml' };
   protected leftReport?: Report;
   protected rightReport?: Report;
   protected leftNode?: Report | Checkpoint;
@@ -212,10 +210,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
   }
 
   private renderDiffs(_leftSide: string, _rightSide: string): void {
-    /*
-    this.originalModel = { ...this.originalModel, code: leftSide };
-    this.modifiedModel = { ...this.originalModel, code: rightSide };
-    */
+    // TODO: The body was commented out. Martijn knows that something is wrong
+    // but postpones fixing.
   }
 
   private getStrategyFromLocalStorage(): void {
