@@ -7,7 +7,7 @@ import { Report } from '../../interfaces/report';
 import { Checkpoint } from '../../interfaces/checkpoint';
 import { ReportUtil as ReportUtility } from '../../util/report-util';
 
-// TODO: Only applicable to Checkpoint, not Report.
+// TODO: Only applicable to Checkpoint, not Report. Investigate usage in compare component.
 @Component({
   selector: 'app-messagecontext-table',
   templateUrl: './messagecontext-table.component.html',

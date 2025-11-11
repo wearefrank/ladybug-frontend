@@ -1,7 +1,6 @@
 name: Testing
 on:
   push:
-    # Temporarily disabled for pull requests to save resources.
     branches:
       - master
   workflow_dispatch:
