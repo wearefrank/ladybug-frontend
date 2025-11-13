@@ -1,5 +1,5 @@
-import { Component, inject, output, TemplateRef, ViewChild } from '@angular/core';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { Component, inject } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-overwrite-transformation-modal',
@@ -8,26 +8,13 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
   styleUrl: './overwrite-transformation-modal.component.css',
 })
 export class OverwriteTransformationComponent {
-  @ViewChild('modal') protected modal!: TemplateRef<OverwriteTransformationComponent>;
-  confirm = output<void>();
-  protected activeModal?: NgbModalRef;
-  private modalService = inject(NgbModal);
-
-  open(): void {
-    this.activeModal = this.modalService.open(this.modal, {
-      backdrop: 'static',
-      keyboard: false,
-    });
-  }
+  dialogReference = inject(MatDialogRef<OverwriteTransformationComponent>);
 
   onConfirm(): void {
-    this.confirm.emit();
-    this.closeModal();
+    this.dialogReference.close(true);
   }
 
-  closeModal(): void {
-    if (this.activeModal) {
-      this.activeModal.close();
-    }
+  onNoConfirm(): void {
+    this.dialogReference.close(false);
   }
 }

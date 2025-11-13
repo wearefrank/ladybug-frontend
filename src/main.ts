@@ -14,6 +14,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { AppRouteReuseStrategy, AppRoutingModule } from './app/app-routing.module';
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
+import { MatDialogModule } from '@angular/material/dialog';
 
 if (environment.production) {
   enableProdMode();
@@ -37,6 +38,7 @@ function main(): void {
         AngularSplitModule,
         MatAutocompleteModule,
         ClipboardModule,
+        MatDialogModule,
       ),
       provideAnimations(),
       provideHttpClient(withInterceptorsFromDi()),

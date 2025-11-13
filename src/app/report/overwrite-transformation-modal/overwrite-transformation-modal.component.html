@@ -1,7 +1,7 @@
-<ng-template #modal>
+<div>
   <div class="modal-header">
     <h3 class="modal-title">Are you sure you want to overwrite the report's XSLT transformation?</h3>
-    <button type="button" class="close" (click)="closeModal()">
+    <button type="button" class="close" (click)="onNoConfirm()">
       <span>&times;</span>
     </button>
   </div>
@@ -10,9 +10,9 @@
       <button type="button" class="btn btn-info mr-2" (click)="onConfirm()"
       >Overwrite
       </button>
-      <button type="button" class="btn btn-info ml-2" (click)="closeModal()">Don't overwrite</button>
+      <button type="button" class="btn btn-info ml-2" (click)="onNoConfirm()">Don't overwrite</button>
     </div>
   </div>
-</ng-template>
+</div>
 
 

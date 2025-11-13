@@ -19,6 +19,7 @@ import { TestResult } from '../../shared/interfaces/test-result';
 import { UpdateReport } from '../../shared/interfaces/update-report';
 import { ReportMetadataTable } from '../report-metadata-table/report-metadata-table';
 import { OverwriteTransformationComponent } from '../overwrite-transformation-modal/overwrite-transformation-modal.component';
+import { MatDialog } from '@angular/material/dialog';
 
 export interface Variable {
   name: string;
@@ -39,7 +40,6 @@ const MIN_MONACO_EDITOR_HEIGHT = 100;
     ReportAlertMessage2Component,
     ReportButtons,
     ReportMetadataTable,
-    OverwriteTransformationComponent,
   ],
   templateUrl: './report-value.component.html',
   styleUrl: './report-value.component.css',
@@ -104,6 +104,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   private http = inject(HttpService);
   private errorHandler = inject(ErrorHandling);
   private subscriptions = new Subscription();
+  private dialog = inject(MatDialog);
   private ngZone = inject(NgZone);
 
   get height(): number {
@@ -149,14 +150,6 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   onTransformationEdited(value: string): void {
     this.editedTransformation = value;
     this.onInputChange();
-  }
-
-  async overwriteTransformationWithDefault(): Promise<void> {
-    // TODO: Rethrow error when obtaining transformation fails? Issue https://github.com/wearefrank/ladybug-frontend/issues/1133.
-    const transformationResponse: Transformation = await firstValueFrom(
-      this.http.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),
-    );
-    this.transformationContentRequestSubject.next(transformationResponse.transformation);
   }
 
   onButton(command: ButtonCommand): void {
@@ -287,6 +280,24 @@ export class ReportValueComponent implements OnInit, OnDestroy {
       updateReport.stubStrategy = this.editedReportStubStrategy;
     }
     this.save.emit({ updateReport });
+  }
+
+  onOverwriteTransformation(): void {
+    const config = {
+      hasBackdrop: false,
+    };
+    const dialogReference = this.dialog.open(OverwriteTransformationComponent, config);
+    dialogReference.afterClosed().subscribe((choice) => {
+      if (choice === true) {
+        // TODO: Rethrow error when obtaining transformation fails? Issue https://github.com/wearefrank/ladybug-frontend/issues/1133.
+        const transformationResponsePromise: Promise<Transformation> = firstValueFrom(
+          this.http.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),
+        );
+        transformationResponsePromise.then((transformationResponse) =>
+          this.transformationContentRequestSubject.next(transformationResponse.transformation),
+        );
+      }
+    });
   }
 
   // For testing purposes
