@@ -338,6 +338,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('clickRootNodeInFileTree' as keyof Chainable, (): void => {
+  cy.wait(200);
   cy.get('[data-cy-debug-tree="root"] > app-tree-item')
     .eq(0)
     .find('.sft-item')
