@@ -46,10 +46,9 @@ export interface PartialReport {
   name: string;
   description: string | null;
   path: string | null;
-  // TODO: class Report defines it erroneously as a plain string.
-  // Fix this error in the type system.
+  // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1127
   transformation: string | null;
-  // TODO: This is not the correct type. Fix.
+  // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1127
   variables: string;
   xml: string;
   crudStorage: boolean;
@@ -141,7 +140,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       if (this.newTabReportData) {
         this.currentView = this.newTabReportData.currentView;
-        // TODO: Show report in value region
+        // TODO: Take care here when working on issue https://github.com/wearefrank/ladybug-frontend/issues/1125.
         this.addReportToTree(this.newTabReportData.report);
       }
     });
@@ -272,8 +271,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
       downloadOptions.downloadReport,
       downloadOptions.downloadXmlSummary,
     );
-    // TODO: Update the helper service to return a promise.
-    // Do not show success toast if an error occurred.
+    // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1128.
     this.toastService.showSuccess('Report Downloaded!');
   }
 
@@ -295,7 +293,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
             callback: () => this.router.navigate(['/test']),
           });
         },
-      }); // TODO: storage is hardcoded, fix issue #196 for this
+      }); // TODO: storage is hardcoded, fix issue https://github.com/wearefrank/ladybug-frontend/issues/196.
   }
 
   private rerunReport(): void {
@@ -475,9 +473,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private selectUpdatedReportOrCheckpoint(updatedReport: Report, checkpointUid: string | undefined): void {
-    // TODO: The tree component has a bug that prevents us from programmatically selecting
-    // a checkpoint. Therefore we assume that the report was selected in the
-    // tree view and we select the corresponding value.
+    // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1129.
     this.selectReport(updatedReport);
   }
 

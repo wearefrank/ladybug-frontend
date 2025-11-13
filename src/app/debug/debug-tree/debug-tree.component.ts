@@ -53,7 +53,7 @@ export class DebugTreeComponent implements OnDestroy {
 
   @Input({ required: true }) set currentView(value: View) {
     if (this._currentView !== value) {
-      // TODO: Check if the current reports are part of the view
+      // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1125.
       this.hideOrShowCheckpointsBasedOnView(value);
     }
     this._currentView = value;

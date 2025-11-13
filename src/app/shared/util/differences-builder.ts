@@ -1,4 +1,4 @@
-import { ReportDifference2 } from '../interfaces/report-difference';
+import { ReportDifference } from '../interfaces/report-difference';
 import DiffMatchPatch from 'diff-match-patch';
 
 // Only exported for testing.
@@ -97,11 +97,11 @@ export class DifferencesBuilder {
     return this;
   }
 
-  build(): ReportDifference2[] {
-    return this.data.map(this.buildItem.bind(this));
+  build(): ReportDifference[] {
+    return this.data.map((item) => this.buildItem(item));
   }
 
-  private buildItem(item: DifferenceBase): ReportDifference2 {
+  private buildItem(item: DifferenceBase): ReportDifference {
     if (item.colorDifferences) {
       const difference = new DiffMatchPatch().diff_main(item.originalValue, item.editedValue);
       return {

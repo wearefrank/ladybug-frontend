@@ -6,7 +6,8 @@ import { Report } from '../../interfaces/report';
 import { Checkpoint } from '../../interfaces/checkpoint';
 import { ReportUtil as ReportUtility } from '../../util/report-util';
 
-// TODO: In CompareComponent use ReportMetadataTable and CheckpointMetadataTable
+// TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1124.
+// In CompareComponent use ReportMetadataTable and CheckpointMetadataTable
 // and then remove MetadataTableComponent.
 @Component({
   selector: 'app-metadata-table',

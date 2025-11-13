@@ -59,7 +59,8 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   editedDescription = '';
   editedPath = '';
   editedTransformation = '';
-  // TODO: Use from input report when type system issue has been fixed.
+  // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1127.
+  // Use from input report when type system issue has been fixed.
   originalVariables: Variable[] = [];
   editedVariables: Variable[] = [];
   duplicateVariables: Set<number> = new Set<number>();
@@ -151,7 +152,7 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   }
 
   async overwriteTransformationWithDefault(): Promise<void> {
-    // TODO: Rethrow error when obtaining transformation fails.
+    // TODO: Rethrow error when obtaining transformation fails? Issue https://github.com/wearefrank/ladybug-frontend/issues/1133.
     const transformationResponse: Transformation = await firstValueFrom(
       this.http.getTransformation(false).pipe(catchError(this.errorHandler.handleError())),
     );
@@ -259,7 +260,6 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  // TODO: Include in Karma tests.
   requestSave(): void {
     if (!this.isEdited()) {
       throw new Error('ReportValueComponent.save() should not be called when the report node has not been edited');
@@ -407,8 +407,8 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     };
   }
 
-  // TODO: Fix issue with types. Report.variables is declared to be a string,
-  // but it is really an object.
+  // TODO: Fix issue with types. Issue https://github.com/wearefrank/ladybug-frontend/issues/1127.
+  // Report.variables is declared to be a string, but it is really an object.
   static initVariables(variables: string | null): Variable[] {
     if (!variables) return [];
     return Object.entries(variables).map(([name, value]) => ({ name, value }));

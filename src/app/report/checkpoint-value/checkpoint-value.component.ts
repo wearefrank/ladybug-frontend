@@ -21,9 +21,9 @@ export interface PartialCheckpoint {
   uid: string;
   message: string | null;
   stubbed: boolean;
-  // TODO: Server will not send undefined.
+  // TODO: Server will not send undefined. Issue https://github.com/wearefrank/ladybug-frontend/issues/1127.
   encoding?: string | null;
-  // TODO: Server will not send undefined.
+  // TODO: Server will not send undefined. Issue https://github.com/wearefrank/ladybug-frontend/issues/1127.
   messageClassName?: string | null;
   showConverted?: boolean;
   preTruncatedMessageLength: number;
@@ -232,8 +232,7 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     this.downloadRequest.emit(downloadOptions);
   }
 
-  // TODO: Fix TypeScript issues that make PartialCheckpoint incompatible with Checkpoint
-  // and then get away with this invalid cast.
+  // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1127.
   protected asCheckpoint(p: PartialCheckpoint): Checkpoint {
     return p as Checkpoint;
   }

@@ -7,7 +7,7 @@ export interface NodeValueLabels {
   stubbed: boolean;
   encoding: string | undefined;
   messageClassName: string | undefined;
-  // TODO: Remove here and remove from checkpoint.ts.
+  // TODO: Remove here and remove from checkpoint.ts. Issue https://github.com/wearefrank/ladybug-frontend/issues/1132.
   showConverted?: boolean;
   charactersRemoved: number;
   stubNotFound?: string;

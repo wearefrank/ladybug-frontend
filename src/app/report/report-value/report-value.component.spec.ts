@@ -50,7 +50,8 @@ describe('ReportValue', () => {
 
   it('When report.variables is filled then it can be parsed as the list of variables', () => {
     const input = '{"My variable":"aap","Other variable":"noot","Third":"mies"}';
-    // TODO: Fix error with types. Report.variables is declared as a string but it is actually an object.
+    // TODO: Fix error with types. Issue https://github.com/wearefrank/ladybug-frontend/issues/1127
+    // Report.variables is declared as a string but it is actually an object.
     const inputAsObject = JSON.parse(input);
     const parsedVariables: Variable[] = ReportValueComponent.initVariables(inputAsObject);
     expect(parsedVariables.length).toEqual(3);

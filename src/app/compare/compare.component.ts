@@ -210,8 +210,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
   }
 
   private renderDiffs(_leftSide: string, _rightSide: string): void {
-    // TODO: The body was commented out. Martijn knows that something is wrong
-    // but postpones fixing.
+    // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1124
   }
 
   private getStrategyFromLocalStorage(): void {
@@ -226,7 +225,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
   }
 
   private extractMessage(selectedNode: Report | Checkpoint): string {
-    // TODO: Does not properly handle null checkpoints.
+    // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1124.
+    // May not propery handle null checkpoints.
     return ReportUtility.isReport(selectedNode)
       ? selectedNode.xml
       : selectedNode.message === null

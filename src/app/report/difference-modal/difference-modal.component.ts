@@ -1,9 +1,9 @@
 import { Component, inject, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ReportDifference2 } from '../../shared/interfaces/report-difference';
+import { ReportDifference } from '../../shared/interfaces/report-difference';
 import { Subject } from 'rxjs';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
-// TODO: Remove option 'saveRerun'
+// TODO: Obsolete. Issue https://github.com/wearefrank/ladybug-frontend/issues/1130.
 export const changesActionConst = ['save', 'discard', 'saveRerun'] as const;
 export type ChangesAction = (typeof changesActionConst)[number];
 
@@ -16,13 +16,13 @@ export type ChangesAction = (typeof changesActionConst)[number];
 export class DifferenceModalComponent {
   @Output() saveChangesEvent: Subject<void> = new Subject<void>();
   @ViewChild('modal') protected modal!: TemplateRef<DifferenceModalComponent>;
-  protected reportDifferences?: ReportDifference2[];
+  protected reportDifferences?: ReportDifference[];
   protected activeModal?: NgbModalRef;
   protected isConfirmClicked = false;
 
   private modalService = inject(NgbModal);
 
-  open(differences: ReportDifference2[]): void {
+  open(differences: ReportDifference[]): void {
     this.isConfirmClicked = false;
     this.reportDifferences = differences;
     this.activeModal = this.modalService.open(this.modal, {

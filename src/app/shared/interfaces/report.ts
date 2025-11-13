@@ -7,7 +7,7 @@ export interface Report extends BaseReport {
   crudStorage: boolean;
   endTime: number;
   estimatedMemoryUsage: number;
-  // TODO: Add "path"?
+  // TODO: Add "path"? Issues https://github.com/wearefrank/ladybug-frontend/issues/1127 and https://github.com/wearefrank/ladybug-frontend/issues/1129.
   fullPath: string;
   inputCheckpoint: Checkpoint;
   numberOfCheckpoints: number;
@@ -15,7 +15,7 @@ export interface Report extends BaseReport {
   originalReport: Report;
   reportFilterMatching: boolean;
   startTime: number;
-  // TODO: Remove, is not provided by the backend.
+  // TODO: Remove, is not provided by the backend. https://github.com/wearefrank/ladybug-frontend/issues/1127
   stub: number;
   stubStrategy: string;
   transformation: string;

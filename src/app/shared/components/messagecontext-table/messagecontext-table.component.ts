@@ -7,7 +7,7 @@ import { Report } from '../../interfaces/report';
 import { Checkpoint } from '../../interfaces/checkpoint';
 import { ReportUtil as ReportUtility } from '../../util/report-util';
 
-// TODO: Only applicable to Checkpoint, not Report. Investigate usage in compare component.
+// TODO: Only applicable to Checkpoint, not Report. Issue https://github.com/wearefrank/ladybug-frontend/issues/1124.
 @Component({
   selector: 'app-messagecontext-table',
   templateUrl: './messagecontext-table.component.html',

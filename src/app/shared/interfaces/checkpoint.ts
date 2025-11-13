@@ -13,7 +13,7 @@ export interface Checkpoint {
   noCloseReceivedForStream?: boolean;
   preTruncatedMessageLength: number;
   sourceClassName?: number;
-  // TODO: No longer sent by server, delete.
+  // TODO: No longer sent by server, delete. Issue https://github.com/wearefrank/ladybug-frontend/issues/1127.
   showConverted?: boolean;
   streaming?: string;
   stub: number;

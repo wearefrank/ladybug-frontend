@@ -100,7 +100,7 @@ export class FilterSideDrawerComponent implements OnDestroy, OnInit {
     return this.toolTipSuggestions?.[key];
   }
 
-  // TODO: Get rid of this cast by using type keyof Report for every metadata label.
+  // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1126.
   toKeyofReport(raw: string): keyof Report {
     return raw as keyof Report;
   }
