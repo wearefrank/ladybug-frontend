@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OverwriteTransformationComponent } from './overwrite-transformation-modal.component';
+import { MatDialogRef } from '@angular/material/dialog';
 
 describe('OverwriteTransformationComponent', () => {
   let component: OverwriteTransformationComponent;
@@ -8,6 +9,7 @@ describe('OverwriteTransformationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [{ provide: MatDialogRef, useValue: {} }],
       imports: [OverwriteTransformationComponent],
     }).compileComponents();
 
