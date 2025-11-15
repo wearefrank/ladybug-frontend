@@ -42,7 +42,7 @@
     "chai-colors": "^1.0.1",
     "diff-match-patch": "1.0.5",
     "font-awesome": "^4.7.0",
-    "monaco-editor": "0.48.0",
+    "monaco-editor": "0.53.0",
     "ng-simple-file-tree": "^0.1.29",
     "ngx-monaco-editor-v2": "19.0.2",
     "path": "^0.12.7",
