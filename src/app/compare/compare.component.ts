@@ -16,11 +16,12 @@ import { ViewDropdownComponent } from '../shared/components/view-dropdown/view-d
 import { View } from '../shared/interfaces/view';
 import { HttpService } from '../shared/services/http.service';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
-import { catchError } from 'rxjs';
+import { catchError, Subject } from 'rxjs';
 import { SimpleFileTreeUtil as SimpleFileTreeUtility } from '../shared/util/simple-file-tree-util';
 import { DebugComponent } from '../debug/debug.component';
 import { TreeItemComponent } from 'ng-simple-file-tree';
 import { ReportAlertMessageComponent } from '../report/report-alert-message/report-alert-message.component';
+import { DiffEditorModel, MonacoDiffEditor } from '../monaco-diff-editor/monaco-diff-editor.component';
 
 @Component({
   selector: 'app-compare',
@@ -37,6 +38,7 @@ import { ReportAlertMessageComponent } from '../report/report-alert-message/repo
     StringReplacePipe,
     ViewDropdownComponent,
     ReportAlertMessageComponent,
+    MonacoDiffEditor,
   ],
 })
 export class CompareComponent implements AfterViewInit, OnInit {
@@ -65,6 +67,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
   protected compareData?: CompareData;
   protected views?: View[];
   protected currentView?: View;
+  protected originalModelRequestSubject = new Subject<DiffEditorModel>();
+  protected modifiedModelRequestSubject = new Subject<DiffEditorModel>();
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -209,8 +213,10 @@ export class CompareComponent implements AfterViewInit, OnInit {
     return this.route.snapshot.paramMap.get('id') as string;
   }
 
-  private renderDiffs(_leftSide: string, _rightSide: string): void {
+  private renderDiffs(leftSide: string, rightSide: string): void {
     // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1124
+    this.originalModelRequestSubject.next({ language: 'xml', code: leftSide });
+    this.modifiedModelRequestSubject.next({ language: 'xml', code: rightSide });
   }
 
   private getStrategyFromLocalStorage(): void {
