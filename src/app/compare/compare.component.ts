@@ -19,7 +19,7 @@ import { ErrorHandling } from '../shared/classes/error-handling.service';
 import { catchError, Subject } from 'rxjs';
 import { SimpleFileTreeUtil as SimpleFileTreeUtility } from '../shared/util/simple-file-tree-util';
 import { DebugComponent } from '../debug/debug.component';
-import { TreeItemComponent } from 'ng-simple-file-tree';
+import { TreeItemComponent } from '../shared/components/simple-file-tree/tree-item/tree-item.component';
 import { ReportAlertMessageComponent } from '../report/report-alert-message/report-alert-message.component';
 import { DiffEditorModel, MonacoDiffEditor } from '../monaco-diff-editor/monaco-diff-editor.component';
 

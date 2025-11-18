@@ -1,4 +1,5 @@
-import { CreateTreeItem, TreeItemComponent } from 'ng-simple-file-tree';
+import { CreateTreeItem } from '../components/simple-file-tree/models/create-tree-item';
+import { TreeItemComponent } from '../components/simple-file-tree/tree-item/tree-item.component';
 
 export const SimpleFileTreeUtil = {
   conditionalCssClass(item: CreateTreeItem): string {

@@ -1,0 +1,31 @@
+<div class="sft-container" [ngClass]="{'no-chevron' : !item.hasChildren()}"
+     [style]="this.parentTree.options.styles?.treeIcon">
+  @if (item.hasChildren()) {
+    <div class="sft-chevron-container" (click)="toggleExpanded($event)">
+      @if (expanded) {
+        <i class="bi bi-chevron-down sft-chevron" [style]="this.parentTree.options.styles?.chevron"></i>
+      } @else {
+        <i class="bi bi-chevron-right sft-chevron" [style]="this.parentTree.options.styles?.chevron"></i>
+      }
+    </div>
+  }
+  <div class="sft-icon-container">
+    @if (item.icon) {
+      <img
+        class="sft-icon"
+        [src]="item.icon"
+        [ngClass]="parentTree.options.determineIconClass ? parentTree.options.determineIconClass(item.originalValue) : ''"
+      >
+    } @else if (parentTree.options.determineIconClass) {
+      <i [class]="parentTree.options.determineIconClass(item.originalValue)"></i>
+    } @else if (item.hasChildren() && !item.extension) {
+      <i class="bi bi-folder sft-icon"></i>
+    } @else if (hasExtension('properties')) {
+      <i class="bi bi-gear sft-icon"></i>
+    } @else if (item.extension) {
+      <i class="bi bi-filetype-{{item.extension.replace('.', '')}} sft-icon"></i>
+    } @else {
+      <i class="bi bi-file-earmark sft-icon"></i>
+    }
+  </div>
+</div>

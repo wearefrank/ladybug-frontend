@@ -1,0 +1,8 @@
+@for (item of items; track $index) {
+  <app-tree-item
+    #elements
+    [parentTree]="this"
+    [item]="item"
+    [style]="options.styles?.all">
+  </app-tree-item>
+}

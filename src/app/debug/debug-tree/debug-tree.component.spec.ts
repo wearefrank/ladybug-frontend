@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DebugTreeComponent } from './debug-tree.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { NgSimpleFileTree } from 'ng-simple-file-tree';
+import { NgSimpleFileTree } from '../../shared/components/simple-file-tree/ng-simple-file-tree.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('DebugTreeComponent', () => {

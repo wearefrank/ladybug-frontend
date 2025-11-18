@@ -42,7 +42,6 @@
     "diff-match-patch": "1.0.5",
     "font-awesome": "^4.7.0",
     "monaco-editor": "0.48.0",
-    "ng-simple-file-tree": "0.1.30",
     "path": "^0.12.7",
     "rxjs": "7.8.2",
     "tslib": "2.8.1",

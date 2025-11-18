@@ -7,13 +7,10 @@ import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
 import { CompareData } from '../compare-data';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { NodeLinkStrategy } from '../../shared/enums/node-link-strategy';
-import {
-  CreateTreeItem,
-  FileTreeItem,
-  FileTreeOptions,
-  NgSimpleFileTree,
-  OptionalParameters,
-} from 'ng-simple-file-tree';
+import { CreateTreeItem } from '../../shared/components/simple-file-tree/models/create-tree-item';
+import { FileTreeItem, OptionalParameters } from '../../shared/components/simple-file-tree/models/file-tree-item';
+import { FileTreeOptions } from '../../shared/components/simple-file-tree/models/file-tree-options';
+import { NgSimpleFileTree } from '../../shared/components/simple-file-tree/ng-simple-file-tree.component';
 import { SimpleFileTreeUtil as SimpleFileTreeUtility } from '../../shared/util/simple-file-tree-util';
 
 export const treeSideConst = ['left', 'right'] as const;

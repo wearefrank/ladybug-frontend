@@ -5,7 +5,11 @@ import { Report } from '../../shared/interfaces/report';
 import { catchError, firstValueFrom, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
-import { CreateTreeItem, FileTreeItem, FileTreeOptions, NgSimpleFileTree } from 'ng-simple-file-tree';
+import { CreateTreeItem } from '../../shared/components/simple-file-tree/models/create-tree-item';
+import { FileTreeItem, OptionalParameters } from '../../shared/components/simple-file-tree/models/file-tree-item';
+import { FileTreeOptions } from '../../shared/components/simple-file-tree/models/file-tree-options';
+import { NgSimpleFileTree } from '../../shared/components/simple-file-tree/ng-simple-file-tree.component';
+
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
 import { SimpleFileTreeUtil as SimpleFileTreeUtility } from '../../shared/util/simple-file-tree-util';
 import { View } from '../../shared/interfaces/view';

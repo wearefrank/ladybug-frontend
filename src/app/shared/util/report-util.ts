@@ -1,6 +1,7 @@
 import { Report } from '../interfaces/report';
 import { Checkpoint } from '../interfaces/checkpoint';
-import { CreateTreeItem, FileTreeItem } from 'ng-simple-file-tree';
+import { CreateTreeItem } from '../components/simple-file-tree/models/create-tree-item';
+import { FileTreeItem } from '../components/simple-file-tree/models/file-tree-item';
 
 type ReportOrCheckpoint = Report | Checkpoint | CreateTreeItem | FileTreeItem | undefined;
 

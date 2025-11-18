@@ -1,0 +1,30 @@
+.sft-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.sft-chevron {
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.sft-icon {
+  font-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.sft-chevron-container {
+  width: 12px;
+}
+
+.sft-icon-container {
+  width: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
