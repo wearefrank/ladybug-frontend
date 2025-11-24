@@ -142,7 +142,6 @@ export class CompareComponent implements AfterViewInit, OnInit {
         if (this.compareData) {
           const filteredViews = this.filterViews(views, this.compareData);
           if (filteredViews.length > 0) {
-            // eslint-disable-next-line unicorn/no-array-sort
             this.views = filteredViews.sort((a, b) => a.name.localeCompare(b.name));
             if (this.compareData.viewName) {
               const view = this.views.find((v) => v.name === this.compareData!.viewName);
