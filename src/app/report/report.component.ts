@@ -387,7 +387,6 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
         .subscribe({
           next: () => {
             this.toastService.showSuccessLong(successText);
-            console.log(`Raised success toast with text: ${successText}`);
             resolve();
           },
           error: () => resolve(),

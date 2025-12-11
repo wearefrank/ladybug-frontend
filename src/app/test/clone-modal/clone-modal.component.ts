@@ -3,7 +3,7 @@ import { Component, EventEmitter, inject, Output, ViewChild } from '@angular/cor
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Report } from '../../shared/interfaces/report';
 import { HttpService } from '../../shared/services/http.service';
-import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { CloneReport } from 'src/app/shared/interfaces/clone-report';
 import { catchError } from 'rxjs';
 import { ErrorHandling } from '../../shared/classes/error-handling.service';
@@ -15,7 +15,7 @@ import { TestListItem } from '../../shared/interfaces/test-list-item';
   templateUrl: './clone-modal.component.html',
   styleUrls: ['./clone-modal.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FormsModule],
 })
 export class CloneModalComponent {
   @Output() cloneReportEvent = new EventEmitter<any>();
@@ -26,7 +26,7 @@ export class CloneModalComponent {
     storageName: 'Test',
   };
   variablesForm = new UntypedFormGroup({
-    variables: new UntypedFormControl(''),
+    variablesCsv: new UntypedFormControl(''),
     message: new UntypedFormControl(''),
   });
 
