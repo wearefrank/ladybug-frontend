@@ -70,6 +70,7 @@ export class TestComponent implements OnInit, OnDestroy {
 
   protected testReportsService = inject(TestReportsService);
   protected appVariablesService = inject(AppVariablesService);
+  protected currentUploadFile = '';
 
   private updatePathAction: UpdatePathAction = 'move';
   private testReportServiceSubscription?: Subscription;
@@ -251,6 +252,8 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   uploadReport(event: Event): void {
+    // Allow same file to be uploaded multiple times
+    this.currentUploadFile = '';
     const eventTarget: HTMLInputElement = event.target as HTMLInputElement;
     const file: File | undefined = eventTarget.files?.[0];
     if (file) {
