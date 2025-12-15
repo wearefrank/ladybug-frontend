@@ -114,6 +114,8 @@ export class TableComponent implements OnInit, OnDestroy {
 
   protected appVariablesService = inject(AppVariablesService);
 
+  protected currentUploadFile = '';
+
   private reportsInProgress: Record<string, number> = {};
 
   private get selectedReportIds(): number[] {
@@ -580,6 +582,8 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   uploadReports(event: Event): void {
+    // Allow the same file to be uploaded again.
+    this.currentUploadFile = '';
     const eventTarget = event.target as HTMLInputElement;
     const file: File | undefined = eventTarget.files?.[0];
     if (file) {
