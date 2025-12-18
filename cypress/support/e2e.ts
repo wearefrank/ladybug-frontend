@@ -13,6 +13,14 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
+Cypress.on('uncaught:exception', (err, runnable) => {
+  // Ignore Identifier '_amdLoaderGlobal' has already been declared
+  if (err.name === 'SyntaxError' && err.message.indexOf('_amdLoaderGlobal') >= 0) {
+    return false;
+  }
+  return;
+})
+
 import 'cypress-file-upload';
 
 // Import commands.js using ES2015 syntax:
