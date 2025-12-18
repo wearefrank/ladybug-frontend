@@ -9,8 +9,10 @@ import { inject, Injectable } from '@angular/core';
 export class ErrorHandling {
   private toastService = inject(ToastService);
 
-  handleError(): (error: HttpErrorResponse) => Observable<unknown> {
-    return (error: HttpErrorResponse): Observable<unknown> => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  handleError(): (error: HttpErrorResponse) => Observable<any> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (error: HttpErrorResponse): Observable<any> => {
       console.warn(error);
       const message = error.error;
       if (error.status > 399 && error.status < 500) {
