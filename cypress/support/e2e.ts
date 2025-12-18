@@ -15,7 +15,7 @@
 
 Cypress.on('uncaught:exception', (err, runnable) => {
   // Ignore Identifier '_amdLoaderGlobal' has already been declared
-  if (err.name === 'TypeError' && err.message.indexOf('_amdLoaderGlobal') >= 0) {
+  if (err.name === 'SyntaxError' && err.message.indexOf('_amdLoaderGlobal') >= 0) {
     return false;
   }
   return;
