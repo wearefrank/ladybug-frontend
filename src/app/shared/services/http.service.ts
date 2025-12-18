@@ -28,7 +28,7 @@ export class HttpService {
   }
 
   getMetadataReports(settings: TableSettings, view: View): Observable<Report[]> {
-    return this.http.get<Report[]>(`api/metadata/${view.storageName}/`, {
+    return this.http.get<Report[]>(`api/metadata/${view.storageName}`, {
       params: {
         limit: settings.displayAmount,
         filterHeader: [...settings.currentFilters.keys()],
@@ -67,7 +67,7 @@ export class HttpService {
   }
 
   getTestReports(metadataNames: string[], storage: string): Observable<TestListItem[]> {
-    return this.http.get<TestListItem[]>(`api/metadata/${storage}/`, {
+    return this.http.get<TestListItem[]>(`api/metadata/${storage}`, {
       params: { metadataNames: metadataNames },
     });
   }
@@ -77,7 +77,7 @@ export class HttpService {
     return this.http
       .get<
         Record<string, Report | string>
-      >(`api/report/${storage}/${reportId}/?xml=true&globalTransformer=${transformationEnabled}`)
+      >(`api/report/${storage}/${reportId}?xml=true&globalTransformer=${transformationEnabled}`)
       .pipe(
         map((e) => {
           const report = e['report'] as Report;
@@ -93,7 +93,7 @@ export class HttpService {
     return this.http
       .get<
         Record<string, CompareReport>
-      >(`api/report/${storage}/?xml=true&globalTransformer=${transformationEnabled}`, { params: { storageIds: reportIds } })
+      >(`api/report/${storage}?xml=true&globalTransformer=${transformationEnabled}`, { params: { storageIds: reportIds } })
       .pipe(
         map((data) => {
           for (const report of reportIds) {
