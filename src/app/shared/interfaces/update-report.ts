@@ -1,8 +1,11 @@
 export interface UpdateReport {
   name?: string;
-  path?: string | null;
-  description?: string | null;
-  transformation?: string | null;
-  variables?: string;
+  clearPath?: boolean;
+  path?: string;
+  clearDescription?: boolean;
+  description?: string;
+  clearTransformation?: boolean;
+  transformation?: string;
+  variables?: Record<string, string>;
   stubStrategy?: string;
 }

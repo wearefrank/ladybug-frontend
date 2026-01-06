@@ -192,6 +192,11 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
     expectNotEdited();
+    // Simulate that report was updated.
+    component.report!.description = 'Changed description';
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.clearDescription).toEqual(true);
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.description).toEqual(undefined);
   });
 
   it('When path is changed then consistently show this change', () => {
@@ -226,6 +231,11 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
     expectNotEdited();
+    // Simulate that report was updated.
+    component.report!.path = 'my/other/path';
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.path).toEqual(undefined);
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.clearPath).toEqual(true);
   });
 
   it('When transformation is changed then consistently show this change', () => {
@@ -260,6 +270,11 @@ describe('ReportValue', () => {
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
     expectNotEdited();
+    // Simulate that report was updated.
+    component.report!.transformation = 'other dummy transformation';
+    component.requestSave();
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.transformation).toEqual(undefined);
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.clearTransformation).toEqual(true);
   });
 
   it('When report level stub strategy is changed then consistently show this change', () => {
@@ -289,7 +304,8 @@ describe('ReportValue', () => {
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables).toEqual('{"otherName":"value"}');
+    const key = 'otherName';
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables[key]).toEqual('value');
     component.editedVariables[0].name = 'variable';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -306,7 +322,8 @@ describe('ReportValue', () => {
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables).toEqual('{"variable":"otherValue"}');
+    const key = 'variable';
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables[key]).toEqual('otherValue');
     component.editedVariables[0].value = 'value';
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -323,9 +340,10 @@ describe('ReportValue', () => {
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables).toEqual(
-      '{"variable":"value","second":"secondValue"}',
-    );
+    const key1 = 'variable';
+    const key2 = 'second';
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables[key1]).toEqual('value');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables[key2]).toEqual('secondValue');
     component.editedVariables.pop();
     component.onInputChange();
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(3);
@@ -342,7 +360,7 @@ describe('ReportValue', () => {
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectEdited();
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables).toEqual('{}');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.variables).toEqual({});
   });
 
   it('When a new edit row for variables appears, there is no change when the variable name is blank', () => {
