@@ -254,7 +254,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: serverStartLog ${{ matrix.spring-profile }}
+          name: installFrankRunnerEnv ${{ matrix.spring-profile }}
           path: | 
             frank-runner/installFrankRunnerEnv.log
-            frank-runner/specials/ladybug/serverStartLog.log
