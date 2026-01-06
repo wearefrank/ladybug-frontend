@@ -200,7 +200,7 @@ jobs:
         working-directory: frank-runner
 
       - name: Start server using Frank!Runner in background
-        run: ./restart.sh > serverStartLog.log
+        run: ./restart.sh
         working-directory: frank-runner/specials/ladybug
 
       - name: Copy .github/workflows/proxy.cicd.conf.json
