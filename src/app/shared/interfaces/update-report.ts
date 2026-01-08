@@ -1,10 +1,10 @@
 export interface UpdateReport {
   name?: string;
-  clearPath?: boolean;
+  // Empty string is interpreted as request to clear the path
   path?: string;
-  clearDescription?: boolean;
+  // Empty string is interpreted as request to clear the description
   description?: string;
-  clearTransformation?: boolean;
+  // Empty string is interpreted as request to clear the transformation
   transformation?: string;
   variables?: Record<string, string>;
   stubStrategy?: string;
