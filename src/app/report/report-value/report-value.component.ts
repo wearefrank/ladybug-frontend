@@ -66,6 +66,9 @@ export class ReportValueComponent implements OnInit, OnDestroy {
   duplicateVariables: Set<number> = new Set<number>();
   editedReportStubStrategy?: string;
 
+  // It would have been nice to make this protected, but we need to edit this during Karma tests.
+  report?: PartialReport;
+
   labels: NodeValueLabels = {
     isEdited: false,
     // These are all dummies
@@ -92,7 +95,6 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     wordWrap: 'on',
   };
   protected monacoEditorInitialHeight = 0;
-  protected report?: PartialReport;
   protected metadataTableVisible = false;
   protected transformationContentRequestSubject = new BehaviorSubject<string | undefined>(undefined);
   protected transformationReadOnlySubject = new BehaviorSubject<boolean>(true);
@@ -263,15 +265,15 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     }
     const description: string | null = this.getRealEditedValueForNullable(this.editedDescription);
     if (description !== this.report!.description) {
-      updateReport.description = description;
+      updateReport.description = description === null ? '' : description;
     }
     const path: string | null = this.getRealEditedValueForNullable(this.editedPath);
     if (path !== this.report!.path) {
-      updateReport.path = path;
+      updateReport.path = path === null ? '' : path;
     }
     const transformation = this.getRealEditedValueForNullable(this.editedTransformation);
     if (transformation !== this.report!.transformation) {
-      updateReport.transformation = transformation;
+      updateReport.transformation = transformation === null ? '' : transformation;
     }
     if (!this.hasNoUnsavedVariables()) {
       updateReport.variables = this.getVariablesUpdate();
@@ -446,11 +448,11 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     return [...resultSet].toSorted();
   }
 
-  private getVariablesUpdate(): string {
+  private getVariablesUpdate(): Record<string, string> {
     const variables: Record<string, string> = {};
     for (const v of this.getRealEditedVariables()) {
       variables[v.name] = v.value;
     }
-    return JSON.stringify(variables);
+    return variables;
   }
 }
