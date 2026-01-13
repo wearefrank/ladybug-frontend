@@ -1,3 +1,9 @@
+export interface UpdateCheckpoint {
+  checkpointId: string;
+  checkpointMessage?: string | null;
+  stub?: number;
+}
+
 export interface UpdateReport {
   name?: string;
   path?: string | null;
@@ -5,4 +11,5 @@ export interface UpdateReport {
   transformation?: string | null;
   variables?: Record<string, string>;
   stubStrategy?: string;
+  checkpoints?: UpdateCheckpoint[];
 }

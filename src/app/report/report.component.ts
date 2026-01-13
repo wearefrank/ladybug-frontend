@@ -33,7 +33,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestResult } from '../shared/interfaces/test-result';
 import { DebugTabService } from '../debug/debug-tab.service';
 import { UpdateReport } from '../shared/interfaces/update-report';
-import { UpdateCheckpoint } from '../shared/interfaces/update-checkpoint';
 import { HelperService } from '../shared/services/helper.service';
 import { TestRefreshService } from '../test/test-refresh.service';
 
@@ -68,15 +67,7 @@ export interface NodeValueState {
 
 export interface UpdateNode {
   checkpointUidToRestore?: string;
-  updateReport?: UpdateReport;
-  updateCheckpointMessage?: UpdateCheckpoint;
-  updateCheckpointStubStrategy?: UpdateCheckpoint;
-}
-
-interface UpdateRequest {
-  body: UpdateCheckpoint | UpdateReport;
-  success: string;
-  failure: string;
+  updateReport: UpdateReport;
 }
 
 const INDENT_TWO_SPACES = '  ';
@@ -232,32 +223,15 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
   protected initEditor(): void {}
 
   protected save(update: UpdateNode): void {
-    const requests: UpdateRequest[] = [];
-    if (update.updateCheckpointMessage !== undefined) {
-      requests.push({
-        body: update.updateCheckpointMessage,
-        success: 'Successfully saved checkpoint message',
-        failure: 'Failed to change checkpoint message',
+    this.httpService
+      .updateReport(`${this.storageId!}`, update.updateReport, this.currentView.storageName)
+      .pipe(catchError(this.handleErrorWithRethrowMessage('Caught error when trying to update report')))
+      .subscribe({
+        next: () => {
+          this.toastService.showSuccessLong('Report updated!');
+          this.updateUIAfterSave(update.checkpointUidToRestore);
+        },
       });
-    }
-    if (update.updateCheckpointStubStrategy !== undefined) {
-      requests.push({
-        body: update.updateCheckpointStubStrategy,
-        success: 'Successfully saved checkpoint stub strategy',
-        failure: 'Failed to change checkpoint stub strategy',
-      });
-    }
-    if (update.updateReport !== undefined) {
-      requests.push({
-        body: update.updateReport,
-        success: 'Successfully saved changes of the whole report',
-        failure: 'Failed to update report node',
-      });
-    }
-    const promises: Promise<void>[] = [];
-    this.sendUpdateRequests(requests, promises, (promises) =>
-      this.waitForUpdateRequestsAndFinishSave(promises, update.checkpointUidToRestore),
-    );
   }
 
   protected onDownload(downloadOptions: DownloadOptions): void {
@@ -375,61 +349,8 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private handleUpdateNodeRequest(
-    request: UpdateReport | UpdateCheckpoint,
-    successText: string,
-    failText: string,
-  ): Promise<void> {
-    return new Promise((resolve) => {
-      this.httpService
-        .updateReport(`${this.storageId!}`, request, this.currentView.storageName)
-        .pipe(catchError(this.handleErrorWithRethrowMessage(failText)))
-        .subscribe({
-          next: () => {
-            this.toastService.showSuccessLong(successText);
-            resolve();
-          },
-          error: () => resolve(),
-        });
-    });
-  }
-
-  private sendUpdateRequests(
-    requests: UpdateRequest[],
-    promises: Promise<void>[],
-    handler: (promises: Promise<void>[]) => void,
-  ): void {
-    if (requests.length === 0) {
-      handler(promises);
-    } else {
-      const next: UpdateRequest = requests.shift()!;
-      promises.push(this.handleUpdateNodeRequest(next.body, next.success, next.failure));
-      setTimeout(() => this.sendUpdateRequests(requests, promises, handler), 1000);
-    }
-  }
-
-  private waitForUpdateRequestsAndFinishSave(
-    promises: Promise<void>[],
-    checkpointUidToRestore: string | undefined,
-  ): void {
-    Promise.all(promises)
-      // We have a waiting time between updating a report on the server and requesting
-      // the updated report.
-      .then(() => setTimeout(() => this.updateUIAfterSave(checkpointUidToRestore), 1000))
-      .catch(() => {
-        console.log(
-          'ReportComponent.save(): Promises of HTTP update requests to update report were expected to resolve, even with errors',
-        );
-        this.toastService.showDanger(
-          'Programming error detected. Please view console log (F12), contact the maintainers of Ladybug and refresh your browser',
-        );
-      });
-  }
-
   private updateUIAfterSave(checkpointUidToRestore: string | undefined): void {
     this.saveDoneSubject.next();
-    // Up to three updates may have been done and we do not make assumptions here which was last.
-    // We want the report from the server that resulted from all updates.
     this.getReportFromServer().then((updatedReport) => {
       this.ngZone.run(() => {
         if (this.newTab) {
