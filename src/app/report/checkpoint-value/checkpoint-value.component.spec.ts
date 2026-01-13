@@ -65,8 +65,10 @@ describe('CheckpointValue', () => {
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointMessage).toEqual('My other value');
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.checkpointMessage).toEqual(
+      'My other value',
+    );
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.checkpointId).toEqual('0');
     expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
     component.onActualEditorContentsChanged('My value');
     flush();
@@ -84,8 +86,10 @@ describe('CheckpointValue', () => {
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointMessage).toEqual('My other value');
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.checkpointMessage).toEqual(
+      'My other value',
+    );
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.checkpointId).toEqual('0');
     expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
     component.onActualEditorContentsChanged('');
     flush();
@@ -93,8 +97,8 @@ describe('CheckpointValue', () => {
     expect(component.getEditedRealCheckpointValue()).toEqual('');
     expectIsEdited();
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointMessage).toEqual('');
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.checkpointMessage).toEqual('');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.checkpointId).toEqual('0');
     expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
   }));
 
@@ -109,8 +113,8 @@ describe('CheckpointValue', () => {
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointMessage).toEqual(null);
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.checkpointMessage).toEqual(null);
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.checkpointId).toEqual('0');
     expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
   }));
 
@@ -126,8 +130,8 @@ describe('CheckpointValue', () => {
     expect(component.nodeValueState.emit).toHaveBeenCalledTimes(2);
     expectIsEdited();
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointMessage).toEqual(null);
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointMessage?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.checkpointMessage).toEqual(null);
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.checkpointId).toEqual('0');
     expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
   }));
 
@@ -142,10 +146,10 @@ describe('CheckpointValue', () => {
     expectIsEdited();
     component.requestSave();
     // Checkpoint stub strategy has to be updated by dedicated HTTP request.
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointStubStrategy.stub).toEqual(
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.stub).toEqual(
       StubStrategy.checkpointIndex2Stub(1),
     );
-    expect(saveSpy?.calls.mostRecent().args[0].updateCheckpointStubStrategy?.checkpointId).toEqual('0');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport.checkpoints[0]?.checkpointId).toEqual('0');
     expect(saveSpy?.calls.mostRecent().args[0].checkpointUidToRestore).toEqual('0#0');
     component.onCheckpointStubStrategyChange(StubStrategy.checkpointIndex2Stub(0));
     flush();

@@ -265,15 +265,15 @@ export class ReportValueComponent implements OnInit, OnDestroy {
     }
     const description: string | null = this.getRealEditedValueForNullable(this.editedDescription);
     if (description !== this.report!.description) {
-      updateReport.description = description === null ? '' : description;
+      updateReport.description = description;
     }
     const path: string | null = this.getRealEditedValueForNullable(this.editedPath);
     if (path !== this.report!.path) {
-      updateReport.path = path === null ? '' : path;
+      updateReport.path = path;
     }
     const transformation = this.getRealEditedValueForNullable(this.editedTransformation);
     if (transformation !== this.report!.transformation) {
-      updateReport.transformation = transformation === null ? '' : transformation;
+      updateReport.transformation = transformation;
     }
     if (!this.hasNoUnsavedVariables()) {
       updateReport.variables = this.getVariablesUpdate();

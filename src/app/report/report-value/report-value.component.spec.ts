@@ -195,7 +195,7 @@ describe('ReportValue', () => {
     // Simulate that report was updated.
     component.report!.description = 'Changed description';
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.description).toEqual('');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.description).toEqual(null);
   });
 
   it('When path is changed then consistently show this change', () => {
@@ -233,7 +233,7 @@ describe('ReportValue', () => {
     // Simulate that report was updated.
     component.report!.path = 'my/other/path';
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.path).toEqual('');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.path).toEqual(null);
   });
 
   it('When transformation is changed then consistently show this change', () => {
@@ -271,7 +271,7 @@ describe('ReportValue', () => {
     // Simulate that report was updated.
     component.report!.transformation = 'other dummy transformation';
     component.requestSave();
-    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.transformation).toEqual('');
+    expect(saveSpy?.calls.mostRecent().args[0].updateReport?.transformation).toEqual(null);
   });
 
   it('When report level stub strategy is changed then consistently show this change', () => {

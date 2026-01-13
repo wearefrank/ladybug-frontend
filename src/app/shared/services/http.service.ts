@@ -11,7 +11,6 @@ import { UploadParameters } from '../interfaces/upload-params';
 import { UpdatePathSettings } from '../interfaces/update-path-settings';
 import { TestResult } from '../interfaces/test-result';
 import { UpdateReport } from '../interfaces/update-report';
-import { UpdateCheckpoint } from '../interfaces/update-checkpoint';
 import { UpdateReportResponse } from '../interfaces/update-report-response';
 import { Transformation } from '../interfaces/transformation';
 import { TableSettings } from '../interfaces/table-settings';
@@ -105,11 +104,7 @@ export class HttpService {
       );
   }
 
-  updateReport(
-    reportId: string,
-    body: UpdateReport | UpdateCheckpoint,
-    storage: string,
-  ): Observable<UpdateReportResponse> {
+  updateReport(reportId: string, body: UpdateReport, storage: string): Observable<UpdateReportResponse> {
     return this.http.post<UpdateReportResponse>(`api/report/${storage}/${reportId}`, body);
   }
 
