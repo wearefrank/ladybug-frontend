@@ -38,20 +38,20 @@ export class HttpService {
     });
   }
 
-  getUserHelp(storage: string, metadataNames: string[]): Observable<Report> {
-    return this.http.get<Report>(`api/metadata/${storage}/userHelp`, {
+  getUserHelp(viewName: string, metadataNames: string[]): Observable<Report> {
+    return this.http.get<Report>(`api/metadata/${viewName}/userHelp`, {
       params: {
         metadataNames: metadataNames,
       },
     });
   }
 
-  getMetadataCount(storage: string): Observable<number> {
-    return this.http.get<number>(`api/metadata/${storage}/count`);
+  getMetadataCount(viewName: string): Observable<number> {
+    return this.http.get<number>(`api/metadata/${viewName}/count`);
   }
 
-  getLatestReports(amount: number, storage: string): Observable<Report[]> {
-    return this.http.get<Report[]>(`api/report/latest/${storage}/${amount}`);
+  getLatestReports(amount: number, viewName: string): Observable<Report[]> {
+    return this.http.get<Report[]>(`api/report/latest/${viewName}/${amount}`);
   }
 
   getReportInProgress(index: number): Observable<Report> {
@@ -66,8 +66,8 @@ export class HttpService {
     return this.http.get<number>('api/testtool/in-progress/threshold-time');
   }
 
-  getTestReports(metadataNames: string[], storage: string): Observable<TestListItem[]> {
-    return this.http.get<TestListItem[]>(`api/metadata/${storage}`, {
+  getTestReports(metadataNames: string[], viewName: string): Observable<TestListItem[]> {
+    return this.http.get<TestListItem[]>(`api/metadata/${viewName}`, {
       params: { metadataNames: metadataNames },
     });
   }

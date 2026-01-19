@@ -242,7 +242,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   loadMetadataCount(): void {
     this.httpService
-      .getMetadataCount(this.currentView.storageName)
+      .getMetadataCount(this.currentView.name)
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (count: number) => (this.metadataCount = count),
@@ -486,7 +486,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   openLatestReports(amount: number): void {
     this.httpService
-      .getLatestReports(amount, this.currentView.storageName)
+      .getLatestReports(amount, this.currentView.name)
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
         next: (data: Report[]) => {
