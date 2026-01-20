@@ -15,6 +15,7 @@ import { CheckpointMetadataTable } from '../checkpoint-metadata-table/checkpoint
 import { MessagecontextTableComponent } from '../../shared/components/messagecontext-table/messagecontext-table.component';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { prettify } from '../report.component';
+import { UpdateCheckpoint, UpdateReport } from 'src/app/shared/interfaces/update-report';
 
 export interface PartialCheckpoint {
   index: number;
@@ -207,25 +208,28 @@ export class CheckpointValueComponent implements OnInit, OnDestroy {
     }
     const message: string | null = this.getEditedRealCheckpointValue();
     const checkpointId = `${this.originalCheckpoint!.index}`;
-    let event: UpdateNode = {};
-    if (message !== this.originalCheckpoint!.message) {
-      event.checkpointUidToRestore = this.originalCheckpoint!.uid;
-      event.updateCheckpointMessage = {
-        checkpointId,
-        checkpointMessage: message,
+    let update: UpdateReport = {};
+    const newMessage: boolean = message !== this.originalCheckpoint!.message;
+    const newStub = this.actualCheckpointStubStrategy !== this.originalCheckpoint!.stub;
+    if (newMessage || newStub) {
+      const checkpointUpdate: UpdateCheckpoint = {
+        checkpointId: checkpointId,
       };
-    }
-    if (this.actualCheckpointStubStrategy !== this.originalCheckpoint!.stub) {
-      event.checkpointUidToRestore = this.originalCheckpoint!.uid;
-      event.updateCheckpointStubStrategy = {
-        checkpointId,
-        stub: this.actualCheckpointStubStrategy,
-      };
+      if (newMessage) {
+        checkpointUpdate.checkpointMessage = message;
+      }
+      if (newStub) {
+        checkpointUpdate.stub = this.actualCheckpointStubStrategy;
+      }
+      update.checkpoints = [checkpointUpdate];
     }
     if (this.actualReportStubStrategy !== this.originalCheckpoint!.parentReport.stubStrategy) {
-      event.updateReport = { stubStrategy: this.actualReportStubStrategy };
+      update.stubStrategy = this.actualReportStubStrategy;
     }
-    this.save.emit(event);
+    this.save.emit({
+      checkpointUidToRestore: this.originalCheckpoint!.uid,
+      updateReport: update,
+    });
   }
 
   protected onDownload(downloadOptions: DownloadOptions): void {
