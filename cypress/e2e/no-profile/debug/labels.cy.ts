@@ -31,10 +31,10 @@ describe('Test labels', () => {
     cy.get('[data-cy-debug="openSelected"]').click();
     cy.get('[data-cy-element-name="checkpointEditor"]').invoke('text').should('contain', 'Hello');
     cy.get(':contains(Edited)').should('not.exist');
-    cy.editCheckpointValue('{selectAll}Other value');
+    cy.editCheckpointValue('Other value');
     cy.get('[data-cy-element-name="checkpointEditor"]').invoke('text').should('contain', 'Other');
     cy.get(':contains(Edited)').should('be.visible');
-    cy.editCheckpointValue('{selectAll}Hello World!');
+    cy.editCheckpointValue('Hello World!');
     cy.get('[data-cy-element-name="checkpointEditor"]').invoke('text').should('contain', 'Hello');
     cy.get(':contains(Edited)').should('not.exist');
   });
@@ -89,7 +89,7 @@ describe('Test labels', () => {
       cy.copyReportsToTestTab(['Simple report']);
       cy.navigateToTestTabAndAwaitLoadingSpinner();
       cy.get('[data-cy-test="openReport"]').click();
-      cy.editCheckpointValue('{selectAll}Other value');
+      cy.editCheckpointValue('Other value');
       cy.get('[data-cy-element-name="checkpointEditor"]').invoke('text').should('contain', 'Other');
       cy.get(':contains(Edited)').should('be.visible');
       // This is the key, testing that read only label does not exist.
