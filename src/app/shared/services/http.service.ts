@@ -23,10 +23,12 @@ export class HttpService {
   private readonly headers: HttpHeaders = new HttpHeaders().set('Content-Type', 'application/json');
   private http = inject(HttpClient);
 
+  // TODO: Debug tab.
   getViews(): Observable<View[]> {
     return this.http.get<Record<string, View>>('api/testtool/views').pipe(map((response) => Object.values(response)));
   }
 
+  // TODO: Debug tab.
   getMetadataReports(settings: TableSettings, view: View): Observable<Report[]> {
     return this.http.get<Report[]>(`api/metadata/${view.storageName}`, {
       params: {
@@ -38,6 +40,7 @@ export class HttpService {
     });
   }
 
+  // TODO: Debug tab.
   getUserHelp(viewName: string, metadataNames: string[]): Observable<Report> {
     return this.http.get<Report>(`api/metadata/${viewName}/userHelp`, {
       params: {
@@ -46,18 +49,22 @@ export class HttpService {
     });
   }
 
+  // TODO: Debug tab.
   getMetadataCount(viewName: string): Observable<number> {
     return this.http.get<number>(`api/metadata/${viewName}/count`);
   }
 
+  // TODO: Debug tab.
   getLatestReports(amount: number, viewName: string): Observable<Report[]> {
     return this.http.get<Report[]>(`api/report/latest/${viewName}/${amount}`);
   }
 
+  // TODO: Deubug tab.
   getReportInProgress(index: number): Observable<Report> {
     return this.http.get<Report>(`api/testtool/in-progress/${index}`);
   }
 
+  // TODO: Debug tab.
   deleteReportInProgress(index: number): Observable<Report> {
     return this.http.delete<Report>(`api/testtool/in-progress/${index}`);
   }
@@ -66,12 +73,14 @@ export class HttpService {
     return this.http.get<number>('api/testtool/in-progress/threshold-time');
   }
 
-  getTestReports(metadataNames: string[], viewName: string): Observable<TestListItem[]> {
-    return this.http.get<TestListItem[]>(`api/metadata/${viewName}`, {
+  // TODO: Test tab.
+  getTestReports(metadataNames: string[], storageName: string): Observable<TestListItem[]> {
+    return this.http.get<TestListItem[]>(`api/metadata/${storageName}`, {
       params: { metadataNames: metadataNames },
     });
   }
 
+  // TODO: Both test tab and debug tab.
   getReport(reportId: number, storage: string): Observable<Report> {
     const transformationEnabled = localStorage.getItem('transformationEnabled') === 'true';
     return this.http
@@ -88,6 +97,7 @@ export class HttpService {
       );
   }
 
+  // TODO: Both test tab and debug tab.
   getReports(reportIds: number[], storage: string): Observable<Record<string, CompareReport>> {
     const transformationEnabled = localStorage.getItem('transformationEnabled') === 'true';
     return this.http
@@ -105,6 +115,7 @@ export class HttpService {
       );
   }
 
+  // TODO: Opened report, can be opened from test tab or debug tab.
   updateReport(
     reportId: string,
     body: UpdateReport | UpdateCheckpoint,
@@ -113,46 +124,56 @@ export class HttpService {
     return this.http.post<UpdateReportResponse>(`api/report/${storage}/${reportId}`, body);
   }
 
+  // TODO: Opened report, can be opened from test tab or debug tab.
   copyReport(data: Record<string, number[]>, storage: string): Observable<void> {
     return this.http.put<void>(`api/report/store/${storage}`, data);
   }
 
+  // TODO: test tab.
   updatePath(reportIds: number[], storage: string, map: UpdatePathSettings): Observable<void> {
     return this.http.put<void>(`api/report/move/${storage}`, map, {
       params: { storageIds: reportIds },
     });
   }
 
+  // TODO: Debug tab.
   uploadReport(formData: FormData): Observable<Report[]> {
     return this.http.post<Report[]>('api/report/upload', formData);
   }
 
+  // TODO: Test tab.
   uploadReportToStorage(formData: FormData, storage: string): Observable<void> {
     return this.http.post<void>(`api/report/upload/${storage}`, formData);
   }
 
+  // TODO: Settings of debug tab.
   postSettings(settings: UploadParameters): Observable<void> {
     return this.http.post<void>('api/testtool', settings);
   }
 
+  // TODO: Settings of debug tab.
   postTransformation(transformation: string): Observable<void> {
     return this.http.post<void>('api/testtool/transformation', {
       transformation: transformation,
     });
   }
 
+  // TODO: Settings of debug tab.
   getTransformation(defaultTransformation: boolean): Observable<Transformation> {
     return this.http.get<Transformation>(`api/testtool/transformation/${defaultTransformation}`);
   }
 
+  // TODO: Both debug tab and test tab.
   getSettings(): Observable<OptionsSettings> {
     return this.http.get<OptionsSettings>('api/testtool');
   }
 
+  // TODO: Debug tab.
   resetSettings(): Observable<OptionsSettings> {
     return this.http.get<OptionsSettings>('api/testtool/reset');
   }
 
+  // TODO: Both debug tab and test tab.
   runReport(storage: string, reportId: number): Observable<TestResult> {
     return this.http.post<TestResult>(`api/runner/run/${storage}/${reportId}`, {
       headers: this.headers,
@@ -160,6 +181,7 @@ export class HttpService {
     });
   }
 
+  // TODO: Not used.
   runDisplayReport(reportId: string, storage: string): Observable<Report> {
     return this.http.put<Report>(`api/runner/replace/${storage}/${reportId}`, {
       headers: this.headers,
@@ -171,12 +193,14 @@ export class HttpService {
     return this.http.post<void>(`api/report/move/${storage}/${storageId}`, map);
   }
 
+  // TODO: Both debug tab and test tab.
   deleteReport(reportIds: number[], storage: string): Observable<void> {
     return this.http.delete<void>(`api/report/${storage}`, {
       params: { storageIds: reportIds },
     });
   }
 
+  // TODO: Both debug tab and test tab.
   deleteAllReports(storage: string): Observable<void> {
     return this.http.delete<void>(`api/report/all/${storage}`);
   }
@@ -188,12 +212,14 @@ export class HttpService {
   //   });
   // }
 
+  // TODO: Opened report, can have been opened from debug tab or test tab.
   getUnmatchedCheckpoints(storageName: string, storageId: number, viewName: string): Observable<string[]> {
     return this.http.get<string[]>(`api/report/${storageName}/${storageId}/checkpoints/uids`, {
       params: { view: viewName, invert: true },
     });
   }
 
+  // TODO: Debug tab.
   getWarningsAndErrors(storageName: string): Observable<string | undefined> {
     const cleanStorageName: string = storageName.replaceAll(' ', '');
     return this.http.get(`api/report/warningsAndErrors/${cleanStorageName}`, {
@@ -201,18 +227,21 @@ export class HttpService {
     });
   }
 
+  // TODO: Not related to tabs, initialization.
   getStubStrategies(): Observable<string[]> {
     return this.http.get<string[]>(`api/testtool/stub-strategies`, {
       headers: this.headers,
     });
   }
 
+  // TODO: Not related to tabs, initialization.
   getBackendVersion(): Observable<string> {
     return this.http.get('api/testtool/version', {
       responseType: 'text',
     });
   }
 
+  // TODO: Both debug tab and test tab.
   processCustomReportAction(storage: string, reportIds: number[]): Observable<void> {
     return this.http.post<void>(`api/report/customreportaction?storage=${storage}`, reportIds);
   }
