@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { DictionaryPipe } from '../../shared/pipes/dictionary.pipe';
 import { NgClass, TitleCasePipe } from '@angular/common';

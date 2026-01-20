@@ -3,7 +3,7 @@ import { Report } from '../../shared/interfaces/report';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
-import { ReportUtil } from '../../shared/util/report-util';
+import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
 import { CompareData } from '../compare-data';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 import { NodeLinkStrategy } from '../../shared/enums/node-link-strategy';
@@ -12,10 +12,9 @@ import {
   FileTreeItem,
   FileTreeOptions,
   NgSimpleFileTree,
-  NgSimpleFileTreeModule,
   OptionalParameters,
 } from 'ng-simple-file-tree';
-import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
+import { SimpleFileTreeUtil as SimpleFileTreeUtility } from '../../shared/util/simple-file-tree-util';
 
 export const treeSideConst = ['left', 'right'] as const;
 export type TreeSide = (typeof treeSideConst)[number];
@@ -24,8 +23,7 @@ export type TreeSide = (typeof treeSideConst)[number];
   selector: 'app-compare-tree',
   templateUrl: './compare-tree.component.html',
   styleUrls: ['./compare-tree.component.css'],
-  standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, NgSimpleFileTreeModule],
+  imports: [ReactiveFormsModule, FormsModule, NgSimpleFileTree],
 })
 export class CompareTreeComponent {
   @Output() compareEvent: EventEmitter<void> = new EventEmitter<void>();
@@ -41,7 +39,7 @@ export class CompareTreeComponent {
     doubleClickToOpenFolders: false,
     folderBehaviourOnClick: 'select',
     expandAllFolders: true,
-    determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
+    determineIconClass: SimpleFileTreeUtility.conditionalCssClass,
     hierarchyLines: {
       vertical: true,
     },
@@ -62,10 +60,10 @@ export class CompareTreeComponent {
   }
 
   setRedLabels(item: CreateTreeItem): string {
-    if (ReportUtil.isReport(item)) {
+    if (ReportUtility.isReport(item)) {
       return this.namesMatch(item.name, this.leftReport?.name);
     }
-    if (ReportUtil.isCheckPoint(item)) {
+    if (ReportUtility.isCheckPoint(item)) {
       const checkpoint: Checkpoint | null = this.findCorrespondingCheckpoint(item, this.leftReport);
       return this.namesMatch(item.name, checkpoint?.name);
     }
@@ -73,10 +71,10 @@ export class CompareTreeComponent {
   }
 
   selectFirstItem(): void {
-    if (ReportUtil.isReport(this.leftReport!)) {
+    if (ReportUtility.isReport(this.leftReport!)) {
       this.leftTree.selectItem(this.leftReport.path);
     }
-    if (ReportUtil.isReport(this.rightReport)) {
+    if (ReportUtility.isReport(this.rightReport)) {
       this.rightTree.selectItem(this.rightReport.path);
     }
     this.compareEvent.emit();
@@ -91,6 +89,7 @@ export class CompareTreeComponent {
   }
 
   selectItem(otherSide: NgSimpleFileTree, treeItem: FileTreeItem): void {
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (this.nodeLinkStrategy) {
       case 'PATH': {
         otherSide.selectItem(treeItem.path);
@@ -104,9 +103,9 @@ export class CompareTreeComponent {
   }
 
   selectByCheckPointNumber(tree: NgSimpleFileTree, treeItem: Report | Checkpoint): void {
-    if (ReportUtil.isReport(treeItem)) {
+    if (ReportUtility.isReport(treeItem)) {
       tree.selectItem(tree.items[0].path);
-    } else if (ReportUtil.isCheckPoint(treeItem)) {
+    } else if (ReportUtility.isCheckPoint(treeItem)) {
       this.selectCheckpoint(tree, tree.items[0], treeItem);
     }
   }
@@ -116,7 +115,8 @@ export class CompareTreeComponent {
       for (const child of item.children) {
         const checkpoint = child.originalValue as Checkpoint;
         if (
-          ReportUtil.getCheckpointIdFromUid(checkpoint.uid) === ReportUtil.getCheckpointIdFromUid(checkpointToMatch.uid)
+          ReportUtility.getCheckpointIdFromUid(checkpoint.uid) ===
+          ReportUtility.getCheckpointIdFromUid(checkpointToMatch.uid)
         ) {
           tree.selectItem(child.path);
           return;
@@ -142,8 +142,8 @@ export class CompareTreeComponent {
       const checkpoints: Checkpoint[] = report.checkpoints ?? [];
       for (let checkpoint of checkpoints) {
         if (
-          ReportUtil.isCheckPoint(itemToMatch) &&
-          ReportUtil.getCheckpointIdFromUid(checkpoint.uid) === ReportUtil.getCheckpointIdFromUid(itemToMatch.uid)
+          ReportUtility.isCheckPoint(itemToMatch) &&
+          ReportUtility.getCheckpointIdFromUid(checkpoint.uid) === ReportUtility.getCheckpointIdFromUid(itemToMatch.uid)
         ) {
           return checkpoint;
         }

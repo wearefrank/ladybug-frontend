@@ -8,7 +8,7 @@ import { Toast, ToastCallback } from '../interfaces/toast';
 export class ToastService {
   readonly TOASTER_LINE_LENGTH: number = 37;
   private toastSubject: Subject<Toast> = new ReplaySubject(1);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   toastObservable: Observable<Toast> = this.toastSubject.asObservable();
 
   public showDanger(body: string, detailedInfo?: string, toastCallback?: ToastCallback): void {
@@ -31,6 +31,14 @@ export class ToastService {
   public showSuccess(body: string, toastCallback?: ToastCallback): void {
     this.toastSubject.next({
       type: 'success',
+      message: body,
+      toastCallback: toastCallback,
+    } as Toast);
+  }
+
+  public showSuccessLong(body: string, toastCallback?: ToastCallback): void {
+    this.toastSubject.next({
+      type: 'long-success',
       message: body,
       toastCallback: toastCallback,
     } as Toast);

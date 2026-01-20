@@ -1,11 +1,9 @@
-/* eslint-disable no-unused-vars */
 import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Location, NgOptimizedImage } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { CompareComponent } from './compare/compare.component';
 import { TestComponent } from './test/test.component';
 import { CompareData } from './compare/compare-data';
-import { SettingsService } from './shared/services/settings.service';
 import { TabService } from './shared/services/tab.service';
 import { AppVariablesService } from './shared/services/app.variables.service';
 import { catchError, Subscription } from 'rxjs';
@@ -14,12 +12,12 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { Tab } from './shared/interfaces/tab';
 import { ReportData } from './shared/interfaces/report-data';
 import { ToastComponent } from './shared/components/toast/toast.component';
-import { ReportComponent } from './report/report.component';
 import { CloseTab } from './shared/interfaces/close-tab';
 import { HttpService } from './shared/services/http.service';
 import { StubStrategy } from './shared/enums/stub-strategy';
 import { ErrorHandling } from './shared/classes/error-handling.service';
 import { VersionService } from './shared/services/version.service';
+import { ReportComponent } from './report/report.component';
 
 @Component({
   selector: 'app-root',

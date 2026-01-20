@@ -1,19 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-unused-vars */
+
 import { Component, EventEmitter, inject, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { catchError, firstValueFrom, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
 import { SettingsService } from '../../shared/services/settings.service';
-import {
-  CreateTreeItem,
-  FileTreeItem,
-  FileTreeOptions,
-  NgSimpleFileTree,
-  NgSimpleFileTreeModule,
-} from 'ng-simple-file-tree';
+import { CreateTreeItem, FileTreeItem, FileTreeOptions, NgSimpleFileTree } from 'ng-simple-file-tree';
 import { ReportHierarchyTransformer } from '../../shared/classes/report-hierarchy-transformer';
-import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
+import { SimpleFileTreeUtil as SimpleFileTreeUtility } from '../../shared/util/simple-file-tree-util';
 import { View } from '../../shared/interfaces/view';
 import { DebugTabService } from '../debug-tab.service';
 import { ErrorHandling } from '../../shared/classes/error-handling.service';
@@ -24,7 +18,7 @@ import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
   templateUrl: './debug-tree.component.html',
   styleUrls: ['./debug-tree.component.css'],
   standalone: true,
-  imports: [NgSimpleFileTreeModule],
+  imports: [NgSimpleFileTree],
 })
 export class DebugTreeComponent implements OnDestroy {
   @ViewChild('tree') tree!: NgSimpleFileTree;
@@ -42,7 +36,7 @@ export class DebugTreeComponent implements OnDestroy {
     folderBehaviourOnClick: 'select',
     doubleClickToOpenFolders: false,
     autoOpenCondition: this.conditionalOpenFunction,
-    determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
+    determineIconClass: SimpleFileTreeUtility.conditionalCssClass,
   };
 
   private _currentView!: View;
@@ -59,7 +53,7 @@ export class DebugTreeComponent implements OnDestroy {
 
   @Input({ required: true }) set currentView(value: View) {
     if (this._currentView !== value) {
-      // TODO: Check if the current reports are part of the view
+      // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1125.
       this.hideOrShowCheckpointsBasedOnView(value);
     }
     this._currentView = value;
@@ -103,7 +97,7 @@ export class DebugTreeComponent implements OnDestroy {
           .pipe(catchError(this.errorHandler.handleError()))
           .subscribe({
             next: (unmatched: string[]) =>
-              SimpleFileTreeUtil.hideOrShowCheckpoints(unmatched, this.tree.elements.toArray()),
+              SimpleFileTreeUtility.hideOrShowCheckpoints(unmatched, this.tree.elements.toArray()),
           });
       }
     }

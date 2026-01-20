@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import { Component, inject, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, inject, NgZone, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal, NgbToast } from '@ng-bootstrap/ng-bootstrap';
 import { Toast } from '../../interfaces/toast';
 import { ToastService } from '../../services/toast.service';
@@ -27,10 +26,11 @@ export class ToastComponent implements OnInit, OnDestroy {
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
   private filterService = inject(FilterService);
+  private ngZone = inject(NgZone);
 
   ngOnInit(): void {
     const toastSubscription = this.toastService.toastObservable.subscribe((toast: Toast): void => {
-      this.toasts.push(toast);
+      this.ngZone.run(() => this.toasts.push(toast));
     });
     this.subscriptions.add(toastSubscription);
     const filterSubscription = this.filterService.filterSidePanel$.subscribe((value) => {
@@ -64,5 +64,12 @@ export class ToastComponent implements OnInit, OnDestroy {
       toast.toastCallback.callback();
       setTimeout(() => this.close(toast), 500);
     }
+  }
+
+  protected getToastClass(toastType: string): string {
+    if (toastType.startsWith('long-')) {
+      return `bg-${toastType.slice('long-'.length)}`;
+    }
+    return `bg-${toastType}`;
   }
 }

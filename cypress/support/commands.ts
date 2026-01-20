@@ -50,6 +50,8 @@ declare global {
 
       createJsonReport(): Chainable;
 
+      createReportWithMessageContext(): Chainable;
+
       clearDebugStore(): Chainable;
 
       clearReportsInProgress(): Chainable;
@@ -70,6 +72,8 @@ declare global {
 
       clickRootNodeInFileTree(): Chainable;
 
+      clickEndCheckpointOfThreeNodeReport(): Chainable;
+
       clickRowInTable(index: number): Chainable;
 
       checkFileTreeLength(length: number): Chainable;
@@ -87,6 +91,8 @@ declare global {
       selectRowInTestTable(index: number): Chainable;
 
       copyReportsToTestTab(names: string[]): Chainable;
+
+      editCheckpointValue(value: string): Chainable;
     }
   }
 }
@@ -240,6 +246,15 @@ Cypress.Commands.add(
   },
 );
 
+Cypress.Commands.add('createReportWithMessageContext' as keyof Chainable, (): void => {
+  // No cy.visit because then the API call can happen multiple times.
+  cy.request(
+    `${Cypress.env('backendServer')}/index.jsp?createReport=Report%20with%20message%20context`,
+  ).then((resp: Cypress.Response<ApiResponse>) => {
+    expect(resp.status).equal(200);
+  });
+});
+
 Cypress.Commands.add('clearDebugStore' as keyof Chainable, (): void => {
   cy.request(
     `${Cypress.env('backendServer')}/index.jsp?clearDebugStorage=true`,
@@ -323,7 +338,20 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('clickRootNodeInFileTree' as keyof Chainable, (): void => {
+  cy.wait(200);
   cy.get('[data-cy-debug-tree="root"] > app-tree-item')
+    .eq(0)
+    .find('.sft-item')
+    .eq(0)
+    .click();
+});
+
+Cypress.Commands.add('clickEndCheckpointOfThreeNodeReport' as keyof Chainable, (): void => {
+  cy.get('[data-cy-debug-tree="root"] > app-tree-item')
+    .eq(0)
+    .find('app-tree-item')
+    .eq(0)
+    .find('app-tree-item')
     .eq(0)
     .find('.sft-item')
     .eq(0)
@@ -389,6 +417,12 @@ Cypress.Commands.add('copyReportsToTestTab' as keyof Chainable, (names: string[]
     cy.get('[data-cy-debug-editor="copy"]').click();
   }
 })
+
+Cypress.Commands.add('editCheckpointValue' as keyof Chainable, (value: string): Chainable => {
+  // Some slack, give app time to recognize item as type-able.
+  cy.wait(500);
+  cy.get('[data-cy-element-name="checkpointEditor"]').type(value);
+});
 
 function awaitLoadingSpinner(): void {
   cy.get('[data-cy-loading-spinner]', { timeout: 10000 }).should('not.exist');

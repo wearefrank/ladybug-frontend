@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import {
   AfterContentChecked,
   ChangeDetectionStrategy,
@@ -133,7 +132,7 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
     }
   }
 
-  replaceReport(report: TestListItem): void {
+  replaceReport(_report: TestListItem): void {
     this.toastService.showWarning('Sorry this is not implemented as of now');
   }
 
@@ -184,13 +183,13 @@ export class TestTableComponent implements OnChanges, AfterContentChecked {
 
   convertToKeyValueFormat(input: string): string {
     if (!input) return '';
-    let obj: Record<string, string>;
+    let object: Record<string, string>;
     try {
-      obj = JSON.parse(input);
+      object = JSON.parse(input);
     } catch {
       return input;
     }
-    return Object.entries(obj)
+    return Object.entries(object)
       .map(([key, value]) => `${key}=${value}`)
       .join('\n');
   }

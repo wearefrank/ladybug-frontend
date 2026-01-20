@@ -34,13 +34,14 @@
             <app-messagecontext-table class="w-50" [report]="rightNode"/>
           </div>
         </div>
+        <div class="diff-editor">
+          <app-monaco-diff-editor
+            [options]="diffOptions"
+            [originalModelRequest$]="originalModelRequestSubject"
+            [modifiedModelRequest$]="modifiedModelRequestSubject"
+          />
+        </div>
       }
-      <ngx-monaco-diff-editor
-        class="diff-editor"
-        [options]="diffOptions"
-        [originalModel]="originalModel"
-        [modifiedModel]="modifiedModel"
-      />
     </div>
   }
 </div>

@@ -1,8 +1,6 @@
-/* eslint-disable no-unused-vars */
 import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CompareTreeComponent } from './compare-tree/compare-tree.component';
 import { CompareData } from './compare-data';
-import { DiffEditorModel, MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { TabService } from '../shared/services/tab.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MetadataTableComponent } from '../shared/components/metadata-table/metadata-table.component';
@@ -12,17 +10,18 @@ import { TitleCasePipe } from '@angular/common';
 import { NodeLinkStrategy, nodeLinkStrategyConst } from '../shared/enums/node-link-strategy';
 import { Report } from '../shared/interfaces/report';
 import { Checkpoint } from '../shared/interfaces/checkpoint';
-import { ReportUtil } from '../shared/util/report-util';
+import { ReportUtil as ReportUtility } from '../shared/util/report-util';
 import { StrReplacePipe as StringReplacePipe } from '../shared/pipes/str-replace.pipe';
 import { ViewDropdownComponent } from '../shared/components/view-dropdown/view-dropdown.component';
 import { View } from '../shared/interfaces/view';
 import { HttpService } from '../shared/services/http.service';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
-import { catchError } from 'rxjs';
-import { SimpleFileTreeUtil } from '../shared/util/simple-file-tree-util';
+import { catchError, Subject } from 'rxjs';
+import { SimpleFileTreeUtil as SimpleFileTreeUtility } from '../shared/util/simple-file-tree-util';
 import { DebugComponent } from '../debug/debug.component';
 import { TreeItemComponent } from 'ng-simple-file-tree';
 import { ReportAlertMessageComponent } from '../report/report-alert-message/report-alert-message.component';
+import { DiffEditorModel, MonacoDiffEditor } from '../monaco-diff-editor/monaco-diff-editor.component';
 
 @Component({
   selector: 'app-compare',
@@ -33,13 +32,13 @@ import { ReportAlertMessageComponent } from '../report/report-alert-message/repo
     CompareTreeComponent,
     MetadataTableComponent,
     MessagecontextTableComponent,
-    MonacoEditorModule,
     ReactiveFormsModule,
     TitleCasePipe,
     FormsModule,
     StringReplacePipe,
     ViewDropdownComponent,
     ReportAlertMessageComponent,
+    MonacoDiffEditor,
   ],
 })
 export class CompareComponent implements AfterViewInit, OnInit {
@@ -48,7 +47,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
 
   public tabService = inject(TabService);
 
-  protected readonly ReportUtil = ReportUtil;
+  protected readonly ReportUtil = ReportUtility;
   protected readonly nodeLinkStrategyConst = nodeLinkStrategyConst;
   protected nodeLinkStrategy!: NodeLinkStrategy;
   protected diffOptions = {
@@ -61,8 +60,6 @@ export class CompareComponent implements AfterViewInit, OnInit {
     scrollBeyondLastLine: false,
     renderOverviewRuler: false,
   };
-  protected originalModel: DiffEditorModel = { code: '', language: 'xml' };
-  protected modifiedModel: DiffEditorModel = { code: '', language: 'xml' };
   protected leftReport?: Report;
   protected rightReport?: Report;
   protected leftNode?: Report | Checkpoint;
@@ -70,6 +67,8 @@ export class CompareComponent implements AfterViewInit, OnInit {
   protected compareData?: CompareData;
   protected views?: View[];
   protected currentView?: View;
+  protected originalModelRequestSubject = new Subject<DiffEditorModel>();
+  protected modifiedModelRequestSubject = new Subject<DiffEditorModel>();
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -94,10 +93,10 @@ export class CompareComponent implements AfterViewInit, OnInit {
   protected syncLeftAndRight(): void {
     this.leftNode = this.compareTreeComponent.leftTree.getSelected().originalValue;
     this.rightNode = this.compareTreeComponent.rightTree.getSelected().originalValue;
-    if (ReportUtil.isReport(this.leftNode)) {
+    if (ReportUtility.isReport(this.leftNode)) {
       this.leftReport = { ...this.leftNode };
     }
-    if (ReportUtil.isReport(this.rightNode)) {
+    if (ReportUtility.isReport(this.rightNode)) {
       this.rightReport = { ...this.rightNode };
     }
     this.showDifference();
@@ -143,6 +142,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
         if (this.compareData) {
           const filteredViews = this.filterViews(views, this.compareData);
           if (filteredViews.length > 0) {
+            // eslint-disable-next-line unicorn/no-array-sort
             this.views = filteredViews.sort((a, b) => a.name.localeCompare(b.name));
             if (this.compareData.viewName) {
               const view = this.views.find((v) => v.name === this.compareData!.viewName);
@@ -214,8 +214,9 @@ export class CompareComponent implements AfterViewInit, OnInit {
   }
 
   private renderDiffs(leftSide: string, rightSide: string): void {
-    this.originalModel = { ...this.originalModel, code: leftSide };
-    this.modifiedModel = { ...this.originalModel, code: rightSide };
+    // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1124
+    this.originalModelRequestSubject.next({ language: 'xml', code: leftSide });
+    this.modifiedModelRequestSubject.next({ language: 'xml', code: rightSide });
   }
 
   private getStrategyFromLocalStorage(): void {
@@ -230,7 +231,13 @@ export class CompareComponent implements AfterViewInit, OnInit {
   }
 
   private extractMessage(selectedNode: Report | Checkpoint): string {
-    return ReportUtil.isReport(selectedNode) ? selectedNode.xml : selectedNode.message;
+    // TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1124.
+    // May not propery handle null checkpoints.
+    return ReportUtility.isReport(selectedNode)
+      ? selectedNode.xml
+      : selectedNode.message === null
+        ? ''
+        : selectedNode.message;
   }
 
   private hideOrShowCheckpoints(
@@ -243,7 +250,7 @@ export class CompareComponent implements AfterViewInit, OnInit {
       .getUnmatchedCheckpoints(storageName, storageId, view.name)
       .pipe(catchError(this.errorHandler.handleError()))
       .subscribe({
-        next: (response: string[]) => SimpleFileTreeUtil.hideOrShowCheckpoints(response, treeElements),
+        next: (response: string[]) => SimpleFileTreeUtility.hideOrShowCheckpoints(response, treeElements),
       });
   }
 }

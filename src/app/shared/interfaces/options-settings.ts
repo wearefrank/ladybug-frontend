@@ -1,4 +1,4 @@
-import { UploadParams as UploadParameters } from './upload-params';
+import { UploadParameters } from './upload-params';
 
 export interface OptionsSettings extends UploadParameters {
   estMemory: string;

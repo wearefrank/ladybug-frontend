@@ -2,10 +2,8 @@ import { enableProdMode, importProvidersFrom } from '@angular/core';
 
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
-import { NgSimpleFileTreeModule } from 'ng-simple-file-tree';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { AngularSplitModule } from 'angular-split';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -16,6 +14,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { AppRouteReuseStrategy, AppRoutingModule } from './app/app-routing.module';
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
+import { MatDialogModule } from '@angular/material/dialog';
 
 if (environment.production) {
   enableProdMode();
@@ -37,10 +36,9 @@ function main(): void {
         FormsModule,
         MatProgressSpinnerModule,
         AngularSplitModule,
-        MonacoEditorModule.forRoot(),
         MatAutocompleteModule,
         ClipboardModule,
-        NgSimpleFileTreeModule,
+        MatDialogModule,
       ),
       provideAnimations(),
       provideHttpClient(withInterceptorsFromDi()),

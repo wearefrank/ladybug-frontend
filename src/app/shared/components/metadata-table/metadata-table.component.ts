@@ -4,8 +4,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CopyTooltipDirective } from '../../directives/copy-tooltip.directive';
 import { Report } from '../../interfaces/report';
 import { Checkpoint } from '../../interfaces/checkpoint';
-import { ReportUtil } from '../../util/report-util';
+import { ReportUtil as ReportUtility } from '../../util/report-util';
 
+// TODO: Issue https://github.com/wearefrank/ladybug-frontend/issues/1124.
+// In CompareComponent use ReportMetadataTable and CheckpointMetadataTable
+// and then remove MetadataTableComponent.
 @Component({
   selector: 'app-metadata-table',
   templateUrl: './metadata-table.component.html',
@@ -16,5 +19,5 @@ import { ReportUtil } from '../../util/report-util';
 export class MetadataTableComponent {
   @Input({ required: true }) report!: Report | Checkpoint;
 
-  protected readonly ReportUtil = ReportUtil;
+  protected readonly ReportUtil = ReportUtility;
 }

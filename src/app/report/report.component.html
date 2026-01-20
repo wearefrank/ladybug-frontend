@@ -8,10 +8,27 @@
     />
   </as-split-area>
   <as-split-area class="right-side" [size]="75">
-    <app-edit-display
-      [newTab]="newTab"
-      [containerHeight]="calculatedHeight"
-      [currentView]="currentView"
-    />
+    @if (reportValueState === 'report') {
+      <app-report-value
+        [height]="monacoEditorHeight"
+        [report$]="reportSubject"
+        [saveDone$]="saveDoneSubject"
+        [rerunResult$]="rerunResultSubject"
+        (nodeValueState)="onNodeValueState($event)"
+        (button)="onButton($event)"
+        (save)="save($event)"
+        (downloadRequest)="onDownload($event)"></app-report-value>
+    }
+    @if (reportValueState === 'checkpoint') {
+      <app-checkpoint-value
+        [height]="monacoEditorHeight"
+        [originalCheckpoint$]="checkpointValueSubject"
+        [saveDone$]="saveDoneSubject"
+        [rerunResult$]="rerunResultSubject"
+        (nodeValueState)="onNodeValueState($event)"
+        (button)="onButton($event)"
+        (save)="save($event)"
+        (downloadRequest)="onDownload($event)"></app-checkpoint-value>
+    }
   </as-split-area>
 </as-split>

@@ -1,8 +1,9 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { ReportUtil } from '../../shared/util/report-util';
+import { ReportUtil as ReportUtility } from '../../shared/util/report-util';
 import { Report } from '../../shared/interfaces/report';
 import { Checkpoint } from '../../shared/interfaces/checkpoint';
 
+// TODO: Duplicate of ReportAlertMessage2Component. Issue https://github.com/wearefrank/ladybug-frontend/issues/1131.
 @Component({
   selector: 'app-report-alert-message',
   standalone: true,
@@ -11,7 +12,7 @@ import { Checkpoint } from '../../shared/interfaces/checkpoint';
 })
 export class ReportAlertMessageComponent implements OnChanges {
   @Input({ required: true }) report!: Report | Checkpoint;
-  protected readonly ReportUtil = ReportUtil;
+  protected readonly ReportUtil = ReportUtility;
   protected anyAlertMessagesPresent = false;
 
   ngOnChanges(): void {
@@ -19,11 +20,12 @@ export class ReportAlertMessageComponent implements OnChanges {
   }
 
   private checkIfAnyAlertMessagesPresent(): void {
-    if (ReportUtil.isCheckPoint(this.report)) {
+    if (ReportUtility.isCheckPoint(this.report)) {
       this.anyAlertMessagesPresent = !!(
         this.report.streaming ||
         this.report.stubbed ||
         !this.report.message ||
+        this.report.message === null ||
         this.report.encoding ||
         (this.report.preTruncatedMessageLength && this.report.preTruncatedMessageLength > 0) ||
         this.report.stubNotFound

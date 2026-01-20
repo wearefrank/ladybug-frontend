@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
@@ -8,11 +7,10 @@ import { Report } from '../interfaces/report';
 import { CompareReport } from '../interfaces/compare-reports';
 import { TestListItem } from '../interfaces/test-list-item';
 import { CloneReport } from '../interfaces/clone-report';
-import { UploadParams as UploadParameters } from '../interfaces/upload-params';
+import { UploadParameters } from '../interfaces/upload-params';
 import { UpdatePathSettings } from '../interfaces/update-path-settings';
 import { TestResult } from '../interfaces/test-result';
 import { UpdateReport } from '../interfaces/update-report';
-import { UpdateCheckpoint } from '../interfaces/update-checkpoint';
 import { UpdateReportResponse } from '../interfaces/update-report-response';
 import { Transformation } from '../interfaces/transformation';
 import { TableSettings } from '../interfaces/table-settings';
@@ -29,7 +27,7 @@ export class HttpService {
   }
 
   getMetadataReports(settings: TableSettings, view: View): Observable<Report[]> {
-    return this.http.get<Report[]>(`api/metadata/${view.storageName}/`, {
+    return this.http.get<Report[]>(`api/metadata/${view.storageName}`, {
       params: {
         limit: settings.displayAmount,
         filterHeader: [...settings.currentFilters.keys()],
@@ -68,7 +66,7 @@ export class HttpService {
   }
 
   getTestReports(metadataNames: string[], storage: string): Observable<TestListItem[]> {
-    return this.http.get<TestListItem[]>(`api/metadata/${storage}/`, {
+    return this.http.get<TestListItem[]>(`api/metadata/${storage}`, {
       params: { metadataNames: metadataNames },
     });
   }
@@ -78,7 +76,7 @@ export class HttpService {
     return this.http
       .get<
         Record<string, Report | string>
-      >(`api/report/${storage}/${reportId}/?xml=true&globalTransformer=${transformationEnabled}`)
+      >(`api/report/${storage}/${reportId}?xml=true&globalTransformer=${transformationEnabled}`)
       .pipe(
         map((e) => {
           const report = e['report'] as Report;
@@ -94,7 +92,7 @@ export class HttpService {
     return this.http
       .get<
         Record<string, CompareReport>
-      >(`api/report/${storage}/?xml=true&globalTransformer=${transformationEnabled}`, { params: { storageIds: reportIds } })
+      >(`api/report/${storage}?xml=true&globalTransformer=${transformationEnabled}`, { params: { storageIds: reportIds } })
       .pipe(
         map((data) => {
           for (const report of reportIds) {
@@ -106,11 +104,7 @@ export class HttpService {
       );
   }
 
-  updateReport(
-    reportId: string,
-    body: UpdateReport | UpdateCheckpoint,
-    storage: string,
-  ): Observable<UpdateReportResponse> {
+  updateReport(reportId: string, body: UpdateReport, storage: string): Observable<UpdateReportResponse> {
     return this.http.post<UpdateReportResponse>(`api/report/${storage}/${reportId}`, body);
   }
 

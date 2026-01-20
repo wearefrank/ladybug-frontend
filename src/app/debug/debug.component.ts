@@ -1,13 +1,12 @@
-/* eslint-disable no-unused-vars */
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { Report } from '../shared/interfaces/report';
 import { TableComponent } from './table/table.component';
-import { ReportComponent } from '../report/report.component';
 import { ToastService } from '../shared/services/toast.service';
 import { HttpService } from '../shared/services/http.service';
 import { View } from '../shared/interfaces/view';
 import { catchError } from 'rxjs';
 import { ErrorHandling } from '../shared/classes/error-handling.service';
+import { ReportComponent } from '../report/report.component';
 
 @Component({
   selector: 'app-debug',

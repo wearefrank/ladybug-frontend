@@ -25,9 +25,8 @@ describe('Tests for report transformation', () => {
     cy.assertDebugTableLength(1).click();
     cy.checkFileTreeLength(1);
     cy.clickRootNodeInFileTree();
-    cy.get('[data-cy-open-metadata-table]').click();
-    cy.get('[data-cy-element-name="editor"]').contains('Name="IGNORED"');
-    // The transformation should not affect the report table, only the XML in the Monaco editor
-    cy.get('[data-cy-metadata-table="reportname"]').should('have.text', 'Another simple report');
+    cy.get('[data-cy-element-name="reportXmlEditor"]').contains('Name="IGNORED"');
+    // Only the XML in the Monaco editor should be affected, not the other fields
+    cy.get('[data-cy-element-name="name"]').should('have.value', 'Another simple report');
   });
 });

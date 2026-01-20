@@ -1,11 +1,10 @@
-/* eslint-disable no-unused-vars */
 import { inject, Injectable, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy, RouterModule, Routes } from '@angular/router';
 import { DebugComponent } from './debug/debug.component';
 import { TestComponent } from './test/test.component';
 import { CompareComponent } from './compare/compare.component';
-import { ReportComponent } from './report/report.component';
 import { TabService } from './shared/services/tab.service';
+import { ReportComponent } from './report/report.component';
 
 export const routes: Routes = [
   {
@@ -54,7 +53,7 @@ export class AppRouteReuseStrategy implements RouteReuseStrategy {
     });
   }
 
-  shouldDetach(route: ActivatedRouteSnapshot): boolean {
+  shouldDetach(_route: ActivatedRouteSnapshot): boolean {
     return true;
   }
 

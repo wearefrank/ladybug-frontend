@@ -1,8 +1,7 @@
-/* eslint-disable no-unused-vars */
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +14,7 @@ export class AppVariablesService {
   fetchCustomReportActionButtonText(): void {
     if (Object.keys(this.variables).length === 0) {
       this.http
-        .get<Record<string, string>>('api/report/variables/')
+        .get<Record<string, string>>('api/report/variables')
         .pipe(
           tap((data: Record<string, string>) => {
             this.variables = data;

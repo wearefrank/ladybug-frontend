@@ -9,15 +9,18 @@ describe('Debug file upload', () => {
 
   afterEach(() => cy.resetApp());
 
-  it('Upload a file to debug', () => {
-    cy.fixture('testRerun.ttr', 'binary')
-      .then(Cypress.Blob.binaryStringToBlob)
-      .then((fileContent) => {
-        cy.get('[data-cy-debug="upload"]').find('input').attachFile({
-          fileContent,
-          fileName: 'testRerun.ttr',
+  const reportsToTest: string[] = ['testRerun.ttr', 'testRerunForNlNnReport.ttr']
+  for (const report of reportsToTest) {
+    it(`Upload report ${report}`, () => {
+      cy.fixture(report, 'binary')
+        .then(Cypress.Blob.binaryStringToBlob)
+        .then((fileContent) => {
+          cy.get('[data-cy-debug="upload"]').find('input').attachFile({
+            fileContent,
+            fileName: 'testRerun.ttr',
+          });
         });
-      });
-    cy.checkFileTreeLength(1);
-  });
+      cy.checkFileTreeLength(1);
+    });
+  }
 });

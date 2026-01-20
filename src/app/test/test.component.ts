@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../shared/services/http.service';
 import { CloneModalComponent } from './clone-modal/clone-modal.component';
 import { TestSettingsModalComponent } from './test-settings-modal/test-settings-modal.component';
@@ -25,6 +24,7 @@ import { LoadingSpinnerComponent } from '../shared/components/loading-spinner/lo
 import { TabService } from '../shared/services/tab.service';
 import { CompareData } from '../compare/compare-data';
 import { CompareReport } from '../shared/interfaces/compare-reports';
+import { TestRefreshService } from './test-refresh.service';
 
 export const updatePathActionConst = ['move', 'copy'] as const;
 export type UpdatePathAction = (typeof updatePathActionConst)[number];
@@ -70,15 +70,18 @@ export class TestComponent implements OnInit, OnDestroy {
 
   protected testReportsService = inject(TestReportsService);
   protected appVariablesService = inject(AppVariablesService);
+  protected currentUploadFile = '';
 
   private updatePathAction: UpdatePathAction = 'move';
   private testReportServiceSubscription?: Subscription;
-
+  private testRefreshServiceSubscription?: Subscription;
   private httpService = inject(HttpService);
   private helperService = inject(HelperService);
   private toastService = inject(ToastService);
   private errorHandler = inject(ErrorHandling);
   private tabService = inject(TabService);
+  private testRefreshService = inject(TestRefreshService);
+  private ngZone = inject(NgZone);
 
   constructor() {
     this.getStorageIdsFromLocalStorage();
@@ -88,10 +91,14 @@ export class TestComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadData();
     localStorage.removeItem('generatorEnabled');
+    this.testRefreshServiceSubscription = this.testRefreshService.refreshAll$.subscribe(() => {
+      this.ngZone.run(() => this.loadData());
+    });
   }
 
   ngOnDestroy(): void {
     this.testReportServiceSubscription?.unsubscribe();
+    this.testRefreshServiceSubscription?.unsubscribe();
   }
 
   getStorageIdsFromLocalStorage(): void {
@@ -245,6 +252,8 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   uploadReport(event: Event): void {
+    // Allow same file to be uploaded multiple times
+    this.currentUploadFile = '';
     const eventTarget: HTMLInputElement = event.target as HTMLInputElement;
     const file: File | undefined = eventTarget.files?.[0];
     if (file) {
@@ -296,11 +305,8 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   changeFilter(filter: string): void {
-    if (!filter || filter === this.testFileTreeComponent?.rootFolder.path) {
-      this.currentFilter = '';
-    } else {
-      this.currentFilter = this.transformPath(filter);
-    }
+    this.currentFilter =
+      !filter || filter === this.testFileTreeComponent?.rootFolder.path ? '' : this.transformPath(filter);
     this.matches();
   }
 

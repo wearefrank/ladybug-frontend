@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/member-ordering */
+
 import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { HelperService } from '../../shared/services/helper.service';
 import { HttpService } from '../../shared/services/http.service';
@@ -114,6 +113,8 @@ export class TableComponent implements OnInit, OnDestroy {
   protected openInProgress: FormControl = new FormControl(1, this.defaultReportInProgressValidators);
 
   protected appVariablesService = inject(AppVariablesService);
+
+  protected currentUploadFile = '';
 
   private reportsInProgress: Record<string, number> = {};
 
@@ -581,6 +582,8 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   uploadReports(event: Event): void {
+    // Allow the same file to be uploaded again.
+    this.currentUploadFile = '';
     const eventTarget = event.target as HTMLInputElement;
     const file: File | undefined = eventTarget.files?.[0];
     if (file) {
@@ -635,7 +638,7 @@ export class TableComponent implements OnInit, OnDestroy {
 
   sortUniqueValues(values: Set<string>): string[] {
     //Sort list alphabetically, if string is actually a number, sort smallest to biggest
-    return [...values].sort((a, b) => {
+    return [...values].toSorted((a, b) => {
       // eslint-disable-next-line unicorn/prefer-number-properties
       const isANumber = !isNaN(Number(a));
       // eslint-disable-next-line unicorn/prefer-number-properties

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Component, EventEmitter, inject, Output, ViewChild } from '@angular/core';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { TestListItem } from '../../interfaces/test-list-item';

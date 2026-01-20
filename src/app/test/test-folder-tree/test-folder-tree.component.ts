@@ -1,12 +1,12 @@
 import { Component, Output, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { SimpleFileTreeUtil } from '../../shared/util/simple-file-tree-util';
-import { CreateTreeItem, FileTreeOptions, NgSimpleFileTree, NgSimpleFileTreeModule } from 'ng-simple-file-tree';
+import { SimpleFileTreeUtil as SimpleFileTreeUtility } from '../../shared/util/simple-file-tree-util';
+import { CreateTreeItem, FileTreeOptions, NgSimpleFileTree } from 'ng-simple-file-tree';
 import { TestListItem } from '../../shared/interfaces/test-list-item';
 
 @Component({
   standalone: true,
-  imports: [NgSimpleFileTreeModule],
+  imports: [NgSimpleFileTree],
   selector: 'app-test-folder-tree',
   templateUrl: './test-folder-tree.component.html',
   styleUrl: './test-folder-tree.component.css',
@@ -27,7 +27,7 @@ export class TestFolderTreeComponent {
     expandAllFolders: true,
     highlightOpenFolders: false,
     autoSelectCondition: (item: CreateTreeItem) => item.treePath === this.rootFolder.name,
-    determineIconClass: SimpleFileTreeUtil.conditionalCssClass,
+    determineIconClass: SimpleFileTreeUtility.conditionalCssClass,
   };
 
   setData(data: TestListItem[]): void {

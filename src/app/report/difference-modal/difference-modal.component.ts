@@ -1,38 +1,30 @@
-/* eslint-disable no-unused-vars */
 import { Component, inject, Output, TemplateRef, ViewChild } from '@angular/core';
 import { ReportDifference } from '../../shared/interfaces/report-difference';
-import { TitleCasePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { ToastService } from '../../shared/services/toast.service';
 
+// TODO: Obsolete. Issue https://github.com/wearefrank/ladybug-frontend/issues/1130.
 export const changesActionConst = ['save', 'discard', 'saveRerun'] as const;
 export type ChangesAction = (typeof changesActionConst)[number];
 
 @Component({
   selector: 'app-difference-modal',
   standalone: true,
-  imports: [TitleCasePipe],
   templateUrl: './difference-modal.component.html',
   styleUrl: './difference-modal.component.css',
 })
 export class DifferenceModalComponent {
-  @Output() saveChangesEvent: Subject<boolean> = new Subject<boolean>();
-  @Output() discardChangesEvent: Subject<void> = new Subject<void>();
-  @Output() rerunEvent: Subject<void> = new Subject<void>();
+  @Output() saveChangesEvent: Subject<void> = new Subject<void>();
   @ViewChild('modal') protected modal!: TemplateRef<DifferenceModalComponent>;
-  protected saveOrDiscardType!: ChangesAction;
   protected reportDifferences?: ReportDifference[];
-  protected stubChange = false;
   protected activeModal?: NgbModalRef;
+  protected isConfirmClicked = false;
 
   private modalService = inject(NgbModal);
-  private toastService = inject(ToastService);
 
-  open(differences: ReportDifference[], saveOrDiscardType: ChangesAction, stubChange?: boolean): void {
-    this.stubChange = !!stubChange;
+  open(differences: ReportDifference[]): void {
+    this.isConfirmClicked = false;
     this.reportDifferences = differences;
-    this.saveOrDiscardType = saveOrDiscardType;
     this.activeModal = this.modalService.open(this.modal, {
       backdrop: 'static',
       keyboard: false,
@@ -59,19 +51,9 @@ export class DifferenceModalComponent {
     }
   }
 
-  onClickSave(): void {
-    if (this.saveOrDiscardType === 'save') {
-      this.saveChangesEvent.next(this.stubChange);
-    } else if (this.saveOrDiscardType === 'discard') {
-      this.discardChangesEvent.next();
-    } else {
-      this.toastService.showWarning('Something went wrong.');
-    }
-    this.closeModal();
-  }
-
-  onClickRerun(): void {
-    this.rerunEvent.next();
-    this.closeModal();
+  onClickConfirm(): void {
+    this.saveChangesEvent.next();
+    this.isConfirmClicked = true;
+    // Do not close so parent component can close when saving data is done.
   }
 }

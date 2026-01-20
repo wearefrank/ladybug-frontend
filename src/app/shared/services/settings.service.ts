@@ -9,38 +9,23 @@ export class SettingsService {
   public readonly defaultShowMultipleFilesAtATime: boolean = true;
   private showMultipleAtATimeKey = 'showMultipleFilesAtATime';
   private showMultipleAtATimeSubject: Subject<boolean> = new ReplaySubject(1);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   public showMultipleAtATimeObservable: Observable<boolean> = this.showMultipleAtATimeSubject.asObservable();
 
   //Table spacing settings
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   public readonly defaultTableSpacing: number = 1;
   private tableSpacingKey = 'tableSpacing';
   private tableSpacingSubject: Subject<number> = new ReplaySubject(1);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   public tableSpacingObservable: Observable<number> = this.tableSpacingSubject.asObservable();
 
-  //Editor settings
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  public readonly defaultShowSearchWindowOnLoad: boolean = true;
-  private showSearchWindowOnLoadKey = 'showSearchWindowOnLoad';
-  private showSearchWindowOnLoadSubject: Subject<boolean> = new ReplaySubject(1);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  public showSearchWindowOnLoadObservable: Observable<boolean> = this.showSearchWindowOnLoadSubject.asObservable();
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  public readonly defaultPrettifyOnLoad: boolean = true;
-  private prettifyOnLoadKey = 'prettifyOnLoad';
-  private prettifyOnLoadSubject: Subject<boolean> = new ReplaySubject(1);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  public prettifyOnLoadObservable: Observable<boolean> = this.prettifyOnLoadSubject.asObservable();
-
   //Table settings
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   public readonly defaultAmountOfRecordsInTable: number = 10;
   private amountOfRecordsInTableKey = 'amountOfRecordsInTable';
   private amountOfRecordsInTableSubject: Subject<number> = new ReplaySubject(1);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
+
   public amountOfRecordsInTableObservable: Observable<number> = this.amountOfRecordsInTableSubject.asObservable();
 
   constructor() {
@@ -57,16 +42,6 @@ export class SettingsService {
     localStorage.setItem(this.tableSpacingKey, String(value));
   }
 
-  public setShowSearchWindowOnLoad(value: boolean = this.defaultShowSearchWindowOnLoad): void {
-    this.showSearchWindowOnLoadSubject.next(value);
-    localStorage.setItem(this.showSearchWindowOnLoadKey, String(value));
-  }
-
-  public setPrettifyOnLoad(value: boolean = this.defaultPrettifyOnLoad): void {
-    this.prettifyOnLoadSubject.next(value);
-    localStorage.setItem(this.prettifyOnLoadKey, String(value));
-  }
-
   public setAmountOfRecordsInTable(value: number = this.defaultAmountOfRecordsInTable): void {
     this.amountOfRecordsInTableSubject.next(value);
     localStorage.setItem(this.amountOfRecordsInTableKey, String(value));
@@ -78,8 +53,6 @@ export class SettingsService {
     const temporaryTableSpacing: number = +(localStorage.getItem(this.tableSpacingKey) ?? 1);
     const cappedTableSpacing: number = Math.min(temporaryTableSpacing, MAX_ALLOWED_DROPDOWN_VALUE);
     this.setTableSpacing(cappedTableSpacing);
-    this.setShowSearchWindowOnLoad(localStorage.getItem(this.showSearchWindowOnLoadKey) === 'true');
-    this.setPrettifyOnLoad(localStorage.getItem(this.prettifyOnLoadKey) === 'true');
     const amountOfRecordsInTable =
       localStorage.getItem(this.amountOfRecordsInTableKey) ?? this.defaultAmountOfRecordsInTable;
     this.setAmountOfRecordsInTable(+amountOfRecordsInTable);

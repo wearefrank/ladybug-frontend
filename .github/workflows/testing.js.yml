@@ -200,7 +200,7 @@ jobs:
         working-directory: frank-runner
 
       - name: Start server using Frank!Runner in background
-        run: ./restart.sh -Dupdate.strategy=none > serverStartLog.log
+        run: ./restart.sh
         working-directory: frank-runner/specials/ladybug
 
       - name: Copy .github/workflows/proxy.cicd.conf.json
@@ -243,11 +243,17 @@ jobs:
         with:
           name: logs and videos ${{ matrix.spring-profile }}
           path: | 
-            frank-runner/installFrankRunnerEnv.log
-            frank-runner/specials/ladybug/serverStartLog.log
             frank-runner/specials/ladybug/build.properties
             frank-runner/build/*/logs/*
             ladybug-frontend/cypress/screenshots/
             ladybug-frontend/cypress/videos/
             ladybug-frontend/cypress/firefox/screenshots/
             ladybug-frontend/cypress/firefox/videos/
+
+      - name: Store logs
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: installFrankRunnerEnv ${{ matrix.spring-profile }}
+          path: | 
+            frank-runner/installFrankRunnerEnv.log
