@@ -60,7 +60,7 @@ describe('Tests for table filter', () => {
   });
 
   //Disabled because form validation has been removed for filter fields
-  xit('Should display error when entering wrong type for filter header', () => {
+  it('Should display error when entering wrong type for filter header', () => {
     cy.get('[data-cy-debug="filter"]').click();
     cy.get('[data-cy-debug="tableFilter"]').eq(0).type('test');
     cy.get('[data-cy-debug="filter-error-message"]').should('be.visible');
