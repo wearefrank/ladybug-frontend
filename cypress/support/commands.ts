@@ -421,7 +421,13 @@ Cypress.Commands.add('copyReportsToTestTab' as keyof Chainable, (names: string[]
 Cypress.Commands.add('editCheckpointValue' as keyof Chainable, (value: string): Chainable => {
   // Some slack, give app time to recognize item as type-able.
   cy.wait(500);
-  cy.get('[data-cy-element-name="checkpointEditor"]').type(value);
+  cy.window().then(win => {
+    const editor = win.monaco.editor.getEditors()[0];
+    editor.executeEdits('', [{
+      range: editor.getModel().getFullModelRange(),
+      text: value
+    }]);
+  });
 });
 
 function awaitLoadingSpinner(): void {
