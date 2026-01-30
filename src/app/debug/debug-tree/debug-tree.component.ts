@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Component, EventEmitter, inject, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Report } from '../../shared/interfaces/report';
 import { catchError, firstValueFrom, Observable, Subscription } from 'rxjs';
 import { HttpService } from '../../shared/services/http.service';
@@ -20,7 +20,7 @@ import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
   standalone: true,
   imports: [NgSimpleFileTree],
 })
-export class DebugTreeComponent implements OnDestroy {
+export class DebugTreeComponent implements OnInit, OnDestroy {
   @ViewChild('tree') tree!: NgSimpleFileTree;
   @Input() adjustWidth: Observable<void> = {} as Observable<void>;
   @Output() selectReportEvent = new EventEmitter<Report>();
@@ -57,6 +57,10 @@ export class DebugTreeComponent implements OnDestroy {
       this.hideOrShowCheckpointsBasedOnView(value);
     }
     this._currentView = value;
+  }
+
+  ngOnInit(): void {
+    this.settingsService.init();
   }
 
   ngOnDestroy(): void {

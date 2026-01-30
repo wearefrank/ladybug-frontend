@@ -133,11 +133,20 @@ export class TableComponent implements OnInit, OnDestroy {
   private errorHandler = inject(ErrorHandling);
   private debugTab = inject(DebugTabService);
 
+  private isLoadingData = false;
+  private isInitializing = true;
+
   ngOnInit(): void {
-    localStorage.setItem('transformationEnabled', 'true');
-    this.filterService.setMetadataTypes(this.currentView.metadataTypes);
-    this.subscribeToObservables();
-    this.loadData();
+    this.settingsService.init().then((initResult) => {
+      if (initResult === SettingsService.INITIALIZATION_SUCCESS) {
+        this.filterService.setMetadataTypes(this.currentView.metadataTypes);
+        this.subscribeToObservables();
+        this.loadData();
+      } else {
+        this.toastService.showDanger('Failed to get settings from server');
+      }
+      this.isInitializing = false;
+    });
   }
 
   ngOnDestroy(): void {
@@ -176,7 +185,15 @@ export class TableComponent implements OnInit, OnDestroy {
     );
     this.subscriptions.add(refreshTable);
     const amountOfRecordsInTableSubscription = this.settingsService.amountOfRecordsInTableObservable.subscribe(
-      (value) => (this.tableSettings.displayAmount = value),
+      (value) => {
+        this.tableSettings.displayAmount = value;
+        console.log(
+          'TableComponent.subscribeToObservables(): Calling retrieveRecords() because amount records shown setting changed',
+        );
+        if (!this.isLoadingData && !this.isInitializing) {
+          this.retrieveRecords();
+        }
+      },
     );
     this.subscriptions.add(amountOfRecordsInTableSubscription);
   }
@@ -207,11 +224,14 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   loadData(showToast = true): void {
+    this.isLoadingData = true;
     this.tableSettings.tableLoaded = false;
+    console.log('TableComponent.loadData() calls retrieveRecords');
     this.retrieveRecords(showToast);
     this.loadMetadataCount();
     this.loadReportInProgressThreshold();
     this.loadReportInProgressSettings();
+    this.isLoadingData = false;
   }
 
   retrieveRecords(showToast = true): void {
@@ -454,7 +474,9 @@ export class TableComponent implements OnInit, OnDestroy {
     const value = event.target.value === '' ? 0 : event.target.value;
     if (this.tableSettings.displayAmount !== value) {
       this.settingsService.setAmountOfRecordsInTable(value);
-      this.retrieveRecords();
+      // Change of amount of records is posted on subject.
+      // Retrieving records is done in a subscription named
+      // amountOfRecordsInTableSubscription.
     }
   }
 
@@ -482,20 +504,6 @@ export class TableComponent implements OnInit, OnDestroy {
   openSelectedReport(storageId: number): void {
     this.selectedReportStorageId = storageId;
     this.openReport(storageId);
-  }
-
-  openLatestReports(amount: number): void {
-    this.httpService
-      .getLatestReports(amount, this.currentView.storageName)
-      .pipe(catchError(this.errorHandler.handleError()))
-      .subscribe({
-        next: (data: Report[]) => {
-          for (let report of data) {
-            this.openReportEvent.next(report);
-          }
-          this.toastService.showSuccess(`Latest ${amount} reports opened!`);
-        },
-      });
   }
 
   openReportInProgress(index: number): void {
