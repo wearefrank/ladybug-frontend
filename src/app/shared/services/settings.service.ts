@@ -85,6 +85,9 @@ export class SettingsService {
         .then((values) => {
           const optionsSettings: OptionsSettings = values[0];
           const transformation: Transformation = values[1];
+          console.log(
+            `SettingsService.refreshFrankAppSettings(): _isGeneratorEnabled from ${this._isGeneratorEnabled} to ${optionsSettings.generatorEnabled}`,
+          );
           this._isGeneratorEnabled = optionsSettings.generatorEnabled;
           this._regexFilter = optionsSettings.regexFilter;
           this._transformation = transformation.transformation;

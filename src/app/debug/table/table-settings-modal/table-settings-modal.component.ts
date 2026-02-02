@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Component, EventEmitter, inject, OnDestroy, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FrankAppSettings, SettingsService } from '../../../shared/services/settings.service';
 import { Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
-import { ErrorHandling } from 'src/app/shared/classes/error-handling.service';
 import { VersionService } from '../../../shared/services/version.service';
 import { CopyTooltipDirective } from '../../../shared/directives/copy-tooltip.directive';
-import { DebugTabService } from '../../debug-tab.service';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -19,8 +17,6 @@ import { DebugTabService } from '../../debug-tab.service';
   imports: [ReactiveFormsModule, CopyTooltipDirective],
 })
 export class TableSettingsModalComponent implements OnInit, OnDestroy {
-  @Output() openLatestReportsEvent: EventEmitter<number> = new EventEmitter<number>();
-
   @ViewChild('modal') protected settingsModalElement!: TemplateRef<HTMLElement>;
   @ViewChild('unsavedChangesModal')
   protected unsavedChangesModalElement!: TemplateRef<HTMLElement>;
@@ -30,9 +26,7 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
   private modalService = inject(NgbModal);
   public settingsService = inject(SettingsService);
   private toastService = inject(ToastService);
-  private errorHandler = inject(ErrorHandling);
   private versionService = inject(VersionService);
-  private debugTabService = inject(DebugTabService);
 
   protected unsavedChanges = false;
 
@@ -89,6 +83,7 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
   }
 
   async open(): Promise<void> {
+    console.log('Opening debug settings dialog');
     await this.loadSettings();
     this.activeSettingsModal = this.modalService.open(this.settingsModalElement);
   }
@@ -105,6 +100,7 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
   }
 
   async loadSettings(): Promise<void> {
+    this.settingsService.refreshFrankAppSettings();
     this.settingsForm.get(this.showMultipleFilesKey)?.setValue(this.settingsService.isShowMultipleReportsAtATime());
     this.settingsForm.get(this.tableSpacingKey)?.setValue(this.settingsService.getTableSpacing());
     this.settingsForm.get(this.amountOfRecordsShownKey)?.setValue(this.settingsService.getAmountOfRecordsInTable());
@@ -120,7 +116,7 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
 
   // TODO: How to do error handling here?
   saveSettings(): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.settingsService.setShowMultipleReportsatATime(this.settingsForm.value[this.showMultipleFilesKey]);
       this.settingsService.setAmountOfRecordsInTable(this.settingsForm.value[this.amountOfRecordsShownKey]);
       this.settingsService.setTableSpacing(this.settingsForm.value[this.tableSpacingKey]);
@@ -132,7 +128,16 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
         };
         this.settingsService
           .saveFrankAppSettings(body)
+          .catch(() => {
+            this.toastService.showDanger('Failed to save settings');
+            reject();
+          })
+          .then(() => this.toastService.showSuccess('Settings saved!'))
           .then(() => this.loadSettings())
+          .catch(() => {
+            this.toastService.showDanger('Failer to reload settings after saving change');
+            reject();
+          })
           .then(() => resolve());
       } else {
         this.loadSettings().then(() => resolve());
@@ -160,18 +165,30 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
   }
 
   protected formServerSettingsChanged(): boolean {
+    console.log('Enter TableSettingsModalComponent.formServerSettingsChanged()');
     const formRegexFilter: string | null = this.settingsForm.value[this.regexFilterKey];
     const formTransformation: string | null = this.settingsForm.value[this.transformationKey];
-    return (
+    console.log(`Current generator enabled status: ${this.settingsService.isGeneratorEnabled()}`);
+    console.log(
+      `Generator enabled changed: ${this.getFormGeneratorEnabled() !== this.settingsService.isGeneratorEnabled()}`,
+    );
+    console.log(`Type of current generator enabled: ${typeof this.getFormGeneratorEnabled()}`);
+    console.log(`Type of form generator enabled: ${typeof this.getFormGeneratorEnabled()}`);
+    const result: boolean =
       this.getFormGeneratorEnabled() !== this.settingsService.isGeneratorEnabled() ||
       formRegexFilter !== this.settingsService.getRegexFilter() ||
-      formTransformation !== this.settingsService.getTransformation()
-    );
+      formTransformation !== this.settingsService.getTransformation();
+    console.log(`Leave TableSettingsModalComponent.formServerSettingsChanged() with result ${result}`);
+    return result;
   }
 
   private getFormGeneratorEnabled(): boolean {
-    const formReportGeneratorEnabledString: string | null = this.settingsForm.value[this.generatorEnabledKey];
-    return formReportGeneratorEnabledString === 'true';
+    const formReportGeneratorEnabled: boolean | null = this.settingsForm.value[this.generatorEnabledKey];
+    const result: boolean = formReportGeneratorEnabled === true;
+    console.log(
+      `formReportGeneratorEnabled: ${formReportGeneratorEnabled}, type ${typeof formReportGeneratorEnabled}, returning ${result}`,
+    );
+    return result;
   }
 
   protected saveAndClose(): void {

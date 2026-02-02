@@ -58,8 +58,7 @@ describe('Tests for settings component', () => {
 
   describe('Restore, factory reset, save', () => {
     beforeEach(() => {
-      cy.get('[data-cy-debug="openSettings"]').as('openSettingsModal').click();
-      cy.get('[data-cy-settings="factoryReset"]').click();
+      cy.debugTabBackToFactorySettings();
       cy.get('@openSettingsModal').click();
       cy.get('[data-cy-settings="nav-client"]').click();
       cy.get('[data-cy-settings="openLatestReports"]').should('have.text', '10');
