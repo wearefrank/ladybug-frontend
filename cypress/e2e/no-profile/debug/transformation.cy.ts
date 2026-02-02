@@ -18,7 +18,6 @@ describe('Tests for report transformation', () => {
     cy.get('[data-cy-settings-transformation]').within((textArea) => {
       cy.fixture('ignoreName.xslt').then((newText) => cy.wrap(textArea).type(newText));
     });
-    cy.get('[data-cy-settings-transformation-enabled]').check();
     cy.get('[data-cy-settings="saveChanges"]').click();
     cy.createOtherReport();
     cy.get('[data-cy-debug="refresh"]').click();

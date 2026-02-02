@@ -175,7 +175,13 @@ export class SettingsService {
   }
 
   public getAmountOfRecordsInTable(): number {
-    return +(localStorage.getItem(this.amountOfRecordsInTableKey) ?? this.defaultAmountOfRecordsInTable);
+    const raw: string | null = localStorage.getItem(this.amountOfRecordsInTableKey);
+    if (raw !== null) {
+      const parsed: number = +raw;
+      const isInvalid: boolean = Number.isNaN(parsed) || parsed === 0 || !Number.isInteger(parsed);
+      return isInvalid ? this.defaultAmountOfRecordsInTable : parsed;
+    }
+    return this.defaultAmountOfRecordsInTable;
   }
 
   public setAmountOfRecordsInTable(value: number): void {

@@ -61,23 +61,19 @@ describe('Tests for settings component', () => {
       cy.debugTabBackToFactorySettings();
       cy.get('@openSettingsModal').click();
       cy.get('[data-cy-settings="nav-client"]').click();
-      cy.get('[data-cy-settings="openLatestReports"]').should('have.text', '10');
+      cy.get('[data-cy-settings="openLatestReports"]').invoke('val').should('equal', '10');
       cy.get('[data-cy-settings="showAmount"]').should('not.be.checked');
       cy.get('[data-cy-settings="spacingDropdown"] option:selected').should(
         'have.text',
         '1x',
       );
       cy.get('[data-cy-settings="nav-server"]').click();
-      cy.get('[data-cy-settings="generatorEnabled" option:selected]').should(
+      cy.get('[data-cy-settings="generatorEnabled"] option:selected').should(
         'have.text',
-        'Disabled'
+        'Enabled'
       )
-      cy.get('[data-cy-settings-transformation]').should((element) => {
-        expect(element.text()).to.have.length.gte(10);
-      })
-      cy.get('[data-cy-settings="regexFilter"]').should((element) => {
-        expect(element.text()).to.have.length(0);
-      })
+      cy.get('[data-cy-settings-transformation]').invoke('val').should('have.length.gt', 10);
+      cy.get('[data-cy-settings="regexFilter"]').invoke('val').should('equal', '.*');
       cy.get('[data-cy-settings="close"]').click();
       cy.get('[data-cy-settings="close"]').should('not.exist');
     })
