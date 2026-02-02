@@ -130,8 +130,8 @@ importers:
         specifier: 1.0.36
         version: 1.0.36
       '@types/jasmine':
-        specifier: 5.1.9
-        version: 5.1.9
+        specifier: 6.0.0
+        version: 6.0.0
       '@types/node':
         specifier: 25.1.0
         version: 25.1.0
@@ -2288,8 +2288,8 @@ packages:
   '@types/http-proxy@1.17.17':
     resolution: {integrity: sha512-ED6LB+Z1AVylNTu7hdzuBqOgMnvG/ld6wGCG8wFnAzKX5uyW2K3WD52v0gnLCTK/VLpXtKckgWuyScYK6cSPaw==}
 
-  '@types/jasmine@5.1.9':
-    resolution: {integrity: sha512-8t4HtkW4wxiPVedMpeZ63n3vlWxEIquo/zc1Tm8ElU+SqVV7+D3Na2PWaJUp179AzTragMWVwkMv7mvty0NfyQ==}
+  '@types/jasmine@6.0.0':
+    resolution: {integrity: sha512-18lgGsLmEh3VJk9eZ5wAjTISxdqzl6YOwu8UdMpolajN57QOCNbl+AbHUd+Yu9ItrsFdB+c8LSZSGNg8nHaguw==}
 
   '@types/jquery@3.5.33':
     resolution: {integrity: sha512-SeyVJXlCZpEki5F0ghuYe+L+PprQta6nRZqhONt9F13dWBtR/ftoaIbdRQ7cis7womE+X2LKhsDdDtkkDhJS6g==}
@@ -8102,7 +8102,7 @@ snapshots:
     dependencies:
       '@types/node': 25.1.0
 
-  '@types/jasmine@5.1.9': {}
+  '@types/jasmine@6.0.0': {}
 
   '@types/jquery@3.5.33':
     dependencies:
