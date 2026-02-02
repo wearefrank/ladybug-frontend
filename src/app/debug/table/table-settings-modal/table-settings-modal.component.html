@@ -26,10 +26,10 @@
       <div class="tabbed">
         <ul class="nav nav-tabs">
           <li class="nav-item">
-            <a [class]="getNavClasses(SERVER)" (click)="selectNav(SERVER)">{{ SERVER }}</a>
+            <a data-cy-settings="nav-server" [class]="getNavClasses(SERVER)" (click)="selectNav(SERVER)">{{ SERVER }}</a>
           </li>
           <li class="nav-item">
-            <a [class]="getNavClasses(CLIENT)" (click)="selectNav(CLIENT)">{{ CLIENT }}</a>
+            <a data-cy-settings="nav-client" [class]="getNavClasses(CLIENT)" (click)="selectNav(CLIENT)">{{ CLIENT }}</a>
           </li>
         </ul>
         @if (activeTab === SERVER) {
@@ -44,7 +44,7 @@
           <div class="form-group">
             <label>Report filter (regex)</label>
             <div class="input-group">
-              <input type="search" [formControlName]="regexFilterKey" title="Example 1 (only store report when name is Hello World):
+              <input data-cy-settings="regexFilter" type="search" [formControlName]="regexFilterKey" title="Example 1 (only store report when name is Hello World):
     Hello World
 
     Example 2 (only store report when name contains Hello or World):
@@ -65,7 +65,7 @@
           <div class="form-group">
             <label for="openLatestReports">Maximum number of reports shown</label>
             <div class="input-group">
-              <input type="number" class="form-control" [formControlName]="amountOfRecordsShownKey" id="openLatestReports" />
+              <input data-cy-settings="openLatestReports" type="number" class="form-control" [formControlName]="amountOfRecordsShownKey" id="openLatestReports" />
             </div>
           </div>
           <div class="form-group">

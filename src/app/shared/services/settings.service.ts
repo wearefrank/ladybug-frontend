@@ -194,6 +194,7 @@ export class SettingsService {
   public tableSpacingObservable = this.tableSpacingSubject as Observable<number>;
   private amountOfRecordsInTableSubject = new BehaviorSubject<number>(this.getAmountOfRecordsInTable());
   public amountOfRecordsInTableObservable = this.amountOfRecordsInTableSubject as Observable<number>;
+
   private restorePersonalFactorySettings(): void {
     this.setAmountOfRecordsInTable(10);
     this.setShowMultipleReportsatATime(false);
