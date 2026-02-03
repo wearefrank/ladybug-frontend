@@ -134,7 +134,6 @@ export class TableComponent implements OnInit, OnDestroy {
   private debugTab = inject(DebugTabService);
 
   private isLoadingData = false;
-  private isInitializing = true;
 
   ngOnInit(): void {
     this.filterService.setMetadataTypes(this.currentView.metadataTypes);
@@ -183,7 +182,7 @@ export class TableComponent implements OnInit, OnDestroy {
         console.log(
           'TableComponent.subscribeToObservables(): Calling retrieveRecords() because amount records shown setting changed',
         );
-        if (!this.isLoadingData && !this.isInitializing) {
+        if (!this.isLoadingData) {
           this.retrieveRecords();
         }
       },
