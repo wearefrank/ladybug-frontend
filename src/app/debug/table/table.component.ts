@@ -7,7 +7,6 @@ import { TableSettingsModalComponent } from './table-settings-modal/table-settin
 import { TableSettings } from '../../shared/interfaces/table-settings';
 import { catchError, Subscription } from 'rxjs';
 import { Report } from '../../shared/interfaces/report';
-import { SettingsService } from '../../shared/services/settings.service';
 import { ToastService } from '../../shared/services/toast.service';
 import { TabService } from '../../shared/services/tab.service';
 import { AppVariablesService } from '../../shared/services/app.variables.service';
@@ -37,6 +36,7 @@ import { DeleteModalComponent } from '../../shared/components/delete-modal/delet
 import { RefreshCondition } from '../../shared/interfaces/refresh-condition';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { ShortenedTableHeaderPipe } from '../../shared/pipes/shortened-table-header.pipe';
+import { ClientSettingsService } from 'src/app/shared/services/client.settings.service';
 
 @Component({
   selector: 'app-table',
@@ -126,7 +126,7 @@ export class TableComponent implements OnInit, OnDestroy {
   private tableDataSort?: MatSort;
 
   private httpService = inject(HttpService);
-  private settingsService = inject(SettingsService);
+  private clientSettingsService = inject(ClientSettingsService);
   private toastService = inject(ToastService);
   private tabService = inject(TabService);
   private filterService = inject(FilterService);
@@ -137,16 +137,9 @@ export class TableComponent implements OnInit, OnDestroy {
   private isInitializing = true;
 
   ngOnInit(): void {
-    this.settingsService.init().then((initResult) => {
-      if (initResult === SettingsService.INITIALIZATION_SUCCESS) {
-        this.filterService.setMetadataTypes(this.currentView.metadataTypes);
-        this.subscribeToObservables();
-        this.loadData();
-      } else {
-        this.toastService.showDanger('Failed to get settings from server');
-      }
-      this.isInitializing = false;
-    });
+    this.filterService.setMetadataTypes(this.currentView.metadataTypes);
+    this.subscribeToObservables();
+    this.loadData();
   }
 
   ngOnDestroy(): void {
@@ -154,7 +147,7 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   subscribeToObservables(): void {
-    const tableSpacingSubscription: Subscription = this.settingsService.tableSpacingObservable.subscribe({
+    const tableSpacingSubscription: Subscription = this.clientSettingsService.tableSpacingObservable.subscribe({
       next: (value: number) => {
         this.setTableSpacing(value);
         this.setFontSize(value);
@@ -163,7 +156,7 @@ export class TableComponent implements OnInit, OnDestroy {
       error: () => catchError(this.errorHandler.handleError()),
     });
     this.subscriptions.add(tableSpacingSubscription);
-    const showMultipleSubscription: Subscription = this.settingsService.showMultipleAtATimeObservable.subscribe({
+    const showMultipleSubscription: Subscription = this.clientSettingsService.showMultipleAtATimeObservable.subscribe({
       next: (value: boolean) => (this.showMultipleFiles = value),
       error: () => catchError(this.errorHandler.handleError()),
     });
@@ -184,7 +177,7 @@ export class TableComponent implements OnInit, OnDestroy {
       this.refresh(condition),
     );
     this.subscriptions.add(refreshTable);
-    const amountOfRecordsInTableSubscription = this.settingsService.amountOfRecordsInTableObservable.subscribe(
+    const amountOfRecordsInTableSubscription = this.clientSettingsService.amountOfRecordsInTableObservable.subscribe(
       (value) => {
         this.tableSettings.displayAmount = value;
         console.log(
@@ -473,7 +466,7 @@ export class TableComponent implements OnInit, OnDestroy {
   changeTableLimit(event: any): void {
     const value = event.target.value === '' ? 0 : event.target.value;
     if (this.tableSettings.displayAmount !== value) {
-      this.settingsService.setAmountOfRecordsInTable(value);
+      this.clientSettingsService.setAmountOfRecordsInTable(value);
       // Change of amount of records is posted on subject.
       // Retrieving records is done in a subscription named
       // amountOfRecordsInTableSubscription.

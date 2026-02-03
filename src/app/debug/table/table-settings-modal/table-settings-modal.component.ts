@@ -3,11 +3,12 @@
 import { Component, inject, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FrankAppSettings, SettingsService } from '../../../shared/services/settings.service';
+import { ServerSettings, SettingsService } from '../../../shared/services/settings.service';
 import { Subscription } from 'rxjs';
 import { ToastService } from '../../../shared/services/toast.service';
 import { VersionService } from '../../../shared/services/version.service';
 import { CopyTooltipDirective } from '../../../shared/directives/copy-tooltip.directive';
+import { ClientSettingsService } from 'src/app/shared/services/client.settings.service';
 
 @Component({
   selector: 'app-table-settings-modal',
@@ -24,7 +25,8 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
   // Cannot be defined after protected members because they
   // are used to initialize the protected members.
   private modalService = inject(NgbModal);
-  public settingsService = inject(SettingsService);
+  public clientSettingsService = inject(ClientSettingsService);
+  public serverSettingsService = inject(SettingsService);
   private toastService = inject(ToastService);
   private versionService = inject(VersionService);
 
@@ -66,7 +68,7 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settingsService.init().then(() => this.loadSettings());
+    this.serverSettingsService.init().then(() => this.loadSettings());
   }
 
   ngOnDestroy(): void {
@@ -100,13 +102,18 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
   }
 
   async loadSettings(): Promise<void> {
-    this.settingsService.refreshFrankAppSettings();
-    this.settingsForm.get(this.showMultipleFilesKey)?.setValue(this.settingsService.isShowMultipleReportsAtATime());
-    this.settingsForm.get(this.tableSpacingKey)?.setValue(this.settingsService.getTableSpacing());
-    this.settingsForm.get(this.amountOfRecordsShownKey)?.setValue(this.settingsService.getAmountOfRecordsInTable());
-    this.settingsForm.get(this.generatorEnabledKey)?.setValue(this.settingsService.isGeneratorEnabled());
-    this.settingsForm.get(this.regexFilterKey)?.setValue(this.settingsService.getRegexFilter());
-    this.settingsForm.get(this.transformationKey)?.setValue(this.settingsService.getTransformation());
+    // TODO: Error handling?
+    await this.serverSettingsService.refresh();
+    this.settingsForm
+      .get(this.showMultipleFilesKey)
+      ?.setValue(this.clientSettingsService.isShowMultipleReportsAtATime());
+    this.settingsForm.get(this.tableSpacingKey)?.setValue(this.clientSettingsService.getTableSpacing());
+    this.settingsForm
+      .get(this.amountOfRecordsShownKey)
+      ?.setValue(this.clientSettingsService.getAmountOfRecordsInTable());
+    this.settingsForm.get(this.generatorEnabledKey)?.setValue(this.serverSettingsService.isGeneratorEnabled());
+    this.settingsForm.get(this.regexFilterKey)?.setValue(this.serverSettingsService.getRegexFilter());
+    this.settingsForm.get(this.transformationKey)?.setValue(this.serverSettingsService.getTransformation());
     this.unsavedChanges = false;
   }
 
@@ -117,21 +124,19 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
   // TODO: How to do error handling here?
   saveSettings(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.settingsService.setShowMultipleReportsatATime(this.settingsForm.value[this.showMultipleFilesKey]);
-      this.settingsService.setAmountOfRecordsInTable(this.settingsForm.value[this.amountOfRecordsShownKey]);
-      this.settingsService.setTableSpacing(this.settingsForm.value[this.tableSpacingKey]);
       if (this.formServerSettingsChanged()) {
-        const body: FrankAppSettings = {
+        const body: ServerSettings = {
           isGeneratorEnabled: this.getFormGeneratorEnabled(),
           regexFilter: this.settingsForm.value[this.regexFilterKey],
           transformation: this.settingsForm.value[this.transformationKey],
         };
-        this.settingsService
-          .saveFrankAppSettings(body)
+        this.serverSettingsService
+          .save(body)
           .catch(() => {
             this.toastService.showDanger('Failed to save settings');
             reject();
           })
+          .then(() => this.saveClientSettings())
           .then(() => this.toastService.showSuccess('Settings saved!'))
           .then(() => this.loadSettings())
           .catch(() => {
@@ -140,14 +145,22 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
           })
           .then(() => resolve());
       } else {
+        this.saveClientSettings();
         this.loadSettings().then(() => resolve());
       }
     });
   }
 
+  private saveClientSettings(): void {
+    this.clientSettingsService.setShowMultipleReportsatATime(this.settingsForm.value[this.showMultipleFilesKey]);
+    this.clientSettingsService.setAmountOfRecordsInTable(this.settingsForm.value[this.amountOfRecordsShownKey]);
+    this.clientSettingsService.setTableSpacing(this.settingsForm.value[this.tableSpacingKey]);
+  }
+
   // TODO: Error handling?
   async factoryReset(): Promise<void> {
-    await this.settingsService.allBackToFactory();
+    await this.serverSettingsService.backToFactory();
+    await this.clientSettingsService.backToFactory();
     await this.loadSettings();
     this.closeSettingsModal();
   }
@@ -158,9 +171,9 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
     const formAmountOfRecordsShown: number | null = this.settingsForm.value[this.amountOfRecordsShownKey];
     this.unsavedChanges =
       this.formServerSettingsChanged() ||
-      formMultipleFilesEnabled !== this.settingsService.isShowMultipleReportsAtATime() ||
-      formTableSpacing !== this.settingsService.getTableSpacing() ||
-      formAmountOfRecordsShown !== this.settingsService.getAmountOfRecordsInTable();
+      formMultipleFilesEnabled !== this.clientSettingsService.isShowMultipleReportsAtATime() ||
+      formTableSpacing !== this.clientSettingsService.getTableSpacing() ||
+      formAmountOfRecordsShown !== this.clientSettingsService.getAmountOfRecordsInTable();
     console.log(`Finishing formHasChanged() with unsaved changes=${this.unsavedChanges}`);
   }
 
@@ -168,16 +181,16 @@ export class TableSettingsModalComponent implements OnInit, OnDestroy {
     console.log('Enter TableSettingsModalComponent.formServerSettingsChanged()');
     const formRegexFilter: string | null = this.settingsForm.value[this.regexFilterKey];
     const formTransformation: string | null = this.settingsForm.value[this.transformationKey];
-    console.log(`Current generator enabled status: ${this.settingsService.isGeneratorEnabled()}`);
+    console.log(`Current generator enabled status: ${this.serverSettingsService.isGeneratorEnabled()}`);
     console.log(
-      `Generator enabled changed: ${this.getFormGeneratorEnabled() !== this.settingsService.isGeneratorEnabled()}`,
+      `Generator enabled changed: ${this.getFormGeneratorEnabled() !== this.serverSettingsService.isGeneratorEnabled()}`,
     );
     console.log(`Type of current generator enabled: ${typeof this.getFormGeneratorEnabled()}`);
     console.log(`Type of form generator enabled: ${typeof this.getFormGeneratorEnabled()}`);
     const result: boolean =
-      this.getFormGeneratorEnabled() !== this.settingsService.isGeneratorEnabled() ||
-      formRegexFilter !== this.settingsService.getRegexFilter() ||
-      formTransformation !== this.settingsService.getTransformation();
+      this.getFormGeneratorEnabled() !== this.serverSettingsService.isGeneratorEnabled() ||
+      formRegexFilter !== this.serverSettingsService.getRegexFilter() ||
+      formTransformation !== this.serverSettingsService.getTransformation();
     console.log(`Leave TableSettingsModalComponent.formServerSettingsChanged() with result ${result}`);
     return result;
   }

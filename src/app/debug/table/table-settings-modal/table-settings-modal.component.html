@@ -75,7 +75,7 @@
                       [formControlName]="tableSpacingKey">
                 @for (option of spacingOptions; track option) {
                   <option [value]="option"
-                          [selected]="option === settingsService.getTableSpacing()"><span>{{ option }}x</span></option>
+                          [selected]="option === clientSettingsService.getTableSpacing()"><span>{{ option }}x</span></option>
                 }
               </select>
             </div>

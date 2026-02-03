@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, firstValueFrom, Observable } from 'rxjs';
+import { catchError, firstValueFrom, Observable } from 'rxjs';
 import { HttpService } from './http.service';
 import { OptionsSettings } from '../interfaces/options-settings';
 import { Transformation } from '../interfaces/transformation';
@@ -7,7 +7,7 @@ import { ErrorHandling } from '../classes/error-handling.service';
 import { UploadParameters } from '../interfaces/upload-params';
 import { HttpErrorResponse } from '@angular/common/http';
 
-export interface FrankAppSettings {
+export interface ServerSettings {
   isGeneratorEnabled: boolean;
   regexFilter: string | null;
   transformation: string | null;
@@ -36,7 +36,7 @@ export class SettingsService {
     return new Promise((resolve) => {
       if (this.initializationState === SettingsService.INITIALIZATION_IDLE) {
         this.initializationState = SettingsService.INITIALIZATION_BUSY;
-        this.refreshFrankAppSettings()
+        this.refresh()
           .then(() => {
             this.initializationState = SettingsService.INITIALIZATION_SUCCESS;
             resolve(this.initializationState);
@@ -67,7 +67,7 @@ export class SettingsService {
     return this._transformation;
   }
 
-  public refreshFrankAppSettings(): Promise<void> {
+  public refresh(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       const settingsPromise: Promise<OptionsSettings> = firstValueFrom(
         this.httpService
@@ -97,7 +97,7 @@ export class SettingsService {
     });
   }
 
-  public async saveFrankAppSettings(settings: FrankAppSettings): Promise<void> {
+  public async save(settings: ServerSettings): Promise<void> {
     return new Promise((resolve, reject) => {
       const uploadParameters: UploadParameters = {
         generatorEnabled: settings.isGeneratorEnabled,
@@ -121,7 +121,7 @@ export class SettingsService {
     });
   }
 
-  public allBackToFactory(): Promise<void> {
+  public backToFactory(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       const settingsPromise = firstValueFrom(
         this.httpService
@@ -146,69 +146,15 @@ export class SettingsService {
           ),
       );
       return Promise.all([settingsPromise, transformationPromise])
-        .then(() => this.refreshFrankAppSettings())
-        .then(() => this.restorePersonalFactorySettings())
+        .then(() => this.refresh())
         .then(() => resolve())
         .catch(() => reject('Failed to restore factory settings'));
     });
   }
 
-  public isShowMultipleReportsAtATime(): boolean {
-    return localStorage.getItem(this.showMultipleRecordsAtATimeKey) === 'true';
-  }
-
-  public setShowMultipleReportsatATime(value: boolean): void {
-    localStorage.setItem(this.showMultipleRecordsAtATimeKey, String(value));
-    this.showMultipleAtATimeSubject.next(value);
-  }
-
-  public getTableSpacing(): number {
-    const MAX_ALLOWED_DROPDOWN_VALUE = 8;
-    const temporaryTableSpacing: number = +(localStorage.getItem(this.tableSpacingKey) ?? 1);
-    const cappedTableSpacing: number = Math.min(temporaryTableSpacing, MAX_ALLOWED_DROPDOWN_VALUE);
-    return cappedTableSpacing;
-  }
-
-  public setTableSpacing(value: number): void {
-    localStorage.setItem(this.tableSpacingKey, String(value));
-    this.tableSpacingSubject.next(this.getTableSpacing());
-  }
-
-  public getAmountOfRecordsInTable(): number {
-    const raw: string | null = localStorage.getItem(this.amountOfRecordsInTableKey);
-    if (raw !== null) {
-      const parsed: number = +raw;
-      const isInvalid: boolean = Number.isNaN(parsed) || parsed === 0 || !Number.isInteger(parsed);
-      return isInvalid ? this.defaultAmountOfRecordsInTable : parsed;
-    }
-    return this.defaultAmountOfRecordsInTable;
-  }
-
-  public setAmountOfRecordsInTable(value: number): void {
-    localStorage.setItem(this.amountOfRecordsInTableKey, String(value));
-    this.amountOfRecordsInTableSubject.next(value);
-  }
-
-  private readonly tableSpacingKey = 'tableSpacing';
-  private readonly showMultipleRecordsAtATimeKey = 'showMultipleFilesAtATime';
-  private readonly defaultAmountOfRecordsInTable: number = 10;
-  private readonly amountOfRecordsInTableKey = 'amountOfRecordsInTable';
-
   private _isGeneratorEnabled = false;
   private _regexFilter: string | null = null;
   private _transformation: string | null = null;
-  private showMultipleAtATimeSubject = new BehaviorSubject<boolean>(this.isShowMultipleReportsAtATime());
-  public showMultipleAtATimeObservable = this.showMultipleAtATimeSubject as Observable<boolean>;
-  private tableSpacingSubject = new BehaviorSubject<number>(this.getTableSpacing());
-  public tableSpacingObservable = this.tableSpacingSubject as Observable<number>;
-  private amountOfRecordsInTableSubject = new BehaviorSubject<number>(this.getAmountOfRecordsInTable());
-  public amountOfRecordsInTableObservable = this.amountOfRecordsInTableSubject as Observable<number>;
-
-  private restorePersonalFactorySettings(): void {
-    this.setAmountOfRecordsInTable(10);
-    this.setShowMultipleReportsatATime(false);
-    this.setTableSpacing(1);
-  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleErrorWithRethrowMessage(message: string): (error: HttpErrorResponse) => Observable<any> {
