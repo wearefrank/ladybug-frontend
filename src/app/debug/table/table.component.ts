@@ -464,13 +464,10 @@ export class TableComponent implements OnInit, OnDestroy {
   }
 
   changeTableLimit(event: any): void {
-    const value = event.target.value === '' ? 0 : event.target.value;
-    if (this.tableSettings.displayAmount !== value) {
-      this.clientSettingsService.setAmountOfRecordsInTable(value);
-      // Change of amount of records is posted on subject.
-      // Retrieving records is done in a subscription named
-      // amountOfRecordsInTableSubscription.
-    }
+    this.clientSettingsService.setAmountOfRecordsInTable(event.target.value);
+    // Change of amount of records is posted on subject.
+    // Retrieving records is done in a subscription named
+    // amountOfRecordsInTableSubscription.
   }
 
   refresh(refreshCondition?: RefreshCondition): void {
